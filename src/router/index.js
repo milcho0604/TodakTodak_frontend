@@ -6,6 +6,7 @@ import {createRouter, createWebHistory} from 'vue-router';
 import HomePage from '@/views/HomePage.vue';
 import { memberRouter } from './memberRouter';
 import { paymentRouter } from './paymentRouter';
+import { untactRouter } from './untactRouter';
 const routes = [
     {
         path: '/',
@@ -13,7 +14,8 @@ const routes = [
         component: HomePage
     },
     ...memberRouter,
-    ...paymentRouter
+    ...paymentRouter,
+    ...untactRouter
 ]
 
 
