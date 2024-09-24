@@ -1,26 +1,37 @@
+<!-- App.vue -->
 <template>
-  <img alt="Vue logo" src="./assets/logo.png">
-  <HelloWorld msg="Welcome to Your Vue.js App"/>
+  <v-app class="app global_bg">
+    <HeaderComponent @open-sidebar="toggleSidebar" />
+    <AppSidebar ref="sidebar" />
+    <v-main class="main-content">
+      <router-view />
+    </v-main>
+  </v-app>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+import HeaderComponent from './components/HeaderComponent.vue';
 
 export default {
   name: 'App',
   components: {
-    HelloWorld
+    HeaderComponent
+  },
+  methods: {
+    toggleSidebar() {
+      this.$refs.sidebar.toggleSidebar();
+    }
   }
 }
 </script>
 
 <style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
+.app {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh; /* 화면 높이의 100%를 차지하도록 설정 */
+}
+.main-content {
+  flex: 1; /* 콘텐츠가 footer 위에 표시되도록 설정 */
 }
 </style>
