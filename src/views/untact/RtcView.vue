@@ -14,7 +14,7 @@
                             <h4>
                                 <span v-for="r in rooms" :key="r.id">
                                     <a :href="`/room/${r.id}`" :id="`button-link-${r.id}`">
-                                        <button type="button" @click="addUuidToButtonLink(r.id)"
+                                        <button type="button"
                                             class="btn badge badge-primary">
                                             {{ r.id }}
                                         </button>
@@ -25,8 +25,7 @@
                         <div class="mb-3">
                             <label for="id">To create a new room enter your room number, or press 'Random #' button to
                                 get a random one</label>
-                            <input class="form-control" name="id" v-model="roomId" type="number"
-                                placeholder="Min: 0, max: 99" min="0" max="99" required />
+                            <input class="form-control" name="id" v-model="roomId" required />
                         </div>
                         <div>
                             <button @click="getRandomRoom" class="btn btn-outline-success" type="button">Random
@@ -78,10 +77,7 @@ export default {
                 alert("방 정보를 불러오는 중에 오류가 발생했습니다. 다시 시도해 주세요.");  // 한글로 사용자에게 알림
             }
         },
-        addUuidToButtonLink(roomId) {
-            let link = document.getElementById(`button-link-${roomId}`).href;
-            document.getElementById(`button-link-${roomId}`).href = link + "/user/" + localStorage.getItem("uuid");
-        },
+    
         async createRoom() {
             await axios.post(`${process.env.VUE_APP_API_BASE_URL}/reservation-service/api/room/`, { id: this.roomId, uuid: this.uuid }).then(() => {
                 this.loadRooms();
