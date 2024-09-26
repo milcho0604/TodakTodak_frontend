@@ -34,7 +34,7 @@
                               <v-btn
                                   style="flex: 1; height: auto; padding: 0; border: none; display: flex; justify-content: center; align-items: center;"
                                   @click="kakaoLogin"
-                              >
+                              > 카카오 로그인
                               <v-icon size="large">mdi-kakao-talk</v-icon>
                               </v-btn>
                             </div>
@@ -62,6 +62,7 @@
 <script>
 import axios from 'axios';
 import { jwtDecode } from 'jwt-decode';
+
 
 export default {
     name: "LoginPage",
