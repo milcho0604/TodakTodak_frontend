@@ -19,21 +19,23 @@ if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('/firebase-messaging-sw.js')
       .then((registration) => {
         console.log('Service Worker registered with scope:', registration.scope);
-        //서비스 워커 등록 완료 후 앱 마운트
         app.use(router);
         app.use(vuetify);
         app.mount('#app');
-      }).catch((error) => {
-        console.error('Service Worker registration failed:', error);
-        //서비스 워커가 등록되지 않을 경우에도 마운트.. 하는게 맞나..?
-        console.log('서비스 워커가 등록되지 않지만 마운트 함...');
-        app.use(router);
-        app.use(vuetify);
-        app.mount('#app');
+        
+      }).catch((error) =>{
+        console.error('service worker registration failed: ', error);
       });
   }else{
     //서비스 워커가 지원되지 않는 경우에도 마운트...
     console.log('서비스 워커가 지원되지 않지만 마운트 함...');
+    //서비스 워커가 지원되지 않는 경우에도 마운트...
+    // Vue 애플리케이션에 플러그인 및 라우터 설정
+    // app.use(store);
+    app.use(router);
+    app.use(vuetify);
+    // Vue 애플리케이션 마운트
+    app.mount('#app');
   }
 
 
@@ -62,7 +64,7 @@ axios.interceptors.request.use(
 
 //             if (refreshToken) {
 //                 try {
-//                     // 토큰 갱신 요청
+//                     // 토큰 갱신 요청a
 //                     localStorage.removeItem('token');
 //                     const response = await axios.post(
 //                         `${process.env.VUE_APP_API_BASE_URL}/member/refresh-token`,
@@ -89,11 +91,4 @@ axios.interceptors.request.use(
 // );
 
 
-//서비스 워커가 지원되지 않는 경우에도 마운트...
-// Vue 애플리케이션에 플러그인 및 라우터 설정
-// app.use(store);
-app.use(router);
-app.use(vuetify);
 
-// Vue 애플리케이션 마운트
-app.mount('#app');

@@ -21,7 +21,9 @@ export default {
     HeaderComponent
   },
   async mounted() {
+    
     await this.initializeFCM();
+  
     //this.updateLayout(this.$route)
 
      // 서비스 워커 등록
@@ -33,7 +35,6 @@ export default {
     //       console.error('Service Worker registration failed:', error);
     //     });
     // }
-
 
   },
   methods: {
@@ -51,25 +52,25 @@ export default {
       
       // 서비스 워커가 준비된 후 FCM 토큰 요청
       await navigator.serviceWorker.ready;
-
+      console.log('Service Worker is ready', navigator.serviceWorker.controller);
       //알림 수신을 위한 사용자 권한 요청
       const permission = await Notification.requestPermission();
-      console.log('permission : ', permission)  
+      console.log('permission : ', permission);
       if(permission !== 'granted'){
           alert('알림을 허용해주세요!');
           return;
       }
       
       
-      // FCM 토큰이 없을 경우 새로 생성
-      if (!localStorage.getItem("fcmToken")) {
         try {
+          console.log('토큰 요청 한다!!!!!')
           //FCM 토큰 요청
           const token = await getToken(messaging,{
             vapidKey: `${process.env.VUE_APP_FIREBASE_VAP_ID}`
           });
 
           if(token){
+            console.log('토큰 이따!!!!')
             localStorage.setItem("fcmToken", token);
             console.log("FCM Token: ", token);
           }
@@ -96,7 +97,7 @@ export default {
           //   vapidKey: 'BHg-Nt-RVggJCTjYQlB-5hThEnYJwUb5SAyjtyaXaFPI4k5JURI0hXSsXGD0IRFr8lSWX8JJY7kyLpGQlylXQw4'
           // });
           
-      }
+      
       
     onMessage(messaging, (payload) => {
       console.log("Recived message ", payload);
@@ -121,7 +122,8 @@ export default {
 .app {
   display: flex;
   flex-direction: column;
-  min-height: 100vh; /* 화면 높이의 100%를 차지하도록 설정 */
+  min-height: 100vh; /* 
+  면 높이의 100%를 차지하도록 설정 */
 }
 .main-content {
   flex: 1; /* 콘텐츠가 footer 위에 표시되도록 설정 */
