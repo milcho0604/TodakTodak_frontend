@@ -34,7 +34,7 @@
                               <v-btn
                                   style="flex: 1; height: auto; padding: 0; border: none; display: flex; justify-content: center; align-items: center;"
                                   @click="kakaoLogin"
-                              >
+                              > 카카오 로그인
                               <v-icon size="large">mdi-kakao-talk</v-icon>
                               </v-btn>
                             </div>
@@ -63,6 +63,7 @@
 import axios from 'axios';
 import { jwtDecode } from 'jwt-decode';
 
+
 export default {
     name: "LoginPage",
     data() {
@@ -90,7 +91,7 @@ export default {
                     autoLogin: this.autoLogin,
                 };
                 const response = await axios.post(`${process.env.VUE_APP_API_BASE_URL}/member-service/member/login`, loginData);
-                console.log('로그인 성공');
+            
                 const token = response.data.result;
                 const decodedToken = jwtDecode(token);
                 const role = decodedToken.role;
@@ -107,12 +108,25 @@ export default {
                     localStorage.removeItem('savedEmail');  // 이메일 삭제
                 }
 
+                await this.fetchData(memberId);
                 window.location.href = "/";
             } catch (e) {
                 alert('로그인 실패');
                 console.error(e);
                 const error_message = e.response?.data?.status_message || "로그인에 실패했습니다.";
                 alert(error_message);
+            }
+        },
+        async fetchData(memberId) {
+            try {
+                const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/some-endpoint`, {
+                    headers: {
+                        'myId': memberId // myId 헤더에 사용자 ID 설정
+                    }
+                });
+                console.log('데이터 가져오기 성공:', response.data);
+            } catch (error) {
+                console.error('데이터 가져오기 실패:', error);
             }
         },
         kakaoLogin() {
