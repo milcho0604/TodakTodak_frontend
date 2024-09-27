@@ -3,7 +3,7 @@
     <h1>Simple WebRTC Signalling Server</h1>
     <div class="col-lg-12 mb-3">
       <div class="mb-3">
-        User: {{ uuid }} @ Room #{{ sid }}
+        User: {{ localUserName }} @ Room #{{ sid }}
       </div>
       <div class="col-lg-12 mb-3">
         <div class="d-flex justify-content-around mb-3">
@@ -29,7 +29,7 @@
 
 <script>
 export default {
-  props: ['sid', 'uuid'],
+  props: ['sid'],
   data() {
     return {
       localStream: null,
@@ -45,7 +45,8 @@ export default {
   },
   methods: {
     startWebSocketConnection() {
-      this.socket = new WebSocket(`wss://server.todak.site/reservation-service/signal`);
+      // this.socket = new WebSocket(`wss://server.todak.site/reservation-service/signal`);
+      this.socket = new WebSocket(`ws://localhost:8080/reservation-service/signal`);
 
       this.socket.onopen = () => {
         console.log(`WebSocket connection opened to Room: #${this.localRoom}`);
@@ -85,6 +86,10 @@ export default {
           case "join":
             console.log('Client is starting to ' + (message.data === "true)" ? 'negotiate' : 'wait for a peer'));
             this.handlePeerConnection(message);
+            break;
+          case "leave":
+            console.log(`User ${message.from} has left the room`);
+            this.handlePeerLeave(message);
             break;
           default:
             this.handleErrorMessage('Wrong type message received from server');
@@ -190,6 +195,76 @@ export default {
 
     exitRoom() {
       // WebRTC 연결 종료 및 방 나가기 로직 추가
+      console.log("Exiting the room...");
+
+      // 서버에 'leave' 메시지 보내기
+      this.sendToServer({
+        from: this.localUserName,
+        type: 'leave',
+        data: this.localRoom
+      });
+
+      // WebRTC 연결 종료
+      if (this.myPeerConnection) {
+        console.log('Closing RTCPeerConnection');
+
+        // 모든 이벤트 리스너 제거
+        this.myPeerConnection.onicecandidate = null;
+        this.myPeerConnection.ontrack = null;
+        this.myPeerConnection.onnegotiationneeded = null;
+        this.myPeerConnection.oniceconnectionstatechange = null;
+        this.myPeerConnection.onsignalingstatechange = null;
+        this.myPeerConnection.onicegatheringstatechange = null;
+        this.myPeerConnection.onnotificationneeded = null;
+        this.myPeerConnection.onremovetrack = null;
+
+        // 비디오 스트림 중지
+        if (this.$refs.remoteVideo.srcObject) {
+          this.$refs.remoteVideo.srcObject.getTracks().forEach(track => track.stop());
+        }
+        if (this.$refs.localVideo.srcObject) {
+          this.$refs.localVideo.srcObject.getTracks().forEach(track => track.stop());
+        }
+
+        // 비디오 요소 초기화
+        this.$refs.remoteVideo.srcObject = null;
+        this.$refs.localVideo.srcObject = null;
+
+        // RTCPeerConnection 닫기
+        this.myPeerConnection.close();
+        this.myPeerConnection = null;
+      }
+
+      // WebSocket 연결 종료
+      if (this.socket) {
+        console.log('Closing the WebSocket connection');
+        this.socket.close();
+      }
+
+      console.log("Room exited successfully");
+      window.location.href = '/welcome';
+    },
+    handlePeerLeave(message) {
+      console.log(`${message.from} has left the room`);
+
+      // 상대방 비디오 스트림을 종료하고 화면에서 제거
+      if (this.$refs.remoteVideo.srcObject) {
+        this.$refs.remoteVideo.srcObject.getTracks().forEach(track => track.stop());
+        this.$refs.remoteVideo.srcObject = null;
+      }
+
+      // 연결 종료 처리 (필요 시)
+      // if (this.myPeerConnection) {
+      //   this.myPeerConnection.close();
+      //   this.myPeerConnection = null;
+      // }
+
+      console.log('Peer connection closed for user:', message.from);
+
+
+      // 진료 끝 api 보내야 함 !!!!!!! medical chart 상태 변경
+      // 리뷰 모달 떠야함
+      // 결제 모달 떠야함
     },
     handleErrorMessage(message) {
       console.error(message);
