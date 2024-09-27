@@ -9,7 +9,7 @@ export const untactRouter = [
         component: RtcView
     },
     {
-        path: '/room/:sid/user/:uuid',
+        path: '/room/:sid',
         name: 'ChatRoom',
         component: ChatRoom,
         props: true  // 이 설정을 통해 경로 매개변수를 컴포넌트에 전달
