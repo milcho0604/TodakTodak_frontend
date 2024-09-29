@@ -4,12 +4,13 @@
       
       <div class="chat-box">
         <div v-for="(message, index) in messages" :key="index" class="message">
-          <strong>{{ message.sender }}:</strong> {{ message.content }}
+          <strong>{{ message.senderName }}:</strong> {{ message.content }}
         </div>
       </div>
       
       <div class="input-box">
         <input v-model="messageToSend" @keyup.enter="sendMessage" placeholder="메시지를 입력하세요..." />
+        <input v-model="memberEmail" placeholder="송신자 이메일"/>
         <button @click="sendMessage">전송</button>
       </div>
     </div>
@@ -25,7 +26,8 @@
         stompClient: null,
         messageToSend: '',
         messages: [], // 수신된 메시지 저장
-        chatRoomId: 1, // 테스트를 위한 chatRoomId (필요시 변경)
+        chatRoomId: 1, // 테스트를 위한 chatRoomId 
+        memberEmail: ''
       };
     },
     mounted() {
@@ -33,20 +35,21 @@
     },
     methods: {
         connect() {
-        const socket = new SockJS('http://localhost:8080/member-service/ws/chat'); // 서버 주소
+        const socket = new SockJS('http://localhost:8080/member-service/ws/chat'); 
         this.stompClient = Stomp.over(socket);
 
         this.stompClient.connect({}, frame => {
             console.log('Connected: ' + frame);
 
-            this.stompClient.subscribe(`/sub/chatroom/${this.chatRoomId}`, message => {
+            this.stompClient.subscribe(`/sub/${this.chatRoomId}`, message => {
             console.log("line43 : 구독시작")
             const receivedMessage = JSON.parse(message.body);
             this.messages.push({
-                sender: receivedMessage.sender,
+                senderName: receivedMessage.senderName,
                 content: receivedMessage.contents
             });
-            console.log("line49 : messages" + this.messages);
+            console.log(this.messages);
+            console.log(this.receivedMessage);
             });
         }, error => {
             console.error('Connection error:', error);
@@ -59,8 +62,9 @@
         if (this.messageToSend.trim() !== '') {
             if (this.stompClient && this.stompClient.connected) {
             const message = {
-                contents: this.messageToSend,
-                chatRoomId: this.chatRoomId
+                chatRoomId: this.chatRoomId,
+                memberEmail: this.memberEmail,
+                contents: this.messageToSend
             };
             
             this.stompClient.send(`/pub/${this.chatRoomId}`, {}, JSON.stringify(message));
