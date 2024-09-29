@@ -8,8 +8,8 @@
                         <v-form @submit.prevent="doLogin">
                             <v-text-field
                                 label="아이디(이메일)"
-                                v-model="email"
-                                type="email"
+                                v-model="memberEmail"
+                                type="memberEmail"
                                 prepend-icon="mdi-email"
                                 required
                             ></v-text-field>
@@ -68,7 +68,7 @@ export default {
     name: "LoginPage",
     data() {
         return {
-            email: "",
+            memberEmail: "",
             password: "",
             rememberEmail: false,
             autoLogin: false,
@@ -77,7 +77,7 @@ export default {
     mounted() {
         const savedEmail = localStorage.getItem('savedEmail');
         if (savedEmail) {
-            this.email = savedEmail;
+            this.memberEmail = savedEmail;
             this.rememberEmail = true;
         }
     },
@@ -85,7 +85,7 @@ export default {
         async doLogin() {
             try {
                 const loginData = {
-                    email: this.email,
+                    memberEmail: this.memberEmail,
                     password: this.password,
                     rememberEmail: this.rememberEmail,
                     autoLogin: this.autoLogin,
@@ -97,13 +97,12 @@ export default {
                 const role = decodedToken.role;
                 const memberId = decodedToken.memberId;
 
-                localStorage.setItem('token', token);
                 localStorage.setItem('role', role);
                 localStorage.setItem('memberId', memberId);  // member.id 저장
-                localStorage.setItem('email', this.email);  // email 저장
+                localStorage.setItem('email', this.memberEmail);  // email 저장
 
                 if (this.rememberEmail) {
-                    localStorage.setItem('savedEmail', this.email);  // 이메일 저장
+                    localStorage.setItem('savedEmail', this.memberEmail);  // 이메일 저장
                 } else {
                     localStorage.removeItem('savedEmail');  // 이메일 삭제
                 }
