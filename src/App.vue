@@ -45,7 +45,8 @@ export default {
         projectId: "padak-todak",
         storageBucket: "padak-todak.appspot.com",
         messagingSenderId: "22351664979",
-        appId: "1:22351664979:web:f8a3cc4b2f5e249d88b3a6"
+        appId: "1:22351664979:web:f8a3cc4b2f5e249d88b3a6",
+        databaseURL: "https://padak-todak-default-rtdb.asia-southeast1.firebasedatabase.app"
       };
       const firebase = initializeApp(firebaseConfig);
       const messaging = getMessaging(firebase);
