@@ -10,10 +10,13 @@
 </template>
 
 <script>
+import axios from 'axios';
 import HeaderComponent from './components/HeaderComponent.vue';
 //FCM
 import { initializeApp } from 'firebase/app';
 import { getMessaging, getToken, onMessage } from 'firebase/messaging';
+// import { resolve } from 'core-js/fn/promise';
+// import member from './store/member';
 
 export default {
   name: 'App',
@@ -21,21 +24,7 @@ export default {
     HeaderComponent
   },
   async mounted() {
-    
     await this.initializeFCM();
-  
-    //this.updateLayout(this.$route)
-
-     // 서비스 워커 등록
-    //  if ('serviceWorker' in navigator) {
-    //   navigator.serviceWorker.register('/firebase-messaging-sw.js')
-    //     .then((registration) => {
-    //       console.log('Service Worker registered with scope:', registration.scope);
-    //     }).catch((error) => {
-    //       console.error('Service Worker registration failed:', error);
-    //     });
-    // }
-
   },
   methods: {
     async initializeFCM(){
@@ -45,7 +34,7 @@ export default {
         projectId: "padak-todak",
         storageBucket: "padak-todak.appspot.com",
         messagingSenderId: "22351664979",
-        appId: "1:22351664979:web:f8a3cc4b2f5e249d88b3a6",
+        appId: "1:22351664979:web:536ae135a5a43c0f88b3a6",
         databaseURL: "https://padak-todak-default-rtdb.asia-southeast1.firebasedatabase.app"
       };
       const firebase = initializeApp(firebaseConfig);
@@ -53,7 +42,8 @@ export default {
       
       // 서비스 워커가 준비된 후 FCM 토큰 요청
       await navigator.serviceWorker.ready;
-      console.log('Service Worker is ready', navigator.serviceWorker.controller);
+      
+      //console.log('Service Worker is ready', navigator.serviceWorker.controller);
       //알림 수신을 위한 사용자 권한 요청
       const permission = await Notification.requestPermission();
       console.log('permission : ', permission);
@@ -61,8 +51,6 @@ export default {
           alert('알림을 허용해주세요!');
           return;
       }
-      
-      
         try {
           console.log('토큰 요청 한다!!!!!')
           //FCM 토큰 요청
@@ -74,12 +62,20 @@ export default {
             console.log('토큰 이따!!!!')
             localStorage.setItem("fcmToken", token);
             console.log("FCM Token: ", token);
+            const memberId = localStorage.getItem('memberId');
+            const BearerToken = localStorage.getItem('token');
+            //localStoragedp fcmToken이 생길때까지 대기
+            await this.waitForToken();
+
+            //FCM 토큰 서버에 전송
+            const access_token = localStorage.getItem('fcmToken');
+            // http://localhost:8080/member-service/fcm/token
+            await axios.post(`${process.env.VUE_APP_API_BASE_URL}/member-service/fcm/token`,{fcmToken: access_token},{headers:{Authorization: `Bearer ${BearerToken}`, memberId: memberId}});
           }
         }catch(err){
           console.error('Failed to get FCM token', err);
         }
-          // const access_token = localStorage.getItem('access_token');
-        //   // const headers = access_token ? { Authorization: `Bearer ${access_token}` } : {};
+          
 
         //   // // FCM 토큰을 서버에 전송
           // await axios.post(`${process.env.VUE_APP_API_BASE_URL}/user/pushToken`, {
@@ -112,6 +108,20 @@ export default {
       }
     });
     },
+    //fcmToken이 localStorage에 생길때까지 대기
+    waitForToken(){
+      return new Promise((resolve)=>{
+        const interval = setInterval(() => {
+          const token = localStorage.getItem('fcmToken');
+          if(token){
+            clearInterval(interval);
+            resolve();
+          }
+        }, 100); //100ms마다확인
+      });
+    },
+
+
     toggleSidebar() {
       this.$refs.sidebar.toggleSidebar();
     }

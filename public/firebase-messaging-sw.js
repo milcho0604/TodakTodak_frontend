@@ -22,17 +22,3 @@ const messaging = firebase.messaging();
       };
       self.registration.showNotification(notificationTitle, notificationOptions);
     });
-
-    messaging.onMessage((payload) => {   
-      console.log(
-        '[firebase-messaging-sw.js] Received foreground message!! ',
-        payload
-      );
-      const notificationTitle = payload.notification.title;
-      const notificationOptions = {
-        body: payload.notification.body,
-        icon: "favicon.ico"
-      };
-    
-      self.registration.showNotification(notificationTitle, notificationOptions);
-    });
