@@ -1,41 +1,43 @@
 <template>
-  <div class="chat-container">
-    <h2>1:1 CS 채팅</h2>
-    
-    <div class="chat-box">
-      <div v-for="(message, index) in messages" :key="index" class="message">
-        <strong>{{ message.senderName }}:</strong> {{ message.content }}
+    <div class="chat-container">
+      <h2>1:1 CS 채팅</h2>
+      
+      <div class="chat-box">
+        <div v-for="(message, index) in messages" :key="index" class="message">
+          <strong>{{ message.senderName }}:</strong> {{ message.content }}
+        </div>
+      </div>
+      
+      <div class="input-box">
+        <input v-model="messageToSend" @keyup.enter="sendMessage" placeholder="메시지를 입력하세요..." />
+        <!-- <input v-model="memberEmail" placeholder="송신자 이메일"/> -->
+        <button @click="sendMessage">전송</button>
       </div>
     </div>
-    
-    <div class="input-box">
-      <input v-model="messageToSend" @keyup.enter="sendMessage" placeholder="메시지를 입력하세요..." />
-      <button @click="sendMessage">전송</button>
-    </div>
-  </div>
-</template>
+  </template>
+  
+  <script>
+    import { Stomp } from "@stomp/stompjs";
+    import SockJS from "sockjs-client";
+  
+  export default {
+    data() {
+      return {
+        stompClient: null,
+        messageToSend: '',
+        messages: [], // 수신된 메시지 저장
+        chatRoomId: 1, // 테스트를 위한 chatRoomId 
+        memberEmail: '',
 
-<script>
-import { Stomp } from "@stomp/stompjs";
-import SockJS from "sockjs-client";
-
-export default {
-data() {
-  return {
-    stompClient: null,
-    messageToSend: '',
-    messages: [], // 수신된 메시지 저장
-    chatRoomId: 1, // 테스트를 위한 chatRoomId 
-    memberEmail: '',
-  };
-},
-mounted() {
-  this.connect();
-},
-methods: {
-  connect() {
-    const socket = new SockJS('http://localhost:8080/member-service/ws/chat'); 
-    this.stompClient = Stomp.over(socket);
+      };
+    },
+    mounted() {
+      this.connect();
+    },
+    methods: {
+        connect() {
+        const socket = new SockJS('http://localhost:8080/member-service/ws/chat'); 
+        this.stompClient = Stomp.over(socket);
 
     // JWT 토큰을 localStorage에서 가져와 auth-token으로 설정
     const token = localStorage.getItem('token');
@@ -65,7 +67,8 @@ methods: {
       if (this.stompClient && this.stompClient.connected) {
         const message = {
           chatRoomId: this.chatRoomId,
-          contents: this.messageToSend
+          contents: this.messageToSend,
+          token: localStorage.getItem('token')
         };
         
         this.stompClient.send(`/pub/${this.chatRoomId}`, {}, JSON.stringify(message));
