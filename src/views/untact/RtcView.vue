@@ -79,7 +79,7 @@ export default {
         },
     
         async createRoom() {
-            await axios.post(`${process.env.VUE_APP_API_BASE_URL}/reservation-service/api/room/`, { id: this.roomId, uuid: this.uuid }).then(() => {
+            await axios.post(`${process.env.VUE_APP_API_BASE_URL}/reservation-service/api/room/`, { id: this.roomId }).then(() => {
                 this.loadRooms();
             });
         },
