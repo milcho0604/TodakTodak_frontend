@@ -39,7 +39,7 @@
                   <v-icon size="large">mdi-kakao-talk</v-icon>
                   </v-btn>
                 </div>
-  
+
                 <v-divider class="my-4"></v-divider>
                 <v-list>
                   <v-list-item @click="findEmail">
@@ -59,10 +59,10 @@
       </v-row>
     </v-container>
   </template>
-  
+
   <script>
   import axios from 'axios';
-  import jwtDecode from 'jwt-decode';  // jwtDecode를 {} 없이 사용
+  import {jwtDecode} from 'jwt-decode';
   
   export default {
     name: "LoginPage",
@@ -108,16 +108,7 @@
           } else {
             localStorage.removeItem('savedEmail');  // 이메일 삭제
           }
-  
-          // 회원 정보 중 isVerified 확인 (생략 가능)
-          if (!decodedToken.isVerified) {
-            // 이메일 인증이 안 된 경우 이메일 인증 페이지로 리디렉션
-            alert('이메일 인증이 필요합니다.');
-            window.location.href = "/email-verification";
-          } else {
-            await this.fetchData(memberId);
             window.location.href = "/";
-          }
         } catch (e) {
           if (e.response?.status === 403) {
             alert('이메일 인증이 필요합니다.');
@@ -151,4 +142,3 @@
     },
   };
   </script>
-  
