@@ -97,6 +97,7 @@ export default {
                 const role = decodedToken.role;
                 const memberId = decodedToken.memberId;
 
+                localStorage.setItem('token', token)
                 localStorage.setItem('role', role);
                 localStorage.setItem('memberId', memberId);  // member.id 저장
                 localStorage.setItem('email', this.memberEmail);  // email 저장
