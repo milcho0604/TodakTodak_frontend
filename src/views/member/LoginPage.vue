@@ -138,7 +138,10 @@
       },
       findEmail() {
             this.$router.push("member/find/email");
-        },
+      },
+      findPassword() {
+            this.$router.push("/member/find/password");
+      },
     },
   };
   </script>
