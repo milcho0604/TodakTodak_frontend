@@ -1,7 +1,7 @@
 import UpdateMember from "@/views/member/UpdateMember.vue";
 import LoginPage from "@/views/member/LoginPage.vue";
 import Authentication from "@/views/member/EmailAuthentication.vue"
-
+import FindEmailPage from "@/views/member/FindEmailPage.vue";
 
 import { jwtDecode } from "jwt-decode";
 export const memberRouter = [
@@ -19,6 +19,11 @@ export const memberRouter = [
         path: '/authentication',
         name: 'Authentication',
         component: Authentication  
+    },
+    {
+        path: '/member/find/email',
+        name: 'FindEmailPage',
+        component: FindEmailPage  
     },
     {
         path: '/loginSuccess',
