@@ -36,7 +36,7 @@ export default {
       localVideoTracks: null,
       myPeerConnection: null,
       localRoom: this.sid,
-      localUserName: localStorage.getItem("uuid"),
+      localUserName: localStorage.getItem("token"),
       socket: null
     };
   },
