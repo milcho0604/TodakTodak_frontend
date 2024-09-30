@@ -25,12 +25,19 @@
                 required
               ></v-text-field>
 
+              <!-- 도로명 주소 검색 버튼 -->
               <v-text-field
                 label="주소"
                 v-model="memberEditInfo.address.city"
                 prepend-icon="mdi-home"
                 required
-              ></v-text-field>
+                readonly
+              >
+                <template #append>
+                  <v-btn @click="openAddressSearch">주소 검색</v-btn>
+                </template>
+              </v-text-field>
+
               <v-text-field
                 label="상세주소"
                 v-model="memberEditInfo.address.street"
@@ -78,6 +85,19 @@
         </v-card>
       </v-col>
     </v-row>
+
+    <!-- 주소 검색 다이얼로그 -->
+    <v-dialog v-model="dialog" max-width="600">
+      <v-card>
+        <v-card-title>주소 검색</v-card-title>
+        <v-card-text>
+          <div id="postcode"></div>
+        </v-card-text>
+        <v-card-actions>
+          <v-btn @click="dialog = false">닫기</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </v-container>
 </template>
 
@@ -88,7 +108,8 @@ export default {
   name: 'MemberEditPage',
   data() {
     return {
-      memberEditInfo: {  // 회원 정보 변수
+      dialog: false,  // 다이얼로그 상태
+      memberEditInfo: {  
         name: '',
         memberEmail: '',
         phoneNumber: '',
@@ -97,14 +118,14 @@ export default {
           street: '',
           zipcode: ''
         },
-        profileImgUrl: ''  // 기존 프로필 이미지 URL
+        profileImgUrl: ''  
       },
-      memberEditReq: {  // 수정 요청 변수
+      memberEditReq: {  
         password: '',
         confirmPassword: '',
-        profileImage: null // 이미지 파일
+        profileImage: null 
       },
-      originalMemberEditInfo: null  // 원래 회원 정보 저장
+      originalMemberEditInfo: null 
     };
   },
   created() {
@@ -115,8 +136,8 @@ export default {
       try {
         const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/member-service/member/edit-info`);
         if (response.status === 200 && response.data.result) {
-          this.memberEditInfo = response.data.result;  // 회원 정보 할당
-          this.originalMemberEditInfo = { ...response.data.result }; // 원래 정보를 저장
+          this.memberEditInfo = response.data.result;  
+          this.originalMemberEditInfo = { ...response.data.result }; 
         } else {
           alert('회원 정보 조회에 실패했습니다.');
         }
@@ -125,51 +146,67 @@ export default {
       }
     },
     async updateMemberInfo() {
-  if (this.memberEditReq.password && this.memberEditReq.password !== this.memberEditReq.confirmPassword) {
-    alert('비밀번호가 일치하지 않습니다.');
-    return;
-  }
-
-  try {
-    const formData = new FormData();
-    formData.append('name', this.memberEditInfo.name || this.originalMemberEditInfo.name);
-    formData.append('phoneNumber', this.memberEditInfo.phoneNumber || this.originalMemberEditInfo.phoneNumber);
-
-    // 주소를 JSON 문자열로 변환하여 추가
-    const address = {
-      city: this.memberEditInfo.address.city || this.originalMemberEditInfo.address.city,
-      street: this.memberEditInfo.address.street || this.originalMemberEditInfo.address.street,
-      zipcode: this.memberEditInfo.address.zipcode || this.originalMemberEditInfo.address.zipcode
-    };
-    formData.append('address', JSON.stringify(address));  // JSON 형식으로 address 추가
-
-    // 프로필 이미지가 있으면 추가
-    if (this.memberEditReq.profileImage) {
-      formData.append('profileImage', this.memberEditReq.profileImage);  // 프로필 이미지 추가
-    }
-
-    // 비밀번호가 있으면 추가
-    if (this.memberEditReq.password) {
-      formData.append('password', this.memberEditReq.password);
-      formData.append('confirmPassword', this.memberEditReq.confirmPassword);
-    }
-
-    const response = await axios.post(`${process.env.VUE_APP_API_BASE_URL}/member-service/member/edit-info`, formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data'
+      if (this.memberEditReq.password && this.memberEditReq.password !== this.memberEditReq.confirmPassword) {
+        alert('비밀번호가 일치하지 않습니다.');
+        return;
       }
-    });
-    
-    if (response.status === 200) {
-      alert('회원 정보가 성공적으로 수정되었습니다.');
-    } else {
-      alert('회원 정보 수정에 실패했습니다.');
-    }
-  } catch (e) {
-    alert(e.response?.data?.status_message || '회원 정보 수정 중 오류가 발생했습니다.');
-  }
-}
 
+      try {
+        const formData = new FormData();
+        formData.append('name', this.memberEditInfo.name || this.originalMemberEditInfo.name);
+        formData.append('phoneNumber', this.memberEditInfo.phoneNumber || this.originalMemberEditInfo.phoneNumber);
+
+        const address = {
+          city: this.memberEditInfo.address.city || this.originalMemberEditInfo.address.city,
+          street: this.memberEditInfo.address.street || this.originalMemberEditInfo.address.street,
+          zipcode: this.memberEditInfo.address.zipcode || this.originalMemberEditInfo.address.zipcode
+        };
+        formData.append('address', JSON.stringify(address));
+
+        if (this.memberEditReq.profileImage) {
+          formData.append('profileImage', this.memberEditReq.profileImage);  
+        }
+
+        if (this.memberEditReq.password) {
+          formData.append('password', this.memberEditReq.password);
+          formData.append('confirmPassword', this.memberEditReq.confirmPassword);
+        }
+
+        const response = await axios.post(`${process.env.VUE_APP_API_BASE_URL}/member-service/member/edit-info`, formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data'
+          }
+        });
+        
+        if (response.status === 200) {
+          alert('회원 정보가 성공적으로 수정되었습니다.');
+        } else {
+          alert('회원 정보 수정에 실패했습니다.');
+        }
+      } catch (e) {
+        alert(e.response?.data?.status_message || '회원 정보 수정 중 오류가 발생했습니다.');
+      }
+    },
+    openAddressSearch() {
+      this.dialog = true;
+      new window.daum.Postcode({
+        oncomplete: (data) => {
+          const fullAddress = data.roadAddress;  // 전체 주소
+          const addressParts = fullAddress.split(' ');
+
+          // 시/도, 구/군, 도로명, 상세주소 분리
+          const city = addressParts[0] + ' ' + addressParts[1];
+          const street = addressParts.slice(2).join(' ');
+
+          this.memberEditInfo.address.city = city;  // 시/도, 구/군
+          this.memberEditInfo.address.street = street;  // 도로명 및 상세주소
+          this.memberEditInfo.address.zipcode = data.zonecode;  // 우편번호
+          this.dialog = false;
+        }
+      }).open({
+        popupName: 'postcodePopup'  // 팝업 이름 지정 (optional)
+      });
+    }
   }
 };
 </script>
