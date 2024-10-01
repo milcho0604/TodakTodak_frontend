@@ -1,23 +1,17 @@
-import RtcView from '@/views/untact/RtcView.vue';
-import ChatRoom from '@/views/untact/ChatRoom.vue';
-import WaitingView from '@/views/untact/WaitingView.vue';
+import RtcTest from '@/views/untact/RtcTest.vue';
+import UntactChatRoom from '@/views/untact/UntactChatRoom.vue';
 
 
 export const untactRouter = [
     {
-        path: '/welcome',
-        name: 'RtcView',
-        component: RtcView
+        path: '/rooms',
+        name: 'RtcTest',
+        component: RtcTest
     },
     {
         path: '/room/:sid',
-        name: 'ChatRoom',
-        component: ChatRoom,
+        name: 'UntactChatRoom',
+        component: UntactChatRoom,
         props: true  // 이 설정을 통해 경로 매개변수를 컴포넌트에 전달
-    },
-    {
-        path: '/wait',
-        name: 'WaitingView',
-        component: WaitingView
     }
 ]

@@ -1,29 +1,63 @@
 <template>
   <div class="text-center">
-    <h1>Simple WebRTC Signalling Server</h1>
-    <div class="col-lg-12 mb-3">
-      <div class="mb-3">
-        User: {{ localUserName }} @ Room #{{ sid }}
-      </div>
-      <div class="col-lg-12 mb-3">
-        <div class="d-flex justify-content-around mb-3">
-          <div id="buttons" class="row">
-            <button type="button" class="btn btn-outline-danger" @click="exitRoom">
-              Exit Room
-            </button>
+    <v-container class="custom-container" style="bord">
+      <v-row justify="center" class="mt-4">
+        <v-col cols="4" class="text-center">
+          <v-row justify="center" class="inter-bold dark-blue subtitle">진료자</v-row>
+          <v-row justify="center" class="mt-6">
+            <v-col class="text-center" cols="5">
+              <img src="https://todak-file.s3.amazonaws.com/d278dfb1-9275-41ad-8b86-f7a0a904892b_IMG_8641.JPG" alt="doctor image" style="width: 40px; height: 40px;">
+            </v-col>
+            <v-col class="text-center" cols="7">
+              <v-row class="inter-bold big-font">김천재 의사</v-row>
+              <v-row class="inter-bold small-font">아이조은성모병원</v-row>
+              <v-row class="inter-normal small-font">별4.5</v-row>
+            </v-col>
+          </v-row>
+        </v-col>
+        <v-col cols="4" class="text-center">
+          <v-row justify="center" class="inter-bold dark-blue subtitle">진료대상</v-row>
+          <v-row justify="center" class="mt-4">
+            <div class="child">
+              <v-row justify="center">
+                <v-col class="text-center" cols="5">
+                  <img src="https://todak-file.s3.amazonaws.com/d278dfb1-9275-41ad-8b86-f7a0a904892b_IMG_8641.JPG" alt="child image" style="width: 40px; height: 40px;">
+                </v-col>
+                <v-col class="text-center" cols="7" style="margin-top: 7px;">
+                  <v-row class="inter-bold big-font">이한아</v-row>
+                  <v-row class="inter-normal small-font">181227 - 4321121</v-row>
+                </v-col>
+              </v-row>
+            </div>
+          </v-row>
+        </v-col>
+        <v-col cols="4" class="text-center">
+          <v-row justify="center" class="inter-bold dark-blue subtitle">진료항목</v-row>
+          <v-row justify="center" class="mt-6">
+            <div class="round inter-normal dark-blue">일반진료</div>
+          </v-row>
+        </v-col>
+      </v-row>
+
+      <div class="col-lg-12 mb-3 mt-8">
+        <div class="row justify-content-around mb-3">
+          <div class="col-lg-6 mb-3">
+            <video class="local_video" :class="{ small: isRemoteVideoVisible }" ref="localVideo" autoplay playsinline
+              style="transform: scaleX(-1);"></video>
+          </div>
+          <div class="col-lg-6 mb-3" v-if="isRemoteVideoVisible">
+            <video class="remote_video" ref="remoteVideo" autoplay playsinline style="transform: scaleX(-1);"></video>
           </div>
         </div>
       </div>
-
-      <div class="row justify-content-around mb-3">
-        <div class="col-lg-6 mb-3">
-          <video id="local_video" ref="localVideo" autoplay playsinline></video>
+      <v-row justify="end">
+        <div id="buttons" class="row" >
+          <button type="button" class="button inter-bold" @click="exitRoom">
+            진료 종료
+          </button>
         </div>
-        <div class="col-lg-6 mb-3">
-          <video id="remote_video" ref="remoteVideo" autoplay playsinline></video>
-        </div>
-      </div>
-    </div>
+      </v-row>
+    </v-container>
   </div>
 </template>
 
@@ -36,8 +70,10 @@ export default {
       localVideoTracks: null,
       myPeerConnection: null,
       localRoom: this.sid,
-      localUserName: localStorage.getItem("uuid"),
-      socket: null
+      localUserName: localStorage.getItem("token"),
+      socket: null,
+      isRemoteVideoVisible: false, // 상대방 화면 여부 체크
+      doctor: null,
     };
   },
   mounted() {
@@ -173,6 +209,7 @@ export default {
       };
       this.myPeerConnection.ontrack = (event) => {
         this.$refs.remoteVideo.srcObject = event.streams[0];
+        this.isRemoteVideoVisible = true;  // 상대방 화면이 있음을 표시
       };
     },
     handleAnswerMessage(message) {
@@ -242,7 +279,7 @@ export default {
       }
 
       console.log("Room exited successfully");
-      window.location.href = '/welcome';
+      window.location.href = '/rooms';
     },
     handlePeerLeave(message) {
       console.log(`${message.from} has left the room`);
@@ -251,6 +288,8 @@ export default {
       if (this.$refs.remoteVideo.srcObject) {
         this.$refs.remoteVideo.srcObject.getTracks().forEach(track => track.stop());
         this.$refs.remoteVideo.srcObject = null;
+        // 상대방이 나가면 내 화면을 다시 크게 표시
+        this.isRemoteVideoVisible = false;
       }
 
       // 연결 종료 처리 (필요 시)
@@ -274,7 +313,67 @@ export default {
 </script>
 
 <style scoped>
-.btn.active {
-  display: none;
+.video {
+  width: 1200px;
+}
+
+.local_video {
+  width: 100%;
+  height: auto;
+}
+
+.local_video.small {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  width: 150px;
+  height: 115px;
+  z-index: 100;
+  border: 2px solid #ccc;
+  border-radius: 5px;
+}
+
+.remote_video {
+  width: 100%;
+  height: auto;
+}
+
+.dark-blue {
+  color: #00499E;
+}
+
+.subtitle {
+  font-size: 20px;
+}
+
+.round {
+  background-color: #C2D7FF;
+  border-radius: 40px;
+  padding: 3px 15px;
+  font-size: 14px;
+}
+
+.big-font {
+  font-size: 16px;
+}
+
+.small-font {
+  font-size: 13px;
+  color: #888888;
+}
+
+.child {
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  width: 290px;
+  padding: 20px 10px;
+}
+
+.button {
+  background-color: #C2D7FF;
+  border-radius: 10px;
+  padding: 5px 15px;
+  margin-right: 10px;
+  font-size: 14px;
 }
 </style>
