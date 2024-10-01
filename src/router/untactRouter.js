@@ -1,8 +1,14 @@
 import RtcTest from '@/views/untact/RtcTest.vue';
 import UntactChatRoom from '@/views/untact/UntactChatRoom.vue';
+import UntactTreatList from '@/views/untact/UntactTreatList.vue';
 
 
 export const untactRouter = [
+    {
+        path: '/untact/list',
+        name: 'UntactTreatList',
+        component: UntactTreatList
+    },
     {
         path: '/rooms',
         name: 'RtcTest',
