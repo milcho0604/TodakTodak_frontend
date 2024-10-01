@@ -21,7 +21,7 @@
 
           <!-- 작은 리스트를 보여주는 v-list -->
           <v-list v-if="menuVisible && isLogin" class="custom-list">
-            <v-list-item @click="navigateTo('/')" class="custom-list-item">
+            <v-list-item @click="navigateTo('/member/myPage')" class="custom-list-item">
               <v-list-item-icon>
                 <v-icon>mdi-account</v-icon>
               </v-list-item-icon>

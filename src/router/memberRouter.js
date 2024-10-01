@@ -4,6 +4,7 @@ import Authentication from "@/views/member/EmailAuthentication.vue"
 import FindEmailPage from "@/views/member/FindEmailPage.vue";
 import FindPasswordPage from "@/views/member/FindPasswordPage.vue";
 import ResetPasswordPage from "@/views/member/ResetPasswordPage.vue";
+import MyPage from "@/views/member/MyPage.vue"
 
 import { jwtDecode } from "jwt-decode";
 export const memberRouter = [
@@ -36,6 +37,11 @@ export const memberRouter = [
         path: '/member/reset/password',
         name: 'ResetPasswordPage',
         component: ResetPasswordPage  
+    },
+    {
+        path: '/member/mypage',
+        name: 'MyPage',
+        component: MyPage  
     },
     {
         path: '/loginSuccess',
