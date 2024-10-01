@@ -17,13 +17,13 @@
         </v-col>
         <v-col cols="4" class="text-center">
           <v-row justify="center" class="inter-bold dark-blue subtitle">진료대상</v-row>
-          <v-row justify="center" class="mt-6">
+          <v-row justify="center" class="mt-4">
             <div class="child">
               <v-row justify="center">
                 <v-col class="text-center" cols="5">
                   <img src="https://todak-file.s3.amazonaws.com/d278dfb1-9275-41ad-8b86-f7a0a904892b_IMG_8641.JPG" alt="child image" style="width: 40px; height: 40px;">
                 </v-col>
-                <v-col class="text-center" cols="7">
+                <v-col class="text-center" cols="7" style="margin-top: 7px;">
                   <v-row class="inter-bold big-font">이한아</v-row>
                   <v-row class="inter-normal small-font">181227 - 4321121</v-row>
                 </v-col>
@@ -45,17 +45,15 @@
             <video class="local_video" :class="{ small: isRemoteVideoVisible }" ref="localVideo" autoplay playsinline
               style="transform: scaleX(-1);"></video>
           </div>
-          <div class="col-lg-6 mb-3">
+          <div class="col-lg-6 mb-3" v-if="isRemoteVideoVisible">
             <video class="remote_video" ref="remoteVideo" autoplay playsinline style="transform: scaleX(-1);"></video>
           </div>
         </div>
       </div>
-
-
-      <v-row>
-        <div id="buttons" class="row">
-          <button type="button" class="button" @click="exitRoom">
-            Exit Room
+      <v-row justify="end">
+        <div id="buttons" class="row" >
+          <button type="button" class="button inter-bold" @click="exitRoom">
+            진료 종료
           </button>
         </div>
       </v-row>
@@ -352,27 +350,30 @@ export default {
   background-color: #C2D7FF;
   border-radius: 40px;
   padding: 3px 15px;
+  font-size: 14px;
 }
 
 .big-font {
-  font-size: 18px;
+  font-size: 16px;
 }
 
 .small-font {
-  font-size: 15px;
+  font-size: 13px;
   color: #888888;
 }
 
 .child {
   border: 1px solid #ccc;
   border-radius: 10px;
-  width: 300px;
-  padding: 25px 10px;
+  width: 290px;
+  padding: 20px 10px;
 }
 
 .button {
   background-color: #C2D7FF;
-  border-radius: 20px;
-  padding: 3px 15px;
+  border-radius: 10px;
+  padding: 5px 15px;
+  margin-right: 10px;
+  font-size: 14px;
 }
 </style>
