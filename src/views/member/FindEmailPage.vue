@@ -25,12 +25,20 @@
                 dense
                 required
               ></v-text-field>
-              <v-btn block type="submit" class="custom-btn">이메일 찾기</v-btn>
+              <v-row justify="center">
+                <v-col cols="auto">
+                  <v-btn type="submit" class="custom-btn btn-fixed-width">이메일 찾기</v-btn>
+                </v-col>
+              </v-row>
             </v-form>
 
             <v-divider class="my-4"></v-divider>
 
-            <v-btn block @click="$router.push('/login')" class="custom-btn">로그인 페이지로 돌아가기</v-btn>
+            <v-row justify="center">
+              <v-col cols="auto">
+                <v-btn @click="$router.push('/login')" class="custom-btn btn-fixed-width">로그인 페이지로 돌아가기</v-btn>
+              </v-col>
+            </v-row>
           </v-card-text>
         </v-card>
 
@@ -88,7 +96,6 @@ export default {
           name: this.name,
           phoneNumber: this.phoneNumber,
         };
-        console.log(body)
         const response = await axios.post(
           `${process.env.VUE_APP_API_BASE_URL}/member-service/member/find/email`,
           body
@@ -115,17 +122,17 @@ body {
   margin: 0;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-start; /* 상단에 정렬 */
   align-items: center;
   font-family: "Noto Sans KR", sans-serif;
 }
 
 .background-container {
-
-  height: 100vh;
+  min-height: 80vh; /* 상단에 더 가까이 위치하도록 */
   display: flex;
   justify-content: center;
-  align-items: center;
+  align-items: flex-start; /* 상단에 가까이 위치 */
+  padding-top: 40px; /* 조금의 상단 여백 */
 }
 
 .find-email-card {
@@ -139,6 +146,10 @@ body {
   color: white !important;
   font-weight: bold;
   border-radius: 20px;
+}
+
+.btn-fixed-width {
+  width: 200px; /* 버튼의 너비를 동일하게 설정 */
 }
 
 .v-card-title {

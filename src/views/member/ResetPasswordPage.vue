@@ -22,7 +22,13 @@
                 class="input-field"
                 required
               ></v-text-field>
-              <v-btn block type="submit" class="custom-btn">비밀번호 재설정</v-btn>
+              
+              <!-- 버튼을 중앙에 정렬하고 너비 줄임 -->
+              <v-row justify="center">
+                <v-col cols="auto">
+                  <v-btn block type="submit" class="custom-btn btn-narrow">비밀번호 재설정</v-btn>
+                </v-col>
+              </v-row>
             </v-form>
           </v-card-text>
         </v-card>
@@ -143,6 +149,11 @@ body {
   color: white !important;
   font-weight: bold;
   border-radius: 20px;
+}
+
+.btn-narrow {
+  max-width: 200px; /* 버튼의 너비를 줄임 */
+  margin: 0 auto;
 }
 
 .v-card-title {
