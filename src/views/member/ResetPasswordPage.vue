@@ -102,7 +102,7 @@ body {
 }
 
 .v-btn {
-  background-color: #feb47b !important;
+  background-color: #c2d7ff !important;
 }
 
 .white--text {

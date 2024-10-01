@@ -5,12 +5,12 @@
           <!-- 프로필 섹션 -->
           <v-row class="profile-section" no-gutters>
             <v-col cols="3">
-              <v-img
-                :src="memberInfo.profileImageUrl ? memberInfo.profileImageUrl : require('@/assets/default-profile.png')"
+                <v-img
+                :src="memberInfo.profileImgUrl ? memberInfo.profileImgUrl : require('@/assets/default-profile.png')"
                 alt="프로필 이미지"
                 max-width="120px"
                 max-height="120px"
-                class="profile-img"
+                class="profile-img with-shadow"
               ></v-img>
             </v-col>
             <v-col cols="9">
@@ -187,6 +187,7 @@
     const formData = new FormData();
 
     // FormData에 수정된 회원 정보 추가
+    formData.append('name', this.memberInfo.name);
     formData.append('phoneNumber', this.memberEditInfo.phoneNumber);
     formData.append('address', JSON.stringify(this.memberEditInfo.address)); // 주소는 JSON 문자열로 전송
 
@@ -363,6 +364,11 @@
     border-radius: 20px;
     color: #00499e;
     margin-right: 10px;
+  }
+  .profile-img.with-shadow {
+    border-radius: 50%; /* 기존 스타일 유지 */
+    object-fit: cover;  /* 기존 스타일 유지 */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* 살짝 그림자 추가 */
   }
   </style>
   
