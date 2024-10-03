@@ -70,7 +70,7 @@ export default {
             //FCM 토큰 서버에 전송
             const access_token = localStorage.getItem('fcmToken');
             // http://localhost:8080/member-service/fcm/token
-            await axios.post(`${process.env.VUE_APP_API_BASE_URL}/member-service/fcm/token`,{fcmToken: access_token},{headers:{Authorization: `Bearer ${BearerToken}`, email: email}});
+            await axios.post(`${process.env.VUE_APP_API_BASE_URL}/member-service/fcm/token`,{fcmToken: access_token},{headers:{Authorization: `Bearer ${BearerToken}`, memberEmail: email}});
           }
         }catch(err){
           console.error('Failed to get FCM token', err);
