@@ -45,7 +45,7 @@
             <video class="local_video" :class="{ small: isRemoteVideoVisible }" ref="localVideo" autoplay playsinline
               style="transform: scaleX(-1);"></video>
           </div>
-          <div class="col-lg-6 mb-3" v-if="isRemoteVideoVisible">
+          <div class="col-lg-6 mb-3">
             <video class="remote_video" ref="remoteVideo" autoplay playsinline style="transform: scaleX(-1);"></video>
           </div>
         </div>
@@ -155,7 +155,8 @@ export default {
           .then(() => this.sendToServer({
             from: this.localUserName,
             type: 'answer',
-            sdp: this.myPeerConnection.localDescription
+            sdp: this.myPeerConnection.localDescription,
+            data: this.localRoom
           }))
           .catch(this.handleErrorMessage);
       }
@@ -181,7 +182,8 @@ export default {
           this.sendToServer({
             from: this.localUserName,
             type: 'offer',
-            sdp: this.myPeerConnection.localDescription
+            sdp: this.myPeerConnection.localDescription,
+            data: this.localRoom
           });
           console.log('Negotiation Needed Event: SDP offer sent');
         })
@@ -203,12 +205,13 @@ export default {
           this.sendToServer({
             from: this.localUserName,
             type: 'ice',
-            candidate: event.candidate
+            candidate: event.candidate,
+            data: this.localRoom
           });
         }
       };
       this.myPeerConnection.ontrack = (event) => {
-        this.$refs.remoteVideo.srcObject = event.streams[0];
+          this.$refs.remoteVideo.srcObject = event.streams[0];
         this.isRemoteVideoVisible = true;  // 상대방 화면이 있음을 표시
       };
     },
