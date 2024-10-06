@@ -349,17 +349,24 @@
   /* 리뷰 수정 완료 버튼 */
   .edit-modal-actions {
     display: flex;
-    justify-content: center;
-    margin-top: -20px; /* 수정 완료 버튼 위로 올리기 */
-  }
-  
-  .submit-btn {
+    justify-content: center;   /* 가운데 정렬 */
+    align-items: center;       /* 세로 가운데 정렬 */
+    margin: 0;                 /* 불필요한 마진 제거 */
+    padding: 10px 0;           /* 위아래 패딩을 약간 추가 */
+}
+
+.submit-btn {
     background-color: #C2D7FF;
     color: #00499E;
     border-radius: 40px;
     width: 118px;
-    height: 33px;
-  }
+    height: 40px;              /* 버튼 높이 약간 증가 */
+    display: flex;
+    justify-content: center;   /* 버튼 텍스트가 중앙에 위치하게 설정 */
+    align-items: center;       /* 버튼 텍스트가 중앙에 위치하게 설정 */
+    margin: 0 auto;            /* 버튼을 자동으로 가운데 배치 */
+}
+
   
   /* 리뷰 삭제 모달 스타일 */
   .review-delete-modal {
