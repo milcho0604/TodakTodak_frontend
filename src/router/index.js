@@ -8,6 +8,7 @@ import { memberRouter } from './memberRouter';
 import { paymentRouter } from './paymentRouter';
 import { untactRouter } from './untactRouter';
 import { chatRouter } from './chatRouter';
+
 const routes = [
     {
         path: '/',
@@ -17,7 +18,7 @@ const routes = [
     ...memberRouter,
     ...paymentRouter,
     ...untactRouter,
-    ...chatRouter
+    ...chatRouter,
 ]
 
 

@@ -16,14 +16,14 @@
         </v-row>
         <v-row class="header-row">
             <v-col cols="3">
-                <select class="select">
-                    <option>인기 순</option>
-                    <option>진료수 순</option>
+                <select class="select" v-model="sortOrder">
+                    <option value="popular">인기 순</option>
+                    <option value="waiting">진료수 순</option>
                 </select>
             </v-col>
             <v-col>
                 <div class="search">
-                    <input type="text" class="search-input">
+                    <input type="text" v-model="searchQuery" class="search-input" placeholder="검색...">
                     <span>
                         🔍
                     </span>
@@ -31,7 +31,7 @@
             </v-col>
         </v-row>
         <v-row justify="center">
-            <div v-for="(doctor, index) in doctorList" :key="index" class="doctor">
+            <div v-for="(doctor, index) in sortedDoctorList" :key="index" class="doctor">
                 <v-row>
                     <v-col cols="2">
                         <img :src="doctor.image" alt="doctor image" style="width: 40px; height: 40px;">
@@ -59,29 +59,84 @@
 export default {
     data() {
         return {
-            selectedCity: "토닥구", // 기본 값
+            selectedCity: "전체선택", // 기본 값
             isDropdownOpen: false,
-            cities: ["강남구", "강동구", "강서구", "강북구", "관악구", "광진구", "구로구", "금천구", "노원구", "동대문구", "도봉구", "동작구", "마포구"
-                , "서대문구", "성동구", "성북구", "서초구", "송파구", "영등포구", "용산구", "양천구", "은평구", "종로구", "중구", "중랑구"], // city 배열
+            cities: ["전체선택", "강남구", "강동구", "강서구", "강북구", "관악구", "광진구", "구로구", "금천구", "노원구", "동대문구", "도봉구", "동작구", "마포구", "서대문구", "성동구", "성북구", "서초구", "송파구", "영등포구", "용산구", "양천구", "은평구", "종로구", "중구", "중랑구"], // city 배열
+            searchQuery: '', // 검색어 저장 변수
+            sortOrder: 'popular', // 정렬 기준
             doctorList: [
                 {
                     id: 1,
-                    name: "김천재 의사",
+                    name: "천재은지 의사",
                     hospital: "아이조은성모병원",
                     rating: 4.5,
                     waiting: 5,
+                    treat: 10,
+                    cities: "강남구",
+                    untact: "Sunday",
                     image: "https://todak-file.s3.amazonaws.com/d278dfb1-9275-41ad-8b86-f7a0a904892b_IMG_8641.JPG"
                 },
                 {
                     id: 2,
                     name: "박명석 의사",
-                    hospital: "서울해빛병원",
-                    rating: 4.7,
+                    hospital: "은지사랑병원",
+                    rating: 3.7,
                     waiting: 3,
+                    treat: 30,
+                    cities: "강동구",
+                    untact: "Friday",
                     image: "https://todak-file.s3.amazonaws.com/d278dfb1-9275-41ad-8b86-f7a0a904892b_IMG_8641.JPG"
-                }
+                },
+                {
+                    id: 3,
+                    name: "최무리 의사",
+                    hospital: "카푸카병원",
+                    rating: 4.0,
+                    waiting: 3,
+                    treat: 25,
+                    cities: "강서구",
+                    untact: "Monday",
+                    image: "https://todak-file.s3.amazonaws.com/d278dfb1-9275-41ad-8b86-f7a0a904892b_IMG_8641.JPG"
+                },
+                {
+                    id: 4,
+                    name: "김창현 의사",
+                    hospital: "애니사랑병원",
+                    rating: 2.8,
+                    waiting: 0,
+                    treat: 2,
+                    cities: "강북구",
+                    untact: "Friday",
+                    image: "https://todak-file.s3.amazonaws.com/d278dfb1-9275-41ad-8b86-f7a0a904892b_IMG_8641.JPG"
+                },
             ]
         };
+    },
+    computed: {
+        filteredDoctorList() {
+            const query = this.searchQuery.toLowerCase();
+            const today = this.getToday(); // 현재 요일 가져오기
+            return this.doctorList.filter(doctor => {
+                const matchesQuery = doctor.name.toLowerCase().includes(query) || doctor.hospital.toLowerCase().includes(query);
+                const matchesUntact = doctor.untact === today;
+
+                if (this.selectedCity === "전체선택") {
+                    return matchesQuery && matchesUntact; // 전체 선택일 때는 모든 의사
+                } else {
+                    return matchesQuery && matchesUntact && (doctor.cities === this.selectedCity); // 선택된 구와 일치하는 의사 필터링
+                }
+            });
+        },
+        sortedDoctorList() {
+            // 정렬 기준에 따라 의사 목록을 정렬
+            return this.filteredDoctorList.slice().sort((a, b) => {
+                if (this.sortOrder === 'popular') {
+                    return b.rating - a.rating; // 평점 높은 순서
+                } else {
+                    return b.treat - a.treat; // 진료수 많은 순서
+                }
+            });
+        }
     },
     methods: {
         toggleDropdown() {
@@ -90,6 +145,11 @@ export default {
         selectCity(city) {
             this.selectedCity = city;
             this.isDropdownOpen = false; // 선택 후 드롭다운 닫기
+        },
+        getToday() {
+            const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+            const date = new Date();
+            return days[date.getDay()]; // 현재 요일 반환
         }
     }
 };
@@ -182,9 +242,7 @@ export default {
     position: absolute;
     font-size: 15px;
     max-height: 220px;
-    /* 최대 높이를 설정하여 스크롤 가능하도록 */
     overflow-y: auto;
-    /* 세로 스크롤 */
 }
 
 .dropdown-list li {
