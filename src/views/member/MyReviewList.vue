@@ -175,7 +175,7 @@
       // 리뷰 삭제 확인
       async confirmDeleteReview() {
         try {
-          await axios.delete(`${process.env.VUE_APP_API_BASE_URL}/reservation-service/review/delete/${this.reviewToDeleteId}`);
+          await axios.get(`${process.env.VUE_APP_API_BASE_URL}/reservation-service/review/delete/${this.reviewToDeleteId}`);
           this.fetchReviews();  // 삭제 후 목록 새로고침
           this.closeDeleteModal();  // 삭제 후 모달 닫기
         } catch (error) {
