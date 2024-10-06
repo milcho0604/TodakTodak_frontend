@@ -143,6 +143,12 @@ export default {
   font-weight: 700;
   font-style: normal;
 }
+.inter-light {
+  font-family: "Inter", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 500;
+  font-style: normal;
+}
 .custom-container{
   max-width: 1200px;
 }
