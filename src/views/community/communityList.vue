@@ -34,12 +34,12 @@
           <br>
           <v-row justify="center">
             <v-col cols="12">
-              <div v-for="(doctor, index) in sortedDoctorList" :key="index">
-                <v-card class="custom-card" @click="goToPost(doctor.id)" style="cursor: pointer;">
+              <div v-for="(post, index) in sortedPostList" :key="index">
+                <v-card class="custom-card" @click="goToPost(post.id)" style="cursor: pointer;">
                   <div class="d-flex" style="height: auto;">
                     <div style="flex: 7; padding-right: 10px;">
-                      <v-card-title class="text-left">{{ doctor.question }}</v-card-title>
-                      <v-card-text class="text-left">{{ doctor.answer }}</v-card-text>
+                      <v-card-title class="text-left">{{ post.question }}</v-card-title>
+                      <v-card-text class="text-left">{{ post.answer }}</v-card-text>
                       <div class="d-flex align-left">
                         <div style="flex: 1; padding-left: 10px;">
                           <v-img
@@ -50,14 +50,14 @@
                           ></v-img>
                         </div>
                         <div style="flex: 9; padding-left: 0px; text-align: left;">
-                          {{ doctor.likes }} · 댓글 {{ doctor.comments }} · 조회수 {{ doctor.views }}
+                          {{ post.likes }} · 댓글 {{ post.comments }} · 조회수 {{ post.views }}
                         </div>
                       </div>
                     </div>
                     <div style="flex: 3; display: flex; align-items: center; justify-content: center;">
                       <v-img
-                        :src="doctor.image"
-                        alt="Doctor Image"
+                        :src="post.image"
+                        alt="Post Image"
                         height="100px"
                         class="mb-0"
                       ></v-img>
@@ -81,7 +81,7 @@ export default {
     return {
       sortOrder: "popular",
       searchQuery: "",
-      doctorList: [
+      postList: [
         {
           id:1,
           question: "모기 아닌거 같은데 이 자국 뭘까요1",
@@ -119,11 +119,11 @@ export default {
     }
   },
   computed: {
-    sortedDoctorList() {
+    sortedPostList() {
       const query = this.searchQuery.toLowerCase();
-      return this.doctorList.filter(doctor => 
-        doctor.question.toLowerCase().includes(query) || 
-        doctor.answer.toLowerCase().includes(query)
+      return this.postList.filter(post => 
+        post.question.toLowerCase().includes(query) || 
+        post.answer.toLowerCase().includes(query)
       ).sort((a, b) => {
         if (this.sortOrder === 'popular') {
           return b.likes - a.likes; // 좋아요 수 기준으로 정렬
@@ -150,9 +150,10 @@ export default {
 }
 
 .custom-card {
-  max-width: 1000px;
+  max-width: 600px;
   width: 100%;
   margin: 0 auto;
+  box-sizing: border-box; /* 패딩과 보더를 포함하여 너비를 계산 */
 }
 
 .select {
@@ -170,7 +171,7 @@ export default {
 .search {
   border-radius: 10px;
   background-color: #EEEEEE;
-  width: 100%;
+  width: 400px;
   padding: 8px 5px;
 }
 
