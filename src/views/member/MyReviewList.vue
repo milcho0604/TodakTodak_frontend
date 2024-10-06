@@ -190,6 +190,9 @@
   .review-header {
     width: 100%;
     margin-top: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
   }
   
   .review-title {
@@ -198,14 +201,19 @@
     font-size: 35px;
     color: #00499E;
     text-align: center;
+    margin-bottom: 10px;
   }
   
   .review-underline {
     width: 1000px;
     height: 0px;
+    left: 471px;
+    top: 323px;
+    
     border: 1px solid #C5C5C5;
     background-color: #C5C5C5;
-    margin-top: 10px;
+    margin: 0 auto; /* 가운데 정렬 */
+    
   }
   
   .pencil-icon {
