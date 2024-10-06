@@ -78,6 +78,27 @@
         alert('채팅 서버에 연결되지 않았습니다.'); // 사용자에게 알림
       }
     }
+  // },
+  // handleIncomingMessage(receivedMessage){
+  //   // if(this.isChatPageActive){
+  //     this.message.push(message);
+  //       this.messages.push({
+  //         senderName: receivedMessage.senderName,
+  //         content: receivedMessage.contents
+  //       });
+  //       //페이지 비활성화 -> 알림
+  //   if(!this.isChatPageActive){
+  //     this.sendPushNotification(receivedMessage);
+  //   }
+  // },
+  // sendPushNotification(message){
+  //   //FCM 알림 전송 로직 추가
+  //   console.log(`${message.senderName}: ${message.contents}`);
+  //   //여기에 fcm 알림 보내는 코드 추가
+    
+  // },
+  // setChatPageActive(isActive){
+  //   this.isChatPageActive = isActive;
   }
 }
 };
