@@ -234,14 +234,14 @@
   
   .review-card {
     width: 963px;
-    height: 207px;
+    height: auto; /* 높이 자동 조정 */
     border: 1px solid #C5C5C5;
-    padding: 30px;
+    padding: 20px; /* 패딩을 줄여서 텍스트가 잘리지 않도록 */
     background-color: #F8F8F8;
     max-width: 900px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     position: relative;
-    top: -15px; /* 리뷰 요소들 위로 올리기 */
+    top: -10px; /* 리뷰 요소들 위로 올리기 */
   }
   
   .review-hospital {
@@ -264,7 +264,7 @@
   .rating-container {
     display: flex;
     align-items: center;
-    margin-bottom: 10px;
+    margin-bottom: 5px; /* 여백을 줄여서 공간 확보 */
   }
   
   .small-rating .v-rating .v-icon {
@@ -281,7 +281,7 @@
   .review-date {
     font-size: 14px;
     color: #606060;
-    margin-top: 10px;
+    margin-top: 5px; /* 마진 조정 */
   }
   
   /* 수정 및 삭제 아이콘 스타일 */
