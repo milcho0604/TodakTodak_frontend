@@ -331,13 +331,14 @@
     width: 100%;
   }
   .edit-btn {
-    background-color: #c2d7ff;
+    background-color: #C2D7FF !important;
     color: #00499e;
     border-radius: 20px;
     width: 113px;
     height: 44px;
     margin-bottom: 40px;
   }
+  
   .membership-options {
     display: flex;
     justify-content: center;

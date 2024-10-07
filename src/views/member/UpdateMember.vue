@@ -302,15 +302,14 @@ export default {
   color: #00499E;
   border-radius: 20px;
 }
-
 .custom-input-field {
-  width: 100%;
-  background-color: #FFFFFF;  /* 모든 입력 필드에 흰색 배경 적용 */
+  background-color: #FFFFFF; /* 모든 입력 필드에 흰색 배경 적용 */
   border: 1px solid #E7E7E7;
   border-radius: 10px;
   margin-bottom: 20px;
   box-shadow: none;
 }
+
 
 .custom-modal {
   position: absolute;
