@@ -7,6 +7,7 @@
         <div class="review-underline"></div>
       </v-col>
     </v-row>
+    <br>
 
     <!-- 리뷰 리스트 -->
     <v-row justify="center" class="review-list">
@@ -211,6 +212,7 @@ export default {
 }
 
 .review-group {
+  margin-top: -20px;
   margin-bottom: 30px;
   display: flex;
   justify-content: center;
