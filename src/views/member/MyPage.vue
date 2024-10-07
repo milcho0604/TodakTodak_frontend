@@ -15,7 +15,7 @@
           </v-col>
           <v-col cols="9">
             <div class="profile-name">{{ memberInfo.name }}</div>
-            <div class="profile-penalty">나의 패널티 : {{ penaltyCount }}회</div> <!-- 패널티 표시 -->
+            <div class="profile-penalty">나의 패널티 : {{ penaltyCount }}회</div>
           </v-col>
         </v-row>
 
@@ -24,7 +24,6 @@
 
         <!-- 마이페이지 카드 -->
         <v-card class="position-relative mypage-card">
-          <!-- 이름과 정보 -->
           <v-card-title class="text-h5 text-center"></v-card-title>
           <v-card-text class="mypage-content">
             <v-row>
@@ -62,22 +61,16 @@
                 <!-- 수정 모드일 때는 주소 입력 가능 -->
                 <div v-if="isEditMode">
                   <v-text-field
-                    v-model="memberEditInfo.address.city"
+                    v-model="fullAddress"
                     label="주소"
                     readonly
                     class="custom-input-field"
+                    @click="openAddressSearch"
                   >
-                  <template #append-inner>
-                      <v-icon class="right-align-icon" @click="openAddressSearch">
-                        mdi-magnify
-                      </v-icon>
+                    <template #append-inner>
+                      <v-icon class="right-align-icon">mdi-magnify</v-icon>
                     </template>
-              </v-text-field>
-                  <v-text-field
-                    v-model="memberEditInfo.address.street"
-                    label="상세주소"
-                    class="custom-input-field"
-                  ></v-text-field>
+                  </v-text-field>
                 </div>
                 <div v-else>
                   <div class="info-content">{{ fullAddress }}</div>
@@ -87,7 +80,6 @@
             </v-row>
           </v-card-text>
 
-          <!-- 수정 버튼 또는 수정 완료 버튼 -->
           <v-row justify="center" class="button-row">
             <v-btn class="edit-btn" v-if="isEditMode" @click="submitEdit">수정 완료</v-btn>
             <v-btn class="edit-btn" v-else @click="toggleEdit">수정</v-btn>
@@ -128,7 +120,7 @@ export default {
   name: "MyPage",
   data() {
     return {
-      isEditMode: false, // 수정 모드 상태
+      isEditMode: false,
       memberInfo: {
         name: "",
         memberEmail: "",
@@ -138,7 +130,7 @@ export default {
           street: "",
           zipcode: "",
         },
-        profileImageUrl: "", // 프로필 이미지 URL
+        profileImageUrl: "",
       },
       memberEditInfo: {
         phoneNumber: "",
@@ -148,20 +140,15 @@ export default {
           zipcode: "",
         },
       },
-      penaltyCount: 0, // 패널티 개수 저장
-      withdrawModal: false, // 모달 상태
-      withdrawalConfirmation: "", // 탈퇴 확인 텍스트
+      fullAddress: "",
+      penaltyCount: 0,
+      withdrawModal: false,
+      withdrawalConfirmation: "",
     };
-  },
-  computed: {
-    fullAddress() {
-      const { city, street, zipcode } = this.memberInfo.address;
-      return `${city} ${street} ${zipcode}`;
-    },
   },
   created() {
     this.fetchMemberInfo();
-    this.fetchPenaltyCount(); // 패널티 정보 가져오기
+    this.fetchPenaltyCount();
   },
   methods: {
     async fetchMemberInfo() {
@@ -173,6 +160,7 @@ export default {
           this.memberInfo = response.data.result;
           this.memberEditInfo.phoneNumber = this.memberInfo.phoneNumber;
           this.memberEditInfo.address = { ...this.memberInfo.address };
+          this.updateFullAddress();
         } else {
           alert("회원 정보 조회에 실패했습니다.");
         }
@@ -180,12 +168,15 @@ export default {
         alert(e.response?.data?.status_message || "회원 정보 조회 중 오류가 발생했습니다.");
       }
     },
+    updateFullAddress() {
+      const { city, street, zipcode } = this.memberEditInfo.address;
+      this.fullAddress = `${city} ${street} (${zipcode})`;
+    },
     async fetchPenaltyCount() {
       try {
         const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/member-service/member/reportCount`);
-        console.log(response)
         if (response.status === 200 && response.data.result !== undefined) {
-          this.penaltyCount = response.data.result; // 패널티 개수 설정
+          this.penaltyCount = response.data.result;
         } else {
           alert("패널티 조회에 실패했습니다.");
         }
@@ -198,14 +189,10 @@ export default {
     },
     async submitEdit() {
       try {
-        // FormData 객체 생성
         const formData = new FormData();
-
-        // FormData에 수정된 회원 정보 추가
-        formData.append('name', this.memberInfo.name);
-        formData.append('phoneNumber', this.memberEditInfo.phoneNumber);
-        formData.append('address', JSON.stringify(this.memberEditInfo.address)); // 주소는 JSON 문자열로 전송
-
+        formData.append("name", this.memberInfo.name);
+        formData.append("phoneNumber", this.memberEditInfo.phoneNumber);
+        formData.append("address", JSON.stringify(this.memberEditInfo.address));
 
         const response = await axios.post(
           `${process.env.VUE_APP_API_BASE_URL}/member-service/member/edit-info`,
@@ -213,7 +200,7 @@ export default {
           {
             headers: {
               Authorization: `Bearer ${localStorage.getItem("token")}`,
-              "Content-Type": "multipart/form-data", // FormData 전송 시 multipart/form-data 사용
+              "Content-Type": "multipart/form-data",
             },
           }
         );
@@ -221,7 +208,7 @@ export default {
         if (response.status === 200) {
           alert("회원 정보가 성공적으로 수정되었습니다.");
           this.toggleEdit();
-          this.fetchMemberInfo(); // 수정 후 정보 갱신
+          this.fetchMemberInfo();
         }
       } catch (error) {
         alert("수정 처리 중 문제가 발생했습니다.");
@@ -230,13 +217,15 @@ export default {
     openAddressSearch() {
       new window.daum.Postcode({
         oncomplete: (data) => {
-          const fullAddress = data.roadAddress;
-          const addressParts = fullAddress.split(" ");
-          const city = addressParts[0] + " " + addressParts[1];
-          const street = addressParts.slice(2).join(" ");
+          const city = data.roadAddress.split(" ")[0] + " " + data.roadAddress.split(" ")[1];
+          const street = data.roadAddress.split(" ").slice(2).join(" ");
+          const zipcode = data.zonecode;
+
           this.memberEditInfo.address.city = city;
           this.memberEditInfo.address.street = street;
-          this.memberEditInfo.address.zipcode = data.zonecode;
+          this.memberEditInfo.address.zipcode = zipcode;
+
+          this.updateFullAddress();
         },
       }).open();
     },
@@ -277,7 +266,6 @@ export default {
 </script>
 
 <style scoped>
-/* 스타일 유지 */
 .main-content {
   display: flex;
   align-items: center;
@@ -352,7 +340,6 @@ export default {
   height: 44px;
   margin-bottom: 40px;
 }
-
 .membership-options {
   display: flex;
   justify-content: center;
@@ -381,8 +368,8 @@ export default {
   margin-right: 10px;
 }
 .profile-img.with-shadow {
-  border-radius: 50%; /* 기존 스타일 유지 */
-  object-fit: cover;  /* 기존 스타일 유지 */
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* 살짝 그림자 추가 */
+  border-radius: 50%;
+  object-fit: cover;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 </style>
