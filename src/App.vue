@@ -4,20 +4,21 @@
     <HeaderComponent @open-sidebar="toggleSidebar" />
     <AppSidebar ref="sidebar" />
     <v-main class="main-content">
-      <router-view />
+      <router-view content="회원가입"/>
     </v-main>
   </v-app>
 </template>
 
 <script>
 import axios from 'axios';
-import HeaderComponent from './components/HeaderComponent.vue';
+import HeaderComponent from './components/header/HeaderComponent.vue';
 
 //FCM
 import { initializeApp } from 'firebase/app';
 import { getMessaging, getToken, onMessage } from 'firebase/messaging';
 // import { resolve } from 'core-js/fn/promise';
 // import member from './store/member';
+
 
 export default {
   name: 'App',
