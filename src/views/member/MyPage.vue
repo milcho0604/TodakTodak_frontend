@@ -11,7 +11,9 @@
               max-width="120px"
               max-height="120px"
               class="v-avatar with-shadow"
+              @click="triggerFileUpload" 
             ></v-img>
+            <input type="file" ref="fileInput" style="display:none" @change="handleFileUpload"/> <!-- 숨겨진 파일 input -->
           </v-col>
           <v-col cols="9">
             <div class="profile-name">{{ memberInfo ? memberInfo.name : '' }}</div>
@@ -23,7 +25,7 @@
         <div class="line-container">
           <div class="custom-line"></div>
         </div>
-        
+
         <br>
 
         <div class="profile-page-gap"></div>
@@ -267,6 +269,36 @@ export default {
         alert("정확한 문구를 입력해 주십시오.");
       }
     },
+
+    // 프로필 이미지 변경 기능
+    triggerFileUpload() {
+      this.$refs.fileInput.click(); // 파일 선택 창을 열기
+    },
+
+    // 파일 업로드 후 처리
+    async handleFileUpload(event) {
+      const file = event.target.files[0];
+      if (file) {
+        const formData = new FormData();
+        formData.append('profileImage', file);
+
+        try {
+          const response = await axios.post(`${process.env.VUE_APP_API_BASE_URL}/member-service/member/update/profileImage`, formData, {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+              'Content-Type': 'multipart/form-data',
+            },
+          });
+
+          if (response.status === 200) {
+            alert("프로필 이미지가 성공적으로 변경되었습니다.");
+            this.fetchMemberInfo(); // 변경된 이미지 정보를 다시 불러옴
+          }
+        } catch (error) {
+          alert("프로필 이미지 업데이트 중 오류가 발생했습니다.");
+        }
+      }
+    },
   },
 };
 </script>
@@ -285,6 +317,7 @@ export default {
 .profile-img {
   border-radius: 50%;
   object-fit: cover;
+  cursor: pointer; /* 프로필 이미지에 클릭 가능 마우스 커서 적용 */
 }
 .profile-name {
   font-family: "Inter";
@@ -317,11 +350,11 @@ export default {
   border: 0;
   height: 1px;
   background-color: #C5C5C5;
-  width: 1000px; /* 선의 길이를 1000px로 고정 */
+  width: 1000px;
   margin-top: 20px;
   margin-left: auto;
-  margin-right: auto; /* 좌우 여백을 자동으로 설정해서 가운데 정렬 */
-  display: block; /* block 요소로 취급해 가운데 정렬 */
+  margin-right: auto;
+  display: block;
 }
 .info-title {
   font-family: "Inter";
@@ -329,7 +362,7 @@ export default {
   font-size: 20px;
   color: #818181;
   margin-bottom: 24px;
-  padding-top: 20px; /* 위쪽 패딩 */
+  padding-top: 20px;
 }
 .info-content {
   font-family: "Inter";
@@ -337,7 +370,7 @@ export default {
   font-size: 20px;
   color: #000000;
   margin-bottom: 24px;
-  padding-top: 20px; /* 위쪽 패딩 */
+  padding-top: 20px;
 }
 .signup-underline {
   width: 100%;
@@ -346,21 +379,20 @@ export default {
 }
 
 .line-container {
-  position: relative; /* 부모 요소를 상대적으로 설정 */
-  width: 100%; /* 부모 요소의 너비를 100%로 설정 */
+  position: relative;
+  width: 100%;
 }
 
 .custom-line {
-  position: absolute; /* 절대 위치로 설정하여 부모 기준으로 배치 */
-  left: 50%; /* 부모 기준 왼쪽에서 50% */
-  transform: translateX(-50%); /* 너비 기준으로 중앙으로 이동 */
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
   height: 1px;
   background-color: #C5C5C5;
-  width: 1000px; /* 고정된 너비 설정 */
+  width: 1000px;
   margin-top: 20px;
   margin-bottom: 20px;
 }
-
 
 .edit-btn {
   background-color: #C2D7FF !important;
@@ -381,7 +413,6 @@ export default {
   align-items: center;
 }
 
-
 .membership-options {
   display: flex;
   justify-content: center;
@@ -395,7 +426,7 @@ export default {
   font-size: 15px;
   color: #A7A7A7;
   background-color: #f3f3f3;
-  box-shadow: none; /* 그림자를 없앰 */
+  box-shadow: none;
 }
 .vertical-divider {
   width: 1px;
