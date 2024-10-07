@@ -12,6 +12,7 @@
 <script>
 import axios from 'axios';
 import HeaderComponent from './components/HeaderComponent.vue';
+
 //FCM
 import { initializeApp } from 'firebase/app';
 import { getMessaging, getToken, onMessage } from 'firebase/messaging';
@@ -21,7 +22,7 @@ import { getMessaging, getToken, onMessage } from 'firebase/messaging';
 export default {
   name: 'App',
   components: {
-    HeaderComponent
+    HeaderComponent,
   },
   async mounted() {
     await this.initializeFCM();
@@ -150,7 +151,9 @@ export default {
   font-style: normal;
 }
 .custom-container{
-  max-width: 1200px;
+  max-width: 1200px !important; /* 원하는 최대 폭 */
+  margin: 0 auto !important;    /* 중앙 정렬 */
+  width: 100% !important; /* 컨테이너의 폭을 100%로 설정 */
 }
 .app {
   display: flex;

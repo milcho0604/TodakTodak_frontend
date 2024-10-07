@@ -54,6 +54,8 @@
           content: receivedMessage.contents
         });
         console.log(this.messages);
+        console.log("receivedMessage")
+        console.log(receivedMessage)
       });
     }, error => {
       console.error('Connection error:', error);
