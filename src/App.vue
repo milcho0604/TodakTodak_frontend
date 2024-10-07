@@ -1,17 +1,19 @@
 <!-- App.vue -->
 <template>
   <v-app class="app global_bg">
-    <HeaderComponent @open-sidebar="toggleSidebar" />
+    <HeaderComponent/>
     <AppSidebar ref="sidebar" />
     <v-main class="main-content">
       <router-view content="회원가입"/>
     </v-main>
+    <FooterComponent/>
   </v-app>
 </template>
 
 <script>
 import axios from 'axios';
 import HeaderComponent from './components/header/HeaderComponent.vue';
+import FooterComponent from './components/footer/FooterComponent.vue';
 
 //FCM
 import { initializeApp } from 'firebase/app';
@@ -24,6 +26,7 @@ export default {
   name: 'App',
   components: {
     HeaderComponent,
+    FooterComponent
   },
   async mounted() {
     await this.initializeFCM();
