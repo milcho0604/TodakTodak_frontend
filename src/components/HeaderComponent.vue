@@ -1,8 +1,8 @@
 <template>
-  <v-app-bar app>
+  <v-app-bar app  style="background-color: #ECF2FE;">
     <v-container fluid class="custom-container">
       <v-row align="center">
-        <v-col>
+        <v-col cols="2">
           <v-toolbar-title>
             <router-link to="/" class="logo">
               <img src="@/assets/logo.png" alt="TodakTodak Logo" class="logo-image" />
@@ -10,50 +10,43 @@
           </v-toolbar-title>
         </v-col>
 
-        <v-col class="d-flex flex-row justify-center text-no-wrap" cols="auto">
+        <v-col class="d-flex flex-row justify-start text-no-wrap" cols="8">
           <!-- 왼쪽 정렬 -->
-          <v-btn class="custom-button transparent-button" text :to="{path: '/'}">
-              <!-- <v-icon left class="mr-1">mdi-hospital-marker</v-icon> -->
+          <v-btn class="custom-button">
               🏥 주변소아과
           </v-btn>
 
-          <v-btn class="custom-button transparent-button" text :to="{path: '/'}">
+          <v-btn class="custom-button">
             🏠 비대면진료
           </v-btn>
 
-          <v-btn class="custom-button transparent-button" text :to="{path: '/'}">
+          <v-btn class="custom-button">
             💬 의사 Q&A
           </v-btn>
         </v-col>
 
-        <v-spacer></v-spacer>
-
-        <v-col cols="auto" md="auto" class="d-flex align-center justify-end text-no-wrap">
+        <v-col cols="2" class="d-flex align-end justify-end text-no-wrap">
           <!-- 오른쪽 정렬 -->
-          <v-menu v-if="!isLogin" open-on-hover>
+          <v-menu v-if="isLogin" open-on-hover>
             <template v-slot:activator="{ props }">
               <v-btn text v-bind="props" height="60">
                 <v-avatar size="40">
-                  <!-- <v-img :src=profileImgUrl alt="profileImgUrl"></v-img> -->
-                   <img src="@/assets/default_profile_image.png"
-                    alt="기본이미지"
-                    style="object-fit: cover; width: 100%; height: 100%;"
-                    />
+                  <v-img :src=profileImgUrl alt="profileImgUrl"></v-img>
                 </v-avatar>
-                <span class="ml-2">{{ nickname }}</span>
+                <span class="ml-2" style="font-size: 17px;">{{ name }}</span>
               </v-btn>
             </template>
             <v-list>
-              <v-list-item :href="`/mypage/${id}`">
+              <v-list-item :href="`/`">
                 <v-list-item-title>나의 예약내역</v-list-item-title>
               </v-list-item>
-              <v-list-item :to="{ path: '/member/mypage'}">
+              <v-list-item :to="{ path: '/'}">
                 <v-list-item-title>우리아이 캘린더                                                                             </v-list-item-title>
               </v-list-item>
-              <v-list-item :to="{ path: '/member/my-projects'}">
-                <v-list-item-title>프로젝트 관리</v-list-item-title>
+              <v-list-item :to="{ path: '/'}">
+                <v-list-item-title>마이 페이지</v-list-item-title>
               </v-list-item>
-              <v-list-item :to="{ path: '/member/chatting-list'}">
+              <v-list-item :to="{ path: '/'}">
                 <v-list-item-title>내 채팅</v-list-item-title>
               </v-list-item>
               <v-list-item @click="logout">
@@ -61,30 +54,57 @@
               </v-list-item>
             </v-list>
           </v-menu>
+          
+          <v-btn v-if="!isLogin" @click="kakaoLogin">
+            <img src="@/assets/kakao_login_small.png" alt="카카오로그인 버튼">
+          </v-btn>
         </v-col>
-
       </v-row>
     </v-container>
   </v-app-bar>
 </template>
 
 <script>
+import axios from 'axios'
+
 export default {
   data() {
     return {
-      menuVisible: false, // 메뉴 보이기 상태
       isLogin: false, // 로그인 상태 확인 변수
-      nickname: "김파닥",
-      profileImgUrl: '@/assets/default_profile_image.png'
+      name: "김파닥",
+      profileImgUrl: '@/assets/default_profile_image.png',
+      memberId:'',
+      role:'',
+      email:''
     };
   },
+  created(){
+
+    this.memberId = localStorage.getItem("memberId")
+    this.email = localStorage.getItem("email")
+    const token = localStorage.getItem("token")
+    if(token){
+      // localStorage에 token 있으면 로그인된 상태
+      this.isLogin = true;
+      this.loadUserProfile();
+    }
+
+  },
   mounted() {
-    this.checkLoginStatus(); // 컴포넌트가 마운트될 때 로그인 상태 확인
+
   },
   methods: {
-    checkLoginStatus() {
-      const token = localStorage.getItem('token');
-      this.isLogin = !!token; // 토큰이 있으면 로그인 상태로 간주
+    async loadUserProfile(){
+      try{
+        const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/member-service/member/id/${this.memberId}`);
+        console.log(response.data);
+        this.name = response.data.result.name;
+        this.role = response.data.result.role;
+        // 프로필 이미지가 null이면 기본 이미지 경로로 설정
+    this.profileImgUrl = response.data.result.profileImgUrl || require('@/assets/default_user_image.png');
+      }catch(error){
+        console.error("사용자 프로필 loading error : ",error);
+      }
     },
     kakaoLogin() {
       window.location.href = 'http://localhost:8080/member-service/oauth2/authorization/kakao';
@@ -109,26 +129,21 @@ export default {
 }
 
 .logo-image {
-  max-width: 150px;
-  width: 100%;
-  height: auto;
+  width: 150px; /* 원하는 고정 너비 */
+  height: auto; /* 높이는 비율에 맞춰 자동 조절 */
+  object-fit: contain; /* 이미지가 고정된 크기 안에서 비율을 유지 */
 }
 
 /* 버튼 커스텀 */
 .custom-button {
   font-weight: bold !important; /* 글씨를 bold로 */
-  font-size: 17px !important; /* 글씨 크기 */
+  font-size: 18px !important; /* 글씨 크기 */
   text-transform: none !important; /* 대문자 변환 방지 */
   background-color: transparent !important;  /* 배경을 투명하게 만듦 */
-  color: inherit !important; /* 글자 색상은 상위 요소에서 상속받음 */
   box-shadow: none !important; /* 그림자 제거 */
   border: none !important; /* 버튼 테두리 제거 */
   outline: none !important; /* 버튼 outline 제거 */
-}
-
-/* Hover 시 살짝 강조 */
-.custom-button:hover {
-  background-color: rgba(0, 0, 0, 0.05) !important; /* 살짝 강조되는 hover 효과 */
+  box-shadow: none !important; /* 그림자 제거 */
 }
 
 .v-avatar {
