@@ -39,7 +39,7 @@
               </div>
               <div>{{ review.contents }}</div>
               <div class="review-date">
-                {{ formatDate(review.createdAt) }} - {{ maskName(review.name) }}
+                {{ formatDate(review.createdAt) }} - {{ review.name }}
               </div>
             </v-card-text>
             <!-- 삭제 아이콘 -->
@@ -49,7 +49,7 @@
       </v-row>
   
       <!-- 리뷰 수정 모달 -->
-      <v-dialog v-model="isEditModalOpen" width="500" persistent> <!-- 수정 모달 크기 줄이기 -->
+      <v-dialog v-model="isEditModalOpen" width="500" persistent>
         <v-card class="review-edit-modal">
           <v-btn icon @click="closeEditModal" class="close-btn">
             <v-icon>mdi-close</v-icon>
@@ -127,6 +127,7 @@
           const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/reservation-service/review/my/list`);
           if (response.status === 200) {
             this.reviews = response.data.content;
+            console.log(this.reviews)
           }
         } catch (error) {
           console.error("리뷰 데이터를 가져오는 중 오류 발생:", error);
@@ -135,12 +136,6 @@
       formatDate(date) {
         const options = { year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit" };
         return new Date(date).toLocaleDateString("ko-KR", options);
-      },
-      maskName(name) {
-        if (name.length === 3) {
-          return name[0] + "*" + name[2];
-        }
-        return name;
       },
       // 리뷰 수정 모달 오픈
       openEditModal(review) {
@@ -361,9 +356,9 @@
     align-items: center;       /* 세로 가운데 정렬 */
     margin: 0;                 /* 불필요한 마진 제거 */
     padding: 10px 0;           /* 위아래 패딩을 약간 추가 */
-}
-
-.submit-btn {
+  }
+  
+  .submit-btn {
     background-color: #C2D7FF;
     color: #00499E;
     border-radius: 40px;
@@ -373,8 +368,7 @@
     justify-content: center;   /* 버튼 텍스트가 중앙에 위치하게 설정 */
     align-items: center;       /* 버튼 텍스트가 중앙에 위치하게 설정 */
     margin: 0 auto;            /* 버튼을 자동으로 가운데 배치 */
-}
-
+  }
   
   /* 리뷰 삭제 모달 스타일 */
   .review-delete-modal {
@@ -421,3 +415,4 @@
     height: 40px;
   }
   </style>
+  
