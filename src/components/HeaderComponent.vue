@@ -1,80 +1,63 @@
 <template>
-  <v-app-bar app>
-    <v-container>
+  <v-app-bar app  style="background-color: #ECF2FE;">
+    <v-container fluid class="custom-container">
       <v-row align="center">
-        <v-col>
+        <v-col cols="2" class="justify-start text-no-wrap">
           <v-toolbar-title>
             <router-link to="/" class="logo">
               <img src="@/assets/logo.png" alt="TodakTodak Logo" class="logo-image" />
             </router-link>
           </v-toolbar-title>
         </v-col>
-        <v-col class="text-right">
-          <!-- 로그인 상태에 따라 카카오 로그인 버튼 또는 리스트를 보여줌 -->
-          <v-btn v-if="!isLogin" icon @click="kakaoLogin">
-            <v-icon>mdi-account</v-icon>
+
+        <v-col class="d-flex flex-row justify-start text-no-wrap" cols="6">
+          <!-- 왼쪽 정렬 -->
+          <v-btn class="custom-button">
+              🏥 주변소아과
           </v-btn>
 
-          <v-btn v-else icon @click="menuVisible = !menuVisible">
-            <v-icon>mdi-menu</v-icon>
+          <v-btn class="custom-button">
+            🏠 비대면진료
           </v-btn>
 
-          <!-- 작은 리스트를 보여주는 v-list -->
-          <v-list v-if="menuVisible && isLogin" class="custom-list">
-            <v-list-item @click="navigateTo('/member/myPage')" class="custom-list-item">
-              <v-list-item-icon>
-                <v-icon>mdi-account</v-icon>
-              </v-list-item-icon>
-              <v-list-item-content>
-                <v-list-item-title>마이페이지</v-list-item-title>
-              </v-list-item-content>
-            </v-list-item>
+          <v-btn class="custom-button">
+            💬 의사 Q&A
+          </v-btn>
+        </v-col>
 
-            <v-list-item @click="navigateTo('/')" class="custom-list-item">
-              <v-list-item-icon>
-                <v-icon>mdi-account-child</v-icon>
-              </v-list-item-icon>
-              <v-list-item-content>
-                <v-list-item-title>자녀설정</v-list-item-title>
-              </v-list-item-content>
-            </v-list-item>
-
-            <v-list-item @click="navigateTo('/')" class="custom-list-item">
-              <v-list-item-icon>
-                <v-icon>mdi-calendar-check</v-icon>
-              </v-list-item-icon>
-              <v-list-item-content>
+        <v-col cols="4" class="d-flex align-end justify-end text-no-wrap">
+          <!-- 오른쪽 정렬 -->
+          <v-menu v-if="isLogin" open-on-hover>
+            <template v-slot:activator="{ props }">
+              <v-btn text v-bind="props" height="60">
+                <v-avatar size="40">
+                  <v-img :src=profileImgUrl alt="profileImgUrl"></v-img>
+                </v-avatar>
+                <span class="ml-2" style="font-size: 17px;">{{ name }}</span>
+              </v-btn>
+            </template>
+            <v-list>
+              <v-list-item :href="`/`">
                 <v-list-item-title>나의 예약내역</v-list-item-title>
-              </v-list-item-content>
-            </v-list-item>
-
-            <v-list-item @click="navigateTo('/')" class="custom-list-item">
-              <v-list-item-icon>
-                <v-icon>mdi-calendar-month</v-icon>
-              </v-list-item-icon>
-              <v-list-item-content>
-                <v-list-item-title>우리아이 캘린더</v-list-item-title>
-              </v-list-item-content>
-            </v-list-item>
-
-            <v-list-item @click="navigateTo('/')" class="custom-list-item">
-              <v-list-item-icon>
-                <v-icon>mdi-headset</v-icon>
-              </v-list-item-icon>
-              <v-list-item-content>
+              </v-list-item>
+              <v-list-item :to="{ path: '/'}">
+                <v-list-item-title>우리아이 캘린더                                                                             </v-list-item-title>
+              </v-list-item>
+              <v-list-item :to="{ path: '/'}">
+                <v-list-item-title>마이 페이지</v-list-item-title>
+              </v-list-item>
+              <v-list-item :to="{ path: '/'}">
                 <v-list-item-title>내 채팅</v-list-item-title>
-              </v-list-item-content>
-            </v-list-item>
-            <div class="signup-underline"></div>
-            <v-list-item @click="logout" class="custom-list-item">
-              <v-list-item-icon>
-                <v-icon>mdi-logout</v-icon>
-              </v-list-item-icon>
-              <v-list-item-content>
+              </v-list-item>
+              <v-list-item @click="logout">
                 <v-list-item-title>로그아웃</v-list-item-title>
-              </v-list-item-content>
-            </v-list-item>
-          </v-list>
+              </v-list-item>
+            </v-list>
+          </v-menu>
+          
+          <v-btn v-if="!isLogin" @click="kakaoLogin">
+            <img src="@/assets/kakao_login_small.png" alt="카카오로그인 버튼">
+          </v-btn>
         </v-col>
       </v-row>
     </v-container>
@@ -82,20 +65,46 @@
 </template>
 
 <script>
+import axios from 'axios'
+
 export default {
   data() {
     return {
-      menuVisible: false, // 메뉴 보이기 상태
       isLogin: false, // 로그인 상태 확인 변수
+      name: "김파닥",
+      profileImgUrl: '@/assets/default_profile_image.png',
+      memberId:'',
+      role:'',
+      email:''
     };
   },
+  created(){
+
+    this.memberId = localStorage.getItem("memberId")
+    this.email = localStorage.getItem("email")
+    const token = localStorage.getItem("token")
+    if(token){
+      // localStorage에 token 있으면 로그인된 상태
+      this.isLogin = true;
+      this.loadUserProfile();
+    }
+
+  },
   mounted() {
-    this.checkLoginStatus(); // 컴포넌트가 마운트될 때 로그인 상태 확인
+
   },
   methods: {
-    checkLoginStatus() {
-      const token = localStorage.getItem('token');
-      this.isLogin = !!token; // 토큰이 있으면 로그인 상태로 간주
+    async loadUserProfile(){
+      try{
+        const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/member-service/member/id/${this.memberId}`);
+        console.log(response.data);
+        this.name = response.data.result.name;
+        this.role = response.data.result.role;
+        // 프로필 이미지가 null이면 기본 이미지 경로로 설정
+    this.profileImgUrl = response.data.result.profileImgUrl || require('@/assets/default_user_image.png');
+      }catch(error){
+        console.error("사용자 프로필 loading error : ",error);
+      }
     },
     kakaoLogin() {
       window.location.href = 'http://localhost:8080/member-service/oauth2/authorization/kakao';
@@ -120,44 +129,27 @@ export default {
 }
 
 .logo-image {
-  max-width: 150px;
-  width: 100%;
-  height: auto;
+  width: 150px; /* 원하는 고정 너비 */
+  max-width: 100%; /* 부모 요소 너비를 넘지 않도록 설정 */
+  height: auto; /* 높이는 비율에 맞춰 자동 조절 */
+  object-fit: contain; /* 이미지가 고정된 크기 안에서 비율을 유지 */
 }
 
-.text-right {
-  text-align: right;
+/* 버튼 커스텀 */
+.custom-button {
+  font-weight: bold !important; /* 글씨를 bold로 */
+  font-size: 18px !important; /* 글씨 크기 */
+  text-transform: none !important; /* 대문자 변환 방지 */
+  background-color: transparent !important;  /* 배경을 투명하게 만듦 */
+  box-shadow: none !important; /* 그림자 제거 */
+  border: none !important; /* 버튼 테두리 제거 */
+  outline: none !important; /* 버튼 outline 제거 */
+  box-shadow: none !important; /* 그림자 제거 */
 }
 
-/* v-list가 다른 요소보다 우선 표시되고 헤더와 무관하게 잘리지 않도록 설정 */
-.custom-list {
-  background-color: #f5f5f5;
-  border-radius: 10px;
-  position: fixed; /* position을 fixed로 변경하여 화면 어디서나 표시 */
-  right: 20px;
-  top: 70px; /* 헤더 아래에 위치하도록 조정 */
-  width: 200px;
-  z-index: 1000; /* z-index를 높여 다른 요소 위로 표시 */
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-}
-
-/* 리스트 요소를 왼쪽 정렬 */
-.custom-list-item {
-  display: flex;
-  justify-content: flex-start; /* 아이템을 왼쪽으로 정렬 */
-  padding-left: 0px; /* 좌측 패딩 제거 */
-  text-align: left; /* 텍스트를 왼쪽 정렬 */
-}
-
-.custom-list-item .v-list-item-content {
-  margin-left: 8px; /* 아이콘과 텍스트 간의 간격 설정 */
-  text-align: left; /* 리스트 내용도 왼쪽 정렬 */
-}
-.signup-underline {
-  width: 100%; /* 선을 페이지 너비만큼 길게 */
-  max-width: 1000px; /* 최대 길이 제한 */
-  height: 1px;
-  background-color: #E3E3E3; /* 마크다운의 ---과 같은 얇은 선 */
-  margin-top: 10px; /* 글자와 선 사이 여백 */
+.v-avatar {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
 }
 </style>
