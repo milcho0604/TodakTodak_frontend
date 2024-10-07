@@ -2,7 +2,7 @@
   <v-app-bar app  style="background-color: #ECF2FE;">
     <v-container fluid class="custom-container">
       <v-row align="center">
-        <v-col cols="2">
+        <v-col cols="2" class="justify-start text-no-wrap">
           <v-toolbar-title>
             <router-link to="/" class="logo">
               <img src="@/assets/logo.png" alt="TodakTodak Logo" class="logo-image" />
@@ -10,7 +10,7 @@
           </v-toolbar-title>
         </v-col>
 
-        <v-col class="d-flex flex-row justify-start text-no-wrap" cols="8">
+        <v-col class="d-flex flex-row justify-start text-no-wrap" cols="6">
           <!-- 왼쪽 정렬 -->
           <v-btn class="custom-button">
               🏥 주변소아과
@@ -25,7 +25,7 @@
           </v-btn>
         </v-col>
 
-        <v-col cols="2" class="d-flex align-end justify-end text-no-wrap">
+        <v-col cols="4" class="d-flex align-end justify-end text-no-wrap">
           <!-- 오른쪽 정렬 -->
           <v-menu v-if="isLogin" open-on-hover>
             <template v-slot:activator="{ props }">
@@ -130,6 +130,7 @@ export default {
 
 .logo-image {
   width: 150px; /* 원하는 고정 너비 */
+  max-width: 100%; /* 부모 요소 너비를 넘지 않도록 설정 */
   height: auto; /* 높이는 비율에 맞춰 자동 조절 */
   object-fit: contain; /* 이미지가 고정된 크기 안에서 비율을 유지 */
 }
