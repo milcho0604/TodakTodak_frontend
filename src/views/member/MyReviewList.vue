@@ -13,9 +13,14 @@
     <v-row justify="center" class="review-list">
       <v-col cols="12" md="10" lg="8" v-for="(review, index) in reviews" :key="index" class="review-group">
         <v-card class="review-card">
-          <v-card-title class="review-hospital">
-            {{ review.hospitalName }} 리뷰
-          </v-card-title>
+          <v-row>
+            <v-card-title class="review-hospital">
+              {{ review.hospitalName }} 리뷰
+            </v-card-title>
+                      <!-- 삭제 아이콘 -->
+          <v-icon small @click="openDeleteModal(review.id)" class="delete-icon">mdi-trash-can-outline</v-icon>
+          </v-row>
+ 
           <v-card-subtitle v-if="review.doctorName" class="review-doctor">
             {{ review.doctorName }} 의사
             <!-- 수정 아이콘 -->
@@ -41,8 +46,7 @@
               {{ formatDate(review.createdAt) }} - {{ review.name }}
             </div>
           </v-card-text>
-          <!-- 삭제 아이콘 -->
-          <v-icon small @click="openDeleteModal(review.id)" class="delete-icon">mdi-trash-can-outline</v-icon>
+
         </v-card>
       </v-col>
     </v-row>
@@ -234,6 +238,7 @@ export default {
   font-weight: 400;
   font-size: 14px;
   color: #767676;
+  margin-left: 12px;
 }
 
 .review-doctor {
@@ -282,6 +287,7 @@ export default {
   right: 10px;
   top: 15px;
   color: #676767;
+  margin-right: 12px;
 }
 
 .review-edit-modal {
