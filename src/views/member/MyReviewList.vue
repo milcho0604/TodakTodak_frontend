@@ -194,16 +194,20 @@ export default {
 }
 
 .review-underline {
-  width: 100%;
-  max-width: 800px;
+  width: 1000px;
+  max-width: 1000px;
   height: 1px;
   background-color: #C5C5C5;
   margin-top: 10px;
+  margin-left: auto; /* 왼쪽 여백 자동 */
+  margin-right: auto; /* 오른쪽 여백 자동 */
 }
 
 .review-list {
   margin-top: 20px;
-  width: 400px;
+  width: 1000px;
+  margin-left: auto; /* 왼쪽 여백 자동 */
+  margin-right: auto; /* 오른쪽 여백 자동 */
 }
 
 .review-group {
@@ -216,7 +220,7 @@ export default {
   width: 100%;
   max-width: 800px;
   height: auto;
-  border: 1px solid #C5C5C5;
+
   padding: 20px;
   background-color: #F8F8F8;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
