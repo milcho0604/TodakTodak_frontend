@@ -238,7 +238,7 @@ export default {
   font-family: 'Inter';
   font-weight: 700;
   font-size: 25px;
-  color: #000000;
+  color: #000000 !important;
   margin-top: -10px;
   display: flex;
   align-items: center;
@@ -272,6 +272,7 @@ export default {
 .edit-icon {
   margin-left: 10px;
   font-size: 25px;
+  color: #676767;
 }
 
 .delete-icon {
