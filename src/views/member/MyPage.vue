@@ -10,7 +10,7 @@
               alt="프로필 이미지"
               max-width="120px"
               max-height="120px"
-              class="profile-img with-shadow"
+              class="v-avatar with-shadow"
             ></v-img>
           </v-col>
           <v-col cols="9">
@@ -370,7 +370,18 @@ export default {
   height: 44px;
   margin-bottom: 40px;
   margin-top: 10px;
+  border-radius: 20px;
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 700;
+  font-size: 20px;
+  line-height: 24px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
+
+
 .membership-options {
   display: flex;
   justify-content: center;
@@ -379,15 +390,19 @@ export default {
 }
 .membership-option {
   font-family: "Inter";
+  font-style: normal;
   font-weight: 700;
   font-size: 15px;
-  color: #a7a7a7;
+  color: #A7A7A7;
+  background-color: #f3f3f3;
+  box-shadow: none; /* 그림자를 없앰 */
 }
 .vertical-divider {
   width: 1px;
-  height: 20px;
+  height: 30px;
   background-color: #a7a7a7;
   margin: 0 10px;
+  
 }
 .custom-modal-background {
   background-color: #c2d7ff;
@@ -402,5 +417,10 @@ export default {
   border-radius: 50%;
   object-fit: cover;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+.v-avatar {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 </style>
