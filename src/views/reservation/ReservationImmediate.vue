@@ -8,7 +8,7 @@
                 </v-col>
                 <v-col>
                     <div class="custom-text">
-                        바로접수
+                        오늘예약
                     </div>
                 </v-col>
             </v-row>
@@ -106,7 +106,7 @@
             </v-row>
             <v-row><textarea class="text ml-4" v-model="comment"></textarea></v-row>
             <v-row class="mt-6 ml-1">
-                <div class="button inter-bold">당일접수 신청</div>
+                <div class="button inter-bold">오늘예약 신청</div>
             </v-row>
 
             <v-dialog v-model="symptomsModal" max-width="700px">
