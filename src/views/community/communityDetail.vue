@@ -18,26 +18,16 @@
     <v-card class="pa-5" v-if="postDetail">
       <div class="d-flex justify-space-between align-center mb-3">
         <v-divider>
-          <h4 class="text-h6">{{ postDetail.memberEmail }}</h4>
+          <h4 class="text-h6">{{ postDetail.name }}</h4>
         </v-divider>
 
         <v-col class="d-flex justify-end" style="flex-grow: 1;">
           <span @click="edit" class="d-flex align-center action-link mr-2">
-            <img
-              :src="require('@/assets/pencil.png')"
-              alt="Edit Icon"
-              height="20px"
-              class="mr-1"
-            />
+            <v-icon small>mdi-pencil</v-icon>
             수정
           </span>
           <span @click="deletePost" class="d-flex align-center action-link">
-            <img
-              :src="require('@/assets/delete.png')"
-              alt="Delete Icon"
-              height="20px"
-              class="mr-1"
-            />
+            <v-icon small>mdi-delete</v-icon>
             삭제
           </span>
         </v-col>
@@ -60,6 +50,16 @@
         <v-img v-if="postDetail.postImgUrl" :src="postDetail.postImgUrl" alt="게시글 이미지" class="mb-3 rounded center-image" />
       </div>
 
+      <v-col class="d-flex justify" style="flex-grow: 1;">
+        <span @click="edit" class="d-flex align-center action-link mr-2">
+          <v-icon small>mdi-heart-outline</v-icon> &nbsp; 좋아요 {{ postDetail.likeCount }}  · 
+        </span>
+        <span @click="deletePost" class="d-flex align-center action-link">
+          댓글 {{ postDetail.comments.length }}   · 조회수 {{ postDetail.viewCount }}   
+        </span>
+      </v-col>
+
+
       <v-row>
         <v-divider></v-divider>
         <v-col cols="12">
@@ -71,29 +71,19 @@
                   <div class="d-flex justify-space-between align-center">
                     <div style="flex: 9;">
                       <div class="comment-text">
-                        <v-list-item-title class="text-subtitle-1">{{ comment.doctorEmail }}</v-list-item-title>
+                        <v-list-item-title class="text-subtitle-1">{{ comment.name }}</v-list-item-title>
                         <v-list-item-subtitle>{{ comment.content }} - {{ formatDate(comment.createdTime) }}</v-list-item-subtitle>
                       </div>
                     </div>
                     <div style="flex: 1;">
-                      <v-img
-                        :src="require('@/assets/report.png')"
-                        alt="Report Icon"
-                        height="20px"
-                        class="cursor-pointer"
-                        @click="openReportModal('comment', comment)"
-                      ></v-img>
+                      <v-icon>mdi-alert-circle-outline</v-icon>
                     </div>
                   </div>
                 </v-card-text>
 
                 <v-card-actions>
                   <span @click="comment.showTextarea = !comment.showTextarea" class="d-flex align-center action-link mr-2">
-                    <img
-                      :src="require('@/assets/comment.png')"
-                      alt="Comment Icon"
-                      height="20px"
-                    />
+                    <v-icon small>mdi-comment-outline</v-icon>
                     댓글달기
                   </span>
                 </v-card-actions>
@@ -101,7 +91,7 @@
                 <v-form v-if="comment.showTextarea" @submit.prevent="submitComment(comment)">
                   <v-textarea
                     v-model="comment.newComment"
-                    label="댓글달기"
+                    label="댓글을 작성해주세요"
                     outlined
                     required
                   ></v-textarea>
@@ -111,13 +101,8 @@
                     class="d-flex align-center action-link"
                     style="cursor: pointer; display: inline-block; padding: 10px; color: #898787; border-radius: 5px; text-align: center; margin-top: 10px;"
                   >
-                    <img
-                      :src="require('@/assets/pencil.png')"
-                      alt="Comment Icon"
-                      height="20px"
-                      class="mr-1"
-                    />
-                    저장
+                    <v-icon small>mdi-comment-outline</v-icon>
+                    댓글달기
                   </span>
                 </v-form>
 
@@ -145,6 +130,7 @@
     <ReportCreate v-if="showReportModal" :postId="reportData.postId" :commentId="reportData.commentId" @close="closeReportModal" />
   </v-container>
 </template>
+
 
 <script>
 import axios from 'axios';
@@ -215,7 +201,6 @@ export default {
 
       try {
         await axios.post(`${process.env.VUE_APP_API_BASE_URL}/community-service/comment/create`, {
-          doctorEmail: this.currentUserEmail, // 현재 사용자 이메일
           content: comment.newComment,
           postId: postId,
           parentId: parentId // 부모 댓글 ID
