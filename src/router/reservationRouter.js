@@ -1,4 +1,5 @@
 import ReservationImmediate from "@/views/reservation/ReservationImmediate.vue"
+import ReservationScheduled from "@/views/reservation/ReservationScheduled.vue"
 
 export const reservationRouter = [
     {
@@ -6,4 +7,9 @@ export const reservationRouter = [
         name: 'ReservationImmediate',
         component: ReservationImmediate
     },
+    {
+        path: '/reservation/scheduled',
+        name: 'ReservationScheduled',
+        component: ReservationScheduled
+    }
 ]
