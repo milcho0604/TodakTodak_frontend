@@ -24,7 +24,7 @@
           <div class="custom-line"></div>
         </div>
         
-        
+        <br>
 
         <div class="profile-page-gap"></div>
 
@@ -346,12 +346,14 @@ export default {
 }
 
 .line-container {
-  display: flex;
-  justify-content: center; /* 가로 중앙 정렬 */
+  position: relative; /* 부모 요소를 상대적으로 설정 */
   width: 100%; /* 부모 요소의 너비를 100%로 설정 */
 }
 
 .custom-line {
+  position: absolute; /* 절대 위치로 설정하여 부모 기준으로 배치 */
+  left: 50%; /* 부모 기준 왼쪽에서 50% */
+  transform: translateX(-50%); /* 너비 기준으로 중앙으로 이동 */
   height: 1px;
   background-color: #C5C5C5;
   width: 1000px; /* 고정된 너비 설정 */
