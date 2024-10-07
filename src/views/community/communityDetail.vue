@@ -51,61 +51,98 @@
       </div>
 
       <v-col class="d-flex justify" style="flex-grow: 1;">
-        <span @click="edit" class="d-flex align-center action-link mr-2">
+        <span @click="like" class="d-flex align-center action-link mr-2">
           <v-icon small>mdi-heart-outline</v-icon> &nbsp; 좋아요 {{ postDetail.likeCount }}  · 
         </span>
-        <span @click="deletePost" class="d-flex align-center action-link">
-          댓글 {{ postDetail.comments.length }}   · 조회수 {{ postDetail.viewCount }}   
+        <span @click="showCommentTextarea = !showCommentTextarea" class="d-flex align-center action-link mr-2">
+          <v-icon small>mdi-comment-outline</v-icon> &nbsp; 댓글 {{ postDetail.comments.length }} ·
+        </span>
+        <span class="d-flex align-center action-link">
+          &nbsp;<v-icon small>mdi-eye-outline</v-icon> &nbsp; 조회수 {{ postDetail.viewCount }}   
         </span>
       </v-col>
 
+      <v-divider></v-divider>
+
+      <v-row v-if="showCommentTextarea" class="mt-3">
+        <v-col cols="12">
+          <v-form @submit.prevent="submitPostComment">
+            <v-textarea
+              v-model="newPostComment"
+              label="댓글을 작성해주세요"
+              outlined
+              required
+            ></v-textarea>
+            <span 
+            @click="submitPostComment" 
+            class="d-flex align-center action-link mr-2" 
+            style="cursor: pointer;"
+          >
+            <v-icon small>mdi-comment-outline</v-icon>&nbsp; 댓글 작성
+          </span>
+          </v-form>
+        </v-col>
+      </v-row>
 
       <v-row>
         <v-divider></v-divider>
+
         <v-col cols="12">
           <h4 class="text-h6 font-weight-bold">댓글</h4>
           <v-list>
             <v-list-item v-for="comment in postDetail.comments" :key="comment.id" class="py-2">
-              <v-card :style="{ backgroundColor: comment.parentId ? '#898787' : (comment.memberEmail === currentUserEmail ? '#F9F9F9' : '#ECF2FE') }" class="mb-2" outlined>
+              <v-card 
+                :style="{ 
+                  backgroundColor: comment.parentId ? '#898787' : (comment.memberEmail === currentUserEmail ? '#F9F9F9' : '#ECF2FE'), 
+                  borderRadius: '10px' 
+                  }" 
+                  class="mb-2" 
+                  outlined>
+
                 <v-card-text>
                   <div class="d-flex justify-space-between align-center">
                     <div style="flex: 9;">
                       <div class="comment-text">
-                        <v-list-item-title class="text-subtitle-1">{{ comment.name }}</v-list-item-title>
-                        <v-list-item-subtitle>{{ comment.content }} - {{ formatDate(comment.createdTime) }}</v-list-item-subtitle>
+                        <v-list-item-title class="text-subtitle-1" style="font-weight: bold; font-size: 20px !important;">{{ comment.name }}</v-list-item-title>
+                        <v-list-item-subtitle style="font-size:18px;">{{ comment.content }}</v-list-item-subtitle>
+                        <v-list-item-subtitle>{{ formatDate(comment.createdTimeAt) }}</v-list-item-subtitle>
                       </div>
                     </div>
-                    <div style="flex: 1;">
-                      <v-icon>mdi-alert-circle-outline</v-icon>
+                    <div style="flex: 1;" class="d-flex align-center">
+                      <span @click="openReportModal('comment', comment)" class="d-flex align-center action-link mr-2">
+                        <v-icon>mdi-alert-circle-outline</v-icon>
+                      </span>
+                      <span @click="deleteComment(comment)" class="d-flex align-center action-link">
+                        <v-icon small>mdi-delete</v-icon>
+                      </span>
                     </div>
                   </div>
                 </v-card-text>
-
+                
                 <v-card-actions>
                   <span @click="comment.showTextarea = !comment.showTextarea" class="d-flex align-center action-link mr-2">
                     <v-icon small>mdi-comment-outline</v-icon>
-                    댓글달기
+                    &nbsp;댓글달기
                   </span>
                 </v-card-actions>
-
+            
                 <v-form v-if="comment.showTextarea" @submit.prevent="submitComment(comment)">
                   <v-textarea
                     v-model="comment.newComment"
-                    label="댓글을 작성해주세요"
+                    label="대댓글을 작성해주세요"
                     outlined
                     required
                   ></v-textarea>
-                  
+            
                   <span 
                     @click="submitComment(comment)" 
-                    class="d-flex align-center action-link"
-                    style="cursor: pointer; display: inline-block; padding: 10px; color: #898787; border-radius: 5px; text-align: center; margin-top: 10px;"
+                    class="d-flex align-center action-link mr-2" 
+                    style="cursor: pointer;"
                   >
-                    <v-icon small>mdi-comment-outline</v-icon>
-                    댓글달기
+                  <v-icon small>mdi-comment-outline</v-icon> &nbsp; 대댓글 작성
                   </span>
                 </v-form>
-
+            
                 <!-- 대댓글 표시 -->
                 <v-list v-if="comment.replies && comment.replies.length">
                   <v-list-item v-for="reply in comment.replies" :key="reply.id">
@@ -131,7 +168,6 @@
   </v-container>
 </template>
 
-
 <script>
 import axios from 'axios';
 import ReportCreate from '@/views/report/ReportCreate.vue';
@@ -146,7 +182,9 @@ export default {
       error: null,
       showReportModal: false,
       reportData: {},
-      currentUserEmail: 'your-email@example.com', // 현재 사용자 이메일 (실제 이메일로 설정)
+      currentUserEmail: 'your-email@example.com',
+      newPostComment: '',
+      showCommentTextarea: false,
     };
   },
   created() {
@@ -155,6 +193,9 @@ export default {
   methods: {
     edit() {
       this.$router.push(`/update/${this.postDetail.id}`);
+    },
+    like() {
+      axios.post(`${process.env.VUE_APP_API_BASE_URL}/community-service/post/detail/like/${this.postDetail.id}`);
     },
     deletePost() {
       const confirmed = confirm("게시글을 정말 삭제하시겠습니까?");
@@ -175,14 +216,12 @@ export default {
         const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/community-service/post/detail/${postId}`);
         this.postDetail = response.data.result;
 
-        // 댓글에 대댓글을 추가하기 위한 로직
         this.postDetail.comments.forEach(comment => {
           this.$set(comment, 'showTextarea', false);
           this.$set(comment, 'newComment', '');
           this.$set(comment, 'replies', []); // 대댓글 배열 초기화
         });
 
-        // 대댓글을 댓글 객체에 추가하는 로직
         this.postDetail.comments.forEach(comment => {
           if (comment.parentId) {
             const parentComment = this.postDetail.comments.find(c => c.id === comment.parentId);
@@ -195,20 +234,46 @@ export default {
         this.error = error.response ? error.response.data.message : '게시글 정보를 불러오는 중 오류가 발생했습니다.';
       }
     },
+    async submitPostComment() {
+      const postId = this.$route.params.id;
+      try {
+        await axios.post(`${process.env.VUE_APP_API_BASE_URL}/community-service/comment/create`, {
+          content: this.newPostComment,
+          postId: postId,
+          parentId: null,
+        });
+        this.newPostComment = '';
+        this.showCommentTextarea = false;
+        this.fetchPostDetail();
+      } catch (error) {
+        this.error = '댓글 등록에 실패했습니다.';
+      }
+    },
     async submitComment(comment) {
       const postId = this.$route.params.id;
-      const parentId = comment.id; // 대댓글을 작성할 부모 댓글 ID
 
       try {
         await axios.post(`${process.env.VUE_APP_API_BASE_URL}/community-service/comment/create`, {
           content: comment.newComment,
           postId: postId,
-          parentId: parentId // 부모 댓글 ID
+          parentId: comment.id, // 대댓글을 위한 부모 댓글 ID
         });
-        comment.newComment = ''; // 댓글 작성 후 텍스트 필드 초기화
-        this.fetchPostDetail(); // 댓글 작성 후 게시글 상세 다시 가져오기
+        comment.newComment = '';
+        this.fetchPostDetail();
       } catch (error) {
         this.error = '댓글 등록에 실패했습니다.';
+      }
+    },
+    async deleteComment(comment) {
+      const confirmed = confirm("댓글을 정말 삭제하시겠습니까?");
+      if (confirmed) {
+        try {
+          await axios.post(`${process.env.VUE_APP_API_BASE_URL}/community-service/comment/delete/${comment.id}`);
+          this.fetchPostDetail(); // 삭제 후 게시글 상세 다시 가져오기
+        } catch (error) {
+          console.error("댓글 삭제에 실패했습니다.", error);
+          this.error = '댓글 삭제에 실패했습니다.';
+        }
       }
     },
     formatDate(date) {
@@ -241,6 +306,7 @@ export default {
   line-height: 1.5;
   color: #000000;
 }
+
 
 .action-link {
   cursor: pointer;
