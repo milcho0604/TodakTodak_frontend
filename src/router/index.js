@@ -8,6 +8,7 @@ import { memberRouter } from './memberRouter';
 import { paymentRouter } from './paymentRouter';
 import { untactRouter } from './untactRouter';
 import { chatRouter } from './chatRouter';
+import { hospitalRouter } from './hospitalRoutr';
 
 const routes = [
     {
@@ -19,6 +20,7 @@ const routes = [
     ...paymentRouter,
     ...untactRouter,
     ...chatRouter,
+    ...hospitalRouter
 ]
 
 
