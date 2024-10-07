@@ -6,7 +6,7 @@
         <v-row class="profile-section" no-gutters>
           <v-col cols="3">
             <v-img
-              :src="memberInfo && memberInfo.profileImgUrl ? memberInfo.profileImgUrl : require('@/assets/default-profile.png')"
+              :src="memberInfo && memberInfo.profileImgUrl ? memberInfo.profileImgUrl : require('@/assets/default_user_image.png')"
               alt="프로필 이미지"
               max-width="120px"
               max-height="120px"
