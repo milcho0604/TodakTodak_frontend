@@ -6,7 +6,7 @@
         <v-row class="profile-section" no-gutters>
           <v-col cols="3">
             <v-img
-              :src="memberInfo.profileImgUrl ? memberInfo.profileImgUrl : require('@/assets/default-profile.png')"
+              :src="memberInfo && memberInfo.profileImgUrl ? memberInfo.profileImgUrl : require('@/assets/default-profile.png')"
               alt="프로필 이미지"
               max-width="120px"
               max-height="120px"
@@ -14,12 +14,18 @@
             ></v-img>
           </v-col>
           <v-col cols="9">
-            <div class="profile-name">{{ memberInfo.name }}</div>
+            <div class="profile-name">{{ memberInfo ? memberInfo.name : '' }}</div>
             <div class="profile-penalty">나의 패널티 : {{ penaltyCount }}회</div>
           </v-col>
         </v-row>
 
-        <hr class="custom-line">
+        <!-- <hr class="unified-line"> -->
+        <div class="line-container">
+          <div class="custom-line"></div>
+        </div>
+        
+        
+
         <div class="profile-page-gap"></div>
 
         <!-- 마이페이지 카드 -->
@@ -40,9 +46,9 @@
               </v-col>
               <!-- 우측 정보 내용 -->
               <v-col cols="8">
-                <div class="info-content">{{ memberInfo.name }}</div>
+                <div class="info-content">{{ memberInfo ? memberInfo.name : '' }}</div>
                 <div class="signup-underline"></div>
-                <div class="info-content">{{ memberInfo.memberEmail }}</div>
+                <div class="info-content">{{ memberInfo ? memberInfo.memberEmail : '' }}</div>
                 <div class="signup-underline"></div>
 
                 <!-- 수정 모드일 때는 전화번호를 입력 가능 -->
@@ -54,7 +60,7 @@
                   ></v-text-field>
                 </div>
                 <div v-else>
-                  <div class="info-content">{{ memberInfo.phoneNumber }}</div>
+                  <div class="info-content">{{ memberInfo ? memberInfo.phoneNumber : '' }}</div>
                 </div>
                 <div class="signup-underline"></div>
 
@@ -306,12 +312,24 @@ export default {
   position: relative;
   margin-left: -100px;
 }
+
+.unified-line {
+  border: 0;
+  height: 1px;
+  background-color: #C5C5C5;
+  width: 1000px; /* 선의 길이를 1000px로 고정 */
+  margin-top: 20px;
+  margin-left: auto;
+  margin-right: auto; /* 좌우 여백을 자동으로 설정해서 가운데 정렬 */
+  display: block; /* block 요소로 취급해 가운데 정렬 */
+}
 .info-title {
   font-family: "Inter";
   font-weight: 400;
   font-size: 20px;
   color: #818181;
   margin-bottom: 24px;
+  padding-top: 20px; /* 위쪽 패딩 */
 }
 .info-content {
   font-family: "Inter";
@@ -319,19 +337,29 @@ export default {
   font-size: 20px;
   color: #000000;
   margin-bottom: 24px;
+  padding-top: 20px; /* 위쪽 패딩 */
 }
 .signup-underline {
   width: 100%;
   height: 1px;
   background-color: #e3e3e3;
-  margin-top: 10px;
 }
+
+.line-container {
+  display: flex;
+  justify-content: center; /* 가로 중앙 정렬 */
+  width: 100%; /* 부모 요소의 너비를 100%로 설정 */
+}
+
 .custom-line {
-  border: 0;
   height: 1px;
-  background-color: #000;
-  width: 100%;
+  background-color: #C5C5C5;
+  width: 1000px; /* 고정된 너비 설정 */
+  margin-top: 20px;
+  margin-bottom: 20px;
 }
+
+
 .edit-btn {
   background-color: #C2D7FF !important;
   color: #00499e;
@@ -339,6 +367,7 @@ export default {
   width: 113px;
   height: 44px;
   margin-bottom: 40px;
+  margin-top: 10px;
 }
 .membership-options {
   display: flex;
