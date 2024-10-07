@@ -18,7 +18,8 @@
     <v-card class="pa-5" v-if="postDetail">
       <div class="d-flex justify-space-between align-center mb-3">
         <v-divider>
-          <h4 class="text-h6">{{ postDetail.name }}</h4>
+          <v-list-item-title class="text-subtitle-1" style="font-weight: bold; font-size: 20px !important;">{{ postDetail.name }}</v-list-item-title>
+          <v-list-item-subtitle>{{ formatDate(postDetail.createdTimeAt) }}</v-list-item-subtitle>
         </v-divider>
 
         <v-col class="d-flex justify-end" style="flex-grow: 1;">
@@ -31,24 +32,22 @@
             삭제
           </span>
         </v-col>
-      </div>
-
-      <v-row class="mb-5">
-        <v-col cols="12" md="12">
-          <v-card flat>
-            <v-card-text>
-              <div>
-                {{ postDetail.title }} 
-                <br><p>{{ postDetail.content }}</p>
+        </div>
+        <v-row class="mb-5 no-margin"> <!-- no-margin 클래스 추가 -->
+          <v-col cols="12" md="12">
+            <v-card flat class="pa-0"> <!-- pa-0 클래스 추가 -->
+              <v-card-text>
+                <div>
+                  <v-list-item-title class="text-subtitle-1" style="font-weight: bold; font-size: 20px !important;">{{ postDetail.title }}</v-list-item-title>
+                  <v-list-item-subtitle style="font-size:17px;">{{ postDetail.content }}</v-list-item-subtitle>
+                </div>
+              </v-card-text>
+              <div class="image-container">
+                <v-img v-if="postDetail.postImgUrl" :src="postDetail.postImgUrl" alt="게시글 이미지" class="mb-3 rounded" />
               </div>
-            </v-card-text>
-          </v-card>
-        </v-col>
-      </v-row>
-
-      <div class="image-container">
-        <v-img v-if="postDetail.postImgUrl" :src="postDetail.postImgUrl" alt="게시글 이미지" class="mb-3 rounded center-image" />
-      </div>
+            </v-card>
+          </v-col>
+        </v-row>
 
       <v-col class="d-flex justify" style="flex-grow: 1;">
         <span @click="like" class="d-flex align-center action-link mr-2">
@@ -103,6 +102,7 @@
                   <div class="d-flex justify-space-between align-center">
                     <div style="flex: 9;">
                       <div class="comment-text">
+                        {{ comment.memberEmail }}
                         <v-list-item-title class="text-subtitle-1" style="font-weight: bold; font-size: 20px !important;">{{ comment.name }}</v-list-item-title>
                         <v-list-item-subtitle style="font-size:18px;">{{ comment.content }}</v-list-item-subtitle>
                         <v-list-item-subtitle>{{ formatDate(comment.createdTimeAt) }}</v-list-item-subtitle>
