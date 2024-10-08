@@ -12,11 +12,6 @@
         <span class="inter-bold title" style="line-height: 50px;">의사 Q&A</span>
       </v-col>
     </v-row>
-    
-    
-    
-    
-
     <v-card class="pa-5" v-if="postDetail">
       <div class="d-flex justify-space-between align-center mb-3">
         <v-divider>
@@ -60,8 +55,8 @@
       </v-row>
 
       <v-col class="d-flex justify" style="flex-grow: 1;">
-        <span @click="like" class="d-flex align-center action-link mr-2">
-          <v-icon small>mdi-heart-outline</v-icon> &nbsp; 좋아요 {{ postDetail.likeCount }}  · 
+        <span @click="toggleLike" class="d-flex align-center action-link mr-2">
+          <v-icon small>{{ liked ? 'mdi-heart' : 'mdi-heart-outline' }}</v-icon> &nbsp; 좋아요 {{ postDetail.likeCount }}  · 
         </span>
         <span @click="showCommentTextarea = !showCommentTextarea" class="d-flex align-center action-link mr-2">
           <v-icon small>mdi-comment-outline</v-icon> &nbsp; 댓글 {{ postDetail.comments.length }} ·
@@ -238,6 +233,7 @@ export default {
       reportData: {},
       newPostComment: '',
       showCommentTextarea: false,
+      liked: false, //좋아요 상태
     };
   },
   created() {
@@ -251,9 +247,25 @@ export default {
     edit() {
       this.$router.push(`/update/${this.postDetail.id}`);
     },
-    like() {
-      axios.post(`${process.env.VUE_APP_API_BASE_URL}/community-service/post/detail/like/${this.postDetail.id}`);
-    },
+    async toggleLike() {
+  const postId = this.postDetail.id;
+  try {
+    if (this.liked) {
+      // 좋아요 취소 요청
+      await axios.post(`${process.env.VUE_APP_API_BASE_URL}/community-service/post/detail/unlike/${postId}`);
+      this.postDetail.likeCount--; // 좋아요 개수 감소
+    } else {
+      // 좋아요 요청
+      await axios.post(`${process.env.VUE_APP_API_BASE_URL}/community-service/post/detail/like/${postId}`);
+      this.postDetail.likeCount++; // 좋아요 개수 증가
+    }
+    this.liked = !this.liked; // 좋아요 상태 토글
+  } catch (error) {
+    console.error("좋아요 토글 중 오류가 발생했습니다.", error);
+    this.error = '좋아요 토글에 실패했습니다.';
+  }
+},
+
     deletePost() {
       const confirmed = confirm("게시글을 정말 삭제하시겠습니까?");
       if (confirmed) {
@@ -280,37 +292,38 @@ export default {
       }
     },
     async fetchPostDetail() {
-      const postId = this.$route.params.id;
-      try {
-        const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/community-service/post/detail/${postId}`);
-        this.postDetail = response.data.result;
+  const postId = this.$route.params.id;
+  try {
+    const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/community-service/post/detail/${postId}`);
+    this.postDetail = response.data.result;
+    console.log(response.data.result);
 
-        // 댓글 및 대댓글 초기화
-        this.postDetail.comments.forEach(comment => {
-          comment.showTextarea = false;  // this.$set 대신 이렇게 사용
-          comment.newComment = '';        // this.$set 대신 이렇게 사용
-          comment.replies = [];           // this.$set 대신 이렇게 사용
-        });
+    // 댓글 및 대댓글 초기화
+    this.postDetail.comments.forEach(comment => {
+      comment.showTextarea = false;
+      comment.newComment = '';
+      comment.replies = [];
+    });
 
-        // 대댓글 구조화
-        this.postDetail.comments.forEach(comment => {
-          if (comment.parentId) {
-            const parentComment = this.postDetail.comments.find(c => c.id === comment.parentId);
-            if (parentComment) {
-              parentComment.replies.push(comment);
-            }
-          }
-        });
-
-        // 부모 댓글만 필터링하고 정렬
-        this.postDetail.comments = this.postDetail.comments.filter(comment => !comment.parentId);
-        this.postDetail.comments.sort((a, b) => new Date(a.createdTimeAt) - new Date(b.createdTimeAt));
-
-      } catch (error) {
-        console.error("게시글 정보를 불러오는 중 오류가 발생했습니다.", error);
-        this.error = error.response ? error.response.data.message : '게시글 정보를 불러오는 중 오류가 발생했습니다.';
+    // 대댓글 구조화
+    this.postDetail.comments.forEach(comment => {
+      if (comment.parentId) {
+        const parentComment = this.postDetail.comments.find(c => c.id === comment.parentId);
+        if (parentComment) {
+          parentComment.replies.push(comment);
+        }
       }
-    },
+    });
+
+    // 부모 댓글만 필터링하고 정렬
+    this.postDetail.comments = this.postDetail.comments.filter(comment => !comment.parentId);
+    this.postDetail.comments.sort((a, b) => new Date(a.createdTimeAt) - new Date(b.createdTimeAt));
+
+  } catch (error) {
+    console.error("게시글 정보를 불러오는 중 오류가 발생했습니다.", error);
+    this.error = error.response ? error.response.data.message : '게시글 정보를 불러오는 중 오류가 발생했습니다.';
+  }
+},
     async submitPostComment() {
       const postId = this.$route.params.id;
       try {
