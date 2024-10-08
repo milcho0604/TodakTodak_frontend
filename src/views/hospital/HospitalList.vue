@@ -70,8 +70,49 @@
             <v-chip value="신속항원" size="large" filter>신속항원</v-chip>
         </v-chip-group>
 
-        <v-spacer></v-spacer>
+        <v-spacer :style="{ height: '20px' }"></v-spacer>
         <!-- 병원리스트 -->
+         <v-card
+            style="width: 1000px;"
+            variant="outlined"
+            class="custom-card"
+         >
+            <div class="d-flex flex-no-wrap">
+                <v-avatar
+                  class="ma-5"
+                  style="height:150px; width:200px; border-radius: 10px; object-fit:cover;"
+                >
+                  <v-img :src=hospital[0].hospitalImageUrl />
+        
+                </v-avatar>
+
+                <div>
+                    <!-- 이름과 평점을 한 줄에 배치 -->
+                    <div class="d-flex flex-row align-center">
+                      <v-card-title class="mt-2 ml-n4 custom-card-title">
+                        {{ hospital[0].name }}
+                      </v-card-title>
+                      <v-card-text class="rating-text mt-5 ml-n7">
+                        <v-icon color="#00499E">mdi-star</v-icon>
+                        {{ hospital[0].averageRating }} ({{ hospital[0].reviewCount }})
+                      </v-card-text>
+                    </div>
+
+                    <div class="d-flex flex-row align-center">
+                        <v-text class="ml-1">
+                            {{ hospital[0].todaySchedule }}
+                        </v-text>
+                        <v-text class="ml-3 distance-text">
+                            {{ hospital[0].distance }}
+                        </v-text>
+                    </div>
+
+                </div>
+            </div>
+
+
+         </v-card>
+
 
     </v-container>
 </template>
@@ -89,8 +130,25 @@ export default{
             { text: "별점 순", value: "rating" },    // 서버로 넘길 값: rating
             { text: "리뷰 순", value: "review" }     // 서버로 넘길 값: review
         ], // 정렬 옵션
-        selectedTag: "전체"
-
+        selectedTag: "전체",
+        hospitalList:[], // 병원리스트
+        // 예시데이터
+        hospital:[{
+            id:'1', // 병원 id
+            standby: '5', // 실시간 대기인원
+            distance: '252m', // 내위치 ~ 병원 직선거리
+            name: '서초아이 소아청소년과의원', // 병원이름
+            hospitalImageUrl :'https://todak-file.s3.ap-northeast-2.amazonaws.com/default-images/hospital-example-image.png',
+            address: '서울 강남구 삼성로14 (개포자이 프레지던스) 자이스퀘어 상가 216호', // 병원주소
+            dong: '방배동', // 병원주소(동)
+            keywords: '전문의, 주차장, 예방접종', // 병원 keywords
+            dayOfWeek: '화요일', // 요일
+            openTime: '08:30', // 영업시작 시각
+            closeTime: '19:00', // 영업종료 시각
+            todaySchedule: '화요일 08:30 ~ 19:00', // 오늘 영업시간(최종)
+            averageRating: '4.5', // 병원 평균평점
+            reviewCount: '32' // 병원리뷰개수
+        }]
       }
     },
     created() {
@@ -110,5 +168,31 @@ export default{
 </script>
 
 <style scoped>
-
+.custom-card {
+    border: 2px solid #DBDBDB; /* 테두리 색상만 변경 */
+    border-radius: 10px; /* 모서리 둥글기 */
+    background-color: white !important; /* 카드 내부 배경색 고정 */
+  }
+/* v-avatar border-radius */
+.custom-avatar {
+    border-radius: 10px; /* Avatar에 10px 둥글기 적용 */
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  
+/* v-card-title 폰트 스타일 */
+.custom-card-title {
+    font-weight: bold; /* 글씨 굵게 */
+    font-size: 23px; /* 원하는 폰트 크기 설정 */
+}
+.rating-text{
+    font-weight: bold;
+    color: #00499E
+}
+.distance-text{
+    font-weight: bold;
+    color: #0066FF;
+    font-size: 17px;
+}
 </style>
