@@ -5,5 +5,5 @@ export const hospitalRouter = [
         path: '/hospital/list',
         name: 'HospitalList',
         component: HospitalList
-    }
+    },
 ]
