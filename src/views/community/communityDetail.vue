@@ -95,59 +95,75 @@
           <h4 class="text-h6 font-weight-bold">댓글</h4>
           <v-list>
             <v-list-item v-for="comment in postDetail.comments" :key="comment.id" class="py-2" style="padding: 10px;">
-              <v-card :style="{ backgroundColor: comment.memberEmail === currentUserEmail ? '#F9F9F9' : '#ECF2FE', padding: '10px 0px 10px 18px' }" class="mb-2" outlined>
+              <v-card :style="{ backgroundColor: comment.memberEmail === currentUserEmail ? '#F9F9F9' : '#ECF2FE', padding: '10px 5px 10px 25px' }" class="mb-2" outlined>
                 <v-card-text>
                   <div class="d-flex justify-space-between align-center">
                     <div style="flex: 9;">
                       <div class="comment-text">
-                        <v-list-item-title class="text-subtitle-1" style="font-weight: bold; font-size: 20px !important; margin-bottom: 8px;">{{ comment.name }}</v-list-item-title>
-                        <v-list-item-subtitle style="font-size: 18px; margin-bottom: 8px;">{{ comment.content }}</v-list-item-subtitle>
+                        <v-list-item-title class="text-subtitle-1" style="font-weight: bold; font-size: 20px !important; margin-bottom: 8px;">
+                          {{ comment.name }}
+                        </v-list-item-title>
+                        <v-list-item-subtitle style="font-size: 18px; margin-bottom: 8px;">
+                          <span v-if="!comment.isEditing">{{ comment.content }}</span>
+                          <span v-else>
+                            <v-textarea
+                              v-model="comment.editContent"
+                              label="수정할 댓글을 입력해주세요"
+                              outlined
+                              required
+                            ></v-textarea>
+                          </span>
+                        </v-list-item-subtitle>
                         <v-list-item-subtitle>{{ formatDate(comment.createdTimeAt) }}</v-list-item-subtitle>
                       </div>                      
                     </div>
                     <div style="flex: 2.5;" class="d-flex align-center">
                       <span 
-                        v-if="comment.doctorEmail === currentUserEmail" 
-                        @click="edit" 
+                        v-if="comment.doctorEmail === currentUserEmail && !comment.isEditing" 
+                        @click="startEditComment(comment)" 
                         class="d-flex align-center action-link"
                       >
-                        <v-icon small>mdi-pencil</v-icon> 수정&nbsp;
+                        <v-icon small>mdi-pencil</v-icon> 수정&nbsp;&nbsp;
                       </span>
                       <span 
-                        v-else 
+                        v-if="comment.doctorEmail === currentUserEmail && comment.isEditing" 
+                        @click="updateComment(comment)" 
                         class="d-flex align-center action-link"
-                        style="visibility: hidden; width: 50px;" 
                       >
-                        <v-icon small>mdi-pencil</v-icon> 
+                        <v-icon small>mdi-pencil</v-icon> 수정하기
                       </span>
-          
+                      
                       <span 
                         v-if="comment.doctorEmail === currentUserEmail" 
                         @click="deleteComment(comment)" 
                         class="d-flex align-center action-link"
                       >
-                        <v-icon small>mdi-trash-can-outline</v-icon> 삭제&nbsp;
+                        <v-icon small>mdi-trash-can-outline</v-icon> 삭제
                       </span>
-                      <span 
-                        v-else 
-                        class="d-flex align-center action-link"
-                        style="visibility: hidden; width: 50px;" 
-                      >
-                        <v-icon small>mdi-trash-can-outline</v-icon>
-                      </span>
-          
-                      <span @click="openReportModal('comment', comment)" class="d-flex align-center action-link mr-2">
+                    
+                      <!-- 신고 버튼은 항상 보이도록 -->
+                      <span @click="openReportModal('comment', comment)" class="d-flex align-center action-link mr-2" 
+                            style="margin-left: auto;">
                         <v-icon small>mdi-alarm-light-outline</v-icon> 신고
                       </span>
-                    </div>                    
+                    </div>
+                                      
                   </div>
                 </v-card-text>
+                <v-card-actions v-if="comment.isEditing">
+                  <span 
+                    @click="updateComment(comment)" 
+                    class="d-flex align-center action-link"
+                    style="cursor: pointer;"
+                  >
+                    <v-icon small>mdi-pencil</v-icon> 수정하기
+                  </span>
+                </v-card-actions>
                 <v-card-actions>
                   <span @click="comment.showTextarea = !comment.showTextarea" class="d-flex align-center action-link mr-2">
                     <v-icon small>mdi-comment-outline</v-icon>&nbsp;댓글달기
                   </span>
                 </v-card-actions>
-          
                 <v-form v-if="comment.showTextarea" @submit.prevent="submitComment(comment)">
                   <v-textarea
                     v-model="comment.newComment"
@@ -164,50 +180,40 @@
                   </span>
                 </v-form>
               </v-card>
-          
               <!-- 대댓글 표시 -->
               <v-list v-if="comment.replies && comment.replies.length" class="ml-4">
-                <v-list-item v-for="reply in comment.replies" :key="reply.id" style="padding: 1px 0;">
-                  <v-card class="mb-2 enlarged-reply-card" outlined :style="{ padding: '10px 0px 10px 18px' }">
+                <v-list-item v-for="reply in comment.replies" :key="reply.id">
+                  <v-card :style=" {padding: '10px 5px 10px 25px'}" class="mb-2 enlarged-reply-card" outlined>
                     <v-card-text>
                       <div class="d-flex justify-space-between align-center">
                         <div style="flex: 9;">
                           <div class="comment-text">
-                            <v-list-item-title class="text-subtitle-1" style="font-weight: bold; font-size: 18px !important;">
-                              <v-icon small>mdi-arrow-right-bottom</v-icon>&nbsp;{{ reply.name }}
-                            </v-list-item-title>
-                            <v-list-item-subtitle style="font-size: 16px; margin-bottom: 8px;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ reply.content }}</v-list-item-subtitle>
+                            <v-list-item-title class="text-subtitle-1"> <v-icon small>mdi-arrow-right-bottom</v-icon>&nbsp;{{ reply.name }}</v-list-item-title>
+                            <v-list-item-subtitle>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ reply.content }}</v-list-item-subtitle>
                             <v-list-item-subtitle>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ formatDate(reply.createdTimeAt) }}</v-list-item-subtitle>
                           </div>
                         </div>
                         <div style="flex: 1.7;" class="d-flex align-center">
-                          <span 
-                            v-if="reply.doctorEmail === currentUserEmail" 
-                            @click="deleteReply(reply)" 
-                            class="d-flex align-center action-link"
-                          >
+                          <span v-if="reply.doctorEmail === currentUserEmail" @click="deleteReply(reply)" class="d-flex align-center action-link">
                             <v-icon small>mdi-trash-can-outline</v-icon> 삭제 &nbsp;
-                          </span>  
-                          <span 
-                            v-else 
-                            class="d-flex align-center action-link"
-                            style="visibility: hidden; width: 50px;"
-                          >
-                            <v-icon small>mdi-trash-can-outline</v-icon>
                           </span>
-          
-                          <span @click="openReportModal('reply', reply)" class="d-flex align-center action-link">
+                          <span class="d-flex align-center action-link" 
+                                :style="{ visibility: reply.doctorEmail === currentUserEmail ? 'visible' : 'hidden' }">
+                            <v-icon small>mdi-alarm-light-outline</v-icon> 신고
+                          </span>
+                          <span v-if="reply.doctorEmail !== currentUserEmail" @click="openReportModal('reply', reply)" class="d-flex align-center action-link mr-2">
                             <v-icon>mdi-alarm-light-outline</v-icon> 신고
-                          </span>                     
-                        </div>
+                          </span>
+                        </div>                        
                       </div>
                     </v-card-text>
                   </v-card>                  
                 </v-list-item>
-              </v-list>              
-            </v-list-item>                
+              </v-list>
+            </v-list-item>                            
           </v-list>          
         </v-col>
+        
       </v-row>
     </v-card>
 
@@ -384,6 +390,24 @@ export default {
     closeReportModal() {
       this.showReportModal = false;
     },
+    startEditComment(comment) {
+    comment.isEditing = true;
+    comment.editContent = comment.content; // 현재 내용을 editContent에 복사
+  },
+  async updateComment(comment) {
+    try {
+      await axios.post(`${process.env.VUE_APP_API_BASE_URL}/community-service/comment/update/${comment.id}`, {
+        content: comment.editContent // 수정된 내용을 전송
+      });
+      comment.content = comment.editContent; // 댓글 내용을 업데이트
+      comment.isEditing = false; // 수정 모드 종료
+    } catch (error) {
+      console.error("댓글 수정에 실패했습니다.", error);
+      this.error = '댓글 수정에 실패했습니다.';
+    }
+  },
+
+
   },
 };
 </script>
