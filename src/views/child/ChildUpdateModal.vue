@@ -122,6 +122,7 @@ export default {
                 } else {
                     alert(response.data.message);  // 서버에서 전달한 메시지 출력
                 }
+                this.closeModal();
             } catch (error) {
                 console.error('자녀 정보 수정 중 오류 발생:', error);
                 alert('자녀 정보 수정에 실패했습니다.');
