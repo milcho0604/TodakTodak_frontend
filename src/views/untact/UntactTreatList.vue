@@ -59,9 +59,9 @@
 export default {
     data() {
         return {
-            selectedCity: "전체선택", // 기본 값
+            selectedCity: "토닥구", // 기본 값
             isDropdownOpen: false,
-            cities: ["전체선택", "강남구", "강동구", "강서구", "강북구", "관악구", "광진구", "구로구", "금천구", "노원구", "동대문구", "도봉구", "동작구", "마포구", "서대문구", "성동구", "성북구", "서초구", "송파구", "영등포구", "용산구", "양천구", "은평구", "종로구", "중구", "중랑구"], // city 배열
+            cities: ["강남구", "강동구", "강서구", "강북구", "관악구", "광진구", "구로구", "금천구", "노원구", "동대문구", "도봉구", "동작구", "마포구", "서대문구", "성동구", "성북구", "서초구", "송파구", "영등포구", "용산구", "양천구", "은평구", "종로구", "중구", "중랑구"], // city 배열
             searchQuery: '', // 검색어 저장 변수
             sortOrder: 'popular', // 정렬 기준
             doctorList: [
@@ -105,7 +105,7 @@ export default {
                     rating: 2.8,
                     waiting: 0,
                     treat: 2,
-                    cities: "강북구",
+                    cities: "강남구",
                     untact: "Friday",
                     image: "https://todak-file.s3.amazonaws.com/d278dfb1-9275-41ad-8b86-f7a0a904892b_IMG_8641.JPG"
                 },
@@ -117,14 +117,9 @@ export default {
             const query = this.searchQuery.toLowerCase();
             const today = this.getToday(); // 현재 요일 가져오기
             return this.doctorList.filter(doctor => {
-                const matchesQuery = doctor.name.toLowerCase().includes(query) || doctor.hospital.toLowerCase().includes(query);
-                const matchesUntact = doctor.untact === today;
-
-                if (this.selectedCity === "전체선택") {
-                    return matchesQuery && matchesUntact; // 전체 선택일 때는 모든 의사
-                } else {
-                    return matchesQuery && matchesUntact && (doctor.cities === this.selectedCity); // 선택된 구와 일치하는 의사 필터링
-                }
+                return (doctor.name.toLowerCase().includes(query) ||
+                        doctor.hospital.toLowerCase().includes(query)) &&
+                       (doctor.untact === today); // 현재 요일과 일치하는 의사 필터링
             });
         },
         sortedDoctorList() {

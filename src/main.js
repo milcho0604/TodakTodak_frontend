@@ -7,6 +7,9 @@ import axios from 'axios';
 // import '@/assets/css/font.css';
 // import store from './store/index.js';
 import mitt from 'mitt';
+// main.js
+import 'bootstrap/dist/css/bootstrap.min.css';
+import 'bootstrap';
 
 
 const app = createApp(App);

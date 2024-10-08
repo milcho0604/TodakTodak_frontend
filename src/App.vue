@@ -99,19 +99,27 @@ export default {
           //   vapidKey: 'BHg-Nt-RVggJCTjYQlB-5hThEnYJwUb5SAyjtyaXaFPI4k5JURI0hXSsXGD0IRFr8lSWX8JJY7kyLpGQlylXQw4'
           // });
           
-      
-      
-    onMessage(messaging, (payload) => {
-      console.log("Recived message ", payload);
-      const notificationTitle = payload.notification.title;
-      const notificationOptions = {
-        body: payload.notification.body,
-        icon: "favicon.ico"
-      };
-      if(Notification.permission === "granted"){
-        new Notification(notificationTitle, notificationOptions);
+      onMessage(messaging, (payload) => {
+        console.log("Received message ", payload);
+        const notificationTitle = payload.notification.title;
+        const notificationOptions = {
+          body: payload.notification.body,
+          icon: "favicon.ico",
+          data: payload.data, // URL을 포함하는 data 필드
+        };
+
+      if (Notification.permission === "granted") {
+        const notification = new Notification(notificationTitle, notificationOptions);
+
+        notification.onclick = (event) => {
+          event.preventDefault(); // 기본 동작 방지
+          const url = payload.data.url; // data에서 URL 추출
+          if (url) {
+            window.open(url, '_blank'); // URL로 이동
+          }
+        };
       }
-    });
+      }); 
     },
     //fcmToken이 localStorage에 생길때까지 대기
     waitForToken(){
