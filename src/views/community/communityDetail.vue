@@ -31,10 +31,15 @@
               삭제&nbsp;&nbsp; 
             </span>
           </template>
-          <span @click="openReportModal" class="d-flex align-center action-link">
+          <span @click="openReportModal('post', post)" class="d-flex align-center action-link">
             <v-icon small>mdi-alarm-light-outline</v-icon>
             &nbsp;신고
           </span>
+          <ReportPost
+            v-if="showReportPostModal"
+            :postId="reportData.postId"
+            @close="closeReportPostModal"
+            />
         </v-col>
       </div>
 
@@ -146,11 +151,13 @@
                             style="margin-left: auto;">
                         <v-icon small>mdi-alarm-light-outline</v-icon> 신고
                       </span>
-                      <ReportCreate
-                        v-if="showReportModal"
+                      <ReportComment
+                        v-if="showReportCommentModal"
                         :postId="reportData.postId"
-                        :commentId="reportData.commentId"
-                        @close="closeReportModal"
+                        :commentId="comment.commentId"
+                        :reportedEmail="comment.doctorEmail"
+                        :comments="postDetail.comments"
+                        @close="closeReportCommentModal"
                       />
                     </div>                
                   </div>
@@ -209,6 +216,12 @@
                           <span v-if="reply.doctorEmail !== currentUserEmail" @click="openReportModal('reply', reply)" class="d-flex align-center action-link mr-2">
                             <v-icon>mdi-alarm-light-outline</v-icon> 신고
                           </span>
+                          <ReportComment
+                            v-if="showReportCommentModal"
+                            :postId="reportData.postId"
+                            :commentId="reportData.commentId"
+                            @close="closeReportCommentModal"
+                             />
                         </div>                        
                       </div>
                     </v-card-text>
@@ -221,67 +234,58 @@
       </v-row>
     </v-card>
     <v-alert type="error" v-if="error">{{ error }}</v-alert>
-    <ReportCreate v-if="showReportModal" :postId="reportData.postId" :commentId="reportData.commentId" @close="closeReportModal" />
   </v-container>
 </template>
 
 
 <script>
 import axios from 'axios';
-import ReportCreate from '@/views/community/ReportCreate.vue';
+import ReportPost from './ReportPost.vue';
+import ReportComment from './ReportComment.vue';
 
 export default {
   components: {
-    ReportCreate,
+    ReportPost,
+    ReportComment,
   },
   data() {
     return {
       postDetail: null,
       error: null,
-      showReportModal: false,
+      showReportPostModal: false,
+      showReportCommentModal: false,
       reportData: {},
       newPostComment: '',
       showCommentTextarea: false,
-      liked: false, //좋아요 상태
+      liked: false, // 좋아요 상태
     };
   },
   created() {
     this.fetchPostDetail();
   },
   mounted() {
-  this.currentUserEmail = localStorage.getItem('email');
-  this.fetchPostDetail();
+    this.currentUserEmail = localStorage.getItem('email');
   },
   methods: {
     edit() {
       this.$router.push(`/update/${this.postDetail.id}`);
     },
     async toggleLike() {
-  const postId = this.postDetail.id;
-  try {
-    if (this.liked) {
-      // 좋아요 취소 요청
-      await axios.post(`${process.env.VUE_APP_API_BASE_URL}/community-service/post/detail/unlike/${postId}`);
-      this.postDetail.likeCount--; // 좋아요 개수 감소
-    } else {
-      // 좋아요 요청
-      await axios.post(`${process.env.VUE_APP_API_BASE_URL}/community-service/post/detail/like/${postId}`);
-      this.postDetail.likeCount++; // 좋아요 개수 증가
-    }
-    this.liked = !this.liked; // 좋아요 상태 토글
-  } catch (error) {
-    console.error("좋아요 토글 중 오류가 발생했습니다.", error);
-    this.error = '좋아요 토글에 실패했습니다.';
-  }
-},
-
+      const postId = this.postDetail.id;
+      try {
+        const action = this.liked ? 'unlike' : 'like';
+        await axios.post(`${process.env.VUE_APP_API_BASE_URL}/community-service/post/detail/${action}/${postId}`);
+        this.postDetail.likeCount += this.liked ? -1 : 1;
+        this.liked = !this.liked;
+      } catch (error) {
+        console.error("좋아요 토글 중 오류가 발생했습니다.", error);
+        this.error = '좋아요 토글에 실패했습니다.';
+      }
+    },
     deletePost() {
-      const confirmed = confirm("게시글을 정말 삭제하시겠습니까?");
-      if (confirmed) {
+      if (confirm("게시글을 정말 삭제하시겠습니까?")) {
         axios.post(`${process.env.VUE_APP_API_BASE_URL}/community-service/post/delete/${this.postDetail.id}`)
-          .then(() => {
-            this.$router.push('/community/list');
-          })
+          .then(() => this.$router.push('/community/list'))
           .catch(error => {
             console.error("게시글 삭제에 실패했습니다.", error);
             this.error = '게시글 삭제에 실패했습니다.';
@@ -289,11 +293,10 @@ export default {
       }
     },
     async deleteReply(reply) {
-      const confirmed = confirm("대댓글을 정말 삭제하시겠습니까?");
-      if (confirmed) {
+      if (confirm("대댓글을 정말 삭제하시겠습니까?")) {
         try {
           await axios.post(`${process.env.VUE_APP_API_BASE_URL}/community-service/comment/delete/${reply.id}`);
-          this.fetchPostDetail(); // 삭제 후 게시글 상세 다시 가져오기
+          this.fetchPostDetail();
         } catch (error) {
           console.error("대댓글 삭제에 실패했습니다.", error);
           this.error = '대댓글 삭제에 실패했습니다.';
@@ -301,38 +304,36 @@ export default {
       }
     },
     async fetchPostDetail() {
-  const postId = this.$route.params.id;
-  try {
-    const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/community-service/post/detail/${postId}`);
-    this.postDetail = response.data.result;
-    console.log(response.data.result);
+      const postId = this.$route.params.id;
+      try {
+        const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/community-service/post/detail/${postId}`);
+        this.postDetail = response.data.result;
 
-    // 댓글 및 대댓글 초기화
-    this.postDetail.comments.forEach(comment => {
-      comment.showTextarea = false;
-      comment.newComment = '';
-      comment.replies = [];
-    });
+        // 댓글 및 대댓글 초기화
+        this.postDetail.comments.forEach(comment => {
+          comment.showTextarea = false;
+          comment.newComment = '';
+          comment.replies = [];
+        });
 
-    // 대댓글 구조화
-    this.postDetail.comments.forEach(comment => {
-      if (comment.parentId) {
-        const parentComment = this.postDetail.comments.find(c => c.id === comment.parentId);
-        if (parentComment) {
-          parentComment.replies.push(comment);
-        }
+        // 대댓글 구조화
+        this.postDetail.comments.forEach(comment => {
+          if (comment.parentId) {
+            const parentComment = this.postDetail.comments.find(c => c.id === comment.parentId);
+            if (parentComment) {
+              parentComment.replies.push(comment);
+            }
+          }
+        });
+
+        // 부모 댓글만 필터링하고 정렬
+        this.postDetail.comments = this.postDetail.comments.filter(comment => !comment.parentId);
+        this.postDetail.comments.sort((a, b) => new Date(a.createdTimeAt) - new Date(b.createdTimeAt));
+      } catch (error) {
+        console.error("게시글 정보를 불러오는 중 오류가 발생했습니다.", error);
+        this.error = error.response ? error.response.data.message : '게시글 정보를 불러오는 중 오류가 발생했습니다.';
       }
-    });
-
-    // 부모 댓글만 필터링하고 정렬
-    this.postDetail.comments = this.postDetail.comments.filter(comment => !comment.parentId);
-    this.postDetail.comments.sort((a, b) => new Date(a.createdTimeAt) - new Date(b.createdTimeAt));
-
-  } catch (error) {
-    console.error("게시글 정보를 불러오는 중 오류가 발생했습니다.", error);
-    this.error = error.response ? error.response.data.message : '게시글 정보를 불러오는 중 오류가 발생했습니다.';
-  }
-},
+    },
     async submitPostComment() {
       const postId = this.$route.params.id;
       try {
@@ -350,12 +351,11 @@ export default {
     },
     async submitComment(comment) {
       const postId = this.$route.params.id;
-
       try {
         await axios.post(`${process.env.VUE_APP_API_BASE_URL}/community-service/comment/create`, {
           content: comment.newComment,
           postId: postId,
-          parentId: comment.id, // 대댓글을 위한 부모 댓글 ID
+          parentId: comment.id,
         });
         comment.newComment = '';
         this.fetchPostDetail();
@@ -364,57 +364,42 @@ export default {
       }
     },
     async deleteComment(comment) {
-      const confirmed = confirm("댓글을 정말 삭제하시겠습니까?");
-      if (confirmed) {
+      if (confirm("댓글을 정말 삭제하시겠습니까?")) {
         try {
           await axios.post(`${process.env.VUE_APP_API_BASE_URL}/community-service/comment/delete/${comment.id}`);
-          this.fetchPostDetail(); // 삭제 후 게시글 상세 다시 가져오기
+          this.fetchPostDetail();
         } catch (error) {
           console.error("댓글 삭제에 실패했습니다.", error);
           this.error = '댓글 삭제에 실패했습니다.';
         }
       }
     },
-    getParentComment(parentId) {
-      return this.postDetail.comments.find(comment => comment.id === parentId);
+    openReportModal(type, comment = null) {
+      this.reportData = {
+        postId: this.postDetail.id,
+        commentId: comment ? comment.id : null,
+      };
+      if (type === 'post') {
+        this.showReportPostModal = true;
+      } else if (type === 'comment') {
+        this.showReportCommentModal = true;
+      }
+    },
+    closeReportPostModal() {
+      this.showReportPostModal = false;
+    },
+    closeReportCommentModal() {
+      this.showReportCommentModal = false;
     },
     formatDate(date) {
       if (!date) return '';
       const options = { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' };
       return new Date(date).toLocaleDateString('ko-KR', options);
     },
-    openReportModal(type, comment = null) {
-      console.log('신고 모달 열기: ', type, comment)
-      this.reportData = {
-        postId: this.postDetail.id,
-        commentId: comment ? comment.id : null,
-      };
-      this.showReportModal = true;
-    },
-    closeReportModal() {
-      this.showReportModal = false;
-    },
-    startEditComment(comment) {
-    comment.isEditing = true;
-    comment.editContent = comment.content; // 현재 내용을 editContent에 복사
-  },
-  async updateComment(comment) {
-    try {
-      await axios.post(`${process.env.VUE_APP_API_BASE_URL}/community-service/comment/update/${comment.id}`, {
-        content: comment.editContent // 수정된 내용을 전송
-      });
-      comment.content = comment.editContent; // 댓글 내용을 업데이트
-      comment.isEditing = false; // 수정 모드 종료
-    } catch (error) {
-      console.error("댓글 수정에 실패했습니다.", error);
-      this.error = '댓글 수정에 실패했습니다.';
-    }
-  },
-
-
   },
 };
 </script>
+
 
 <style scoped>
 .v-container {
