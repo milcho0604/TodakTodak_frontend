@@ -1,19 +1,21 @@
 <template>
   <v-container class="mt-5">
-    <v-row>
-      <v-col cols="12">
-        <div class="d-flex align-center">
-          <v-img
-            :src="require('@/assets/community.png')"
-            alt="Community Icon"
-            height="50px"
-            class="mb-0"
-            style="margin-right: 0;"
-          ></v-img>
-          <v-col class="inter-bold title">의사 Q&A</v-col>
-        </div>
+    <v-row align="center">
+      <v-col cols="6" class="d-flex justify-end">
+        <v-img
+          :src="require('@/assets/community.png')"
+          alt="Community Icon"
+          height="50px"
+        ></v-img>
+      </v-col>
+      <v-col cols="6" class="d-flex align-center">
+        <span class="inter-bold title" style="line-height: 50px;">의사 Q&A</span>
       </v-col>
     </v-row>
+    
+    
+    
+    
 
     <v-card class="pa-5" v-if="postDetail">
       <div class="d-flex justify-space-between align-center mb-3">
@@ -23,13 +25,20 @@
         </v-divider>
 
         <v-col class="d-flex justify-end" style="flex-grow: 1;">
-          <span @click="edit" class="d-flex align-center action-link mr-2">
-            <v-icon small>mdi-pencil</v-icon>
-            수정
-          </span>
-          <span @click="deletePost" class="d-flex align-center action-link">
-            <v-icon small>mdi-trash-can-outline</v-icon>
-            삭제
+          <!-- 로그인한 사용자의 이메일을 가져옵니다. -->
+          <template v-if="currentUserEmail === postDetail.memberEmail">
+            <span @click="edit" class="d-flex align-center action-link mr-2">
+              <v-icon small>mdi-pencil</v-icon>
+              수정
+            </span>
+            <span @click="deletePost" class="d-flex align-center action-link">
+              <v-icon small>mdi-trash-can-outline</v-icon>
+              삭제&nbsp;&nbsp; 
+            </span>
+          </template>
+          <span @click="openReportModal" class="d-flex align-center action-link">
+            <v-icon small>mdi-alarm-light-outline</v-icon>
+            &nbsp;신고
           </span>
         </v-col>
       </div>
@@ -39,8 +48,8 @@
           <v-card flat class="pa-0">
             <v-card-text>
               <div>
-                <v-list-item-title class="text-subtitle-1" style="font-weight: bold; font-size: 20px !important;">{{ postDetail.title }}</v-list-item-title>
-                <v-list-item-subtitle style="font-size:17px;">{{ postDetail.content }}</v-list-item-subtitle>
+                <v-list-item-title class="text-subtitle-1" style="font-weight: bold; font-size: 30px !important; margin-bottom: 10px;">{{ postDetail.title }}</v-list-item-title>
+                <v-list-item-subtitle style="font-size:20px; margin-bottom: 10px; line-height: 1.5;">{{ postDetail.content }}</v-list-item-subtitle>
               </div>
             </v-card-text>
             <div class="image-container">
@@ -90,35 +99,60 @@
         <v-col cols="12">
           <h4 class="text-h6 font-weight-bold">댓글</h4>
           <v-list>
-            <v-list-item v-for="comment in postDetail.comments" :key="comment.id" class="py-2">
-              <v-card :style="{ backgroundColor: comment.memberEmail === currentUserEmail ? '#F9F9F9' : '#ECF2FE' }" class="mb-2" outlined>
+            <v-list-item v-for="comment in postDetail.comments" :key="comment.id" class="py-2" style="padding: 10px;">
+              <v-card :style="{ backgroundColor: comment.memberEmail === currentUserEmail ? '#F9F9F9' : '#ECF2FE', padding: '10px 0px 10px 18px' }" class="mb-2" outlined>
                 <v-card-text>
                   <div class="d-flex justify-space-between align-center">
                     <div style="flex: 9;">
                       <div class="comment-text">
-                        <v-list-item-title class="text-subtitle-1" style="font-weight: bold; font-size: 20px !important;">{{ comment.name }}</v-list-item-title>
-                        <v-list-item-subtitle style="font-size:18px;">{{ comment.content }}</v-list-item-subtitle>
+                        <v-list-item-title class="text-subtitle-1" style="font-weight: bold; font-size: 20px !important; margin-bottom: 8px;">{{ comment.name }}</v-list-item-title>
+                        <v-list-item-subtitle style="font-size: 18px; margin-bottom: 8px;">{{ comment.content }}</v-list-item-subtitle>
                         <v-list-item-subtitle>{{ formatDate(comment.createdTimeAt) }}</v-list-item-subtitle>
-                      </div>
+                      </div>                      
                     </div>
-                    <div style="flex: 1;" class="d-flex align-center">
-                      <span @click="openReportModal('comment', comment)" class="d-flex align-center action-link mr-2">
-                        <v-icon>mdi-bullhorn-variant-outline</v-icon>
+                    <div style="flex: 2.5;" class="d-flex align-center">
+                      <span 
+                        v-if="comment.doctorEmail === currentUserEmail" 
+                        @click="edit" 
+                        class="d-flex align-center action-link"
+                      >
+                        <v-icon small>mdi-pencil</v-icon> 수정&nbsp;
                       </span>
-                      <span v-if="comment.doctorEmail === currentUserEmail" @click="deleteComment(comment)" class="d-flex align-center action-link">
+                      <span 
+                        v-else 
+                        class="d-flex align-center action-link"
+                        style="visibility: hidden; width: 50px;" 
+                      >
+                        <v-icon small>mdi-pencil</v-icon> 
+                      </span>
+          
+                      <span 
+                        v-if="comment.doctorEmail === currentUserEmail" 
+                        @click="deleteComment(comment)" 
+                        class="d-flex align-center action-link"
+                      >
+                        <v-icon small>mdi-trash-can-outline</v-icon> 삭제&nbsp;
+                      </span>
+                      <span 
+                        v-else 
+                        class="d-flex align-center action-link"
+                        style="visibility: hidden; width: 50px;" 
+                      >
                         <v-icon small>mdi-trash-can-outline</v-icon>
                       </span>
-                      
-                    </div>
+          
+                      <span @click="openReportModal('comment', comment)" class="d-flex align-center action-link mr-2">
+                        <v-icon small>mdi-alarm-light-outline</v-icon> 신고
+                      </span>
+                    </div>                    
                   </div>
                 </v-card-text>
-
                 <v-card-actions>
                   <span @click="comment.showTextarea = !comment.showTextarea" class="d-flex align-center action-link mr-2">
                     <v-icon small>mdi-comment-outline</v-icon>&nbsp;댓글달기
                   </span>
                 </v-card-actions>
-
+          
                 <v-form v-if="comment.showTextarea" @submit.prevent="submitComment(comment)">
                   <v-textarea
                     v-model="comment.newComment"
@@ -135,35 +169,49 @@
                   </span>
                 </v-form>
               </v-card>
-
+          
               <!-- 대댓글 표시 -->
               <v-list v-if="comment.replies && comment.replies.length" class="ml-4">
-                <v-list-item v-for="reply in comment.replies" :key="reply.id">
-                  <v-card class="mb-2 enlarged-reply-card" outlined>
+                <v-list-item v-for="reply in comment.replies" :key="reply.id" style="padding: 1px 0;">
+                  <v-card class="mb-2 enlarged-reply-card" outlined :style="{ padding: '10px 0px 10px 18px' }">
                     <v-card-text>
                       <div class="d-flex justify-space-between align-center">
                         <div style="flex: 9;">
                           <div class="comment-text">
-                            <v-list-item-title class="text-subtitle-1"> <v-icon small>mdi-arrow-right-bottom</v-icon>&nbsp;{{ reply.name }}</v-list-item-title>
-                            <v-list-item-subtitle>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ reply.content }}</v-list-item-subtitle>
+                            <v-list-item-title class="text-subtitle-1" style="font-weight: bold; font-size: 18px !important;">
+                              <v-icon small>mdi-arrow-right-bottom</v-icon>&nbsp;{{ reply.name }}
+                            </v-list-item-title>
+                            <v-list-item-subtitle style="font-size: 16px; margin-bottom: 8px;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ reply.content }}</v-list-item-subtitle>
                             <v-list-item-subtitle>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ formatDate(reply.createdTimeAt) }}</v-list-item-subtitle>
                           </div>
                         </div>
-                        <div style="flex: 1;" class="d-flex align-center">
-                          <span @click="openReportModal('reply', reply)" class="d-flex align-center action-link mr-2">
-                            <v-icon>mdi-bullhorn-variant-outline</v-icon>
-                          </span>
-                          <span v-if="reply.doctorEmail === currentUserEmail" @click="deleteReply(reply)" class="d-flex align-center action-link">
+                        <div style="flex: 1.7;" class="d-flex align-center">
+                          <span 
+                            v-if="reply.doctorEmail === currentUserEmail" 
+                            @click="deleteReply(reply)" 
+                            class="d-flex align-center action-link"
+                          >
+                            <v-icon small>mdi-trash-can-outline</v-icon> 삭제 &nbsp;
+                          </span>  
+                          <span 
+                            v-else 
+                            class="d-flex align-center action-link"
+                            style="visibility: hidden; width: 50px;"
+                          >
                             <v-icon small>mdi-trash-can-outline</v-icon>
-                          </span>                          
+                          </span>
+          
+                          <span @click="openReportModal('reply', reply)" class="d-flex align-center action-link">
+                            <v-icon>mdi-alarm-light-outline</v-icon> 신고
+                          </span>                     
                         </div>
                       </div>
                     </v-card-text>
                   </v-card>                  
                 </v-list-item>
-              </v-list>
-            </v-list-item>                       
-          </v-list>
+              </v-list>              
+            </v-list-item>                
+          </v-list>          
         </v-col>
       </v-row>
     </v-card>
@@ -172,6 +220,7 @@
     <ReportCreate v-if="showReportModal" :postId="reportData.postId" :commentId="reportData.commentId" @close="closeReportModal" />
   </v-container>
 </template>
+
 
 <script>
 import axios from 'axios';
@@ -187,7 +236,6 @@ export default {
       error: null,
       showReportModal: false,
       reportData: {},
-      currentUserEmail: 'your-email@example.com',
       newPostComment: '',
       showCommentTextarea: false,
     };
