@@ -106,7 +106,7 @@
             </v-row>
             <v-row><textarea class="text ml-4" v-model="comment"></textarea></v-row>
             <v-row class="mt-6 ml-1">
-                <div class="button inter-bold">오늘예약 신청</div>
+                <div class="button inter-bold" @click="reservedApply">오늘예약 신청</div>
             </v-row>
 
             <v-dialog v-model="symptomsModal" max-width="700px">
@@ -183,51 +183,18 @@
 </template>
 
 <script>
+import axios from 'axios';
+
 export default {
     data() {
         return {
+            medicalType:"Immediate",
             hostpitalName: "삼성화곡소아청소년과",
+            hospitalId: 1,
             child: null,
-            doctor: null,
-            childOptions: [
-                {
-                    id: 1,
-                    name: "이한아",
-                    ssn: "181227 - 432112",
-                    image: "https://todak-file.s3.amazonaws.com/d278dfb1-9275-41ad-8b86-f7a0a904892b_IMG_8641.JPG"
-                },
-                {
-                    id: 2,
-                    name: "정슬기",
-                    ssn: "181227 - 432112",
-                    image: "https://todak-file.s3.amazonaws.com/d278dfb1-9275-41ad-8b86-f7a0a904892b_IMG_8641.JPG"
-                },
-                {
-                    id: 3,
-                    name: "이한아",
-                    ssn: "181227 - 432112",
-                    image: "https://todak-file.s3.amazonaws.com/d278dfb1-9275-41ad-8b86-f7a0a904892b_IMG_8641.JPG"
-                }, {
-                    id: 4,
-                    name: "이한아",
-                    ssn: "181227 - 432112",
-                    image: "https://todak-file.s3.amazonaws.com/d278dfb1-9275-41ad-8b86-f7a0a904892b_IMG_8641.JPG"
-                },
-            ],
-            doctorList: [
-                {
-                    id: 1,
-                    name: "김천재 의사",
-                    waiting: 5,
-                    image: "https://todak-file.s3.amazonaws.com/d278dfb1-9275-41ad-8b86-f7a0a904892b_IMG_8641.JPG"
-                },
-                {
-                    id: 2,
-                    name: "박명석 의사",
-                    waiting: 3,
-                    image: "https://todak-file.s3.amazonaws.com/d278dfb1-9275-41ad-8b86-f7a0a904892b_IMG_8641.JPG"
-                },
-            ],
+            doctor: [],
+            childOptions: [],
+            doctorList: [],
             symptoms: [],
             symptomsOptions: {
                 respiratory: ['콧물', '기침', '인후통', '호흡곤란', '가래'],
@@ -263,9 +230,55 @@ export default {
                 this.symptoms.splice(index, 1);
             }
         },
+        async fetchDoctorList() {
+            try {
+                const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/member-service/member/doctorList/${this.hospitalId}`);
+                this.doctorList = response.data.result.content;
+
+                console.log(this.doctorList);
+            } catch (e) {
+                console.log(e);
+            }
+        },
+        async fetchChildList() {
+            try {
+                const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/member-service/child/`);
+                this.childOptions = response.data.result;
+                console.log(this.childOptions)
+            } catch (e) {
+                console.log(e);
+            }
+        },
+        async reservedApply() {
+            try {
+                const req = {
+                    childId: this.child.id,
+                    hospitalId: this.hospitalId,
+                    doctorName: this.doctor.name,
+                    doctorEmail: this.doctor.doctorEmail,
+                    reservationType: this.medicalType,
+                    untact: "false",
+                    medicalItem: this.mediItem,
+                    status: "Confirmed",
+                    field: this.symptoms.toString(),
+                    message: this.comment
+                }
+                console.log(req)
+
+                const response = await axios.post(`${process.env.VUE_APP_API_BASE_URL}/reservation-service/reservation/immediate`,
+                    req);
+
+                console.log(response)
+                this.$router.push('/')
+            }catch(e){
+                alert(e.message)
+            }
+        },
     },
-    computed: {
-    }
+    async created() {
+        this.fetchDoctorList();
+        this.fetchChildList();
+    },
 }
 </script>
 
