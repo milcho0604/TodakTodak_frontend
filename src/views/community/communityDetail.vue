@@ -193,7 +193,7 @@ export default {
     deletePost() {
       const confirmed = confirm("게시글을 정말 삭제하시겠습니까?");
       if (confirmed) {
-        axios.delete(`${process.env.VUE_APP_API_BASE_URL}/post/delete/${this.postDetail.id}`)
+        axios.post(`${process.env.VUE_APP_API_BASE_URL}/community-service/post/delete/${this.postDetail.id}`)
           .then(() => {
             this.$router.push('/community/list');
           })
