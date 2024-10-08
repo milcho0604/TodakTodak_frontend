@@ -20,7 +20,7 @@
                             {{ child.name }}
                             <v-icon class="edit-icon" @click="openUpdateModal(child)">mdi-pencil-outline</v-icon>
                             <v-spacer></v-spacer>
-                            <v-icon class="delete-icon">mdi-trash-can-outline</v-icon>
+                            <v-icon class="delete-icon" @click="openDeleteModal(child.id)">mdi-trash-can-outline</v-icon>
                         </v-row>
                         <v-row class="small-font inter-normal">
                             {{ child.ssn }}
@@ -36,6 +36,9 @@
 
         <!-- 자녀 추가 모달 -->
         <ChildCreateModal v-model="createModal" @update:dialog="createModal = $event" @child-exists="openChildExistsDialog"></ChildCreateModal>
+        
+        <!-- 자녀 삭제 모달 -->
+        <ChildDeleteModal v-model="deleteModal" :childId="selectedChildId" @update:childDeleteDialog="deleteModal = $event"></ChildDeleteModal>
         
         <!-- 자녀 수정 모달 -->
         <ChildUpdateModal 
@@ -69,32 +72,25 @@
         </v-dialog>
     </v-container>
 </template>
+
 <script>
 import axios from 'axios';
 import ChildCreateModal from './ChildCreateModal.vue';
+import ChildDeleteModal from './ChildDeleteModal.vue';
 import ChildUpdateModal from './ChildUpdateModal.vue';
 export default {
     components: {
         ChildCreateModal,
-        ChildUpdateModal
+        ChildUpdateModal,
+        ChildDeleteModal
     },
     data() {
         return {
             updateModal: false,
             createModal: false,
+            deleteModal: false,
             childExistsDialog: false,
             children: [
-                {
-                    name: "김아들",
-                    ssn: "200619-1010101",
-                    image: "https://todak-file.s3.amazonaws.com/d278dfb1-9275-41ad-8b86-f7a0a904892b_IMG_8641.JPG"
-                },
-                {
-                    name: "박딸",
-                    ssn: "201123-2020202",
-                    image: "https://todak-file.s3.amazonaws.com/d278dfb1-9275-41ad-8b86-f7a0a904892b_IMG_8641.JPG"
-                }
-                
             ],
             selectedChild: {
                 id: null,
@@ -102,6 +98,7 @@ export default {
                 ssn: '',
                 imageUrl: ''
             },
+            selectedChildId: null, // 삭제할 자녀의 ID
             childExistsMessage: [], // 메시지를 저장할 데이터
         }
     },
@@ -125,6 +122,10 @@ export default {
             console.log(this.selectedChild);
             this.updateModal = true;  // 수정 모달 열기
         },
+        openDeleteModal(childId) {
+            this.selectedChildId = childId; // 삭제할 자녀 ID 저장
+            this.deleteModal = true; // 삭제 모달 열기
+        },
         openChildExistsDialog(message) {
             this.childExistsDialog = true; // 자녀 등록되어 있음 모달 열기
             this.childExistsMessage = message; // 메시지 저장
@@ -132,6 +133,7 @@ export default {
     }
 }
 </script>
+
 <style scoped>
 .modal {
     padding: 20px;
@@ -147,7 +149,6 @@ export default {
     color: #00499E;
     font-size: 25px;
     margin-top: 10px;
-  
 }
 .close-icon {
     color: #676767;
@@ -168,9 +169,7 @@ export default {
     width: 70%;
     border: 0;
     border-top: 1px solid #ccc;
-    /* 구분선 색상과 두께 */
     margin: 20px 0;
-    /* 구분선 위아래 여백 */
 }
 
 .child {
@@ -203,7 +202,7 @@ export default {
     border-radius: 40px;
     padding: 4px 18px;
     font-size: 14px;
-    display: inline-block; /* 글자 수에 맞춰 버튼 길이 조정 */
+    display: inline-block;
     text-align: center;
     color: #00499E;
     margin: auto;
