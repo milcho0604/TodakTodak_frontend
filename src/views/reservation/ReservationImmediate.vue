@@ -311,9 +311,9 @@ export default {
         this.fetchDoctorList();
         this.fetchChildList();
     },
-    mounted(){
-        this.fetchMediData();
-    }
+    // mounted(){
+    //     this.fetchMediData();
+    // }
 }
 </script>
 
