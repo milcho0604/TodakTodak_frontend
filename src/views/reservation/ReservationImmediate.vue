@@ -419,7 +419,7 @@ export default {
 }
 
 .selected-doctor {
-    background-color: #c2d7ff93;
+    background-color: #C2D7FF !important;
     color: black;
 }
 
@@ -430,6 +430,7 @@ export default {
 
 .doctor {
     border: 1px solid #ccc;
+    background-color: #F3F3F3;
     border-radius: 15px;
     width: 670px;
     padding: 20px 10px;
