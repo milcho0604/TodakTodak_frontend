@@ -11,24 +11,35 @@
                 </div>
                 <div class="search">
                     <input type="text" v-model="searchQuery" class="search-input" placeholder="검색...">
-                    <span>
-                        🔍
-                    </span>
+                    <span>🔍</span>
                 </div>
-                <div v-for="m in members" :key="m.id">
-                    {{ m.name }}
+                <div v-for="m in members.slice(0, 3)" :key="m.id" class="member" @click="selectMember(m.id)" :class="{ 'selected-member': m.id === selectedMemberId }" >
+                    <v-row>
+                        <v-col cols="3" class="d-flex justify-center">
+                            <v-avatar size="40">
+                                <v-img :src="m.profileImgUrl" alt="profile image" class="profile-img" />
+                            </v-avatar>
+                        </v-col>
+                        <v-col class="info">
+                            <v-row class="inter-bold">
+                                {{ m.name }}
+                            </v-row>
+                            <v-row class="inter-light" style="color:grey;">
+                                {{ m.memberEmail }}
+                            </v-row>
+                        </v-col>
+                    </v-row>
                 </div>
             </v-card-text>
             <v-card-actions style="display: flex; justify-content: center; align-items: center; gap: 5px;">
                 <div class="round-grey inter-bold mr-3" @click="closeModal()">최소</div>
-
-                <div style="border-left: 1px solid #ccc; height: 20px; "></div>
-
-                <div class="round inter-bold ml-3" @click="deleteChild()">확인</div>
+                <div style="border-left: 1px solid #ccc; height: 20px;"></div>
+                <div class="round inter-bold ml-3" @click="shareChild()">공유</div>
             </v-card-actions>
         </v-card>
     </v-dialog>
 </template>
+
 <script>
 import axios from 'axios';
 
@@ -37,8 +48,9 @@ export default {
     data() {
         return {
             members: [], // 초기값을 빈 배열로 설정
-            searchQuery: '',
-        }
+            searchQuery: '', // 검색어
+            selectedMemberId: null // 선택된 멤버 ID를 저장할 변수
+        };
     },
     watch: {
         searchQuery(newQuery) {
@@ -56,21 +68,45 @@ export default {
             }
             try {
                 const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/member-service/member/search/${keyword}`);
-                console.log(response.data.result);
                 this.members = response.data.result; // 멤버 리스트 업데이트
             } catch (error) {
                 console.error("Failed to get member:", error);
             }
+        },
+        selectMember(memberId) {
+            if(this.selectedMemberId != memberId) {
+                this.selectedMemberId = memberId;
+            }else {
+                this.selectedMemberId = null;
+            }
+            
+        },
+        async shareChild() {
+            if (!this.selectedMemberId) {
+                alert('공유할 멤버를 선택해주세요.');
+                return;
+            }
+            try {
+                const response = await axios.post(`${process.env.VUE_APP_API_BASE_URL}/member-service/child/share`, {
+                    childId: this.childId,
+                    sharedId: this.selectedMemberId
+                });
+                console.log('Share response:', response.data);
+                alert('자녀 공유 성공');
+                this.closeModal(); // 공유 후 모달 닫기
+            } catch (error) {
+                console.error("Failed to share child:", error);
+            }
         }
     }
-}
+};
 </script>
+
 <style>
 .modal {
     padding: 20px;
     border-radius: 40px;
 }
-
 .headline {
     text-align: center;
     color: #00499E;
@@ -78,31 +114,26 @@ export default {
     margin-top: 10px;
     margin: auto;
 }
-
 .weak {
     color: #5B5B5B;
     text-align: center;
     font-size: 15px;
 }
-
 .round {
     background-color: #C2D7FF;
     border-radius: 40px;
     padding: 4px 18px;
     font-size: 14px;
     display: inline-block;
-    /* 글자 수에 맞춰 버튼 길이 조정 */
     text-align: center;
     color: #00499E;
 }
-
 .round-grey {
     background-color: #D9D9D9;
     border-radius: 40px;
     padding: 4px 18px;
     font-size: 14px;
     display: inline-block;
-    /* 글자 수에 맞춰 버튼 길이 조정 */
     text-align: center;
     color: #7F7D7D;
 }
@@ -112,12 +143,25 @@ export default {
     width: 100%;
     padding: 8px 5px;
 }
-
 .search-input {
     width: 90%;
 }
-
 .search-input:focus {
     outline: none;
+}
+.member {
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    padding: 20px 10px;
+    margin: 5px 0;
+}
+.member:hover {
+    background-color: #f2f3f4;
+}
+.selected-member {
+    background-color: #f2f3f4;
+}
+.info {
+    margin: 10px 0px;
 }
 </style>

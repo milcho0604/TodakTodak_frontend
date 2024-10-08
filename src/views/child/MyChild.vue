@@ -42,7 +42,7 @@
 
         <!-- 자녀 공유 모달 -->
         <ChildShareModal v-model="shareModal" :childId="selectedChildId"
-            @update:dialog="deleteModal = $event;"></ChildShareModal>
+            @update:dialog="shareModal = $event;"></ChildShareModal>
 
         <!-- 자녀 삭제 모달 -->
         <ChildDeleteModal v-model="deleteModal" :childId="selectedChildId"
