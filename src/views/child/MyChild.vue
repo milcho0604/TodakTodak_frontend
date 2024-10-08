@@ -12,15 +12,15 @@
             <div class="child">
                 <v-row>
                     <v-col cols="3">
-                        <img :src="child.imageUrl"
-                            alt="child image" style="width: 40px; height: 40px;">
+                        <img :src="child.imageUrl" alt="child image" style="width: 40px; height: 40px;">
                     </v-col>
                     <v-col cols="9">
                         <v-row class="inter-bold" style="margin-top: 2px;">
                             {{ child.name }}
                             <v-icon class="edit-icon" @click="openUpdateModal(child)">mdi-pencil-outline</v-icon>
                             <v-spacer></v-spacer>
-                            <v-icon class="delete-icon" @click="openDeleteModal(child.id)">mdi-trash-can-outline</v-icon>
+                            <v-icon class="delete-icon"
+                                @click="openDeleteModal(child.id)">mdi-trash-can-outline</v-icon>
                         </v-row>
                         <v-row class="small-font inter-normal">
                             {{ child.ssn }}
@@ -31,24 +31,21 @@
         </v-row>
 
         <v-row justify="center" class="mt-8">
-            <div class="round inter-normal dark-blue" @click="createModal=true">자녀정보 추가</div>
+            <div class="round inter-normal dark-blue" @click="createModal = true">자녀정보 추가</div>
         </v-row>
 
         <!-- 자녀 추가 모달 -->
-        <ChildCreateModal v-model="createModal" @update:dialog="createModal = $event" @child-exists="openChildExistsDialog"></ChildCreateModal>
-        
+        <ChildCreateModal v-model="createModal" @update:dialog="createModal = $event; this.fetchChild()"
+            @child-exists="openChildExistsDialog"></ChildCreateModal>
+
         <!-- 자녀 삭제 모달 -->
-        <ChildDeleteModal v-model="deleteModal" :childId="selectedChildId" @update:childDeleteDialog="deleteModal = $event"></ChildDeleteModal>
-        
+        <ChildDeleteModal v-model="deleteModal" :childId="selectedChildId"
+            @update:childDeleteDialog="deleteModal = $event; this.fetchChild()"></ChildDeleteModal>
+
         <!-- 자녀 수정 모달 -->
-        <ChildUpdateModal 
-            v-model="updateModal" 
-            @update:dialog="updateModal = $event"
-            :childId="selectedChild.id"
-            :initialName="selectedChild.name"
-            :initialSSN="selectedChild.ssn"
-            :initialImage="selectedChild.imageUrl"
-        ></ChildUpdateModal>
+        <ChildUpdateModal v-model="updateModal" @update:dialog="updateModal = $event; this.fetchChild()" :childId="selectedChild.id"
+            :initialName="selectedChild.name" :initialSSN="selectedChild.ssn" :initialImage="selectedChild.imageUrl">
+        </ChildUpdateModal>
 
         <!-- 자녀 이미 등록 모달 -->
         <v-dialog v-model="childExistsDialog" max-width="450px">
@@ -62,7 +59,7 @@
                     </div>
                     <div class="weak inter-light">
                         해당 주민번호의 자녀는 다른 계정에 등록되어 있습니다.<br>
-                        먼저 등록한 보호자에게 자녀 정보를 공유받아주세요. 
+                        먼저 등록한 보호자에게 자녀 정보를 공유받아주세요.
                     </div>
                 </v-card-text>
                 <v-card-actions>
@@ -129,6 +126,10 @@ export default {
         openChildExistsDialog(message) {
             this.childExistsDialog = true; // 자녀 등록되어 있음 모달 열기
             this.childExistsMessage = message; // 메시지 저장
+        },
+        handleModalClose(isDialogClosed) {
+            if (!isDialogClosed) return;
+            this.fetchChild();  // 모달이 닫히면 자녀 목록 다시 불러오기
         }
     }
 }
@@ -139,17 +140,20 @@ export default {
     padding: 20px;
     border-radius: 40px;
 }
+
 .hover-btn {
     position: absolute;
     top: 10px;
     right: 10px;
 }
+
 .headline {
     text-align: center;
     color: #00499E;
     font-size: 25px;
     margin-top: 10px;
 }
+
 .close-icon {
     color: #676767;
 }
@@ -207,9 +211,11 @@ export default {
     color: #00499E;
     margin: auto;
 }
+
 .strong {
     text-align: center;
 }
+
 .weak {
     color: #5B5B5B;
     text-align: center;
