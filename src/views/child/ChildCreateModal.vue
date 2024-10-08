@@ -130,7 +130,7 @@ export default {
             }
         },
         async addChild() {
-            if (!this.childName || !this.childSSN1 || !this.childSSN2 || !this.selectedFile) {
+            if (!this.childName || !this.childSSN1 || !this.childSSN2 ) {
                 alert('모든 필드를 입력해주세요.');
                 return;
             }
@@ -154,6 +154,7 @@ export default {
                 } else {
                     alert(response.data.message);
                 }
+                this.closeModal();
             } catch (error) {
                 console.error('자녀 등록 중 오류 발생:', error.response.data.result.parents);
                 
