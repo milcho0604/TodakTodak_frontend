@@ -19,8 +19,10 @@
                             {{ child.name }}
                             <v-icon class="edit-icon" @click="openUpdateModal(child)">mdi-pencil-outline</v-icon>
                             <v-spacer></v-spacer>
+                            <v-icon class="share-icon" @click="openShareModal(child.id)">mdi-share</v-icon>
                             <v-icon class="delete-icon"
                                 @click="openDeleteModal(child.id)">mdi-trash-can-outline</v-icon>
+                        
                         </v-row>
                         <v-row class="small-font inter-normal">
                             {{ child.ssn }}
@@ -37,6 +39,10 @@
         <!-- 자녀 추가 모달 -->
         <ChildCreateModal v-model="createModal" @update:dialog="createModal = $event; this.fetchChild()"
             @child-exists="openChildExistsDialog"></ChildCreateModal>
+
+        <!-- 자녀 공유 모달 -->
+        <ChildShareModal v-model="shareModal" :childId="selectedChildId"
+            @update:dialog="deleteModal = $event;"></ChildShareModal>
 
         <!-- 자녀 삭제 모달 -->
         <ChildDeleteModal v-model="deleteModal" :childId="selectedChildId"
@@ -75,17 +81,20 @@ import axios from 'axios';
 import ChildCreateModal from './ChildCreateModal.vue';
 import ChildDeleteModal from './ChildDeleteModal.vue';
 import ChildUpdateModal from './ChildUpdateModal.vue';
+import ChildShareModal from './ChildShareModal.vue';
 export default {
     components: {
         ChildCreateModal,
         ChildUpdateModal,
-        ChildDeleteModal
+        ChildDeleteModal,
+        ChildShareModal
     },
     data() {
         return {
             updateModal: false,
             createModal: false,
             deleteModal: false,
+            shareModal: false,
             childExistsDialog: false,
             children: [
             ],
@@ -127,10 +136,10 @@ export default {
             this.childExistsDialog = true; // 자녀 등록되어 있음 모달 열기
             this.childExistsMessage = message; // 메시지 저장
         },
-        handleModalClose(isDialogClosed) {
-            if (!isDialogClosed) return;
-            this.fetchChild();  // 모달이 닫히면 자녀 목록 다시 불러오기
-        }
+        openShareModal(childId) {
+            this.selectedChildId = childId; // 삭제할 자녀 ID 저장
+            this.shareModal = true; // 삭제 모달 열기
+        },
     }
 }
 </script>
@@ -178,7 +187,7 @@ export default {
 
 .child {
     border: 1px solid #ccc;
-    width: 40%;
+    width: 45%;
     border-radius: 10px;
     padding: 16px 10px;
     margin: 10px 0;
@@ -198,7 +207,13 @@ export default {
 
 .delete-icon {
     color: #888888;
+    font-size: 20px;
     margin-right: 20px;
+}
+.share-icon {
+    color: #888888;
+    font-size: 19px;
+    margin-right: 2px;
 }
 
 .round {
