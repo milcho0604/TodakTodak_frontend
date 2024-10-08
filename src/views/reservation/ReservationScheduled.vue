@@ -28,7 +28,8 @@
             <v-row>
                 <!-- childOptions 배열에 있는 아이들을 반복 렌더링 -->
                 <v-col v-for="(child, index) in childOptions" :key="index">
-                    <div class="child" @click="addChild(child)" :class="{ 'selected-child': this.child == child }">
+                    <div class="child button-cursor" @click="addChild(child)"
+                        :class="{ 'selected-child': this.child == child }">
                         <v-row justify="center">
                             <v-col class="text-center" cols="3">
                                 <img :src="child.imageUrl" alt="child image" style="width: 40px; height: 40px;">
@@ -51,14 +52,14 @@
                 </v-col>
             </v-row>
             <v-row justify="center">
-                <div v-for="(doctor, index) in doctorList" :key="index" class="doctor" @click="addDoctor(doctor)"
-                    :class="{ 'selected-doctor': this.doctor == doctor }">
+                <div v-for="(doctor, index) in doctorList" :key="index" class="doctor button-cursor"
+                    @click="addDoctor(doctor)" :class="{ 'selected-doctor': this.doctor == doctor }">
                     <v-row>
                         <v-col cols="2">
                             <img :src="doctor.image" alt="doctor image" style="width: 40px; height: 40px;">
                         </v-col>
                         <v-col cols="2">
-                            <v-row class="inter-bold inline">{{ doctor.name }}</v-row>
+                            <v-row class="inter-bold inline">{{ doctor.name }} 원장</v-row>
                         </v-col>
                         <v-col>
                             <v-row class="inter-bold custom-text3 inline">대기 {{ doctor.waiting }}명</v-row>
@@ -75,11 +76,7 @@
                 </v-col>
             </v-row>
             <v-row justify="start" class="ml-2">
-                <v-date-picker 
-                    v-model="date" 
-                    :allowed-dates="allowedDates" 
-                    @input="updateDate"
-                    :width="650"
+                <v-date-picker v-model="date" :allowed-dates="allowedDates" @input="updateDate" :width="650"
                     color="primary">
                 </v-date-picker>
             </v-row>
@@ -101,12 +98,12 @@
             </v-row>
             <v-row class="mt-1 ml-1">
                 <v-col cols="2">
-                    <v-row class="inter-bold before-selected inline" :class="{ 'selected-medi': mediItem == '일반진료' }"
-                        @click="addmediItem('일반진료')"> 일반진료 </v-row>
+                    <v-row class="inter-bold before-selected inline button-cursor"
+                        :class="{ 'selected-medi': mediItem == '일반진료' }" @click="addmediItem('일반진료')"> 일반진료 </v-row>
                 </v-col>
                 <v-col cols="2">
-                    <v-row class="inter-bold before-selected inline" :class="{ 'selected-medi': mediItem == '예방접종' }"
-                        @click="addmediItem('예방접종')">예방접종 </v-row>
+                    <v-row class="inter-bold before-selected inline button-cursor"
+                        :class="{ 'selected-medi': mediItem == '예방접종' }" @click="addmediItem('예방접종')">예방접종 </v-row>
                 </v-col>
             </v-row>
             <v-row class="header-row">
@@ -124,14 +121,14 @@
                 </div>
             </v-row>
             <v-row class="ml-1">
-                <div class="mini-button inter-bold mt-3" @click="symptomsModal = true">증상선택하기</div>
+                <div class="mini-button button-cursor inter-bold mt-3" @click="symptomsModal = true">증상선택하기</div>
             </v-row>
             <v-row>
                 <div class="inter-bold dark-blue subtitle mt-6 ml-5">의사선생님께 하고싶은 말</div>
             </v-row>
             <v-row><textarea class="text ml-4" v-model="comment"></textarea></v-row>
             <v-row class="mt-6 ml-1">
-                <div class="button inter-bold">스케줄예약 신청</div>
+                <div class="button  inter-bold" @click="reservedApply">스케줄예약 신청</div>
             </v-row>
 
             <v-dialog v-model="symptomsModal" max-width="700px">
@@ -212,11 +209,14 @@
 </template>
 
 <script>
+import axios from 'axios';
+
 export default {
     data() {
         return {
             medicalType: "Scheduled",
             hostpitalName: "삼성화곡소아청소년과",
+            hospitalId: 1,
             child: null,
             doctor: null,
             childOptions: [
@@ -246,14 +246,15 @@ export default {
             ],
             doctorList: [
                 {
-                    id: 1,
-                    name: "김천재 의사",
-                    waiting: 5,
-                    image: "https://todak-file.s3.amazonaws.com/d278dfb1-9275-41ad-8b86-f7a0a904892b_IMG_8641.JPG"
+                    id: null,
+                    name: null,
+                    waiting: null,
+                    doctorEmail: null,
+                    image: null
                 },
                 {
                     id: 2,
-                    name: "박명석 의사",
+                    name: "박명석",
                     waiting: 3,
                     image: "https://todak-file.s3.amazonaws.com/d278dfb1-9275-41ad-8b86-f7a0a904892b_IMG_8641.JPG"
                 },
@@ -269,6 +270,7 @@ export default {
             symptomsModal: false,
             comment: null,
             date: null,
+            reservationType: null,
             timeSlots: [
                 "09:00", "09:30", "10:00", "10:30",
                 "11:00", "11:30", "13:00", "13:30",
@@ -337,11 +339,43 @@ export default {
             }
             console.log(this.selectedTime)
         },
-    },
-    watch: {
-        date(newDate) {
-            console.log(newDate)
+        async reservedApply() {
+            const formattedDate = this.date.toISOString().split('T')[0];
+
+            const req = {
+                childId: this.child.id,
+                hospitalId: 1,
+                doctorName: this.doctor.name,
+                doctorEmail: this.doctor.doctorEmail,
+                reservationType: this.medicalType,
+                reservationDate: formattedDate,
+                reservationTime: this.selectedTime,
+                untact: "false",
+                medicalItem: this.mediItem,
+                status: "Confirmed",
+                field: this.symptoms.toString(),
+                message: this.comment
+            }
+            console.log(req)
+
+            const response = await axios.post(`${process.env.VUE_APP_API_BASE_URL}/reservation-service/reservation/scheduled`,
+                req);
+
+            console.log(response)
+        },
+        async fetchDoctorList() {
+            try {
+                const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/member-service/member/doctorList/${this.hospitalId}`);
+                this.doctorList = response.data.result.content;
+
+                console.log(this.doctorList);
+            } catch (e) {
+                console.log(e);
+            }
         }
+    },
+    async created() {
+        this.fetchDoctorList();
     }
 }
 </script>
@@ -502,6 +536,7 @@ export default {
 }
 
 .button {
+    cursor: pointer;
     background-color: #C2D7FF;
     border-radius: 10px;
     padding: 10px 20px;
@@ -558,5 +593,9 @@ export default {
     background-color: #e0e0e0;
     color: #757575;
     cursor: not-allowed;
+}
+
+.button-cursor {
+    cursor: pointer;
 }
 </style>
