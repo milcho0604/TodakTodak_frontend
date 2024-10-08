@@ -1,9 +1,10 @@
 <template>
     <v-container fluid class="custom-container">
         <v-spacer :style="{ height: '50px' }"></v-spacer>
+        <!-- 주변소아과, gps -->
         <v-row>
             <v-col cols="4"
-            class="justify-start text-no-wrap"
+            class="ml-50 justify-end text-no-wrap"
             >
                 <v-btn variant="plain" size="x-large" @click="openAddressSearch">
                     <h3> 
@@ -28,15 +29,10 @@
 
         <v-spacer :style="{ height: '30px' }"></v-spacer>
 
+        <!-- 검색창 -->
         <v-row>
             <v-col cols="2"> 
-                <v-autocomplete
-                v-model="sort"
-                :items="sortOptions.map(option => option.text)"
-                density="comfortable"
-                label="정렬조건"
-                class="mt-n1"
-              ></v-autocomplete> 
+                
             </v-col>
             <v-col cols="8">
                 <v-text-field
@@ -55,23 +51,42 @@
         </v-row>
 
         <v-spacer></v-spacer>
-        <!-- 필터 태그 그룹들 -->
-        <v-chip-group
-            v-model="selectedTag"
-            selected-class="text-primary"
-            mandatory
-        >
-            <v-chip value="전체" size="large" filter>전체</v-chip>
-            <v-chip value="영유아검진" size="large" filter>영유아검진</v-chip>
-            <v-chip value="전문의" size="large" filter>전문의</v-chip>
-            <v-chip value="주차장" size="large" filter>주차장</v-chip>
-            <v-chip value="어린이 국가예방접종" size="large" filter>어린이 국가예방접종</v-chip>
-            <v-chip value="예방접종" size="large" filter>비대면</v-chip>
-            <v-chip value="신속항원" size="large" filter>신속항원</v-chip>
-        </v-chip-group>
+        <v-row>
+            <v-col cols="2">
+                <!-- <v-autocomplete
+                v-model="sort"
+                :items="sortOptions.map(option => option.text)"
+                density="comfortable"
+                label="정렬조건"
+                class="mt-n1"
+              ></v-autocomplete>  -->
 
-        <v-spacer></v-spacer>
-        <!-- 병원리스트 -->
+            </v-col>
+
+            <v-col cols="8">
+                <!-- 필터 태그 그룹 -->
+                <v-chip-group
+                v-model="selectedTag"
+                selected-class="text-primary"
+                mandatory
+                >
+                    <v-chip value="전체" size="large">전체</v-chip>
+                    <v-chip value="영유아검진" size="large">영유아검진</v-chip>
+                    <v-chip value="전문의" size="large">전문의</v-chip>
+                    <v-chip value="주차장" size="large">주차장</v-chip>
+                    <v-chip value="어린이 국가예방접종" size="large">어린이 국가예방접종</v-chip>
+                    <v-chip value="예방접종" size="large">비대면</v-chip>
+                    <v-chip value="신속항원" size="large">신속항원</v-chip>
+                </v-chip-group>
+
+            </v-col>
+
+            <v-col cols="2">
+            </v-col>
+        </v-row>
+
+        
+        
 
     </v-container>
 </template>
