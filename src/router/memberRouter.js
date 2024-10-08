@@ -6,6 +6,7 @@ import FindPasswordPage from "@/views/member/FindPasswordPage.vue";
 import ResetPasswordPage from "@/views/member/ResetPasswordPage.vue";
 import MyPage from "@/views/member/MyPage.vue"
 import MyReviewList from "@/views/member/MyReviewList.vue";
+import AdminLoginPage from "@/views/member/AdminLoginPage.vue";
 import MyChild from "@/views/child/MyChild.vue";
 
 import { jwtDecode } from "jwt-decode";
@@ -19,6 +20,11 @@ export const memberRouter = [
         path: '/login',
         name: 'LoginPage',
         component: LoginPage
+    },
+    {
+        path: '/admin/login',
+        name: 'AdminLoginPage',
+        component: AdminLoginPage
     },
     {
         path: '/authentication',
