@@ -72,7 +72,7 @@ export default {
     return {
       isLogin: false, // 로그인 상태 확인 변수
       name: "김파닥",
-      profileImgUrl: '@/assets/default_profile_image.png',
+      profileImgUrl:'https://todak-file.s3.ap-northeast-2.amazonaws.com/default-images/default_user_image.png',
       memberId:'',
       role:'',
       email:''
@@ -96,13 +96,15 @@ export default {
   methods: {
     async loadUserProfile(){
       try{
-        const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/member-service/member/id/${this.
-        memberId}`);
+        const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/member-service/member/id/${this.memberId}`);
         console.log(response.data);
         this.name = response.data.result.name;
         this.role = response.data.result.role;
         // 프로필 이미지가 null이면 기본 이미지 경로로 설정
-        this.profileImgUrl = response.data.result.profileImgUrl || require('@/assets/default_user_image.png');
+    this.profileImgUrl = response.data.result.profileImgUrl 
+        ? response.data.result.profileImgUrl
+        : "https://todak-file.s3.ap-northeast-2.amazonaws.com/default-images/default_user_image.png"
+
       }catch(error){
         console.error("사용자 프로필 loading error : ",error);
       }

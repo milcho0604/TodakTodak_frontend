@@ -1,17 +1,19 @@
 <!-- App.vue -->
 <template>
   <v-app class="app global_bg">
-    <HeaderComponent @open-sidebar="toggleSidebar" />
+    <HeaderComponent/>
     <AppSidebar ref="sidebar" />
     <v-main class="main-content">
-      <router-view />
+      <router-view content="회원가입"/>
     </v-main>
+    <FooterComponent/>
   </v-app>
 </template>
 
 <script>
 import axios from 'axios';
-import HeaderComponent from './components/HeaderComponent.vue';
+import HeaderComponent from './components/header/HeaderComponent.vue';
+import FooterComponent from './components/footer/FooterComponent.vue';
 
 //FCM
 import { initializeApp } from 'firebase/app';
@@ -19,10 +21,12 @@ import { getMessaging, getToken, onMessage } from 'firebase/messaging';
 // import { resolve } from 'core-js/fn/promise';
 // import member from './store/member';
 
+
 export default {
   name: 'App',
   components: {
     HeaderComponent,
+    FooterComponent
   },
   async mounted() {
     await this.initializeFCM();
