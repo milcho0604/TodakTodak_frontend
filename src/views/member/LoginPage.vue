@@ -57,17 +57,11 @@
 
               <br>
               <!-- 추가 링크들 -->
-              <v-list class="custom-list">
-                <v-list-item @click="findEmail">
-                  <v-list-item-title class="link-text">아이디 찾기</v-list-item-title>
-                </v-list-item>
-                <v-list-item @click="findPassword">
-                  <v-list-item-title class="link-text">비밀번호 찾기</v-list-item-title>
-                </v-list-item>
-                <v-list-item @click="signUp">
-                  <v-list-item-title class="link-text">회원가입</v-list-item-title>
-                </v-list-item>
-              </v-list>
+              <v-row justify="center" class="membership-options">
+                <v-btn text class="membership-option" @click="findEmail">아이디 찾기</v-btn>
+                <v-divider vertical class="vertical-divider"></v-divider>
+                <v-btn text class="membership-option" @click="findPassword">비밀번호 찾기</v-btn>
+              </v-row>
             </v-form>
           </v-card-text>
         </v-card>
@@ -230,5 +224,20 @@ export default {
   background-color: #f9f9f9;
   padding: 10px;
   border-radius: 8px;
+}
+.membership-options {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 20px;
+}
+.membership-option {
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 700;
+  font-size: 15px;
+  color: #A7A7A7;
+  background-color: #f9f9f9;
+  box-shadow: none;
 }
 </style>
