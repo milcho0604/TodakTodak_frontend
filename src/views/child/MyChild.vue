@@ -11,11 +11,13 @@
         <v-row justify="center" v-for="(child, id) in children" :key="id">
             <div class="child">
                 <v-row>
-                    <v-col cols="3">
-                        <img :src="child.imageUrl" alt="child image" style="width: 40px; height: 40px;">
+                    <v-col cols="3" class="d-flex justify-center">
+                        <v-avatar size="40">
+                            <v-img :src="child.imageUrl" alt="child image"/>
+                        </v-avatar>
                     </v-col>
-                    <v-col cols="9">
-                        <v-row class="inter-bold" style="margin-top: 2px;">
+                    <v-col cols="9" class="info">
+                        <v-row class="inter-bold">
                             {{ child.name }}
                             <v-icon class="edit-icon" @click="openUpdateModal(child)">mdi-pencil-outline</v-icon>
                             <v-spacer></v-spacer>
@@ -187,9 +189,9 @@ export default {
 
 .child {
     border: 1px solid #ccc;
-    width: 45%;
+    width: 35%;
     border-radius: 10px;
-    padding: 16px 10px;
+    padding: 19px 10px;
     margin: 10px 0;
 }
 
@@ -235,5 +237,8 @@ export default {
     color: #5B5B5B;
     text-align: center;
     font-size: 15px;
+}
+.info {
+    margin: 10px 0px;
 }
 </style>
