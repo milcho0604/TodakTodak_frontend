@@ -62,7 +62,6 @@
                             <v-row class="inter-bold inline">{{ doctor.name }} 원장</v-row>
                         </v-col>
                         <v-col>
-                            <v-row class="inter-bold custom-text3 inline">대기 {{ doctor.waiting }}명</v-row>
                         </v-col>
                         <v-col cols="2">
                             <div class="mini-button" v-if="this.doctor == doctor" style="margin-top: 5px;">선택됨</div>
@@ -480,7 +479,7 @@ export default {
 }
 
 .selected-doctor {
-    background-color: #c2d7ff93;
+    background-color: #C2D7FF !important;
     color: black;
 }
 
@@ -491,6 +490,7 @@ export default {
 
 .doctor {
     border: 1px solid #ccc;
+    background-color: #F3F3F3;
     border-radius: 15px;
     width: 670px;
     padding: 20px 10px;

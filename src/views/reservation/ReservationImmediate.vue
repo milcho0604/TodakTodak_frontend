@@ -111,84 +111,90 @@
 
             <v-dialog v-model="symptomsModal" max-width="700px">
                 <v-card>
-                  <v-card-title class="subtitle dark-blue inter-bold text-center">
-                    증상 선택
-                  </v-card-title>
-                  <v-card-text>
-                    <v-container>
-                      <!-- 호흡기 -->
-                      <v-row justify="center" class="mb-2"> <!-- 위 아래 여백 줄임 -->
-                        <v-col cols="11">
-                          <div class="inter-bold subtitle-2 dark-blue">호흡기</div>
-                        </v-col>
-                        <v-col cols="auto" v-for="(symptom, index) in symptomsOptions.respiratory" :key="'respiratory-' + index">
-                          <div class="inter-bold symptom-box"
-                            :class="symptoms.includes(symptom) ? 'selected-symptom' : 'symptom'"
-                            @click="addSymptom(symptom)">
-                            {{ symptom }}
-                          </div>
-                        </v-col>
-                      </v-row>
-              
-                      <!-- 소화기 -->
-                      <v-row justify="center" class="mb-2"> <!-- 위 아래 여백 줄임 -->
-                        <v-col cols="11">
-                          <div class="inter-bold subtitle-2 dark-blue">소화기</div>
-                        </v-col>
-                        <v-col cols="auto" v-for="(symptom, index) in symptomsOptions.digestive" :key="'digestive-' + index">
-                          <div class="inter-bold symptom-box"
-                            :class="symptoms.includes(symptom) ? 'selected-symptom' : 'symptom'"
-                            @click="addSymptom(symptom)">
-                            {{ symptom }}
-                          </div>
-                        </v-col>
-                      </v-row>
-              
-                      <!-- 피부 및 알레르기 -->
-                      <v-row justify="center" class="mb-2"> <!-- 위 아래 여백 줄임 -->
-                        <v-col cols="11">
-                          <div class="inter-bold subtitle-2 dark-blue">피부 및 알레르기</div>
-                        </v-col>
-                        <v-col cols="auto" v-for="(symptom, index) in symptomsOptions.skinAllergy" :key="'skinAllergy-' + index">
-                          <div class="inter-bold symptom-box"
-                            :class="symptoms.includes(symptom) ? 'selected-symptom' : 'symptom'"
-                            @click="addSymptom(symptom)">
-                            {{ symptom }}
-                          </div>
-                        </v-col>
-                      </v-row>
-              
-                      <!-- 전신 / 기타 -->
-                      <v-row justify="center" class="mb-2"> <!-- 위 아래 여백 줄임 -->
-                        <v-col cols="11">
-                          <div class="inter-bold subtitle-2 dark-blue">전신 / 기타</div>
-                        </v-col>
-                        <v-col cols="auto" v-for="(symptom, index) in symptomsOptions.general" :key="'general-' + index">
-                          <div class="inter-bold symptom-box"
-                            :class="symptoms.includes(symptom) ? 'selected-symptom' : 'symptom'"
-                            @click="addSymptom(symptom)">
-                            {{ symptom }}
-                          </div>
-                        </v-col>
-                      </v-row>
-                    </v-container>
-                  </v-card-text>
-                  <v-card-actions>
-                    <div class="mini-button" @click="symptomsModal = false" style="margin: auto;">증상 선택 완료</div>
-                  </v-card-actions>
+                    <v-card-title class="subtitle dark-blue inter-bold text-center">
+                        증상 선택
+                    </v-card-title>
+                    <v-card-text>
+                        <v-container>
+                            <!-- 호흡기 -->
+                            <v-row justify="center" class="mb-2"> <!-- 위 아래 여백 줄임 -->
+                                <v-col cols="11">
+                                    <div class="inter-bold subtitle-2 dark-blue">호흡기</div>
+                                </v-col>
+                                <v-col cols="auto" v-for="(symptom, index) in symptomsOptions.respiratory"
+                                    :key="'respiratory-' + index">
+                                    <div class="inter-bold symptom-box"
+                                        :class="symptoms.includes(symptom) ? 'selected-symptom' : 'symptom'"
+                                        @click="addSymptom(symptom)">
+                                        {{ symptom }}
+                                    </div>
+                                </v-col>
+                            </v-row>
+
+                            <!-- 소화기 -->
+                            <v-row justify="center" class="mb-2"> <!-- 위 아래 여백 줄임 -->
+                                <v-col cols="11">
+                                    <div class="inter-bold subtitle-2 dark-blue">소화기</div>
+                                </v-col>
+                                <v-col cols="auto" v-for="(symptom, index) in symptomsOptions.digestive"
+                                    :key="'digestive-' + index">
+                                    <div class="inter-bold symptom-box"
+                                        :class="symptoms.includes(symptom) ? 'selected-symptom' : 'symptom'"
+                                        @click="addSymptom(symptom)">
+                                        {{ symptom }}
+                                    </div>
+                                </v-col>
+                            </v-row>
+
+                            <!-- 피부 및 알레르기 -->
+                            <v-row justify="center" class="mb-2"> <!-- 위 아래 여백 줄임 -->
+                                <v-col cols="11">
+                                    <div class="inter-bold subtitle-2 dark-blue">피부 및 알레르기</div>
+                                </v-col>
+                                <v-col cols="auto" v-for="(symptom, index) in symptomsOptions.skinAllergy"
+                                    :key="'skinAllergy-' + index">
+                                    <div class="inter-bold symptom-box"
+                                        :class="symptoms.includes(symptom) ? 'selected-symptom' : 'symptom'"
+                                        @click="addSymptom(symptom)">
+                                        {{ symptom }}
+                                    </div>
+                                </v-col>
+                            </v-row>
+
+                            <!-- 전신 / 기타 -->
+                            <v-row justify="center" class="mb-2"> <!-- 위 아래 여백 줄임 -->
+                                <v-col cols="11">
+                                    <div class="inter-bold subtitle-2 dark-blue">전신 / 기타</div>
+                                </v-col>
+                                <v-col cols="auto" v-for="(symptom, index) in symptomsOptions.general"
+                                    :key="'general-' + index">
+                                    <div class="inter-bold symptom-box"
+                                        :class="symptoms.includes(symptom) ? 'selected-symptom' : 'symptom'"
+                                        @click="addSymptom(symptom)">
+                                        {{ symptom }}
+                                    </div>
+                                </v-col>
+                            </v-row>
+                        </v-container>
+                    </v-card-text>
+                    <v-card-actions>
+                        <div class="mini-button" @click="symptomsModal = false" style="margin: auto;">증상 선택 완료</div>
+                    </v-card-actions>
                 </v-card>
-              </v-dialog>
+            </v-dialog>
         </v-container>
     </v-container>
 </template>
 
 <script>
 import axios from 'axios';
+import { initializeApp } from 'firebase/app';
+import { getDatabase, ref, onValue } from 'firebase/database';
 
 export default {
     data() {
         return {
-            medicalType:"Immediate",
+            medicalType: "Immediate",
             hostpitalName: "삼성화곡소아청소년과",
             hospitalId: 1,
             child: null,
@@ -204,7 +210,8 @@ export default {
             },
             mediItem: null,
             symptomsModal: false,
-            comment: null
+            comment: null,
+            mediData: [],
         }
     },
     methods: {
@@ -270,15 +277,43 @@ export default {
 
                 console.log(response)
                 this.$router.push('/')
-            }catch(e){
+            } catch (e) {
                 alert(e.message)
             }
         },
+        fetchMediData() {
+            const firebaseConfig = {
+                apiKey: "AIzaSyBSH8wJ7aoblNAj8Kj7iNTfsJhlEL4KEcE",
+                authDomain: "padak-todak.firebaseapp.com",
+                projectId: "padak-todak",
+                storageBucket: "padak-todak.appspot.com",
+                messagingSenderId: "22351664979",
+                appId: "1:22351664979:web:f8a3cc4b2f5e249d88b3a6",
+                databaseURL: "https://padak-todak-default-rtdb.asia-southeast1.firebasedatabase.app"
+            };
+
+            const app = initializeApp(firebaseConfig);
+            const db = getDatabase(app);
+            const mediRef = ref(db, 'medi');
+
+            onValue(mediRef,(snapshot) => {
+                const data = snapshot.val();
+                console.log(data);
+                if(data){
+                    this.mediData = Object.keys(data)
+                    .filter(key => data[key] && data[key].data)
+                    .map(key => data[key]);
+                }
+            });
+        }
     },
     async created() {
         this.fetchDoctorList();
         this.fetchChildList();
     },
+    mounted(){
+        this.fetchMediData();
+    }
 }
 </script>
 
@@ -454,16 +489,17 @@ export default {
     width: 700px;
     margin-top: 10px;
 }
+
 .symptom-box {
     cursor: pointer;
     margin-bottom: 10px;
     width: 100px;
     text-align: center;
-  }
+}
 
-  .subtitle-2 {
+.subtitle-2 {
     font-size: 1.2em;
     margin-bottom: -15px;
     margin-top: -20px;
-  }
+}
 </style>
