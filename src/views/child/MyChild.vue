@@ -82,7 +82,7 @@ export default {
         return {
             updateModal: false,
             createModal: false,
-            childExistsDialog: true,
+            childExistsDialog: false,
             children: [
                 {
                     name: "김아들",
