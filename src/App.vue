@@ -1,27 +1,32 @@
 <!-- App.vue -->
 <template>
   <v-app class="app global_bg">
-    <HeaderComponent @open-sidebar="toggleSidebar" />
+    <HeaderComponent/>
     <AppSidebar ref="sidebar" />
     <v-main class="main-content">
-      <router-view />
+      <router-view content="회원가입"/>
     </v-main>
+    <FooterComponent/>
   </v-app>
 </template>
 
 <script>
 import axios from 'axios';
-import HeaderComponent from './components/HeaderComponent.vue';
+import HeaderComponent from './components/header/HeaderComponent.vue';
+import FooterComponent from './components/footer/FooterComponent.vue';
+
 //FCM
 import { initializeApp } from 'firebase/app';
 import { getMessaging, getToken, onMessage } from 'firebase/messaging';
 // import { resolve } from 'core-js/fn/promise';
 // import member from './store/member';
 
+
 export default {
   name: 'App',
   components: {
-    HeaderComponent
+    HeaderComponent,
+    FooterComponent
   },
   async mounted() {
     await this.initializeFCM();
@@ -151,8 +156,16 @@ export default {
   font-weight: 700;
   font-style: normal;
 }
+.inter-light {
+  font-family: "Inter", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 500;
+  font-style: normal;
+}
 .custom-container{
-  max-width: 1200px;
+  max-width: 1200px !important; /* 원하는 최대 폭 */
+  margin: 0 auto !important;    /* 중앙 정렬 */
+  width: 100% !important; /* 컨테이너의 폭을 100%로 설정 */
 }
 .app {
   display: flex;
