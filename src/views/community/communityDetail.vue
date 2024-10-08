@@ -146,8 +146,13 @@
                             style="margin-left: auto;">
                         <v-icon small>mdi-alarm-light-outline</v-icon> 신고
                       </span>
-                    </div>
-                                      
+                      <ReportCreate
+                        v-if="showReportModal"
+                        :postId="reportData.postId"
+                        :commentId="reportData.commentId"
+                        @close="closeReportModal"
+                      />
+                    </div>                
                   </div>
                 </v-card-text>
                 <v-card-actions v-if="comment.isEditing">
@@ -212,11 +217,9 @@
               </v-list>
             </v-list-item>                            
           </v-list>          
-        </v-col>
-        
+        </v-col>     
       </v-row>
     </v-card>
-
     <v-alert type="error" v-if="error">{{ error }}</v-alert>
     <ReportCreate v-if="showReportModal" :postId="reportData.postId" :commentId="reportData.commentId" @close="closeReportModal" />
   </v-container>
@@ -225,7 +228,7 @@
 
 <script>
 import axios from 'axios';
-import ReportCreate from '@/views/report/ReportCreate.vue';
+import ReportCreate from '@/views/community/ReportCreate.vue';
 
 export default {
   components: {
@@ -381,6 +384,7 @@ export default {
       return new Date(date).toLocaleDateString('ko-KR', options);
     },
     openReportModal(type, comment = null) {
+      console.log('신고 모달 열기: ', type, comment)
       this.reportData = {
         postId: this.postDetail.id,
         commentId: comment ? comment.id : null,
