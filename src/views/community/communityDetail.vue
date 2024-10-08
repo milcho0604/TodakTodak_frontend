@@ -28,7 +28,7 @@
             수정
           </span>
           <span @click="deletePost" class="d-flex align-center action-link">
-            <v-icon small>mdi-delete</v-icon>
+            <v-icon small>mdi-trash-can-outline</v-icon>
             삭제
           </span>
         </v-col>
@@ -103,11 +103,12 @@
                     </div>
                     <div style="flex: 1;" class="d-flex align-center">
                       <span @click="openReportModal('comment', comment)" class="d-flex align-center action-link mr-2">
-                        <v-icon>mdi-alert-circle-outline</v-icon>
+                        <v-icon>mdi-bullhorn-variant-outline</v-icon>
                       </span>
-                      <span @click="deleteComment(comment)" class="d-flex align-center action-link">
-                        <v-icon small>mdi-delete</v-icon>
+                      <span v-if="comment.doctorEmail === currentUserEmail" @click="deleteComment(comment)" class="d-flex align-center action-link">
+                        <v-icon small>mdi-trash-can-outline</v-icon>
                       </span>
+                      
                     </div>
                   </div>
                 </v-card-text>
@@ -140,13 +141,25 @@
                 <v-list-item v-for="reply in comment.replies" :key="reply.id">
                   <v-card class="mb-2 enlarged-reply-card" outlined>
                     <v-card-text>
-                      <div class="comment-text">
-                        <v-list-item-title class="text-subtitle-1">{{ reply.name }}</v-list-item-title>
-                        <v-list-item-subtitle>{{ reply.content }}</v-list-item-subtitle>
-                        <v-list-item-subtitle>{{ formatDate(reply.createdTimeAt) }}</v-list-item-subtitle>
+                      <div class="d-flex justify-space-between align-center">
+                        <div style="flex: 9;">
+                          <div class="comment-text">
+                            <v-list-item-title class="text-subtitle-1"> <v-icon small>mdi-arrow-right-bottom</v-icon>&nbsp;{{ reply.name }}</v-list-item-title>
+                            <v-list-item-subtitle>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ reply.content }}</v-list-item-subtitle>
+                            <v-list-item-subtitle>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ formatDate(reply.createdTimeAt) }}</v-list-item-subtitle>
+                          </div>
+                        </div>
+                        <div style="flex: 1;" class="d-flex align-center">
+                          <span @click="openReportModal('reply', reply)" class="d-flex align-center action-link mr-2">
+                            <v-icon>mdi-bullhorn-variant-outline</v-icon>
+                          </span>
+                          <span v-if="reply.doctorEmail === currentUserEmail" @click="deleteReply(reply)" class="d-flex align-center action-link">
+                            <v-icon small>mdi-trash-can-outline</v-icon>
+                          </span>                          
+                        </div>
                       </div>
                     </v-card-text>
-                  </v-card>
+                  </v-card>                  
                 </v-list-item>
               </v-list>
             </v-list-item>                       
@@ -159,7 +172,6 @@
     <ReportCreate v-if="showReportModal" :postId="reportData.postId" :commentId="reportData.commentId" @close="closeReportModal" />
   </v-container>
 </template>
-
 
 <script>
 import axios from 'axios';
@@ -183,6 +195,10 @@ export default {
   created() {
     this.fetchPostDetail();
   },
+  mounted() {
+  this.currentUserEmail = localStorage.getItem('email');
+  this.fetchPostDetail();
+  },
   methods: {
     edit() {
       this.$router.push(`/update/${this.postDetail.id}`);
@@ -203,38 +219,50 @@ export default {
           });
       }
     },
-    async fetchPostDetail() {
-  const postId = this.$route.params.id;
-  try {
-    const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/community-service/post/detail/${postId}`);
-    this.postDetail = response.data.result;
-
-    // 댓글 및 대댓글 초기화
-    this.postDetail.comments.forEach(comment => {
-      comment.showTextarea = false;  // this.$set 대신 이렇게 사용
-      comment.newComment = '';        // this.$set 대신 이렇게 사용
-      comment.replies = [];           // this.$set 대신 이렇게 사용
-    });
-
-    // 대댓글 구조화
-    this.postDetail.comments.forEach(comment => {
-      if (comment.parentId) {
-        const parentComment = this.postDetail.comments.find(c => c.id === comment.parentId);
-        if (parentComment) {
-          parentComment.replies.push(comment);
+    async deleteReply(reply) {
+      const confirmed = confirm("대댓글을 정말 삭제하시겠습니까?");
+      if (confirmed) {
+        try {
+          await axios.post(`${process.env.VUE_APP_API_BASE_URL}/community-service/comment/delete/${reply.id}`);
+          this.fetchPostDetail(); // 삭제 후 게시글 상세 다시 가져오기
+        } catch (error) {
+          console.error("대댓글 삭제에 실패했습니다.", error);
+          this.error = '대댓글 삭제에 실패했습니다.';
         }
       }
-    });
+    },
+    async fetchPostDetail() {
+      const postId = this.$route.params.id;
+      try {
+        const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/community-service/post/detail/${postId}`);
+        this.postDetail = response.data.result;
 
-    // 부모 댓글만 필터링하고 정렬
-    this.postDetail.comments = this.postDetail.comments.filter(comment => !comment.parentId);
-    this.postDetail.comments.sort((a, b) => new Date(a.createdTimeAt) - new Date(b.createdTimeAt));
+        // 댓글 및 대댓글 초기화
+        this.postDetail.comments.forEach(comment => {
+          comment.showTextarea = false;  // this.$set 대신 이렇게 사용
+          comment.newComment = '';        // this.$set 대신 이렇게 사용
+          comment.replies = [];           // this.$set 대신 이렇게 사용
+        });
 
-  } catch (error) {
-    console.error("게시글 정보를 불러오는 중 오류가 발생했습니다.", error);
-    this.error = error.response ? error.response.data.message : '게시글 정보를 불러오는 중 오류가 발생했습니다.';
-  }
-},
+        // 대댓글 구조화
+        this.postDetail.comments.forEach(comment => {
+          if (comment.parentId) {
+            const parentComment = this.postDetail.comments.find(c => c.id === comment.parentId);
+            if (parentComment) {
+              parentComment.replies.push(comment);
+            }
+          }
+        });
+
+        // 부모 댓글만 필터링하고 정렬
+        this.postDetail.comments = this.postDetail.comments.filter(comment => !comment.parentId);
+        this.postDetail.comments.sort((a, b) => new Date(a.createdTimeAt) - new Date(b.createdTimeAt));
+
+      } catch (error) {
+        console.error("게시글 정보를 불러오는 중 오류가 발생했습니다.", error);
+        this.error = error.response ? error.response.data.message : '게시글 정보를 불러오는 중 오류가 발생했습니다.';
+      }
+    },
     async submitPostComment() {
       const postId = this.$route.params.id;
       try {
@@ -278,7 +306,7 @@ export default {
       }
     },
     getParentComment(parentId) {
-    return this.postDetail.comments.find(comment => comment.id === parentId);
+      return this.postDetail.comments.find(comment => comment.id === parentId);
     },
     formatDate(date) {
       if (!date) return '';
