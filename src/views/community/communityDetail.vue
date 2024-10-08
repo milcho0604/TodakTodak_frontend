@@ -32,22 +32,23 @@
             삭제
           </span>
         </v-col>
-        </div>
-        <v-row class="mb-5 no-margin"> <!-- no-margin 클래스 추가 -->
-          <v-col cols="12" md="12">
-            <v-card flat class="pa-0"> <!-- pa-0 클래스 추가 -->
-              <v-card-text>
-                <div>
-                  <v-list-item-title class="text-subtitle-1" style="font-weight: bold; font-size: 20px !important;">{{ postDetail.title }}</v-list-item-title>
-                  <v-list-item-subtitle style="font-size:17px;">{{ postDetail.content }}</v-list-item-subtitle>
-                </div>
-              </v-card-text>
-              <div class="image-container">
-                <v-img v-if="postDetail.postImgUrl" :src="postDetail.postImgUrl" alt="게시글 이미지" class="mb-3 rounded" />
+      </div>
+
+      <v-row class="mb-5 no-margin">
+        <v-col cols="12" md="12">
+          <v-card flat class="pa-0">
+            <v-card-text>
+              <div>
+                <v-list-item-title class="text-subtitle-1" style="font-weight: bold; font-size: 20px !important;">{{ postDetail.title }}</v-list-item-title>
+                <v-list-item-subtitle style="font-size:17px;">{{ postDetail.content }}</v-list-item-subtitle>
               </div>
-            </v-card>
-          </v-col>
-        </v-row>
+            </v-card-text>
+            <div class="image-container">
+              <v-img v-if="postDetail.postImgUrl" :src="postDetail.postImgUrl" alt="게시글 이미지" class="mb-3 rounded" />
+            </div>
+          </v-card>
+        </v-col>
+      </v-row>
 
       <v-col class="d-flex justify" style="flex-grow: 1;">
         <span @click="like" class="d-flex align-center action-link mr-2">
@@ -73,12 +74,12 @@
               required
             ></v-textarea>
             <span 
-            @click="submitPostComment" 
-            class="d-flex align-center action-link mr-2" 
-            style="cursor: pointer;"
-          >
-            <v-icon small>mdi-comment-outline</v-icon>&nbsp; 댓글 작성
-          </span>
+              @click="submitPostComment" 
+              class="d-flex align-center action-link mr-2" 
+              style="cursor: pointer;"
+            >
+              <v-icon small>mdi-comment-outline</v-icon>&nbsp; 댓글 작성
+            </span>
           </v-form>
         </v-col>
       </v-row>
@@ -90,19 +91,11 @@
           <h4 class="text-h6 font-weight-bold">댓글</h4>
           <v-list>
             <v-list-item v-for="comment in postDetail.comments" :key="comment.id" class="py-2">
-              <v-card 
-                :style="{ 
-                  backgroundColor: comment.parentId ? '#898787' : (comment.memberEmail === currentUserEmail ? '#F9F9F9' : '#ECF2FE'), 
-                  borderRadius: '10px' 
-                  }" 
-                  class="mb-2" 
-                  outlined>
-
+              <v-card :style="{ backgroundColor: comment.memberEmail === currentUserEmail ? '#F9F9F9' : '#ECF2FE' }" class="mb-2" outlined>
                 <v-card-text>
                   <div class="d-flex justify-space-between align-center">
                     <div style="flex: 9;">
                       <div class="comment-text">
-                        {{ comment.memberEmail }}
                         <v-list-item-title class="text-subtitle-1" style="font-weight: bold; font-size: 20px !important;">{{ comment.name }}</v-list-item-title>
                         <v-list-item-subtitle style="font-size:18px;">{{ comment.content }}</v-list-item-subtitle>
                         <v-list-item-subtitle>{{ formatDate(comment.createdTimeAt) }}</v-list-item-subtitle>
@@ -118,46 +111,45 @@
                     </div>
                   </div>
                 </v-card-text>
-                
+
                 <v-card-actions>
                   <span @click="comment.showTextarea = !comment.showTextarea" class="d-flex align-center action-link mr-2">
-                    <v-icon small>mdi-comment-outline</v-icon>
-                    &nbsp;댓글달기
+                    <v-icon small>mdi-comment-outline</v-icon>&nbsp;댓글달기
                   </span>
                 </v-card-actions>
-            
+
                 <v-form v-if="comment.showTextarea" @submit.prevent="submitComment(comment)">
                   <v-textarea
                     v-model="comment.newComment"
-                    label="대댓글을 작성해주세요"
+                    :label="comment.parentId ? getParentComment(comment.parentId).content : '대댓글을 작성해주세요'"
                     outlined
                     required
                   ></v-textarea>
-            
                   <span 
                     @click="submitComment(comment)" 
                     class="d-flex align-center action-link mr-2" 
                     style="cursor: pointer;"
                   >
-                  <v-icon small>mdi-comment-outline</v-icon> &nbsp; 대댓글 작성
+                    <v-icon small>mdi-comment-outline</v-icon> &nbsp; 대댓글 작성
                   </span>
                 </v-form>
-            
-                <!-- 대댓글 표시 -->
-                <v-list v-if="comment.replies && comment.replies.length">
-                  <v-list-item v-for="reply in comment.replies" :key="reply.id">
-                    <v-card :style="{ backgroundColor: '#898787' }" class="mb-2" outlined>
-                      <v-card-text>
-                        <div class="comment-text">
-                          <v-list-item-title class="text-subtitle-1">{{ reply.doctorEmail }}</v-list-item-title>
-                          <v-list-item-subtitle>{{ reply.content }} - {{ formatDate(reply.createdTime) }}</v-list-item-subtitle>
-                        </div>
-                      </v-card-text>
-                    </v-card>
-                  </v-list-item>
-                </v-list>
               </v-card>
-            </v-list-item>
+
+              <!-- 대댓글 표시 -->
+              <v-list v-if="comment.replies && comment.replies.length" class="ml-4">
+                <v-list-item v-for="reply in comment.replies" :key="reply.id">
+                  <v-card class="mb-2 enlarged-reply-card" outlined>
+                    <v-card-text>
+                      <div class="comment-text">
+                        <v-list-item-title class="text-subtitle-1">{{ reply.name }}</v-list-item-title>
+                        <v-list-item-subtitle>{{ reply.content }}</v-list-item-subtitle>
+                        <v-list-item-subtitle>{{ formatDate(reply.createdTimeAt) }}</v-list-item-subtitle>
+                      </div>
+                    </v-card-text>
+                  </v-card>
+                </v-list-item>
+              </v-list>
+            </v-list-item>                       
           </v-list>
         </v-col>
       </v-row>
@@ -167,6 +159,7 @@
     <ReportCreate v-if="showReportModal" :postId="reportData.postId" :commentId="reportData.commentId" @close="closeReportModal" />
   </v-container>
 </template>
+
 
 <script>
 import axios from 'axios';
@@ -211,29 +204,37 @@ export default {
       }
     },
     async fetchPostDetail() {
-      const postId = this.$route.params.id;
-      try {
-        const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/community-service/post/detail/${postId}`);
-        this.postDetail = response.data.result;
+  const postId = this.$route.params.id;
+  try {
+    const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/community-service/post/detail/${postId}`);
+    this.postDetail = response.data.result;
 
-        this.postDetail.comments.forEach(comment => {
-          this.$set(comment, 'showTextarea', false);
-          this.$set(comment, 'newComment', '');
-          this.$set(comment, 'replies', []); // 대댓글 배열 초기화
-        });
+    // 댓글 및 대댓글 초기화
+    this.postDetail.comments.forEach(comment => {
+      comment.showTextarea = false;  // this.$set 대신 이렇게 사용
+      comment.newComment = '';        // this.$set 대신 이렇게 사용
+      comment.replies = [];           // this.$set 대신 이렇게 사용
+    });
 
-        this.postDetail.comments.forEach(comment => {
-          if (comment.parentId) {
-            const parentComment = this.postDetail.comments.find(c => c.id === comment.parentId);
-            if (parentComment) {
-              parentComment.replies.push(comment); // 부모 댓글의 replies에 대댓글 추가
-            }
-          }
-        });
-      } catch (error) {
-        this.error = error.response ? error.response.data.message : '게시글 정보를 불러오는 중 오류가 발생했습니다.';
+    // 대댓글 구조화
+    this.postDetail.comments.forEach(comment => {
+      if (comment.parentId) {
+        const parentComment = this.postDetail.comments.find(c => c.id === comment.parentId);
+        if (parentComment) {
+          parentComment.replies.push(comment);
+        }
       }
-    },
+    });
+
+    // 부모 댓글만 필터링하고 정렬
+    this.postDetail.comments = this.postDetail.comments.filter(comment => !comment.parentId);
+    this.postDetail.comments.sort((a, b) => new Date(a.createdTimeAt) - new Date(b.createdTimeAt));
+
+  } catch (error) {
+    console.error("게시글 정보를 불러오는 중 오류가 발생했습니다.", error);
+    this.error = error.response ? error.response.data.message : '게시글 정보를 불러오는 중 오류가 발생했습니다.';
+  }
+},
     async submitPostComment() {
       const postId = this.$route.params.id;
       try {
@@ -276,6 +277,9 @@ export default {
         }
       }
     },
+    getParentComment(parentId) {
+    return this.postDetail.comments.find(comment => comment.id === parentId);
+    },
     formatDate(date) {
       if (!date) return '';
       const options = { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' };
@@ -306,7 +310,6 @@ export default {
   line-height: 1.5;
   color: #000000;
 }
-
 
 .action-link {
   cursor: pointer;
@@ -348,12 +351,9 @@ h2.text-h5 {
   border-radius: 8px;
 }
 
-.btn_board_option {
-  display: block;
-  padding: 5px 10px;
-  color: #ffffff;
-  text-decoration: none;
-  background-color: #f27885;
-  border-radius: 8px;
+.enlarged-reply-card {
+  padding: 16px;
+  margin: 8px 0;
+  background-color: #f9f9f9;
 }
 </style>
