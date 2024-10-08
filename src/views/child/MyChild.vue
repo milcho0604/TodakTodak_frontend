@@ -1,0 +1,219 @@
+<template>
+    <v-container class="custom-container">
+        <v-row justify="center" class="inter-bold title">
+            자녀 설정
+        </v-row>
+        <v-row justify="center" class="divider-row">
+            <hr class="divider">
+        </v-row>
+
+        <!-- 자녀 목록을 반복하여 렌더링 -->
+        <v-row justify="center" v-for="(child, id) in children" :key="id">
+            <div class="child">
+                <v-row>
+                    <v-col cols="3">
+                        <img :src="child.imageUrl"
+                            alt="child image" style="width: 40px; height: 40px;">
+                    </v-col>
+                    <v-col cols="9">
+                        <v-row class="inter-bold" style="margin-top: 2px;">
+                            {{ child.name }}
+                            <v-icon class="edit-icon" @click="openUpdateModal(child)">mdi-pencil-outline</v-icon>
+                            <v-spacer></v-spacer>
+                            <v-icon class="delete-icon">mdi-trash-can-outline</v-icon>
+                        </v-row>
+                        <v-row class="small-font inter-normal">
+                            {{ child.ssn }}
+                        </v-row>
+                    </v-col>
+                </v-row>
+            </div>
+        </v-row>
+
+        <v-row justify="center" class="mt-8">
+            <div class="round inter-normal dark-blue" @click="createModal=true">자녀정보 추가</div>
+        </v-row>
+
+        <!-- 자녀 추가 모달 -->
+        <ChildCreateModal v-model="createModal" @update:dialog="createModal = $event" @child-exists="openChildExistsDialog"></ChildCreateModal>
+        
+        <!-- 자녀 수정 모달 -->
+        <ChildUpdateModal 
+            v-model="updateModal" 
+            @update:dialog="updateModal = $event"
+            :childId="selectedChild.id"
+            :initialName="selectedChild.name"
+            :initialSSN="selectedChild.ssn"
+            :initialImage="selectedChild.imageUrl"
+        ></ChildUpdateModal>
+
+        <!-- 자녀 이미 등록 모달 -->
+        <v-dialog v-model="childExistsDialog" max-width="450px">
+            <v-card class="modal">
+                <v-row class="mt-3" justify="center">
+                    <div class="headline inter-bold">자녀정보 등록 실패</div>
+                </v-row>
+                <v-card-text class="mt-5">
+                    <div class="strong inter-bold">
+                        {{ formattedChildExistsMessage }} 님께 이미 등록된 자녀입니다.
+                    </div>
+                    <div class="weak inter-light">
+                        해당 주민번호의 자녀는 다른 계정에 등록되어 있습니다.<br>
+                        먼저 등록한 보호자에게 자녀 정보를 공유받아주세요. 
+                    </div>
+                </v-card-text>
+                <v-card-actions>
+                    <div class="round inter-bold" @click="childExistsDialog = false">확인</div>
+                </v-card-actions>
+            </v-card>
+        </v-dialog>
+    </v-container>
+</template>
+<script>
+import axios from 'axios';
+import ChildCreateModal from './ChildCreateModal.vue';
+import ChildUpdateModal from './ChildUpdateModal.vue';
+export default {
+    components: {
+        ChildCreateModal,
+        ChildUpdateModal
+    },
+    data() {
+        return {
+            updateModal: false,
+            createModal: false,
+            childExistsDialog: false,
+            children: [
+                {
+                    name: "김아들",
+                    ssn: "200619-1010101",
+                    image: "https://todak-file.s3.amazonaws.com/d278dfb1-9275-41ad-8b86-f7a0a904892b_IMG_8641.JPG"
+                },
+                {
+                    name: "박딸",
+                    ssn: "201123-2020202",
+                    image: "https://todak-file.s3.amazonaws.com/d278dfb1-9275-41ad-8b86-f7a0a904892b_IMG_8641.JPG"
+                }
+                
+            ],
+            selectedChild: {
+                id: null,
+                name: '',
+                ssn: '',
+                imageUrl: ''
+            },
+            childExistsMessage: [], // 메시지를 저장할 데이터
+        }
+    },
+    created() {
+        this.fetchChild();
+    },
+    computed: {
+        // childExistsMessage 배열을 쉼표로 구분된 문자열로 변환
+        formattedChildExistsMessage() {
+            return this.childExistsMessage.join(', ');
+        }
+    },
+    methods: {
+        async fetchChild() {
+            const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/member-service/child/`);
+            this.children = response.data.result;
+        },
+        openUpdateModal(child) {
+            console.log(child);
+            this.selectedChild = { ...child };  // 선택된 자녀 정보 저장
+            console.log(this.selectedChild);
+            this.updateModal = true;  // 수정 모달 열기
+        },
+        openChildExistsDialog(message) {
+            this.childExistsDialog = true; // 자녀 등록되어 있음 모달 열기
+            this.childExistsMessage = message; // 메시지 저장
+        }
+    }
+}
+</script>
+<style scoped>
+.modal {
+    padding: 20px;
+    border-radius: 40px;
+}
+.hover-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+}
+.headline {
+    text-align: center;
+    color: #00499E;
+    font-size: 25px;
+    margin-top: 10px;
+  
+}
+.close-icon {
+    color: #676767;
+}
+
+.title {
+    margin-top: 50px;
+    font-size: 25px;
+    color: #00499E;
+}
+
+.divider-row {
+    width: 100%;
+    justify-content: center;
+}
+
+.divider {
+    width: 70%;
+    border: 0;
+    border-top: 1px solid #ccc;
+    /* 구분선 색상과 두께 */
+    margin: 20px 0;
+    /* 구분선 위아래 여백 */
+}
+
+.child {
+    border: 1px solid #ccc;
+    width: 40%;
+    border-radius: 10px;
+    padding: 16px 10px;
+    margin: 10px 0;
+}
+
+.small-font {
+    font-size: 13px;
+    color: #888888;
+}
+
+.edit-icon {
+    margin-left: 4px;
+    margin-top: 2px;
+    color: #888888;
+    font-size: 20px;
+}
+
+.delete-icon {
+    color: #888888;
+    margin-right: 20px;
+}
+
+.round {
+    background-color: #C2D7FF;
+    border-radius: 40px;
+    padding: 4px 18px;
+    font-size: 14px;
+    display: inline-block; /* 글자 수에 맞춰 버튼 길이 조정 */
+    text-align: center;
+    color: #00499E;
+    margin: auto;
+}
+.strong {
+    text-align: center;
+}
+.weak {
+    color: #5B5B5B;
+    text-align: center;
+    font-size: 15px;
+}
+</style>
