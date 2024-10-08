@@ -217,11 +217,14 @@
                             <v-icon>mdi-alarm-light-outline</v-icon> 신고
                           </span>
                           <ReportComment
-                            v-if="showReportCommentModal"
-                            :postId="reportData.postId"
-                            :commentId="reportData.commentId"
-                            @close="closeReportCommentModal"
-                             />
+                          v-if="showReportCommentModal"
+                          :postId="reportData.postId"
+                          :commentId="reportData.replyId"
+                          :replyId="reply.replyId"
+                          :reportedEmail="reply.doctorEmail"
+                          :comments="postDetail.comments"
+                          @close="closeReportCommentModal"
+                          />     
                         </div>                        
                       </div>
                     </v-card-text>
@@ -378,10 +381,13 @@ export default {
       this.reportData = {
         postId: this.postDetail.id,
         commentId: comment ? comment.id : null,
+        replyId: comment && comment.parentId ? comment.id : null
       };
       if (type === 'post') {
         this.showReportPostModal = true;
       } else if (type === 'comment') {
+        this.showReportCommentModal = true;
+      } else if (type === 'reply') {
         this.showReportCommentModal = true;
       }
     },
