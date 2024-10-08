@@ -218,47 +218,9 @@ export default {
             hostpitalName: "삼성화곡소아청소년과",
             hospitalId: 1,
             child: null,
-            doctor: null,
-            childOptions: [
-                {
-                    id: 1,
-                    name: "이한아",
-                    ssn: "181227 - 432112",
-                    image: "https://todak-file.s3.amazonaws.com/d278dfb1-9275-41ad-8b86-f7a0a904892b_IMG_8641.JPG"
-                },
-                {
-                    id: 2,
-                    name: "정슬기",
-                    ssn: "181227 - 432112",
-                    image: "https://todak-file.s3.amazonaws.com/d278dfb1-9275-41ad-8b86-f7a0a904892b_IMG_8641.JPG"
-                },
-                {
-                    id: 3,
-                    name: "이한아",
-                    ssn: "181227 - 432112",
-                    image: "https://todak-file.s3.amazonaws.com/d278dfb1-9275-41ad-8b86-f7a0a904892b_IMG_8641.JPG"
-                }, {
-                    id: 4,
-                    name: "이한아",
-                    ssn: "181227 - 432112",
-                    image: "https://todak-file.s3.amazonaws.com/d278dfb1-9275-41ad-8b86-f7a0a904892b_IMG_8641.JPG"
-                },
-            ],
-            doctorList: [
-                {
-                    id: null,
-                    name: null,
-                    waiting: null,
-                    doctorEmail: null,
-                    image: null
-                },
-                {
-                    id: 2,
-                    name: "박명석",
-                    waiting: 3,
-                    image: "https://todak-file.s3.amazonaws.com/d278dfb1-9275-41ad-8b86-f7a0a904892b_IMG_8641.JPG"
-                },
-            ],
+            doctor: [],
+            childOptions: [],
+            doctorList: [],
             symptoms: [],
             symptomsOptions: {
                 respiratory: ['콧물', '기침', '인후통', '호흡곤란', '가래'],
@@ -277,7 +239,7 @@ export default {
                 "14:00", "14:30", "15:00", "15:30",
                 "16:00", "16:30", "17:00", "17:30"
             ], // 시간 슬롯 설정
-            reservedTimes: ["10:00", "13:00", "15:00"], // 이미 예약된 시간
+            reservedTimes: [], // 이미 예약된 시간
             selectedTime: null, // 선택된 시간
         }
     },
@@ -288,6 +250,7 @@ export default {
         },
         addDoctor(doctor) {
             this.doctor = doctor;
+            this.fetchDoctorTime();
             console.log(doctor);
         },
         addmediItem(mediItem) {
@@ -340,28 +303,33 @@ export default {
             console.log(this.selectedTime)
         },
         async reservedApply() {
-            const formattedDate = this.date.toISOString().split('T')[0];
+            try {
+                const formattedDate = this.date.toLocaleDateString('en-CA')
 
-            const req = {
-                childId: this.child.id,
-                hospitalId: 1,
-                doctorName: this.doctor.name,
-                doctorEmail: this.doctor.doctorEmail,
-                reservationType: this.medicalType,
-                reservationDate: formattedDate,
-                reservationTime: this.selectedTime,
-                untact: "false",
-                medicalItem: this.mediItem,
-                status: "Confirmed",
-                field: this.symptoms.toString(),
-                message: this.comment
+                const req = {
+                    childId: this.child.id,
+                    hospitalId: this.hospitalId,
+                    doctorName: this.doctor.name,
+                    doctorEmail: this.doctor.doctorEmail,
+                    reservationType: this.medicalType,
+                    reservationDate: formattedDate,
+                    reservationTime: this.selectedTime,
+                    untact: "false",
+                    medicalItem: this.mediItem,
+                    status: "Confirmed",
+                    field: this.symptoms.toString(),
+                    message: this.comment
+                }
+                console.log(req)
+
+                const response = await axios.post(`${process.env.VUE_APP_API_BASE_URL}/reservation-service/reservation/scheduled`,
+                    req);
+
+                console.log(response)
+                this.$router.push('/')
+            }catch(e){
+                alert(e.message)
             }
-            console.log(req)
-
-            const response = await axios.post(`${process.env.VUE_APP_API_BASE_URL}/reservation-service/reservation/scheduled`,
-                req);
-
-            console.log(response)
         },
         async fetchDoctorList() {
             try {
@@ -372,10 +340,40 @@ export default {
             } catch (e) {
                 console.log(e);
             }
+        },
+        async fetchChildList() {
+            try {
+                const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/member-service/child/`);
+                this.childOptions = response.data.result;
+                console.log(this.childOptions)
+            } catch (e) {
+                console.log(e);
+            }
+        },
+        async fetchDoctorTime() {
+            try {
+                this.reservedTimes = [];
+                const request = {
+                    doctorEmail: this.doctor.doctorEmail,
+                    date: this.date.toLocaleDateString('en-CA')
+                };
+                const response = await axios.post(`${process.env.VUE_APP_API_BASE_URL}/reservation-service/reservation/get/time`,
+                    request);
+                this.reservedTimes = response.data.map(time => time.slice(0, 5));
+            } catch (e) {
+                console.log(e)
+            }
         }
     },
     async created() {
         this.fetchDoctorList();
+        this.fetchChildList();
+    },
+    watch: {
+        date(newDate) {
+            console.log(newDate);
+            this.fetchDoctorTime();
+        }
     }
 }
 </script>
