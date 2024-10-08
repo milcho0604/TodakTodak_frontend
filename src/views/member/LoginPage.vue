@@ -1,147 +1,234 @@
 <template>
-    <v-container>
-      <v-row justify="center">
-        <v-col cols="12" sm="6" md="8">
-          <v-card>
-            <v-card-title class="text-h5 text-center">로그인</v-card-title>
-            <v-card-text>
-              <v-form @submit.prevent="doLogin">
-                <v-text-field
-                  label="아이디(이메일)"
-                  v-model="memberEmail"
-                  type="email"
-                  prepend-icon="mdi-email"
-                  required
-                ></v-text-field>
-                <v-text-field
-                  label="비밀번호"
-                  v-model="password"
-                  type="password"
-                  prepend-icon="mdi-lock"
-                  required
-                ></v-text-field>
-                <v-checkbox
-                  v-model="rememberEmail"
-                  label="ID 저장"
-                ></v-checkbox>
-                <v-checkbox
-                  v-model="autoLogin"
-                  label="자동로그인"
-                ></v-checkbox>
-                <v-btn block type="submit" color="primary">로그인</v-btn>
-                <v-divider class="my-4"></v-divider>
-                <div style="display: flex; justify-content: center; align-items: center; width: 100%; gap: 5px;">
-                  <v-btn
-                    style="flex: 1; height: auto; padding: 0; border: none; display: flex; justify-content: center; align-items: center;"
-                    @click="kakaoLogin"
-                  > 
-                  카카오 로그인
-                  <v-icon size="large">mdi-kakao-talk</v-icon>
-                  </v-btn>
-                </div>
+  <v-container class="main-content">
+    <div class="signup-title-container">
+      <div class="signup-title">병원 관계자 로그인</div>
+    </div>
+    <br />
+    <v-row justify="center">
+      <v-col cols="12" sm="6" md="8">
+        <v-card class="login-card">
+          <v-card-title class="text-h5 text-center">로그인</v-card-title>
+          <v-card-text>
+            <v-form @submit.prevent="doLogin">
+              <!-- 이메일 필드 -->
+              <v-text-field
+                label="아이디(이메일)"
+                v-model="memberEmail"
+                type="email"
+                prepend-icon="mdi-email"
+                required
+                class="underline-input-field"
+                solo-inverted
+                hide-details
+              ></v-text-field>
+              <br>
+              <!-- 비밀번호 필드 -->
+              <v-text-field
+                label="비밀번호"
+                v-model="password"
+                type="password"
+                prepend-icon="mdi-lock"
+                required
+                class="underline-input-field"
+                solo-inverted
+                hide-details
+              ></v-text-field>
+              <!-- 체크박스 필드 -->
+              <v-row class="checkbox-row" dense>
+                <v-col cols="4">
+                  <v-checkbox
+                    v-model="rememberEmail"
+                    label="ID 저장"
+                    class="custom-checkbox"
+                  ></v-checkbox>
+                </v-col>
+                <v-col cols="6" class="text-right">
+                  <v-checkbox
+                    v-model="autoLogin"
+                    label="자동로그인"
+                    class="custom-checkbox"
+                  ></v-checkbox>
+                </v-col>
+              </v-row>
+              <!-- 로그인 버튼 -->
+              <v-row justify="center" >
+                <v-btn type="submit" class="login-btn">로그인</v-btn>
+              </v-row>
 
-                <v-divider class="my-4"></v-divider>
-                <v-list>
-                  <v-list-item @click="findEmail">
-                    <v-list-item-title>아이디 찾기</v-list-item-title>
-                  </v-list-item>
-                  <v-list-item @click="findPassword">
-                    <v-list-item-title>비밀번호 찾기</v-list-item-title>
-                  </v-list-item>
-                  <v-list-item @click="signUp">
-                    <v-list-item-title>회원가입</v-list-item-title>
-                  </v-list-item>
-                </v-list>
-              </v-form>
-            </v-card-text>
-          </v-card>
-        </v-col>
-      </v-row>
-    </v-container>
-  </template>
+              <br>
+              <!-- 추가 링크들 -->
+              <v-list class="custom-list">
+                <v-list-item @click="findEmail">
+                  <v-list-item-title class="link-text">아이디 찾기</v-list-item-title>
+                </v-list-item>
+                <v-list-item @click="findPassword">
+                  <v-list-item-title class="link-text">비밀번호 찾기</v-list-item-title>
+                </v-list-item>
+                <v-list-item @click="signUp">
+                  <v-list-item-title class="link-text">회원가입</v-list-item-title>
+                </v-list-item>
+              </v-list>
+            </v-form>
+          </v-card-text>
+        </v-card>
+      </v-col>
+    </v-row>
+  </v-container>
+</template>
 
-  <script>
-  import axios from 'axios';
-  import {jwtDecode} from 'jwt-decode';
-  
-  export default {
-    name: "LoginPage",
-    data() {
-      return {
-        memberEmail: "",
-        password: "",
-        rememberEmail: false,
-        autoLogin: false,
-      };
-    },
-    mounted() {
-      const savedEmail = localStorage.getItem('savedEmail');
-      if (savedEmail) {
-        this.memberEmail = savedEmail;
-        this.rememberEmail = true;
+<script>
+import axios from 'axios';
+import jwtDecode from 'jwt-decode';
+
+export default {
+  name: "LoginPage",
+  data() {
+    return {
+      memberEmail: "",
+      password: "",
+      rememberEmail: false,
+      autoLogin: false,
+    };
+  },
+  mounted() {
+    const savedEmail = localStorage.getItem('savedEmail');
+    if (savedEmail) {
+      this.memberEmail = savedEmail;
+      this.rememberEmail = true;
+    }
+  },
+  methods: {
+    async doLogin() {
+      try {
+        const loginData = {
+          memberEmail: this.memberEmail,
+          password: this.password,
+          rememberEmail: this.rememberEmail,
+          autoLogin: this.autoLogin,
+        };
+
+        const response = await axios.post(`${process.env.VUE_APP_API_BASE_URL}/member-service/member/login`, loginData);
+
+        const token = response.data.result;
+        const decodedToken = jwtDecode(token);
+        const role = decodedToken.role;
+        const memberId = decodedToken.memberId;
+
+        localStorage.setItem('token', token);
+        localStorage.setItem('role', role);
+        localStorage.setItem('memberId', memberId);
+        localStorage.setItem('email', this.memberEmail);
+
+        if (this.rememberEmail) {
+          localStorage.setItem('savedEmail', this.memberEmail);
+        } else {
+          localStorage.removeItem('savedEmail');
+        }
+        window.location.href = "/";
+      } catch (e) {
+        if (e.response?.status === 403) {
+          alert('이메일 인증이 필요합니다.');
+          window.location.href = "/authentication";
+        } else {
+          alert('로그인 실패');
+          const error_message = e.response?.data?.status_message || "로그인에 실패했습니다.";
+          alert(error_message);
+        }
       }
     },
-    methods: {
-      async doLogin() {
-        try {
-          const loginData = {
-            memberEmail: this.memberEmail,
-            password: this.password,
-            rememberEmail: this.rememberEmail,
-            autoLogin: this.autoLogin,
-          };
-  
-          const response = await axios.post(`${process.env.VUE_APP_API_BASE_URL}/member-service/member/login`, loginData);
-        
-          const token = response.data.result;
-          const decodedToken = jwtDecode(token);
-          const role = decodedToken.role;
-          const memberId = decodedToken.memberId;
-  
-          localStorage.setItem('token', token);
-          localStorage.setItem('role', role);
-          localStorage.setItem('memberId', memberId);  // member.id 저장
-          localStorage.setItem('email', this.memberEmail);  // email 저장
-  
-          if (this.rememberEmail) {
-            localStorage.setItem('savedEmail', this.memberEmail);  // 이메일 저장
-          } else {
-            localStorage.removeItem('savedEmail');  // 이메일 삭제
-          }
-            window.location.href = "/";
-        } catch (e) {
-          if (e.response?.status === 403) {
-            alert('이메일 인증이 필요합니다.');
-            window.location.href = "/authentication";
-          } else {
-            alert('로그인 실패');
-            console.error(e);
-            const error_message = e.response?.data?.status_message || "로그인에 실패했습니다.";
-            alert(error_message);
-          }
-        }
-      },
-      async fetchData(memberId) {
-        try {
-          const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/some-endpoint`, {
-            headers: {
-              'myId': memberId // myId 헤더에 사용자 ID 설정
-            }
-          });
-          console.log('데이터 가져오기 성공:', response.data);
-        } catch (error) {
-          console.error('데이터 가져오기 실패:', error);
-        }
-      },
-      kakaoLogin() {
-        window.location.href = 'http://localhost:8080/member-service/oauth2/authorization/kakao';
-      },
-      findEmail() {
-            this.$router.push("member/find/email");
-      },
-      findPassword() {
-            this.$router.push("/member/find/password");
-      },
+    findEmail() {
+      this.$router.push("member/find/email");
     },
-  };
-  </script>
+    findPassword() {
+      this.$router.push("/member/find/password");
+    },
+  },
+};
+</script>
+
+<style scoped>
+.v-container {
+  max-width: 850px;
+  margin: auto;
+  padding: 40px;
+}
+
+.login-card {
+  padding: 30px;
+  background-color: #f9f9f9;
+  border-radius: 12px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* 밑줄이 있는 텍스트 필드 */
+.underline-input-field .v-input__control {
+  border-bottom: 2px solid #00499e !important;
+  box-shadow: none !important;
+  background-color: white !important;
+  margin-bottom: 10px;
+}
+
+.underline-input-field .v-input__control:hover {
+  border-bottom-color: #003c8f !important;
+}
+
+.underline-input-field .v-input__control input {
+  padding-left: 0 !important;
+}
+
+/* 체크박스 간격 좁히기 */
+.checkbox-row {
+  margin-top: -5px !important; /* 간격 좁힘 */
+  margin-bottom: -5px !important; /* 간격 좁힘 */
+}
+.custom-checkbox {
+  color: #00499e;
+  font-size: 14px;
+  margin-left: 30px;
+}
+
+/* 로그인 버튼 크기 조정 및 중앙 정렬 */
+.login-btn {
+  background-color: #c2d7ff !important;
+  color: #00499e !important;
+  border-radius: 25px !important;
+  padding: 8px 40px !important;
+  font-family: 'Inter' !important;
+  font-weight: 700 !important;
+  font-size: 16px !important;
+  text-transform: none !important;
+  width: 150px;
+}
+
+.link-text {
+  color: #00499e;
+  font-weight: 500;
+  cursor: pointer;
+  text-align: center;
+}
+
+.link-text:hover {
+  text-decoration: underline;
+}
+
+.signup-title {
+  font-size: 28px;
+  font-weight: 700;
+  color: #00499e;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.signup-title-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 30px;
+}
+
+.custom-list {
+  background-color: #f9f9f9;
+  padding: 10px;
+  border-radius: 8px;
+}
+</style>
