@@ -8,6 +8,7 @@ import { memberRouter } from './memberRouter';
 import { paymentRouter } from './paymentRouter';
 import { untactRouter } from './untactRouter';
 import { chatRouter } from './chatRouter';
+import { reservationRouter } from './reservationRouter';
 import { communityRouter } from './communityRouter';
 
 const routes = [
@@ -20,6 +21,7 @@ const routes = [
     ...paymentRouter,
     ...untactRouter,
     ...chatRouter,
+    ...reservationRouter,
     ...communityRouter,
 ]
 
