@@ -679,6 +679,7 @@ export default {
     font-size: 35px;
     text-align: center;
     font-weight: bold;
+    margin-top: -25px;
 }
 .waiting-text{
     color: #888888;

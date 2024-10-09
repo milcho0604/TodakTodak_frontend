@@ -758,8 +758,8 @@ export default {
 
 .modal-success-home{
     margin-top: 5px;
-    background-color: #5F5F5F;
-    color: #E0E0E0;
+    background-color: #E0E0E0;
+    color: #5F5F5F;
     border-radius: 5px;
     padding: 5px;
     margin-right: 5px;
