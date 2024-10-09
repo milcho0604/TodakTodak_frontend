@@ -349,7 +349,9 @@ export default {
         this.showCommentTextarea = false;
         this.fetchPostDetail();
       } catch (error) {
-        this.error = '댓글 등록에 실패했습니다.';
+        const message1 = error.response.data.status_message; // 에러 메시지 설정
+        alert(message1);
+
       }
     },
     async submitComment(comment) {
@@ -363,7 +365,9 @@ export default {
         comment.newComment = '';
         this.fetchPostDetail();
       } catch (error) {
-        this.error = '댓글 등록에 실패했습니다.';
+        const message = error.response.data.status_message;
+        alert(message);
+        
       }
     },
     async deleteComment(comment) {
