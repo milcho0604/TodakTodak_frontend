@@ -759,7 +759,7 @@ export default {
     margin-top: 5px;
     background-color: #5F5F5F;
     color: #E0E0E0;
-    border-radius: 10px;
+    border-radius: 5px;
     padding: 5px;
     margin-right: 5px;
     cursor: pointer;
@@ -768,7 +768,7 @@ export default {
 .modal-success-detail{
     margin-top: 5px;
     background-color: #C2D7FF;
-    border-radius: 10px;
+    border-radius: 5px;
     padding: 5px;
     margin-left: 5px;
     color: #00499E;

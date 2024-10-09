@@ -187,7 +187,7 @@
                     <v-card-title class="submodal mt-6 inter-bold text-center">
                         바로접수 완료하시겠습니까?
                     </v-card-title>
-                    <v-card-text >
+                    <v-card-text>
                         <v-container class="submodaltext">
                             <v-row justify="center">
                                 <v-col class="inter-bold subtitle-3">
@@ -220,7 +220,7 @@
                                 <v-col style="margin-top: -20px">
                                     {{ mediItem }}
                                 </v-col>
-                            </v-row>    
+                            </v-row>
                             <v-row justify="center">
                                 <v-col class="inter-bold subtitle-3">
                                     진료 정보
@@ -230,7 +230,7 @@
                                 <v-col style="margin-top: -20px">
                                     {{ symptoms.join("•") }}
                                 </v-col>
-                            </v-row>  
+                            </v-row>
                             <v-row justify="center">
                                 <v-col class="inter-bold subtitle-3">
                                     원장님께 하고 싶은 말
@@ -240,7 +240,7 @@
                                 <v-col style="margin-top: -20px">
                                     {{ comment }}
                                 </v-col>
-                            </v-row>  
+                            </v-row>
                         </v-container>
                         <v-container style="text-align: center;">
                             <v-row justify="center" align="center">
@@ -253,6 +253,35 @@
                             </v-row>
                         </v-container>
                     </v-card-text>
+                </v-card>
+            </v-dialog>
+            <v-dialog v-model="successReserveModal" max-width="600px">
+                <v-card>
+                    <v-card-title class="submodal mt-6 inter-bold text-center">
+                        당일접수가 성공적으로 완료되었습니다!
+                    </v-card-title>
+                    <v-container style="text-align: center;" class="mt-3">
+                        <v-row>
+                            <v-col class="waiting">
+                                {{ totalWaiting }}명 대기중
+                            </v-col>
+                        </v-row>
+                        <v-row>
+                            <v-col class="waiting-text" style="margin-top: -20px;">
+                                현재 내 차례는 <span style="color: #0066FF;">{{ myWaiting }}</span>번 째 입니다.
+                            </v-col>
+                        </v-row>
+
+                        <v-row justify="center" align="center" class="mt-6">
+                            <v-col cols="4" class="modal-success-home" @click="goRoute('home')">
+                                홈으로 가기
+                            </v-col>
+                            <v-col cols="4" class="modal-success-detail" @click="goRoute('detail')">
+                                예약상세내역 확인
+                            </v-col>
+                        </v-row>
+                        <br><br>
+                    </v-container>
                 </v-card>
             </v-dialog>
         </v-container>
@@ -286,6 +315,9 @@ export default {
             comment: null,
             mediData: [],
             reservedModal: false,
+            successReserveModal: false,
+            totalWaiting: 42,
+            myWaiting: 43
         }
     },
     methods: {
@@ -350,7 +382,8 @@ export default {
                     req);
 
                 console.log(response)
-                this.$router.push('/')
+                this.reservedModal = false;
+                this.successReserveModal = true;
             } catch (e) {
                 alert(e.message)
             }
@@ -370,13 +403,13 @@ export default {
             const db = getDatabase(app);
             const mediRef = ref(db, 'medi');
 
-            onValue(mediRef,(snapshot) => {
+            onValue(mediRef, (snapshot) => {
                 const data = snapshot.val();
                 console.log(data);
-                if(data){
+                if (data) {
                     this.mediData = Object.keys(data)
-                    .filter(key => data[key] && data[key].data)
-                    .map(key => data[key]);
+                        .filter(key => data[key] && data[key].data)
+                        .map(key => data[key]);
                 }
             });
         }
@@ -481,7 +514,7 @@ export default {
     cursor: pointer;
 }
 
-.modal-selected{
+.modal-selected {
     margin-top: 5px;
     background-color: #717171;
     border-radius: 10px;
@@ -489,7 +522,8 @@ export default {
     margin-right: 5px;
     cursor: pointer;
 }
-.modal-reserved{
+
+.modal-reserved {
     margin-top: 5px;
     background-color: #00488e;
     border-radius: 10px;
@@ -601,19 +635,54 @@ export default {
     margin-top: -20px;
 }
 
-.subtitle-3{
+.subtitle-3 {
     font-size: 1.2em;
     color: #0058FF;
 }
 
-.submodal{
+.submodal {
     font-size: 30px;
     font-weight: bold;
 }
 
-.submodaltext{
+.submodaltext {
     background-color: #E5EEFF;
     width: 400px;
     margin: 0 auto;
+}
+
+.modal-success-home {
+    margin-top: 5px;
+    background-color: #E0E0E0;
+    color: #5F5F5F;
+    border-radius: 5px;
+    padding: 5px;
+    margin-right: 5px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.modal-success-detail {
+    margin-top: 5px;
+    background-color: #C2D7FF;
+    border-radius: 5px;
+    padding: 5px;
+    margin-left: 5px;
+    color: #00499E;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.waiting{
+    color: #0029FF;
+    font-size: 35px;
+    text-align: center;
+    font-weight: bold;
+}
+.waiting-text{
+    color: #888888;
+    font-size: 20px;
+    text-align: center;
+    font-weight: bold;
 }
 </style>
