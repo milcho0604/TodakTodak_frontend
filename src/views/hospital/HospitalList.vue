@@ -117,7 +117,7 @@
                     </div>
 
                     <div class="d-flex flex-row align-center mt-1">
-                        <v-text style="color:#888888; font-weight: bold;">
+                        <v-text style="color:#888888; font-weight: bold; font-size:15px">
                             <v-icon>mdi-map-marker-outline</v-icon>
                             {{ hospital[0].address }}
                         </v-text>
@@ -134,7 +134,6 @@
                         {{ keyword }} 
                       </v-chip>
                     </div>
-
                 </div>
             </div>
          </v-card>
