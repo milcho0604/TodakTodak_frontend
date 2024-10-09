@@ -738,7 +738,8 @@ export default {
 
 .modal-selected {
     margin-top: 5px;
-    background-color: #717171;
+    background-color: #CACACA;
+    color: #717171;
     border-radius: 10px;
     padding: 5px;
     margin-right: 5px;
@@ -747,11 +748,11 @@ export default {
 
 .modal-reserved {
     margin-top: 5px;
-    background-color: #00488e;
+    background-color: #0058FF;
     border-radius: 10px;
     padding: 5px;
     margin-left: 5px;
-    color: white;
+    color: #FFFFFF;
     cursor: pointer;
 }
 
