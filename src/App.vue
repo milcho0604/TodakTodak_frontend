@@ -1,27 +1,32 @@
 <!-- App.vue -->
 <template>
   <v-app class="app global_bg">
-    <HeaderComponent @open-sidebar="toggleSidebar" />
+    <HeaderComponent/>
     <AppSidebar ref="sidebar" />
     <v-main class="main-content">
-      <router-view />
+      <router-view content="회원가입"/>
     </v-main>
+    <FooterComponent/>
   </v-app>
 </template>
 
 <script>
 import axios from 'axios';
-import HeaderComponent from './components/HeaderComponent.vue';
+import HeaderComponent from './components/header/HeaderComponent.vue';
+import FooterComponent from './components/footer/FooterComponent.vue';
+
 //FCM
 import { initializeApp } from 'firebase/app';
 import { getMessaging, getToken, onMessage } from 'firebase/messaging';
 // import { resolve } from 'core-js/fn/promise';
 // import member from './store/member';
 
+
 export default {
   name: 'App',
   components: {
-    HeaderComponent
+    HeaderComponent,
+    FooterComponent
   },
   async mounted() {
     await this.initializeFCM();
@@ -94,19 +99,27 @@ export default {
           //   vapidKey: 'BHg-Nt-RVggJCTjYQlB-5hThEnYJwUb5SAyjtyaXaFPI4k5JURI0hXSsXGD0IRFr8lSWX8JJY7kyLpGQlylXQw4'
           // });
           
-      
-      
-    onMessage(messaging, (payload) => {
-      console.log("Recived message ", payload);
-      const notificationTitle = payload.notification.title;
-      const notificationOptions = {
-        body: payload.notification.body,
-        icon: "favicon.ico"
-      };
-      if(Notification.permission === "granted"){
-        new Notification(notificationTitle, notificationOptions);
+      onMessage(messaging, (payload) => {
+        console.log("Received message ", payload);
+        const notificationTitle = payload.notification.title;
+        const notificationOptions = {
+          body: payload.notification.body,
+          icon: "favicon.ico",
+          data: payload.data, // URL을 포함하는 data 필드
+        };
+
+      if (Notification.permission === "granted") {
+        const notification = new Notification(notificationTitle, notificationOptions);
+
+        notification.onclick = (event) => {
+          event.preventDefault(); // 기본 동작 방지
+          const url = payload.data.url; // data에서 URL 추출
+          if (url) {
+            window.open(url, '_blank'); // URL로 이동
+          }
+        };
       }
-    });
+      }); 
     },
     //fcmToken이 localStorage에 생길때까지 대기
     waitForToken(){
@@ -150,7 +163,9 @@ export default {
   font-style: normal;
 }
 .custom-container{
-  max-width: 1200px;
+  max-width: 1200px !important; /* 원하는 최대 폭 */
+  margin: 0 auto !important;    /* 중앙 정렬 */
+  width: 100% !important; /* 컨테이너의 폭을 100%로 설정 */
 }
 .app {
   display: flex;
