@@ -106,7 +106,7 @@
             </v-row>
             <v-row><textarea class="text ml-4" v-model="comment"></textarea></v-row>
             <v-row class="mt-6 ml-1">
-                <div class="button inter-bold" @click="reservedApply">오늘예약 신청</div>
+                <div class="button inter-bold" @click="reservedModal = true">오늘예약 신청</div>
             </v-row>
 
             <v-dialog v-model="symptomsModal" max-width="700px">
@@ -182,6 +182,79 @@
                     </v-card-actions>
                 </v-card>
             </v-dialog>
+            <v-dialog v-model="reservedModal" max-width="500px">
+                <v-card>
+                    <v-card-title class="submodal mt-6 inter-bold text-center">
+                        바로접수 완료하시겠습니까?
+                    </v-card-title>
+                    <v-card-text >
+                        <v-container class="submodaltext">
+                            <v-row justify="center">
+                                <v-col class="inter-bold subtitle-3">
+                                    병원 정보
+                                </v-col>
+                            </v-row>
+                            <v-row>
+                                <v-col style="margin-top: -10px">
+                                    {{ hostpitalName }} <br>
+                                    {{ doctor.name }} 원장
+                                </v-col>
+                            </v-row>
+                            <v-row justify="center">
+                                <v-col class="inter-bold subtitle-3">
+                                    환자 정보
+                                </v-col>
+                            </v-row>
+                            <v-row>
+                                <v-col style="margin-top: -10px">
+                                    {{ child.name }} <br>
+                                    {{ child.ssn }}
+                                </v-col>
+                            </v-row>
+                            <v-row justify="center">
+                                <v-col class="inter-bold subtitle-3">
+                                    진료 항목
+                                </v-col>
+                            </v-row>
+                            <v-row>
+                                <v-col style="margin-top: -10px">
+                                    {{ mediItem }}
+                                </v-col>
+                            </v-row>    
+                            <v-row justify="center">
+                                <v-col class="inter-bold subtitle-3">
+                                    진료 정보
+                                </v-col>
+                            </v-row>
+                            <v-row>
+                                <v-col style="margin-top: -10px">
+                                    {{ symptoms.join("•") }}
+                                </v-col>
+                            </v-row>  
+                            <v-row justify="center">
+                                <v-col class="inter-bold subtitle-3">
+                                    원장님께 하고 싶은 말
+                                </v-col>
+                            </v-row>
+                            <v-row>
+                                <v-col style="margin-top: -20px">
+                                    {{ comment }}
+                                </v-col>
+                            </v-row>  
+                        </v-container>
+                        <v-container style="text-align: center;">
+                            <v-row justify="center" align="center">
+                                <v-col cols="4" class="modal-selected">
+                                    취소
+                                </v-col>
+                                <v-col cols="4" class="modal-reserved" @click="reservedApply">
+                                    당일접수 신청
+                                </v-col>
+                            </v-row>
+                        </v-container>
+                    </v-card-text>
+                </v-card>
+            </v-dialog>
         </v-container>
     </v-container>
 </template>
@@ -212,6 +285,7 @@ export default {
             symptomsModal: false,
             comment: null,
             mediData: [],
+            reservedModal: false,
         }
     },
     methods: {
@@ -377,6 +451,7 @@ export default {
     margin-right: 10px;
     font-size: 14px;
     text-align: center;
+    cursor: pointer;
 }
 
 .no-wrap {
@@ -393,6 +468,7 @@ export default {
     border-radius: 10px;
     width: 320px;
     padding: 12px;
+    cursor: pointer;
 }
 
 .before-selected {
@@ -402,6 +478,23 @@ export default {
     border-radius: 15px;
     font-size: 15px;
     letter-spacing: -1px;
+    cursor: pointer;
+}
+
+.modal-selected{
+    margin-top: 5px;
+    background-color: #717171;
+    border-radius: 10px;
+    padding: 5px;
+    margin-right: 5px;
+}
+.modal-reserved{
+    margin-top: 5px;
+    background-color: #00488e;
+    border-radius: 10px;
+    padding: 5px;
+    margin-left: 5px;
+    color: white;
 }
 
 .child-name {
@@ -437,6 +530,7 @@ export default {
     margin-bottom: 10px;
     display: flex;
     align-items: center;
+    cursor: pointer;
 }
 
 .more {
@@ -480,6 +574,7 @@ export default {
     margin-right: 10px;
     font-size: 17px;
     color: #010565;
+    cursor: pointer;
 }
 
 .text {
@@ -502,5 +597,21 @@ export default {
     font-size: 1.2em;
     margin-bottom: -15px;
     margin-top: -20px;
+}
+
+.subtitle-3{
+    font-size: 1.2em;
+    color: #0058FF;
+}
+
+.submodal{
+    font-size: 30px;
+    font-weight: bold;
+}
+
+.submodaltext{
+    background-color: #E5EEFF;
+    width: 400px;
+    margin: 0 auto;
 }
 </style>
