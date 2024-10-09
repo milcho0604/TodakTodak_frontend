@@ -20,7 +20,7 @@
             🏠 비대면진료
           </v-btn>
 
-          <v-btn class="custom-button">
+          <v-btn to="/community/list" class="custom-button">
             💬 의사 Q&A
           </v-btn>
         </v-col>
