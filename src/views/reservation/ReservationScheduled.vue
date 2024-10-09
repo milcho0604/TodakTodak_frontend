@@ -208,9 +208,9 @@
                     <v-card-title class="submodal mt-6 inter-bold text-center">
                         예약접수 완료하시겠습니까?
                     </v-card-title>
-                    <v-card-text >
+                    <v-card-text>
                         <v-container class="submodalsubject inter-bold text-center" style="margin-top: -30px;">
-                            {{ formatDate(date) }} {{ selectedTime}}
+                            {{ formatDate(date) }} {{ selectedTime }}
                         </v-container>
                         <v-container class="submodaltext">
                             <v-row justify="center">
@@ -241,10 +241,10 @@
                                 </v-col>
                             </v-row>
                             <v-row style="margin-top: -10px">
-                                <v-col style="margin-top: -10px" class="inter-bord"> 
+                                <v-col style="margin-top: -10px" class="inter-bord">
                                     {{ mediItem }}
                                 </v-col>
-                            </v-row>    
+                            </v-row>
                             <v-row justify="center">
                                 <v-col class="inter-bold subtitle-3">
                                     진료 정보
@@ -254,7 +254,7 @@
                                 <v-col style="margin-top: -10px">
                                     {{ symptoms.join("•") }}
                                 </v-col>
-                            </v-row>  
+                            </v-row>
                             <v-row justify="center">
                                 <v-col class="inter-bold subtitle-3">
                                     원장님께 하고 싶은 말
@@ -264,7 +264,7 @@
                                 <v-col style="margin-top: -10px">
                                     {{ comment }}
                                 </v-col>
-                            </v-row>  
+                            </v-row>
                         </v-container>
                         <v-container style="text-align: center;">
                             <v-row justify="center" align="center">
@@ -277,6 +277,24 @@
                             </v-row>
                         </v-container>
                     </v-card-text>
+                </v-card>
+            </v-dialog>
+            <v-dialog v-model="successReserveModal" max-width="600px">
+                <v-card>
+                    <v-card-title class="submodal mt-6 inter-bold text-center">
+                        예약접수가 성공적으로 완료되었습니다!
+                    </v-card-title>
+                    <v-container style="text-align: center;" class="mt-3">
+                        <v-row justify="center" align="center">
+                            <v-col cols="4" class="modal-success-home" @click="goRoute('home')">
+                                홈으로 가기
+                            </v-col>
+                            <v-col cols="4" class="modal-success-detail" @click="goRoute('detail')">
+                                예약상세내역 확인
+                            </v-col>
+                        </v-row>
+                        <br><br>
+                    </v-container>
                 </v-card>
             </v-dialog>
         </v-container>
@@ -317,6 +335,7 @@ export default {
             reservedTimes: [], // 이미 예약된 시간
             selectedTime: null, // 선택된 시간
             reservedModal: false,
+            successReserveModal: false,
         }
     },
     methods: {
@@ -402,8 +421,9 @@ export default {
                     req);
 
                 console.log(response)
-                this.$router.push('/')
-            }catch(e){
+                this.reservedModal = false;
+                this.successReserveModal = true;
+            } catch (e) {
                 alert(e.message)
             }
         },
@@ -442,14 +462,23 @@ export default {
         },
         formatDate(date) {
             const option = {
-                year : 'numeric',
-                month : '2-digit',
-                day : '2-digit',
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
                 weekday: 'short'
             }
 
             const formattedDate = new Date(date).toLocaleDateString('ko-KR', option);
             return formattedDate
+        },
+        goRoute(route) {
+            if (route == 'home') {
+                this.$router.push('/')
+            }
+            else {
+                // 여기에 "예약상세내역 페이지 경로"
+                this.$router.push('')
+            }
         }
     },
     async created() {
@@ -685,28 +714,29 @@ export default {
     cursor: pointer;
 }
 
-.submodal{
+.submodal {
     font-size: 25px;
     font-weight: bold;
 }
 
-.submodalsubject{
+.submodalsubject {
     font-size: 20px;
     font-weight: bold;
     color: #0075FF;
 }
 
-.submodaltext{
+.submodaltext {
     background-color: #E5EEFF;
     width: 400px;
     margin: 0 auto;
 }
 
-.subtitle-3{
+.subtitle-3 {
     font-size: 1.2em;
     color: #0058FF;
 }
-.modal-selected{
+
+.modal-selected {
     margin-top: 5px;
     background-color: #717171;
     border-radius: 10px;
@@ -714,7 +744,8 @@ export default {
     margin-right: 5px;
     cursor: pointer;
 }
-.modal-reserved{
+
+.modal-reserved {
     margin-top: 5px;
     background-color: #00488e;
     border-radius: 10px;
@@ -722,5 +753,26 @@ export default {
     margin-left: 5px;
     color: white;
     cursor: pointer;
+}
+
+.modal-success-home{
+    margin-top: 5px;
+    background-color: #5F5F5F;
+    color: #E0E0E0;
+    border-radius: 10px;
+    padding: 5px;
+    margin-right: 5px;
+    cursor: pointer;
+    font-weight: bold;
+}
+.modal-success-detail{
+    margin-top: 5px;
+    background-color: #C2D7FF;
+    border-radius: 10px;
+    padding: 5px;
+    margin-left: 5px;
+    color: #00499E;
+    cursor: pointer;
+    font-weight: bold;
 }
 </style>
