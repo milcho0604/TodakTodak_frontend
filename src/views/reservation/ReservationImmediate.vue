@@ -195,7 +195,7 @@
                                 </v-col>
                             </v-row>
                             <v-row>
-                                <v-col style="margin-top: -10px">
+                                <v-col style="margin-top: -20px">
                                     {{ hostpitalName }} <br>
                                     {{ doctor.name }} 원장
                                 </v-col>
@@ -206,7 +206,7 @@
                                 </v-col>
                             </v-row>
                             <v-row>
-                                <v-col style="margin-top: -10px">
+                                <v-col style="margin-top: -20px">
                                     {{ child.name }} <br>
                                     {{ child.ssn }}
                                 </v-col>
@@ -217,7 +217,7 @@
                                 </v-col>
                             </v-row>
                             <v-row>
-                                <v-col style="margin-top: -10px">
+                                <v-col style="margin-top: -20px">
                                     {{ mediItem }}
                                 </v-col>
                             </v-row>    
@@ -227,7 +227,7 @@
                                 </v-col>
                             </v-row>
                             <v-row>
-                                <v-col style="margin-top: -10px">
+                                <v-col style="margin-top: -20px">
                                     {{ symptoms.join("•") }}
                                 </v-col>
                             </v-row>  
@@ -244,7 +244,7 @@
                         </v-container>
                         <v-container style="text-align: center;">
                             <v-row justify="center" align="center">
-                                <v-col cols="4" class="modal-selected">
+                                <v-col cols="4" class="modal-selected" @click="reservedModal = false">
                                     취소
                                 </v-col>
                                 <v-col cols="4" class="modal-reserved" @click="reservedApply">
@@ -487,6 +487,7 @@ export default {
     border-radius: 10px;
     padding: 5px;
     margin-right: 5px;
+    cursor: pointer;
 }
 .modal-reserved{
     margin-top: 5px;
@@ -495,6 +496,7 @@ export default {
     padding: 5px;
     margin-left: 5px;
     color: white;
+    cursor: pointer;
 }
 
 .child-name {

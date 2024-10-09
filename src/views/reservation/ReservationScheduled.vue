@@ -127,7 +127,7 @@
             </v-row>
             <v-row><textarea class="text ml-4" v-model="comment"></textarea></v-row>
             <v-row class="mt-6 ml-1">
-                <div class="button  inter-bold" @click="reservedApply">스케줄예약 신청</div>
+                <div class="button  inter-bold" @click="reservedModal = true">스케줄예약 신청</div>
             </v-row>
 
             <v-dialog v-model="symptomsModal" max-width="700px">
@@ -203,6 +203,82 @@
                     </v-card-actions>
                 </v-card>
             </v-dialog>
+            <v-dialog v-model="reservedModal" max-width="500px">
+                <v-card>
+                    <v-card-title class="submodal mt-6 inter-bold text-center">
+                        예약접수 완료하시겠습니까?
+                    </v-card-title>
+                    <v-card-text >
+                        <v-container class="submodalsubject inter-bold text-center" style="margin-top: -30px;">
+                            {{ formatDate(date) }} {{ selectedTime}}
+                        </v-container>
+                        <v-container class="submodaltext">
+                            <v-row justify="center">
+                                <v-col class="inter-bold subtitle-3">
+                                    병원 정보
+                                </v-col>
+                            </v-row>
+                            <v-row style="margin-top: -10px">
+                                <v-col style="margin-top: -10px" class="inter-bord">
+                                    {{ hostpitalName }} <br>
+                                    {{ doctor.name }} 원장
+                                </v-col>
+                            </v-row>
+                            <v-row justify="center">
+                                <v-col class="inter-bold subtitle-3">
+                                    환자 정보
+                                </v-col>
+                            </v-row>
+                            <v-row style="margin-top: -10px">
+                                <v-col style="margin-top: -10px" class="inter-bord">
+                                    {{ child.name }} <br>
+                                    {{ child.ssn }}
+                                </v-col>
+                            </v-row>
+                            <v-row justify="center">
+                                <v-col class="inter-bold subtitle-3">
+                                    진료 항목
+                                </v-col>
+                            </v-row>
+                            <v-row style="margin-top: -10px">
+                                <v-col style="margin-top: -10px" class="inter-bord"> 
+                                    {{ mediItem }}
+                                </v-col>
+                            </v-row>    
+                            <v-row justify="center">
+                                <v-col class="inter-bold subtitle-3">
+                                    진료 정보
+                                </v-col>
+                            </v-row>
+                            <v-row style="margin-top: -10px">
+                                <v-col style="margin-top: -10px">
+                                    {{ symptoms.join("•") }}
+                                </v-col>
+                            </v-row>  
+                            <v-row justify="center">
+                                <v-col class="inter-bold subtitle-3">
+                                    원장님께 하고 싶은 말
+                                </v-col>
+                            </v-row>
+                            <v-row style="margin-top: -10px">
+                                <v-col style="margin-top: -10px">
+                                    {{ comment }}
+                                </v-col>
+                            </v-row>  
+                        </v-container>
+                        <v-container style="text-align: center;">
+                            <v-row justify="center" align="center">
+                                <v-col cols="4" class="modal-selected" @click="reservedModal = false">
+                                    취소
+                                </v-col>
+                                <v-col cols="4" class="modal-reserved" @click="reservedApply">
+                                    예약접수 신청
+                                </v-col>
+                            </v-row>
+                        </v-container>
+                    </v-card-text>
+                </v-card>
+            </v-dialog>
         </v-container>
     </v-container>
 </template>
@@ -240,6 +316,7 @@ export default {
             ], // 시간 슬롯 설정
             reservedTimes: [], // 이미 예약된 시간
             selectedTime: null, // 선택된 시간
+            reservedModal: false,
         }
     },
     methods: {
@@ -362,6 +439,17 @@ export default {
             } catch (e) {
                 console.log(e)
             }
+        },
+        formatDate(date) {
+            const option = {
+                year : 'numeric',
+                month : '2-digit',
+                day : '2-digit',
+                weekday: 'short'
+            }
+
+            const formattedDate = new Date(date).toLocaleDateString('ko-KR', option);
+            return formattedDate
         }
     },
     async created() {
@@ -594,6 +682,45 @@ export default {
 }
 
 .button-cursor {
+    cursor: pointer;
+}
+
+.submodal{
+    font-size: 25px;
+    font-weight: bold;
+}
+
+.submodalsubject{
+    font-size: 20px;
+    font-weight: bold;
+    color: #0075FF;
+}
+
+.submodaltext{
+    background-color: #E5EEFF;
+    width: 400px;
+    margin: 0 auto;
+}
+
+.subtitle-3{
+    font-size: 1.2em;
+    color: #0058FF;
+}
+.modal-selected{
+    margin-top: 5px;
+    background-color: #717171;
+    border-radius: 10px;
+    padding: 5px;
+    margin-right: 5px;
+    cursor: pointer;
+}
+.modal-reserved{
+    margin-top: 5px;
+    background-color: #00488e;
+    border-radius: 10px;
+    padding: 5px;
+    margin-left: 5px;
+    color: white;
     cursor: pointer;
 }
 </style>
