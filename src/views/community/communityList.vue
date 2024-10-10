@@ -42,7 +42,6 @@
                             <div style="flex: 1; padding-right: 10px;">
                               <v-card-title class="text-left" style="font-size: 18px; display: flex; justify-content: space-between;">
                                 <span>{{ post.title }}</span>
-                                <span style="font-size: 14px; color: #6A6A6A;">{{ post.createdTimeAt.slice(0, 10) }}</span>
                               </v-card-title>
                               <v-card-text class="text-left post-content" style="margin: 0; font-size: 18px;">{{ post.content }}</v-card-text>
                               <div class="d-flex align-left">
@@ -50,7 +49,7 @@
                                   <div class="d-flex align-left">
                                     <div style="flex: 1; padding-left: 10px; display: flex; align-items: center; color: #6A6A6A; margin: 0px;">
                                       <v-icon small class="icon">mdi-heart</v-icon>
-                                      <span class="like-text">{{ post.likeCount }} · 댓글 {{ post.comments }} · 조회수 {{ post.viewCount }}</span>
+                                      <span class="like-text">{{ post.likeCount }} · 댓글 {{ post.comments }} · 조회수 {{ post.viewCount }} {{ post.createdTimeAt.slice(0, 10) }}</span>
                                     </div>
                                   </div>
                                 </div>
@@ -59,18 +58,23 @@
                           </div>
                         </v-col>
                         <v-col cols="3" class="text-left" style="padding: 10px; display: flex; align-items: center; justify-content: center;">
-                          <div class="image-container" style="width: 100px; height: 100px; overflow: hidden;">
-                            <v-img
-                              :src="post.postImgUrl"   
-                              alt="게시글 이미지"
-                              style="object-fit: cover; height: 100%;"
-                            />
+                          <div class="image-container" style="width: 100px; height: 100px; overflow: hidden; position: relative;">
+                            <template v-if="post.postImgUrl">
+                              <v-img
+                                :src="post.postImgUrl"   
+                                alt="게시글 이미지"
+                                style="object-fit: cover; position: absolute; top: 50%; left: 50%; width: 100%; height: 100%; transform: translate(-50%, -50%);"
+                              />
+                            </template>
+                            <template v-else>
+                              <span style="font-size: 14px; color: #6A6A6A;">{{ post.createdTimeAt.slice(0, 10) }}</span>
+                            </template>
                           </div>
-                        </v-col>
+                        </v-col>                        
                       </v-row>
                     </v-card>
                   </v-list-item>
-                </v-list-item-group>
+                </v-list-item-group>                
               </v-list>              
             </v-col>
           </v-row>          
