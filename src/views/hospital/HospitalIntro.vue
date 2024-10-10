@@ -43,6 +43,7 @@
             </v-row>
         </v-card>
 
+        <!-- 월 ~ 금 영ㅇ업시간 -->
         <v-spacer :style="{ height: '10px' }"></v-spacer>
         <v-card class="notice-card mt-3" variant="flat">
             <v-row align="center">
@@ -113,10 +114,22 @@
                 <v-col class="text-center" cols="6">
                   <v-card-title style="font-size:17px; font-weight:bold">{{ hospital.sunday }}</v-card-title>
                 </v-col>
-            </v-row> 
-
-            
+            </v-row>  
         </v-card>
+
+        <v-spacer :style="{ height: '30px' }"></v-spacer>
+        <!-- 경계선 -->
+        <v-row justify="center" class="divider-row">
+            <hr class="divider">
+        </v-row>
+        <v-spacer :style="{ height: '20px' }"></v-spacer>
+
+        <h3 >병원위치</h3>
+        <h4 style="color:#888888">{{hospital.address}}</h4>
+        <v-spacer :style="{ height: '20px' }"></v-spacer>
+
+        <div id="map" style="width:600px; height:400px;"></div>
+
 
     </v-container>
    
@@ -134,15 +147,22 @@ export default{
             hospitalId: '', // 병원 id
             hospitalDescriptionFirstLine: '', // 병원소개 첫째 줄
             hospitalDescriptionRest: '', // 병원소개 나머지 글
-
+            kakaoMap: null,
+            hospitalLatitude:'', // 병원 위도
+            hospitalLongitude:'', // 병원 경도
         }
     },
     created() {
         const route = useRoute();
         this.hospitalId = route.params.hospitalId; 
     },
-    mounted(){
+    async mounted(){
         this.loadHospitalDetail();
+        try{
+            await this.loadKakaoMapScript();
+        }catch(error){
+            console.log(error)
+        }
     },
     methods:{
         async loadHospitalDetail(){
@@ -156,6 +176,8 @@ export default{
                 console.log(response.data);
 
                 this.hospital = response.data.result;
+                this.hospitalLatitude = response.data.result.latitude;
+                this.hospitalLongitude = response.data.result.longitude;
 
                 // description을 줄바꿈(\n) 기준으로 나눔
                 let descriptionLines = response.data.result.description.split('\n');
@@ -165,8 +187,44 @@ export default{
             }catch(error){
                 console.log(error);
             }
-        }
-    }
+        },
+        // 카카오맵 스크립트를 동적으로 로드하는 함수
+        loadKakaoMapScript() {
+            const script = document.createElement('script');
+            script.src = `//dapi.kakao.com/v2/maps/sdk.js?appkey=${process.env.VUE_APP_KAKAO_MAP_JS_APP_KEY}&autoload=false`;
+            script.onload = () => {
+                console.log("Kakao map script loaded successfully");
+                this.initMap(); // 스크립트 로드 후 지도 초기화
+            };
+            script.onerror = () => {
+                console.error("Failed to load Kakao map script");
+            };
+            document.head.appendChild(script);
+        },
+
+        initMap() {
+            window.kakao.maps.load(() => {
+                console.log("Kakao map API loaded");
+                const container = document.getElementById('map');
+                console.log("Map container:", container);
+
+                const options = {
+                    center: new window.kakao.maps.LatLng(this.hospitalLatitude, this.hospitalLongitude),
+                    level: 3,
+                };
+                this.kakaoMap = new window.kakao.maps.Map(container, options);
+
+                const markerPosition = new window.kakao.maps.LatLng(this.hospitalLatitude, this.hospitalLongitude);
+                const marker = new window.kakao.maps.Marker({
+                    position: markerPosition,
+                });
+                marker.setMap(this.kakaoMap);
+            });
+        },
+
+
+    },
+    
 }
 
 </script>
