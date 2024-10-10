@@ -8,6 +8,7 @@ import { memberRouter } from './memberRouter';
 import { paymentRouter } from './paymentRouter';
 import { untactRouter } from './untactRouter';
 import { chatRouter } from './chatRouter';
+import { hospitalRouter } from './hospitalRouter';
 import { reservationRouter } from './reservationRouter';
 import { communityRouter } from './communityRouter';
 
@@ -21,10 +22,10 @@ const routes = [
     ...paymentRouter,
     ...untactRouter,
     ...chatRouter,
+    ...hospitalRouter
     ...reservationRouter,
     ...communityRouter,
 ]
-
 
 const router = createRouter({
     // vue router는 내부적으로 두가지 방식의 히스토리 관리를 제공
