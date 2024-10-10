@@ -59,15 +59,27 @@
           </button>
         </div>
       </v-row>
+
+      <!-- 리뷰 모달 -->
+      <ReviewComponent v-model="reviewModal" 
+      :reservationId=this.sid
+      @update:dialog="reviewModal = $event;"
+      @openPayModal="openPayModal" />
+
+      <!-- 결제 모달 -->
+      <!-- 여기에 넣어주세요 -->
+      <!-- 리뷰 모달 닫으면서 payModal true로 바뀌게 해뒀습니다 -->
     </v-container>
   </div>
 </template>
 
 <script>
+import ReviewComponent from '@/components/ReviewComponent.vue';
 import axios from 'axios';
 
 export default {
   props: ['sid'],
+  components: { ReviewComponent },
   data() {
     return {
       localStream: null,
@@ -80,6 +92,8 @@ export default {
       doctor: null,
       medicalChartId: null,
       chartCreated: false,
+      reviewModal: false,
+      payModal: false
     };
   },
   mounted() {
@@ -293,7 +307,13 @@ export default {
       }
 
       console.log("Room exited successfully");
-      window.location.href = '/rooms';
+      // Role이 Member인 경우에만 alert 메시지 띄우기 & 리뷰 & 결제
+      if (localStorage.getItem('role') === 'Member') {
+        alert("진료가 종료되었습니다.");
+        this.reviewModal = true;
+      } else if (localStorage.getItem('role') === 'Doctor') {
+        window.location.href = '/rooms';
+      }
     },
     handlePeerLeave(message) {
       console.log(`${message.from} has left the room`);
@@ -311,6 +331,7 @@ export default {
       //   this.myPeerConnection.close();
       //   this.myPeerConnection = null;
       // }
+      this.exitRoom();
 
       console.log('Peer connection closed for user:', message.from);
 
@@ -332,6 +353,10 @@ export default {
         .catch(error => {
           console.error('Error creating medical chart:', error);
         });
+    },
+    openPayModal() {
+      console.log("이제 결제할게");
+      this.payModal = true;
     }
   },
 };
