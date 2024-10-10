@@ -17,22 +17,22 @@ export const hospitalRouter = [
         component: HospitalList2
     },
     {
-        path: '/hospital/detail/:id',
+        path: '/hospital/detail/:hospitalId',
         name: 'HospitalDetail',
         component: HospitalDetail
     },
     { 
-        path: '/hospital/hospital-intro/:id',
+        path: '/hospital/hospital-intro/:hospitalId',
         name: 'HospitalIntro',
         component: HospitalIntro 
     },
     { 
-        path: '/hospital/medical-info/:id', 
+        path: '/hospital/medical-info/:hospitalId', 
         name: 'HospitalMedicalInfo',
         component: HospitalMedicalInfo 
     },
     { 
-        path: '/hospital/reviews/:id', 
+        path: '/hospital/reviews/:hospitalId', 
         name: 'HospitalReviews',
         component: HospitalReviews 
     }

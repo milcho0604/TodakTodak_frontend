@@ -1,6 +1,6 @@
 <template>
     <v-container fluid class="hospital-detail-container">
-    <h2>진료정보</h2>
+    <h3 color="#0075FF">진료정보</h3>
     </v-container>
    
 </template>
