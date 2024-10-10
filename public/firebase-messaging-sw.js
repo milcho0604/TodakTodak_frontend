@@ -18,7 +18,7 @@ const messaging = firebase.messaging();
 // 백그라운드 메시지 수신
 messaging.onBackgroundMessage((payload) => {
   console.log('[firebase-messaging-sw.js] Received background message ', payload);
-
+  console.log(parseInt(payload.data.notificationId, 10))
   const redirectUrl = payload.data.url;
   const notificationTitle = payload.notification.title;
   const notificationOptions = {
