@@ -67,7 +67,7 @@
       @openPayModal="openPayModal" />
 
       <!-- 결제 모달 -->
-      <!-- 여기에 넣어주세요 -->
+      <SinglePaymentComponent v-model:showPaymentModal="payModal" :reservationId="sid" />
       <!-- 리뷰 모달 닫으면서 payModal true로 바뀌게 해뒀습니다 -->
     </v-container>
   </div>
@@ -75,11 +75,13 @@
 
 <script>
 import ReviewComponent from '@/components/ReviewComponent.vue';
+import SinglePaymentComponent from '@/components/pay/SinglePaymentComponent.vue'; // PaymentComponent 추가
 import axios from 'axios';
 
 export default {
   props: ['sid'],
-  components: { ReviewComponent },
+  components: { ReviewComponent, 
+    SinglePaymentComponent},
   data() {
     return {
       localStream: null,
