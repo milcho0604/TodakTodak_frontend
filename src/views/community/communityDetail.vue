@@ -407,6 +407,14 @@ export default {
 
 
 <style scoped>
+.pa-5{
+  max-width: 770px;
+  width: 100%;
+  margin: 0 auto;
+  box-sizing: border-box; /* 패딩과 보더를 포함하여 너비를 계산 */
+  background-color: #FCFCFC; /* 배경색 변경 */
+}
+
 .v-container {
   max-width: 900px;
   margin: 0 auto;
