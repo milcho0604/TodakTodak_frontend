@@ -58,16 +58,13 @@
                           </div>
                         </v-col>
                         <v-col cols="3" class="text-left" style="padding: 10px; display: flex; align-items: center; justify-content: center;">
-                          <div class="image-container" style="width: 100px; height: 100px; overflow: hidden; position: relative;">
-                            <template v-if="post.postImgUrl">
+                          <div class="image-container" style=" width : 100%; height: 100px; overflow: hidden; position: relative;">
+                            <template>
                               <v-img
                                 :src="post.postImgUrl"   
                                 alt="게시글 이미지"
                                 style="object-fit: cover; position: absolute; top: 50%; left: 50%; width: 100%; height: 100%; transform: translate(-50%, -50%);"
                               />
-                            </template>
-                            <template v-else>
-                              <span style="font-size: 14px; color: #6A6A6A;">{{ post.createdTimeAt.slice(0, 10) }}</span>
                             </template>
                           </div>
                         </v-col>                        
@@ -103,7 +100,7 @@ import axios from 'axios';
 export default {
   data() {
     return {
-      sortOrder: "popular",
+      sortOrder: "latest",
       searchQuery: "",
       postList: [],
       currentPage: 1,
@@ -113,6 +110,12 @@ export default {
   },
   mounted() {
     this.fetchPosts();
+  },
+  watch: {
+    sortOrder() {
+      this.sortPosts(); // sortOrder가 변경될 때마다 sortPosts 호출
+      this.updatePaginatedPosts(); // 페이지네이션 업데이트
+    },
   },
   methods: {
     async fetchPosts() {
@@ -233,7 +236,7 @@ export default {
 }
 
 .custom-card {
-  max-width: 580px;
+  max-width: 770px;
   width: 100%;
   margin: 0 auto;
   box-sizing: border-box; /* 패딩과 보더를 포함하여 너비를 계산 */
@@ -349,3 +352,6 @@ export default {
 }
 
 </style>
+
+
+
