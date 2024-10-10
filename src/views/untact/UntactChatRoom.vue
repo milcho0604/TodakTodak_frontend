@@ -6,7 +6,8 @@
           <v-row justify="center" class="inter-bold dark-blue subtitle">진료자</v-row>
           <v-row justify="center" class="mt-6">
             <v-col class="text-center" cols="5">
-              <img src="https://todak-file.s3.amazonaws.com/d278dfb1-9275-41ad-8b86-f7a0a904892b_IMG_8641.JPG" alt="doctor image" style="width: 40px; height: 40px;">
+              <img src="https://todak-file.s3.amazonaws.com/d278dfb1-9275-41ad-8b86-f7a0a904892b_IMG_8641.JPG"
+                alt="doctor image" style="width: 40px; height: 40px;">
             </v-col>
             <v-col class="text-center" cols="7">
               <v-row class="inter-bold big-font">김천재 의사</v-row>
@@ -21,7 +22,8 @@
             <div class="child">
               <v-row justify="center">
                 <v-col class="text-center" cols="5">
-                  <img src="https://todak-file.s3.amazonaws.com/d278dfb1-9275-41ad-8b86-f7a0a904892b_IMG_8641.JPG" alt="child image" style="width: 40px; height: 40px;">
+                  <img src="https://todak-file.s3.amazonaws.com/d278dfb1-9275-41ad-8b86-f7a0a904892b_IMG_8641.JPG"
+                    alt="child image" style="width: 40px; height: 40px;">
                 </v-col>
                 <v-col class="text-center" cols="7" style="margin-top: 7px;">
                   <v-row class="inter-bold big-font">이한아</v-row>
@@ -51,19 +53,33 @@
         </div>
       </div>
       <v-row justify="end">
-        <div id="buttons" class="row" >
+        <div id="buttons" class="row">
           <button type="button" class="button inter-bold" @click="exitRoom">
             진료 종료
           </button>
         </div>
       </v-row>
+
+      <!-- 리뷰 모달 -->
+      <ReviewComponent v-model="reviewModal" 
+      :reservationId=this.sid
+      @update:dialog="reviewModal = $event;"
+      @openPayModal="openPayModal" />
+
+      <!-- 결제 모달 -->
+      <!-- 여기에 넣어주세요 -->
+      <!-- 리뷰 모달 닫으면서 payModal true로 바뀌게 해뒀습니다 -->
     </v-container>
   </div>
 </template>
 
 <script>
+import ReviewComponent from '@/components/ReviewComponent.vue';
+import axios from 'axios';
+
 export default {
   props: ['sid'],
+  components: { ReviewComponent },
   data() {
     return {
       localStream: null,
@@ -74,6 +90,10 @@ export default {
       socket: null,
       isRemoteVideoVisible: false, // 상대방 화면 여부 체크
       doctor: null,
+      medicalChartId: null,
+      chartCreated: false,
+      reviewModal: false,
+      payModal: false
     };
   },
   mounted() {
@@ -169,6 +189,11 @@ export default {
           this.$refs.localVideo.srcObject = stream;
           stream.getTracks().forEach(track => this.myPeerConnection.addTrack(track, this.localStream));
         });
+      if (message.data && !this.chartCreated) {
+        // 차트가 아직 생성되지 않았을 때만 API 요청
+        this.createMedicalChart();
+        this.chartCreated = true; // 차트 생성 상태 업데이트
+      }
       if (message.data) {
         this.myPeerConnection.onnegotiationneeded = this.handleNegotiationNeededEvent;
       }
@@ -211,7 +236,7 @@ export default {
         }
       };
       this.myPeerConnection.ontrack = (event) => {
-          this.$refs.remoteVideo.srcObject = event.streams[0];
+        this.$refs.remoteVideo.srcObject = event.streams[0];
         this.isRemoteVideoVisible = true;  // 상대방 화면이 있음을 표시
       };
     },
@@ -282,7 +307,13 @@ export default {
       }
 
       console.log("Room exited successfully");
-      window.location.href = '/rooms';
+      // Role이 Member인 경우에만 alert 메시지 띄우기 & 리뷰 & 결제
+      if (localStorage.getItem('role') === 'Member') {
+        alert("진료가 종료되었습니다.");
+        this.reviewModal = true;
+      } else if (localStorage.getItem('role') === 'Doctor') {
+        window.location.href = '/rooms';
+      }
     },
     handlePeerLeave(message) {
       console.log(`${message.from} has left the room`);
@@ -300,6 +331,7 @@ export default {
       //   this.myPeerConnection.close();
       //   this.myPeerConnection = null;
       // }
+      this.exitRoom();
 
       console.log('Peer connection closed for user:', message.from);
 
@@ -310,6 +342,21 @@ export default {
     },
     handleErrorMessage(message) {
       console.error(message);
+    },
+    async createMedicalChart() {
+      // 메디차트 생성
+      await axios.post(`${process.env.VUE_APP_API_BASE_URL}/reservation-service/medical-chart/create`, { reservationId: this.sid })
+        .then(response => {
+          this.medicalChartId = response.data.result.id;
+          console.log('Medical chart created successfully', response.data);
+        })
+        .catch(error => {
+          console.error('Error creating medical chart:', error);
+        });
+    },
+    openPayModal() {
+      console.log("이제 결제할게");
+      this.payModal = true;
     }
   },
 };

@@ -20,7 +20,7 @@
             🏠 비대면진료
           </v-btn>
 
-          <v-btn class="custom-button">
+          <v-btn to="/community/list" class="custom-button">
             💬 의사 Q&A
           </v-btn>
         </v-col>
@@ -114,6 +114,7 @@ export default {
     },
     logout() {
       localStorage.removeItem('token'); // 토큰 제거
+      localStorage.removeItem('fcmToken') // fcm 토큰 제거
       this.isLogin = false; // 로그아웃 후 로그인 상태 업데이트
       this.$router.push('/'); // 로그아웃 후 메인 페이지로 이동
     },

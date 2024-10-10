@@ -9,6 +9,8 @@ import { paymentRouter } from './paymentRouter';
 import { untactRouter } from './untactRouter';
 import { chatRouter } from './chatRouter';
 import { hospitalRouter } from './hospitalRouter';
+import { reservationRouter } from './reservationRouter';
+import { communityRouter } from './communityRouter';
 
 const routes = [
     {
@@ -21,6 +23,8 @@ const routes = [
     ...untactRouter,
     ...chatRouter,
     ...hospitalRouter
+    ...reservationRouter,
+    ...communityRouter,
 ]
 
 const router = createRouter({

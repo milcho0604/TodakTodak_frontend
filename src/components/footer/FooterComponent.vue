@@ -39,10 +39,10 @@ export default{
           name:'Home', url:'/'
         },
         {
-          name:'HOSPITAL', url:'/'
+          name:'HOSPITAL', url:'/login'
         },
         {
-          name:'PADAK', url:'/'
+          name:'PADAK', url:'/admin/login'
         },
         {
           name:'TEAM', url:'/'

@@ -1,7 +1,7 @@
 <template>
   <v-container class="main-content">
     <div class="signup-title-container">
-      <div class="signup-title">병원 관계자 로그인</div>
+      <div class="signup-title">토닥 관계자 로그인</div>
     </div>
     <br />
     <v-row justify="center">
@@ -56,12 +56,6 @@
               </v-row>
 
               <br>
-              <!-- 추가 링크들 -->
-              <v-row justify="center" class="membership-options">
-                <v-btn text class="membership-option" @click="findEmail">아이디 찾기</v-btn>
-                <v-divider vertical class="vertical-divider"></v-divider>
-                <v-btn text class="membership-option" @click="findPassword">비밀번호 찾기</v-btn>
-              </v-row>
             </v-form>
           </v-card-text>
         </v-card>
@@ -102,7 +96,6 @@ export default {
         };
 
         const response = await axios.post(`${process.env.VUE_APP_API_BASE_URL}/member-service/member/login`, loginData);
-        console.log(response)
 
         const token = response.data.result;
         const decodedToken = jwtDecode(token);
@@ -126,17 +119,10 @@ export default {
           window.location.href = "/authentication";
         } else {
           alert('로그인 실패');
-          console.log(e)
           const error_message = e.response?.data?.status_message || "로그인에 실패했습니다.";
           alert(error_message);
         }
       }
-    },
-    findEmail() {
-      this.$router.push("member/find/email");
-    },
-    findPassword() {
-      this.$router.push("/member/find/password");
     },
   },
 };
@@ -226,20 +212,5 @@ export default {
   background-color: #f9f9f9;
   padding: 10px;
   border-radius: 8px;
-}
-.membership-options {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-top: 20px;
-}
-.membership-option {
-  font-family: "Inter";
-  font-style: normal;
-  font-weight: 700;
-  font-size: 15px;
-  color: #A7A7A7;
-  background-color: #f9f9f9;
-  box-shadow: none;
 }
 </style>

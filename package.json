@@ -12,6 +12,7 @@
     "@stomp/stompjs": "^7.0.0",
     "assert": "^2.1.0",
     "axios": "^1.7.7",
+    "bootstrap": "5.3.3",
     "browserify-zlib": "^0.2.0",
     "core-js": "^3.8.3",
     "firebase": "10.13.2",

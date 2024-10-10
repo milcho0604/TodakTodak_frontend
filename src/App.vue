@@ -1,4 +1,3 @@
-<!-- App.vue -->
 <template>
   <v-app class="app global_bg">
     <HeaderComponent/>
@@ -15,12 +14,9 @@ import axios from 'axios';
 import HeaderComponent from './components/header/HeaderComponent.vue';
 import FooterComponent from './components/footer/FooterComponent.vue';
 
-//FCM
+// FCM 관련 Firebase SDK
 import { initializeApp } from 'firebase/app';
 import { getMessaging, getToken, onMessage } from 'firebase/messaging';
-// import { resolve } from 'core-js/fn/promise';
-// import member from './store/member';
-
 
 export default {
   name: 'App',
@@ -32,7 +28,8 @@ export default {
     await this.initializeFCM();
   },
   methods: {
-    async initializeFCM(){
+    // FCM 초기화 및 알림 권한 요청
+    async initializeFCM() {
       const firebaseConfig = {
         apiKey: "AIzaSyBSH8wJ7aoblNAj8Kj7iNTfsJhlEL4KEcE",
         authDomain: "padak-todak.firebaseapp.com",
@@ -42,90 +39,98 @@ export default {
         appId: "1:22351664979:web:536ae135a5a43c0f88b3a6",
         databaseURL: "https://padak-todak-default-rtdb.asia-southeast1.firebasedatabase.app"
       };
+
       const firebase = initializeApp(firebaseConfig);
       const messaging = getMessaging(firebase);
-      
-      // 서비스 워커가 준비된 후 FCM 토큰 요청
+
+      // 서비스 워커가 준비될 때까지 대기
       await navigator.serviceWorker.ready;
-      
-      //console.log('Service Worker is ready', navigator.serviceWorker.controller);
-      //알림 수신을 위한 사용자 권한 요청
+
+      // 알림 권한 요청
       const permission = await Notification.requestPermission();
-      console.log('permission : ', permission);
-      if(permission !== 'granted'){
-          alert('알림을 허용해주세요!');
-          return;
+      console.log('Permission: ', permission);
+      if (permission !== 'granted') {
+        alert('알림을 허용해주세요!');
+        return;
       }
-        try {
-          console.log('토큰 요청 한다!!!!!')
-          //FCM 토큰 요청
-          const token = await getToken(messaging,{
-            vapidKey: `${process.env.VUE_APP_FIREBASE_VAP_ID}`
+
+      try {
+        // FCM 토큰 요청
+        const token = await getToken(messaging, {
+          vapidKey: process.env.VUE_APP_FIREBASE_VAP_ID
+        });
+
+        if (token) {
+          console.log('FCM Token: ', token);
+          localStorage.setItem('fcmToken', token);
+
+          // 이메일과 토큰 헤더 정보
+          const memberEmail = localStorage.getItem('email');
+          const BearerToken = localStorage.getItem('token');
+          
+          // FCM 토큰 서버로 전송
+          await axios.post(`${process.env.VUE_APP_API_BASE_URL}/member-service/fcm/token`, { fcmToken: token }, {
+            headers: { Authorization: `Bearer ${BearerToken}`, memberEmail: memberEmail }
           });
-
-          if(token){
-            console.log('토큰 이따!!!!')
-            localStorage.setItem("fcmToken", token);
-            console.log("FCM Token: ", token);
-            const memberEmail = localStorage.getItem('email');
-            const BearerToken = localStorage.getItem('token');
-            //localStoragedp fcmToken이 생길때까지 대기
-            await this.waitForToken();
-
-            //FCM 토큰 서버에 전송
-            const access_token = localStorage.getItem('fcmToken');
-            // http://localhost:8080/member-service/fcm/token
-            await axios.post(`${process.env.VUE_APP_API_BASE_URL}/member-service/fcm/token`,{fcmToken: access_token},{headers:{Authorization: `Bearer ${BearerToken}`, memberEmail: memberEmail}});
-          }
-        }catch(err){
-          console.error('Failed to get FCM token', err);
         }
-          
-
-        //   // // FCM 토큰을 서버에 전송
-          // await axios.post(`${process.env.VUE_APP_API_BASE_URL}/user/pushToken`, {
-          //   pushToken: token,
-          // }, { headers });
-
-        //   // localStorage.setItem("fcmToken", token);
-        //   // console.log('fcmToken: ', token);
-        // } catch (err) {
-        //   console.error(err);
-        // }
-        
-        // await navigator.serviceWorker.ready
-          // // FCM 토큰 요청
-          //const token = await getToken(messaging, {
-          //   vapidKey: 'BHg-Nt-RVggJCTjYQlB-5hThEnYJwUb5SAyjtyaXaFPI4k5JURI0hXSsXGD0IRFr8lSWX8JJY7kyLpGQlylXQw4'
-          // });
-          
-      
-      
-    onMessage(messaging, (payload) => {
-      console.log("Recived message ", payload);
-      const notificationTitle = payload.notification.title;
-      const notificationOptions = {
-        body: payload.notification.body,
-        icon: "favicon.ico"
-      };
-      if(Notification.permission === "granted"){
-        new Notification(notificationTitle, notificationOptions);
+      } catch (err) {
+        console.error('Failed to get FCM token', err);
       }
-    });
-    },
-    //fcmToken이 localStorage에 생길때까지 대기
-    waitForToken(){
-      return new Promise((resolve)=>{
-        const interval = setInterval(() => {
-          const token = localStorage.getItem('fcmToken');
-          if(token){
-            clearInterval(interval);
-            resolve();
-          }
-        }, 100); //100ms마다확인
+
+      // 메시지 수신 시 로직 처리
+      onMessage(messaging, (payload) => {
+        console.log('Received message: ', payload);
+        const notificationTitle = payload.notification.title;
+        const notificationOptions = {
+          body: payload.notification.body,
+          icon: "favicon.ico",
+          data: payload.data // URL과 알림 ID를 포함하는 data 필드
+        };
+
+        if (Notification.permission === 'granted') {
+          const notification = new Notification(notificationTitle, notificationOptions);
+
+          // 알림 클릭 시 동작
+          notification.onclick = async (event) => {
+            event.preventDefault();
+            const notificationId = payload.data.notificationId; // 알림 ID 추출
+            const url = payload.data.url; // data에서 URL 추출
+
+            // 알림 읽음 처리 API 호출
+            if (notificationId) {
+              try {
+                const notificationIdAsLong = parseInt(notificationId, 10);
+                const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/member-service/fcm/read/${notificationIdAsLong}`);
+                console.log('알림 읽음 처리 완료:', response.data);
+
+                // 읽은 알림 사라지게 처리 (해당 로직 필요 시 추가)
+                notification.close();
+              } catch (err) {
+                console.error('알림 읽음 처리 중 오류 발생:', err);
+              }
+            }
+
+            // URL로 이동
+            if (url) {
+              window.open(url, '_self'); // 현재 창에서 리다이렉트
+            }
+          };
+        }
       });
     },
 
+    // fcmToken이 localStorage에 생길 때까지 대기
+    waitForToken() {
+      return new Promise((resolve) => {
+        const interval = setInterval(() => {
+          const token = localStorage.getItem('fcmToken');
+          if (token) {
+            clearInterval(interval);
+            resolve();
+          }
+        }, 100); // 100ms마다 확인
+      });
+    },
 
     toggleSidebar() {
       this.$refs.sidebar.toggleSidebar();
@@ -135,6 +140,7 @@ export default {
 </script>
 
 <style>
+/* 기존 스타일 유지 */
 @import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
 .inter-bold {
   font-family: "Inter", sans-serif;
@@ -155,17 +161,16 @@ export default {
   font-style: normal;
 }
 .custom-container{
-  max-width: 1200px !important; /* 원하는 최대 폭 */
-  margin: 0 auto !important;    /* 중앙 정렬 */
-  width: 100% !important; /* 컨테이너의 폭을 100%로 설정 */
+  max-width: 1200px !important;
+  margin: 0 auto !important;
+  width: 100% !important;
 }
 .app {
   display: flex;
   flex-direction: column;
-  min-height: 100vh; /* 
-  면 높이의 100%를 차지하도록 설정 */
+  min-height: 100vh;
 }
 .main-content {
-  flex: 1; /* 콘텐츠가 footer 위에 표시되도록 설정 */
+  flex: 1;
 }
 </style>
