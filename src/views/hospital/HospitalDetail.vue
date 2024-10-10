@@ -9,6 +9,7 @@
         </div>
 
         <v-spacer :style="{ height: '30px' }"></v-spacer>
+
         <!-- 병원이름, 별점, 대기인원 -->
         <v-row>
             <h2 class="ml-5">{{hospital[0].name}}</h2>
@@ -20,6 +21,7 @@
                 <strong>대기 {{ hospital[0].standby }}명</strong>
             </v-chip>
         </v-row>
+
         <!-- 병원주소 -->
         <v-row>
             <v-text style="color:#888888; font-weight: bold; font-size:15px" class="ml-3 mt-2">
@@ -27,6 +29,7 @@
                 {{ hospital[0].address }}
             </v-text>
         </v-row>
+
         <!-- 병원 영업시간, 점심시간 -->
         <v-row>
             <v-text style="color:#888888; font-weight: bold; font-size:15px" class="ml-3 mt-2">
@@ -34,6 +37,7 @@
                 {{ hospital[0].todaySchedule }} | 점심시간 {{ hospital[0].breakTime }}
             </v-text>
         </v-row>
+
         <!-- 병원 전화번호 -->
         <v-row>
             <v-text style="color:#888888; font-weight: bold; font-size:15px" class="ml-3 mt-2">
@@ -41,6 +45,7 @@
                 {{ hospital[0].phoneNumber }}
             </v-text>
         </v-row>
+
         <!-- 병원 keywords -->
         <v-row>
             <v-text style="color:#888888; font-weight: bold; font-size:15px" class="ml-3 mt-2">
@@ -57,19 +62,20 @@
             <strong>{{ keyword }} </strong>
             </v-chip>  
         </v-row>
+
         <!-- 오늘예약, 스케쥴예약 버튼 (click 이벤트 이후 추가예정) -->
         <v-row class="my-7 ml-2">
             <v-btn size="large" class="schedule-button" rounded="lg" variant="flat">스케쥴 예약</v-btn>
             <v-btn size="large" class="today-button ml-5" rounded="lg" variant="flat">오늘 예약</v-btn>
         </v-row>
+
         <!-- 병원소개, 진료정보, 리뷰 메뉴 tab -->
         <v-tabs
+        v-model="activeTab"
         align-tabs="center"
         style="color: #00499E;"
+        @change="updateTab"
         >
-            <!-- <v-tab :to="`/hospital-intro/${hospitalId}`">병원소개</v-tab>
-            <v-tab :to="`/medical-info/${hospitalId}`">진료정보</v-tab>
-            <v-tab :to="`/review/${hospitalId}`">리뷰</v-tab> -->
             <v-tab class="custom-tab">병원소개</v-tab>
             <v-tab class="custom-tab">진료정보</v-tab>
             <v-tab class="custom-tab">리뷰</v-tab>
@@ -83,8 +89,8 @@
         </v-row>
 
         
-        <!-- 라우터에 의해 컴포넌트가 여기서 로드됨 -->
-        <router-view />
+        <!-- 탭에 따른 컴포넌트 렌더링 -->
+        <component :is="currentComponent"></component>
 
 
 
@@ -94,33 +100,37 @@
 </template>
 
 <script>
+import HospitalIntro from './HospitalIntro.vue';
+import HospitalMedicalInfo from './HospitalMedicalInfo.vue';
+import HospitalReviews from './HospitalReviews.vue';
 
 export default{
     data() {
       return {
-            // 예시데이터
-            keywordList:['전문의','주차장','예방접종'],
-            hospital:[{
-                id:'1', // 병원 id
-                standby: '5', // 실시간 대기인원
-                distance: '252m', // 내위치 ~ 병원 직선거리
-                name: '서초아이 소아청소년과의원', // 병원이름
-                hospitalImageUrl :'https://todak-file.s3.ap-northeast-2.amazonaws.com/default-images/hospital-example-image.png',
-                address: '서울 강남구 삼성로14 (개포자이 프레지던스) 자이스퀘어 상가 216호', // 병원주소
-                dong: '방배동', // 병원주소(동)
-                phoneNumber: '02-465-1234', // 병원전화번호
-                description: '', // 병원소개
-                notice: '', // 병원공지
-                keywords: '전문의, 주차장, 예방접종', // 병원 keywords
-                latitude: '', // 위도
-                longitude: '', // 경도
-                dayOfWeek: '화요일', // 요일
-                openTime: '08:30', // 영업시작 시각
-                closeTime: '19:00', // 영업종료 시각
-                todaySchedule: '화요일 08:30 ~ 19:00', // 오늘 영업시간(최종)
-                averageRating: '4.5', // 병원 평균평점
-                reviewCount: '32', // 병원리뷰개수
-                breakTime: '12:30 ~ 13:30' // 오늘 휴게시간
+        activeTab: 0, // 선택된 탭을 저장
+        // 예시데이터
+        keywordList:['전문의','주차장','예방접종'],
+        hospital:[{
+            id:'1', // 병원 id
+            standby: '5', // 실시간 대기인원
+            distance: '252m', // 내위치 ~ 병원 직선거리
+            name: '서초아이 소아청소년과의원', // 병원이름
+            hospitalImageUrl :'https://todak-file.s3.ap-northeast-2.amazonaws.com/default-images/hospital-example-image.png',
+            address: '서울 강남구 삼성로14 (개포자이 프레지던스) 자이스퀘어 상가 216호', // 병원주소
+            dong: '방배동', // 병원주소(동)
+            phoneNumber: '02-465-1234', // 병원전화번호
+            description: '', // 병원소개
+            notice: '', // 병원공지
+            keywords: '전문의, 주차장, 예방접종', // 병원 keywords
+            latitude: '', // 위도
+            longitude: '', // 경도
+            dayOfWeek: '화요일', // 요일
+            openTime: '08:30', // 영업시작 시각
+            closeTime: '19:00', // 영업종료 시각
+            todaySchedule: '화요일 08:30 ~ 19:00', // 오늘 영업시간(최종)
+            averageRating: '4.5', // 병원 평균평점
+            reviewCount: '32', // 병원리뷰개수
+            breakTime: '12:30 ~ 13:30' // 오늘 휴게시간
         }]
         
       }
@@ -128,7 +138,21 @@ export default{
     created() {
 
     },
+    computed: {
+    currentComponent() {
+      if (this.activeTab == 0) {
+        return HospitalIntro;
+      } else if (this.activeTab == 1) {
+        return HospitalMedicalInfo;
+      } else {
+        return HospitalReviews;
+      }
+    }
+  },
     methods: {
+        updateTab(tabIndex) {
+            this.activeTab = tabIndex; // 선택된 탭의 인덱스를 업데이트
+        }
         
     }
 }
@@ -170,9 +194,9 @@ export default{
     width: 300px
 }
 .custom-tab{
-    font-size:20px; 
+    font-size:22px; 
     font-weight: bold; 
-    margin-right: 5px;
+    margin-right: 30px;
 }
 .divider-row {
     width: 100%;
