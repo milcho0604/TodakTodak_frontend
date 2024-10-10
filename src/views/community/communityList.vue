@@ -59,7 +59,7 @@
                         </v-col>
                         <v-col cols="3" class="text-left" style="padding: 10px; display: flex; align-items: center; justify-content: center;">
                           <div class="image-container" style=" width : 100%; height: 100px; overflow: hidden; position: relative;">
-                            <template>
+                            <template v-if="post.postImgUrl">
                               <v-img
                                 :src="post.postImgUrl"   
                                 alt="게시글 이미지"
