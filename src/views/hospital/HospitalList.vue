@@ -82,6 +82,8 @@
                 style="width: 1000px; max-width: 100%; margin-left: 0; margin-right: auto !important;"
                 variant="outlined"
                 class="custom-card justify-start"
+                @click="goToDetail(hospital.id)"
+                clickable
             >
                 <div class="d-flex flex-no-wrap">
                 <v-avatar
@@ -145,6 +147,7 @@
             </v-col>
         </v-row>
 
+        <v-spacer :style="{ height: '50px' }"></v-spacer>
 
     </v-container>
 </template>
@@ -223,6 +226,10 @@ export default{
             }catch(error){
                 console.log(error);
             }
+        },
+        goToDetail(hospitalId) {
+            // 병원 상세 페이지로 이동
+            this.$router.push({ path: `/hospital/detail/${hospitalId}` });
         }
     }
 }

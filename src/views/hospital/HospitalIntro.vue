@@ -125,7 +125,7 @@
         <v-spacer :style="{ height: '20px' }"></v-spacer>
 
         <h3 >병원위치</h3>
-        <h4 style="color:#888888">{{hospital.address}}</h4>
+        <h4 style="font-size: 20px">{{hospital.address}}</h4>
         <v-spacer :style="{ height: '20px' }"></v-spacer>
 
         <div id="map" style="width:600px; height:400px;"></div>
