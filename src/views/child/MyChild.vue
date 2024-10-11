@@ -12,7 +12,7 @@
             <div class="child">
                 <v-row>
                     <v-col cols="3" class="d-flex justify-center">
-                        <v-avatar size="40">
+                        <v-avatar size="55">
                             <v-img :src="child.imageUrl" alt="child image"/>
                         </v-avatar>
                     </v-col>
@@ -57,7 +57,7 @@
 
         <!-- 자녀 이미 등록 모달 -->
         <v-dialog v-model="childExistsDialog" max-width="450px">
-            <v-card class="modal">
+            <v-card class="child-modal">
                 <v-row class="mt-3" justify="center">
                     <div class="headline inter-bold">자녀정보 등록 실패</div>
                 </v-row>
@@ -147,7 +147,7 @@ export default {
 </script>
 
 <style scoped>
-.modal {
+.child-modal {
     padding: 20px;
     border-radius: 40px;
 }

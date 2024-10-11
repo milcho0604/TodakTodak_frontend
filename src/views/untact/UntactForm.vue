@@ -2,8 +2,9 @@
     <v-container style="width: 700px;">
         <v-row class="mt-6">
             <v-col class="text-center" cols="2">
-                <img src="https://todak-file.s3.amazonaws.com/d278dfb1-9275-41ad-8b86-f7a0a904892b_IMG_8641.JPG"
-                    alt="doctor image" style="width: 40px; height: 40px;">
+                <v-avatar size="60">
+                    <v-img :src="doctor.imageUrl" alt="doctor image" />
+                  </v-avatar>
             </v-col>
             <v-col class="text-center" cols="7">
                 <v-row class="inter-bold big-font">{{doctor.name}} 의사</v-row>
@@ -16,7 +17,7 @@
                 <div class="inter-bold dark-blue subtitle">진료대상선택</div>
             </v-col>
             <v-col>
-                <div class="round inter-normal dark-blue">자녀추가</div>
+                <div class="round inter-normal dark-blue" @click="$router.push('/member/child')">자녀추가</div>
             </v-col>
         </v-row>
         <v-row>
@@ -28,7 +29,9 @@
                 <div class="child" @click="addChild(child)" :class="{ 'selected-child' : this.child==child}">
                     <v-row justify="center">
                         <v-col class="text-center" cols="3">
-                            <img :src="child.imageUrl" alt="child image" style="width: 40px; height: 40px;">
+                            <v-avatar size="50">
+                                <v-img :src="child.imageUrl" alt="doctor image" />
+                              </v-avatar>
                         </v-col>
                         <v-col class="text-center" cols="5" style="margin-top: 11px;">
                             <v-row class="inter-bold big-font">{{ child.name }}</v-row>
@@ -114,7 +117,11 @@
                                     <div class="modal-subtitle inter-bold mt-3">진료정보</div>
                                 </v-row>
                                 <v-row class="inter-light mt-3">
-                                    {{ symptoms }}
+                                    <v-chip-group v-if="symptoms.length > 0">
+                                        <v-chip v-for="(symptom, index) in symptoms" :key="index" class="mr-2">
+                                            {{ symptom }}
+                                        </v-chip>
+                                    </v-chip-group>
                                 </v-row>
                                 <v-row class="inter-light">
                                     <div class="modal-subtitle inter-bold mt-3">선생님께 하고싶은 말</div>
@@ -144,7 +151,12 @@ export default {
     props: ['doctorId'],
     data() {
         return {
-            doctor: {name: "김천재", hospital:"아이조은성모병원",rating:"4.5"},
+            doctor: {
+                imageUrl: "https://todak-file.s3.amazonaws.com/9227db48-1e3a-4559-9ff9-fad2db9cd68b_스크린샷 2024-10-08 오후 2.08.28.png",
+                name: "김천재",
+                hospital:"아이조은성모병원",
+                rating:"4.5"
+            },
             child: null,
             // childOptions 배열에 자녀 정보 저장
             childOptions: [
@@ -168,7 +180,7 @@ export default {
             ],
             comment:null,
             symptomsModal: false,
-            confirmModal: true,
+            confirmModal: false,
         };
     },
     created() {

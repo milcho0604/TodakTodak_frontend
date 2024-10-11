@@ -12,7 +12,7 @@ import { hospitalRouter } from './hospitalRouter';
 import { reservationRouter } from './reservationRouter';
 import { communityRouter } from './communityRouter';
 import { mypageRouter } from './mypageRouter';
-=======import { todakRouter } from './todakRouter';
+import { todakRouter } from './todakRouter';
 
 const routes = [
     {
