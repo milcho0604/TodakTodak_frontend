@@ -1,7 +1,7 @@
 <template>
   <div class="text-center">
-    <v-container class="custom-container" style="bord">
-      <v-row justify="center" class="mt-4">
+    <v-container class="custom-container">
+      <v-row justify="center" class="mt-4" style="width: 900px; margin: 0 auto;">
         <v-col cols="4" class="text-center">
           <v-row justify="center" class="inter-bold dark-blue subtitle">진료자</v-row>
           <v-row justify="center" class="mt-6">
@@ -40,31 +40,21 @@
           </v-row>
         </v-col>
       </v-row>
-
-      <div class="col-lg-12 mb-3 mt-8">
-        <div class="row justify-content-around mb-3">
-          <div class="col-lg-6 mb-3">
-            <video class="local_video" :class="{ small: isRemoteVideoVisible }" ref="localVideo" autoplay playsinline
-              style="transform: scaleX(-1);"></video>
-          </div>
-          <div class="col-lg-6 mb-3">
-            <video class="remote_video" ref="remoteVideo" autoplay playsinline style="transform: scaleX(-1);"></video>
-          </div>
-        </div>
+      <div class="video-container mt-10">
+        <video class="local_video" :class="{ small: isRemoteVideoVisible }" ref="localVideo" autoplay playsinline
+          style="transform: scaleX(-1);"></video>
+        <video class="remote_video" :class="{ tiny: !isRemoteVideoVisible }" ref="remoteVideo" autoplay playsinline
+          style="transform: scaleX(-1);"></video>
       </div>
-      <v-row justify="end">
-        <div id="buttons" class="row">
-          <button type="button" class="button inter-bold" @click="exitRoom">
-            진료 종료
-          </button>
-        </div>
-      </v-row>
+      <div id="buttons">
+        <button type="button" class="button inter-bold" @click="exitRoom">
+          진료 종료
+        </button>
+      </div>
 
       <!-- 리뷰 모달 -->
-      <ReviewComponent v-model="reviewModal" 
-      :reservationId=this.sid
-      @update:dialog="reviewModal = $event;"
-      @openPayModal="openPayModal" />
+      <ReviewComponent v-model="reviewModal" :reservationId=this.sid @update:dialog="reviewModal = $event;"
+        @openPayModal="openPayModal" />
 
       <!-- 결제 모달 -->
       <SinglePaymentComponent v-model:showPaymentModal="payModal" :reservationId="sid" />
@@ -80,8 +70,10 @@ import axios from 'axios';
 
 export default {
   props: ['sid'],
-  components: { ReviewComponent, 
-    SinglePaymentComponent},
+  components: {
+    ReviewComponent,
+    SinglePaymentComponent
+  },
   data() {
     return {
       localStream: null,
@@ -369,25 +361,41 @@ export default {
   width: 1200px;
 }
 
+.video-container {
+  margin: 0 auto;
+  position: relative;
+  /* 부모 컨테이너가 기준 */
+  width: 80%;
+  height: auto;
+}
+
 .local_video {
-  width: 100%;
+  width: 80%;
   height: auto;
 }
 
 .local_video.small {
   position: absolute;
-  bottom: 10px;
-  right: 10px;
-  width: 150px;
-  height: 115px;
-  z-index: 100;
+  /* remote_video 위에 위치 */
+  bottom: 20px;
+  right: 12%;
+  width: 160px;
+  /* 크기 조정 */
+  height: auto;
   border: 2px solid #ccc;
   border-radius: 5px;
+  z-index: 10;
+  /* z-index로 remote_video 위에 표시 */
 }
 
 .remote_video {
-  width: 100%;
+  width: 80%;
   height: auto;
+}
+
+.remote_video.tiny {
+  width: 1px;
+  height: 1px;
 }
 
 .dark-blue {
