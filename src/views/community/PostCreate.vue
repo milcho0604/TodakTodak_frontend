@@ -3,8 +3,10 @@
       <v-col class="inter-bold title" style="text-align: center;">
         <img src="@/assets/community.png" width="50px" /> 의사 Q&A 등록
       </v-col>
-  
-      <div class="search" style="display: flex; align-items: center; margin: 10px 0; justify-content: center;">
+    </div>
+    
+    <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%;">
+      <div class="search" style="display: flex; align-items: center; margin: 10px 0; width: 100%; max-width: 770px;">
         <input
           type="text"
           v-model="searchQuery"
@@ -12,19 +14,19 @@
           :placeholder="titlePlaceholder"
           @focus="clearPlaceholder('title')"
           @blur="restorePlaceholder('title')"
-          style="flex: 1; text-align: center; height: 40px; min-width: 300px; max-width: 770px;"
+          style="flex: 1; text-align: center; height: 40px; min-width: 300px;"
         />
       </div>
   
-      <div class="search" style="display: flex; flex-direction: column; align-items: center; margin: 10px 0; justify-content: center;">
-        <div style="position: relative; width: 100%; max-width: 770px;">
+      <div class="search" style="display: flex; flex-direction: column; align-items: center; width: 100%; max-width: 770px;">
+        <div style="position: relative; width: 100%;">
           <textarea
             v-model="contentQuery"
             class="content-input"
             :placeholder="contentPlaceholder"
             @focus="clearPlaceholder('content')"
             @blur="restorePlaceholder('content')"
-            style="flex: 1; text-align: center; height: 300px; min-width: 300px; max-width: 770px; padding-bottom: 40px;"
+            style="flex: 1; text-align: center; height: 300px; min-width: 300px; width: 100%; padding-bottom: 40px;"
           ></textarea>
           <label class="upload-btn" style="position: absolute; left: 10px; bottom: 10px;">
             <input type="file" @change="onFileChange" accept="image/png, image/jpeg" />
@@ -44,6 +46,7 @@
       </v-btn>
     </div>
   </template>
+  
   
   <script>
   import axios from 'axios';
@@ -168,7 +171,8 @@
   
   .search {
     min-width: 300px;
-    max-width: 700px;
+    max-width: 770px;
+    background-color: #f0f0f0;
   }
   
   .title-input,
@@ -178,6 +182,7 @@
     min-width: 300px;
     max-width: 770px;
     width: 100%;
+    align-items: center;
     border: none !important;
     border-bottom: 1px solid #ccc;
     border-radius: 0;
@@ -188,6 +193,14 @@
   .content-input {
     height: 300px;
     border: none;
+  }
+
+  .search-button{
+    background-color: #ECF2FE;
+    color: #00499E;
+    font-weight: bold;
+    box-shadow: none !important; /* 그림자 없애기 */
+    padding: 10px 10px !important;
   }
   </style>
   

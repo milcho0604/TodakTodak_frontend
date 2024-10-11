@@ -9,20 +9,20 @@
           <br><br>
           <div class="searchBox">
             <v-row class="header-row" align="center" style="flex-grow: 0; justify-content: flex-start;">
-              <v-col style="padding: 10px; flex: 0 0 150px; display: flex; justify-content: center;">
+              <v-col cols="4" style="padding: 10px; flex: 0 0 150px; display: flex; justify-content: center;">
                 <select class="select" v-model="sortOrder" @change="sortPosts" style="text-align: center;">
                   <option value="popular">인기 순</option>
                   <option value="views">조회 순</option>
                   <option value="latest">최신 순</option>
                 </select>
               </v-col>
-              <v-col style="padding: 10px; flex: 1; display: flex; justify-content: center;">
+              <v-col  cols="5.5"  style="padding: 10px; flex: 1; display: flex; justify-content: center;">
                 <div class="search" style="display: flex; align-items: center; margin-right: 10px;">
                   <input type="text" v-model="searchQuery" class="search-input" placeholder="검색..." style="flex-grow: 1;">
                   <span>🔍</span>
                 </div>
               </v-col>
-              <v-col class="text-left" style="padding: 10px; flex: 0 0 120px; display: flex; justify-content: center;">
+              <v-col cols="2.5" class="text-left" style="padding: 10px; flex: 0 0 120px; display: flex; justify-content: center;">
                 <v-btn class="search-button" style="width: 100%; height: 40px; text-align: left;" @click="goToCreatePost">
                   <v-icon small>mdi-pencil-outline</v-icon> 글작성
                 </v-btn>
