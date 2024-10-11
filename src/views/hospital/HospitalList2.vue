@@ -116,18 +116,19 @@
                                     </v-chip>
                                 </div>
                     
-                                <!-- 오늘 영업시간, 내위치 ~ 병원 거리 -->
                                 <div class="d-flex flex-row align-center">
-                                    <v-text class="ml-1" style="font-size:18px">
+                                    <!-- 오늘 영업시간-->
+                                    <v-text class="ml-1" style="font-size:15px">
                                         {{ hospital.todaySchedule }}
                                     </v-text>
-                                    <v-text class="ml-3 distance-text" style="font-size:18px">
+                                    <!--  내위치 ~ 병원 거리  -->
+                                    <v-text class="ml-3 distance-text" style="font-size:15px">
                                         {{ hospital.distance }}
                                     </v-text>
                                 </div>
                                 <!-- 병원 주소 -->
                                 <div class="d-flex flex-row align-center mt-1">
-                                    <v-text style="color:#888888; font-size:17px">
+                                    <v-text style="color:#888888; font-size:15px">
                                         <v-icon>mdi-map-marker-outline</v-icon>
                                         {{ hospital.address }}
                                     </v-text>
@@ -243,16 +244,16 @@ export default{
 /* v-card-title 폰트 스타일 */
 .custom-card-title {
     font-weight: bold; /* 글씨 굵게 */
-    font-size: 23px; /* 원하는 폰트 크기 설정 */
+    font-size: 22px; /* 원하는 폰트 크기 설정 */
 }
 .rating-text{
     font-weight: bold;
-    color: #00499E
+    color: #00499E;
 }
 .distance-text{
     font-weight: bold;
     color: #0066FF;
-    font-size: 17px;
+    font-size: 15px;
 }
 
 </style>
