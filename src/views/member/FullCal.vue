@@ -1,7 +1,7 @@
 <template>
     <div class="calendar-container">
       <!-- FullCalendar Integration -->
-      <FullCalendar :options="calendarOptions">
+      <FullCalendar :options="calendarOptions" class="custom-calendar">
         <template v-slot:eventContent="arg">
           <div class="event-block">
             <strong>{{ arg.event.title }}</strong>
@@ -240,6 +240,11 @@
     margin: 0;
     font-size: 0.8rem; /* 설명 텍스트 더 작게 */
     background-color:#ECF2FE ;
+  }
+  .custom-calendar{
+    max-width: 900px; /* 너비를 900px로 제한 */
+    height: 800px; /* 높이를 900px로 설정 */
+    margin: auto; /* 가운데 정렬 */
   }
   </style>
   
