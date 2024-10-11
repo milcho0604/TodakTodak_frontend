@@ -263,7 +263,7 @@ export default {
 
 .search {
   flex: 1; /* 검색창이 가능한 공간을 모두 차지하도록 설정 */
-  max-width: 300px; /* 최대 너비 설정 */
+  max-width: 500px; /* 최대 너비 설정 */
   min-width: 150px; /* 최소 너비 설정 */
   margin-right: 10px; /* 글 작성 버튼과의 간격 설정 */
   border-radius: 10px;
