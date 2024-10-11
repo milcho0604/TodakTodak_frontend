@@ -6,12 +6,12 @@
             <v-col cols="4"
             class="justify-start text-no-wrap"
             >
-                <v-btn variant="plain" size="x-large" @click="openAddressSearch">
-                    <h3> 
-                        <v-icon> mdi-crosshairs-gps</v-icon>
-                        {{dong}}
+                <v-btn variant="flat" size="large" @click="openAddressSearch">
+                    <h4> 
+                        <!-- <v-icon> mdi-crosshairs-gps</v-icon> -->
+                        📍 {{dong}}
                         <v-icon class="custom-width ml-n1"> mdi-chevron-down</v-icon>
-                    </h3>
+                    </h4>
                 </v-btn>
             </v-col>
             <!-- 주변소아과 타이틀 -->
@@ -53,9 +53,9 @@
               ></v-text-field>
             </v-col>
             <!-- 진료중 버튼 -->
-            <v-col cols="2" >
+            <!-- <v-col cols="2" >
                 <v-btn variant="tonal" rounded="lg" size="large" color="#0066FF"> 진료중 </v-btn>
-            </v-col>
+            </v-col> -->
         </v-row>
 
         <v-spacer></v-spacer>
@@ -78,72 +78,72 @@
         <!-- 병원리스트 -->
         <v-row>
             <v-col cols="12" v-for="hospital in hospitalList" :key="hospital.id">
-            <v-card
-                style="width: 1000px; max-width: 100%; margin-left: 0; margin-right: auto !important;"
-                variant="outlined"
-                class="custom-card justify-start"
-                @click="goToDetail(hospital.id)"
-                clickable
-            >
-                <div class="d-flex flex-no-wrap">
-                <v-avatar
-                    class="ma-5"
-                    style="height:140px; width:180px; border-radius: 10px; object-fit:cover;"
+                <v-card
+                    style="width: 1000px; max-width: 100%; margin-left: 0; margin-right: auto !important;"
+                    variant="outlined"
+                    class="custom-card justify-start"
+                    @click="goToDetail(hospital.id)"
+                    clickable
                 >
-                    <v-img :src="hospital.hospitalImageUrl" />
-                </v-avatar>
-    
-                <div style="flex: 1;">
-                    <div class="d-flex flex-row align-center justify-space-between">
-                    <!-- 병원 이름 -->
-                    <div class="d-flex flex-row align-center">
-                        <v-card-title class="mt-2 ml-n4 custom-card-title">
-                        {{ hospital.name }}
-                        </v-card-title>
-                        <!-- 병원 평균평점, 리뷰개수 -->
-                        <v-card-text class="rating-text mt-4 ml-n7">
-                        <v-icon color="#00499E">mdi-star</v-icon>
-                        {{ hospital.averageRating }} ({{ hospital.reviewCount }})
-                        </v-card-text>
-                    </div>
+                    <div class="d-flex flex-no-wrap">
+                        <v-avatar
+                            class="ma-5"
+                            style="height:140px; width:180px; border-radius: 10px; object-fit:cover;"
+                        >
+                            <v-img :src="hospital.hospitalImageUrl" />
+                        </v-avatar>
         
-                    <!-- 대기 인원 (오른쪽 정렬) -->
-                    <v-chip color="#0066FF" size="large" class="ml-auto mr-10 mt-2">
-                        <strong>대기 {{ hospital.standby ?? 0 }}명</strong>
-                    </v-chip>
+                        <div style="flex: 1;">
+                            <div class="d-flex flex-row align-center justify-space-between">
+                                <!-- 병원 이름 -->
+                                <div class="d-flex flex-row align-center">
+                                    <v-card-title class="mt-2 ml-n4 custom-card-title">
+                                    {{ hospital.name }}
+                                    </v-card-title>
+                                    <!-- 병원 평균평점, 리뷰개수 -->
+                                    <v-card-text class="rating-text mt-4 ml-n7">
+                                    <v-icon color="#00499E">mdi-star</v-icon>
+                                    {{ hospital.averageRating }} ({{ hospital.reviewCount }})
+                                    </v-card-text>
+                                </div>
+                    
+                                <!-- 대기 인원 (오른쪽 정렬) -->
+                                <v-chip color="#0066FF" size="large" class="ml-auto mr-10 mt-2">
+                                    <strong>대기 {{ hospital.standby ?? 0 }}명</strong>
+                                </v-chip>
+                            </div>
+                
+                            <!-- 오늘 영업시간, 내위치 ~ 병원 거리 -->
+                            <div class="d-flex flex-row align-center">
+                                <v-text class="ml-1" style="font-size:18px">
+                                    {{ hospital.todaySchedule }}
+                                </v-text>
+                                <v-text class="ml-3 distance-text" style="font-size:18px">
+                                    {{ hospital.distance }}
+                                </v-text>
+                            </div>
+                            <!-- 병원 주소 -->
+                            <div class="d-flex flex-row align-center mt-1">
+                                <v-text style="color:#888888; font-size:17px">
+                                    <v-icon>mdi-map-marker-outline</v-icon>
+                                    {{ hospital.address }}
+                                </v-text>
+                            </div>
+                            <!-- 병원 키워드 chip -->
+                            <div class="d-flex flex-row align-center">
+                                <v-chip
+                                    v-for="(keyword, index) in hospital.keywordList"
+                                    :key="index"
+                                    color="#00499E"
+                                    size="default"
+                                    class="mr-2 mt-2"
+                                >
+                                    {{ keyword }} 
+                                </v-chip>
+                            </div>
+                        </div>
                     </div>
-        
-                    <!-- 오늘 영업시간, 내위치 ~ 병원 거리 -->
-                    <div class="d-flex flex-row align-center">
-                    <v-text class="ml-1" style="font-size:18px">
-                        {{ hospital.todaySchedule }}
-                    </v-text>
-                    <v-text class="ml-3 distance-text" style="font-size:18px">
-                        {{ hospital.distance }}
-                    </v-text>
-                    </div>
-                    <!-- 병원 주소 -->
-                    <div class="d-flex flex-row align-center mt-1">
-                    <v-text style="color:#888888; font-size:17px">
-                        <v-icon>mdi-map-marker-outline</v-icon>
-                        {{ hospital.address }}
-                    </v-text>
-                    </div>
-                    <!-- 병원 키워드 chip -->
-                    <div class="d-flex flex-row align-center">
-                    <v-chip
-                        v-for="(keyword, index) in hospital.keywordList"
-                        :key="index"
-                        color="#00499E"
-                        size="default"
-                        class="mr-2 mt-2"
-                    >
-                        {{ keyword }} 
-                    </v-chip>
-                    </div>
-                </div>
-                </div>
-            </v-card>
+                </v-card>
             </v-col>
         </v-row>
 
