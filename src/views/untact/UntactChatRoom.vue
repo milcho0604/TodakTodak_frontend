@@ -6,10 +6,12 @@
           <v-row justify="center" class="inter-bold dark-blue subtitle">진료자</v-row>
           <v-row justify="center" class="mt-6">
             <v-col class="text-center" cols="5">
-              <img src="https://todak-file.s3.amazonaws.com/d278dfb1-9275-41ad-8b86-f7a0a904892b_IMG_8641.JPG"
-                alt="doctor image" style="width: 40px; height: 40px;">
+              <v-avatar size="60">
+                <v-img :src="doctor.imageUrl" alt="doctor image" />
+              </v-avatar>
+
             </v-col>
-            <v-col class="text-center" cols="7">
+            <v-col class="text-center mt-3" cols="7">
               <v-row class="inter-bold big-font">김천재 의사</v-row>
               <v-row class="inter-bold small-font">아이조은성모병원</v-row>
               <v-row class="inter-normal small-font">별4.5</v-row>
@@ -22,10 +24,11 @@
             <div class="child">
               <v-row justify="center">
                 <v-col class="text-center" cols="5">
-                  <img src="https://todak-file.s3.amazonaws.com/d278dfb1-9275-41ad-8b86-f7a0a904892b_IMG_8641.JPG"
-                    alt="child image" style="width: 40px; height: 40px;">
+                  <v-avatar size="60">
+                    <v-img :src="child.imageUrl" alt="doctor image" />
+                  </v-avatar>
                 </v-col>
-                <v-col class="text-center" cols="7" style="margin-top: 7px;">
+                <v-col class="text-center" cols="7" style="margin: 15px auto;">
                   <v-row class="inter-bold big-font">이한아</v-row>
                   <v-row class="inter-normal small-font">181227 - 4321121</v-row>
                 </v-col>
@@ -83,7 +86,8 @@ export default {
       localUserName: localStorage.getItem("token"),
       socket: null,
       isRemoteVideoVisible: false, // 상대방 화면 여부 체크
-      doctor: null,
+      doctor: {imageUrl: "https://todak-file.s3.amazonaws.com/9227db48-1e3a-4559-9ff9-fad2db9cd68b_스크린샷 2024-10-08 오후 2.08.28.png"},
+      child: {imageUrl: "https://todak-file.s3.amazonaws.com/9227db48-1e3a-4559-9ff9-fad2db9cd68b_스크린샷 2024-10-08 오후 2.08.28.png"},
       medicalChartId: null,
       chartCreated: false,
       reviewModal: false,
@@ -411,6 +415,7 @@ export default {
   border-radius: 40px;
   padding: 3px 15px;
   font-size: 14px;
+  margin: 15px auto;
 }
 
 .big-font {
@@ -426,7 +431,7 @@ export default {
   border: 1px solid #ccc;
   border-radius: 10px;
   width: 290px;
-  padding: 20px 10px;
+  padding: 15px 10px;
 }
 
 .button {
