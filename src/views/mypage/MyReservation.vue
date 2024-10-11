@@ -268,6 +268,7 @@ export default {
 *{
     user-select: none;
     font-family: "Inter";
+    font-weight: bold;
 }
 
 .main-content {
