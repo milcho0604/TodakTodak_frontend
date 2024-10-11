@@ -145,7 +145,7 @@
   </script>
   
   
-  <style>
+  <style scoped>
   .upload-btn {
     display: inline-flex;
     justify-content: center;
