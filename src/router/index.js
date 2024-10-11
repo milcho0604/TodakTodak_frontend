@@ -10,6 +10,7 @@ import { untactRouter } from './untactRouter';
 import { chatRouter } from './chatRouter';
 import { reservationRouter } from './reservationRouter';
 import { communityRouter } from './communityRouter';
+import { todakRouter } from './todakRouter';
 
 const routes = [
     {
@@ -23,6 +24,7 @@ const routes = [
     ...chatRouter,
     ...reservationRouter,
     ...communityRouter,
+    ...todakRouter,
 ]
 
 
