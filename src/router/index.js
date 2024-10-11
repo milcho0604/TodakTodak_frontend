@@ -10,6 +10,7 @@ import { untactRouter } from './untactRouter';
 import { chatRouter } from './chatRouter';
 import { reservationRouter } from './reservationRouter';
 import { communityRouter } from './communityRouter';
+import { mypageRouter } from './mypageRouter';
 
 const routes = [
     {
@@ -23,6 +24,7 @@ const routes = [
     ...chatRouter,
     ...reservationRouter,
     ...communityRouter,
+    ...mypageRouter,
 ]
 
 
