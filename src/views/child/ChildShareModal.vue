@@ -1,7 +1,7 @@
 <template>
     <!-- 자녀 공유 모달 -->
     <v-dialog v-model="childDeleteDialog" max-width="450px">
-        <v-card class="modal">
+        <v-card class="child-modal">
             <v-row class="mt-3" justify="center">
                 <div class="headline inter-bold">자녀정보 공유</div>
             </v-row>
@@ -102,8 +102,8 @@ export default {
 };
 </script>
 
-<style>
-.modal {
+<style scoped>
+.child-modal {
     padding: 20px;
     border-radius: 40px;
 }

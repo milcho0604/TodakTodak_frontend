@@ -1,17 +1,12 @@
 <template>
   <v-container class="mt-5">
     <v-row align="center">
-      <v-col cols="6" class="d-flex justify-end">
-        <v-img
-          :src="require('@/assets/community.png')"
-          alt="Community Icon"
-          height="50px"
-        ></v-img>
+      <v-col cols="6" md="8" class="d-flex justify-end">
+        <div class="d-flex align-center">
+          <v-col class="inter-bold title" style="text-align: center;"><img src="@/assets/community.png" width="50px"/> 의사 Q&A</v-col>
+        </div>
       </v-col>
-      <v-col cols="6" class="d-flex align-center">
-        <span class="inter-bold title" style="line-height: 50px;">의사 Q&A</span>
-      </v-col>
-    </v-row>
+    </v-row> <br>
     <v-card class="pa-5" v-if="postDetail">
       <div class="d-flex justify-space-between align-center mb-3">
         <v-divider>
@@ -412,6 +407,14 @@ export default {
 
 
 <style scoped>
+.pa-5{
+  max-width: 770px;
+  width: 100%;
+  margin: 0 auto;
+  box-sizing: border-box; /* 패딩과 보더를 포함하여 너비를 계산 */
+  background-color: #FCFCFC; /* 배경색 변경 */
+}
+
 .v-container {
   max-width: 900px;
   margin: 0 auto;

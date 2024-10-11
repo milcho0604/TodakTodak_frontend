@@ -12,11 +12,11 @@
 
         <v-col class="d-flex flex-row justify-start text-no-wrap" cols="6">
           <!-- 왼쪽 정렬 -->
-          <v-btn class="custom-button">
+          <v-btn class="custom-button" @click="$router.push('/hospital/list')"> 
               🏥 주변소아과
           </v-btn>
 
-          <v-btn class="custom-button">
+          <v-btn class="custom-button" @click="$router.push('/untact/list')">
             🏠 비대면진료
           </v-btn>
 
@@ -46,8 +46,14 @@
               <v-list-item :to="{ path: '/member/mypage'}">
                 <v-list-item-title>마이 페이지</v-list-item-title>
               </v-list-item>
+              <v-list-item :to="{ path: '/member/child'}">
+                <v-list-item-title>자녀 설정</v-list-item-title>
+              </v-list-item>
               <v-list-item :to="{ path: '/'}">
                 <v-list-item-title>내 채팅</v-list-item-title>
+              </v-list-item>
+              <v-list-item :to="{ path: '/member/fullcal'}">
+                <v-list-item-title>캘린더</v-list-item-title>
               </v-list-item>
               <v-list-item @click="logout">
                 <v-list-item-title>로그아웃</v-list-item-title>
@@ -114,6 +120,7 @@ export default {
     },
     logout() {
       localStorage.removeItem('token'); // 토큰 제거
+      localStorage.removeItem('fcmToken') // fcm 토큰 제거
       this.isLogin = false; // 로그아웃 후 로그인 상태 업데이트
       this.$router.push('/'); // 로그아웃 후 메인 페이지로 이동
     },

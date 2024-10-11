@@ -8,6 +8,7 @@ import ResetPasswordPage from "@/views/member/ResetPasswordPage.vue";
 import MyReviewList from "@/views/member/MyReviewList.vue";
 import AdminLoginPage from "@/views/member/AdminLoginPage.vue";
 import MyChild from "@/views/child/MyChild.vue";
+import FullCal from "@/views/member/FullCal.vue";
 
 import { jwtDecode } from "jwt-decode";
 export const memberRouter = [
@@ -55,6 +56,11 @@ export const memberRouter = [
         path: '/member/child',
         name: 'MyChild',
         component: MyChild  
+    },
+    {
+        path: '/member/fullcal',
+        name: 'FullCal',
+        component: FullCal  
     },
     {
         path: '/loginSuccess',

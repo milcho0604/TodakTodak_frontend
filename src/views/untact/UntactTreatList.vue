@@ -152,13 +152,13 @@ export default {
 
 <style scoped>
 .title {
-    font-size: 20px;
+    font-size: 25px;
 }
 
 .doctor {
     border: 1px solid #ccc;
     border-radius: 10px;
-    width: 700px;
+    width: 80%;
     padding: 40px 10px;
     margin-bottom: 10px;
 }
@@ -185,7 +185,7 @@ export default {
 }
 
 .header-row {
-    width: 700px;
+    width: 1000px;
     margin: 0 auto;
 }
 
@@ -194,8 +194,8 @@ export default {
     border: 1px solid #ccc;
     border-radius: 10px;
     padding: 8px;
+    width: 90%;
     font-size: 15px;
-    width: 150px;
     outline: none;
     cursor: pointer;
     text-align: center;
