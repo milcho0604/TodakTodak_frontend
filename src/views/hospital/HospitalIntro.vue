@@ -125,7 +125,7 @@
         <v-spacer :style="{ height: '20px' }"></v-spacer>
 
         <h3 >병원위치</h3>
-        <h4 style="color:#888888">{{hospital.address}}</h4>
+        <h4 style="font-size: 20px">{{hospital.address}}</h4>
         <v-spacer :style="{ height: '20px' }"></v-spacer>
 
         <div id="map" style="width:600px; height:400px;"></div>
@@ -157,11 +157,11 @@ export default{
         this.hospitalId = route.params.hospitalId; 
     },
     async mounted(){
-        this.loadHospitalDetail();
-        try{
-            await this.loadKakaoMapScript();
-        }catch(error){
-            console.log(error)
+        try {
+            await this.loadHospitalDetail();  // 병원 상세 정보를 먼저 불러옴
+            await this.loadKakaoMapScript();  // 병원 정보가 로드된 후에 KakaoMap Script를 로드
+        } catch (error) {
+        console.log(error);
         }
     },
     methods:{
