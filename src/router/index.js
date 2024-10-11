@@ -22,7 +22,7 @@ const routes = [
     ...paymentRouter,
     ...untactRouter,
     ...chatRouter,
-    ...hospitalRouter
+    ...hospitalRouter,
     ...reservationRouter,
     ...communityRouter,
 ]

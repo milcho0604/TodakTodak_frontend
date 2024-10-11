@@ -13,11 +13,11 @@
         <!-- 병원이름, 별점, 대기인원 -->
         <v-row>
             <h2 class="ml-5">{{hospital.name}}</h2>
-            <v-icon color="#00499E" class="ml-2 mt-1" style="font-size:22px">mdi-star</v-icon>
+            <v-icon color="#00499E" class="ml-2 mt-2" style="font-size:22px">mdi-star</v-icon>
             <v-text class="ml-1 mt-1 rating-text">
                 {{ hospital.averageRating }} ({{ hospital.reviewCount }})
             </v-text>
-            <v-chip color="#0066FF" size="default" class="ml-3">
+            <v-chip color="#0066FF" size="default" class="ml-3 mt-1">
                 <strong>대기 {{ hospital.standby }}명</strong>
             </v-chip>
         </v-row>

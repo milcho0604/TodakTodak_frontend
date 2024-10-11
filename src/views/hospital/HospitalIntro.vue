@@ -157,11 +157,11 @@ export default{
         this.hospitalId = route.params.hospitalId; 
     },
     async mounted(){
-        this.loadHospitalDetail();
-        try{
-            await this.loadKakaoMapScript();
-        }catch(error){
-            console.log(error)
+        try {
+            await this.loadHospitalDetail();  // 병원 상세 정보를 먼저 불러옴
+            await this.loadKakaoMapScript();  // 병원 정보가 로드된 후에 KakaoMap Script를 로드
+        } catch (error) {
+        console.log(error);
         }
     },
     methods:{
