@@ -3,11 +3,11 @@
         <v-container style="width: 700px;">
             <v-spacer :style="{ height: '50px' }"></v-spacer>
             <v-row class="header-row">
-                <v-col cols="5">
-                    <h2>{{ hostpitalName }}</h2>
+                <v-col cols="4" :class="fontSize">
+                    <div class="hospital" >{{ hostpitalName }}</div>
                 </v-col>
-                <v-col>
-                    <div class="custom-text">
+                <v-col cols="4">
+                    <div class="custom-text" >
                         스케줄예약
                     </div>
                 </v-col>
@@ -477,7 +477,7 @@ export default {
             }
             else {
                 // 여기에 "예약상세내역 페이지 경로"
-                this.$router.push('')
+                this.$router.push('/member/mypage/reservation')
             }
         }
     },
@@ -489,6 +489,22 @@ export default {
         date(newDate) {
             console.log(newDate);
             this.fetchDoctorTime();
+        }
+    },
+    computed: {
+        fontSize(){
+            const length = this.hostpitalName.length;
+            console.log(length)
+            if(length <= 5){
+                return "large-font";
+            }else if(length <= 8){
+                return 'lm-font';
+            }
+            else if(length <= 10){
+                return "medium-font";
+            }else{
+                return "smalll-font";
+            }
         }
     }
 }
@@ -520,7 +536,7 @@ export default {
 .custom-text {
     background-color: #ECF2FD;
     color: #00499E;
-    font-size: 1.4rem;
+    font-size: 1.2rem;
     border-radius: 10px;
     padding: 4px 20px;
     display: inline-block;
@@ -775,5 +791,24 @@ export default {
     color: #00499E;
     cursor: pointer;
     font-weight: bold;
+}
+
+.hospital{
+    font-weight: bold !important;
+}
+
+.large-font{
+    font-size: 30px;
+    margin-right: -60px;
+}
+.lm-font{
+    font-size: 25px;
+}
+.medium-font{
+    font-size: 20px;
+}
+
+.smalll-font{
+    font-size: 17px;
 }
 </style>

@@ -11,7 +11,8 @@ import { chatRouter } from './chatRouter';
 import { hospitalRouter } from './hospitalRouter';
 import { reservationRouter } from './reservationRouter';
 import { communityRouter } from './communityRouter';
-import { todakRouter } from './todakRouter';
+import { mypageRouter } from './mypageRouter';
+=======import { todakRouter } from './todakRouter';
 
 const routes = [
     {
@@ -26,6 +27,7 @@ const routes = [
     ...hospitalRouter,
     ...reservationRouter,
     ...communityRouter,
+    ...mypageRouter,
     ...todakRouter,
 ]
 

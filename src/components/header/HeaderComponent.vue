@@ -37,7 +37,7 @@
               </v-btn>
             </template>
             <v-list>
-              <v-list-item :href="`/`">
+              <v-list-item :href="`/member/mypage/reservation`">
                 <v-list-item-title>나의 예약내역</v-list-item-title>
               </v-list-item>
               <v-list-item :to="{ path: '/'}">

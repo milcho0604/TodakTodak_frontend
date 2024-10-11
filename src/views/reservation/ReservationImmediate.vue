@@ -3,11 +3,11 @@
         <v-container style="width: 700px;">
             <v-spacer :style="{ height: '50px' }"></v-spacer>
             <v-row class="header-row">
-                <v-col cols="5">
-                    <h2>{{ hostpitalName }}</h2>
+                <v-col cols="4" :class="fontSize">
+                    <div class="hospital" >{{ hostpitalName }}</div>
                 </v-col>
-                <v-col>
-                    <div class="custom-text">
+                <v-col cols="3">
+                    <div class="custom-text" >
                         오늘예약
                     </div>
                 </v-col>
@@ -273,10 +273,10 @@
                         </v-row>
 
                         <v-row justify="center" align="center" class="mt-6">
-                            <v-col cols="4" class="modal-success-home" @click="goRoute('home')">
+                            <v-col cols="4" class="modal-success-home" @click="this.$router.push('/')">
                                 홈으로 가기
                             </v-col>
-                            <v-col cols="4" class="modal-success-detail" @click="goRoute('detail')">
+                            <v-col cols="4" class="modal-success-detail" @click="this.$router.push('/member/mypage/reservation')">
                                 예약상세내역 확인
                             </v-col>
                         </v-row>
@@ -297,7 +297,7 @@ export default {
     data() {
         return {
             medicalType: "Immediate",
-            hostpitalName: "삼성화곡소아청소년과",
+            hostpitalName: "파닥닥닥닥닥닥닥닥닥병원",
             hospitalId: 1,
             child: null,
             doctor: [],
@@ -412,15 +412,28 @@ export default {
                         .map(key => data[key]);
                 }
             });
-        }
+        },
     },
     async created() {
         this.fetchDoctorList();
         this.fetchChildList();
     },
-    // mounted(){
-    //     this.fetchMediData();
-    // }
+    computed: {
+        fontSize(){
+            const length = this.hostpitalName.length;
+            console.log(length)
+            if(length <= 5){
+                return "large-font";
+            }else if(length <= 8){
+                return 'lm-font';
+            }
+            else if(length <= 10){
+                return "medium-font";
+            }else{
+                return "smalll-font";
+            }
+        }
+    }
 }
 </script>
 
@@ -450,9 +463,9 @@ export default {
 .custom-text {
     background-color: #ECF2FD;
     color: #00499E;
-    font-size: 1.4rem;
+    font-size: 1.2rem;
     border-radius: 10px;
-    padding: 4px 20px;
+    padding: 2px 20px;
     display: inline-block;
     font-weight: bold;
 }
@@ -686,5 +699,23 @@ export default {
     font-size: 20px;
     text-align: center;
     font-weight: bold;
+}
+.hospital{
+    font-weight: bold !important;
+}
+
+.large-font{
+    font-size: 30px;
+    margin-right: -60px;
+}
+.lm-font{
+    font-size: 25px;
+}
+.medium-font{
+    font-size: 20px;
+}
+
+.smalll-font{
+    font-size: 17px;
 }
 </style>
