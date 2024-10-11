@@ -1,6 +1,6 @@
 <template>
     <v-dialog v-model="dialog" max-width="450px">
-        <v-card class="modal">
+        <v-card class="child-modal">
             <v-row class="mt-3">
                 <div class="headline inter-bold">자녀정보 수정하기</div>
                 <div class="hover-btn mr-3" text @click="closeModal">
@@ -140,7 +140,7 @@ export default {
 </script>
 
 <style scoped>
-.modal {
+.child-modal {
     padding: 20px;
     border-radius: 40px;
 }
