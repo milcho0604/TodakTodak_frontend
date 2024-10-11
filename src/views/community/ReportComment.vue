@@ -109,7 +109,7 @@ export default {
 </script>
 
   
-  <style>
+  <style scoped>
   .headline {
     font-size: 10px;
     color: #00499E;

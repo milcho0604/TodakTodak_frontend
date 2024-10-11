@@ -48,7 +48,7 @@ export default {
     }
 }
 </script>
-<style>
+<style scoped>
 .modal {
     padding: 20px;
     border-radius: 40px;

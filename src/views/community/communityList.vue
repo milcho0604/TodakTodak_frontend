@@ -213,7 +213,7 @@ export default {
 
 
 
-<style>
+<style scoped>
 .title {
   text-align: left;
   font-size: 20px;
