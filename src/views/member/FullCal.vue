@@ -2,12 +2,6 @@
     <div class="calendar-container">
       <!-- FullCalendar Integration -->
       <FullCalendar :options="calendarOptions" class="custom-calendar">
-        <template v-slot:eventContent="arg">
-          <div class="event-block">
-            <strong>{{ arg.event.title }}</strong>
-            <p>{{ arg.event.extendedProps.content }}</p>
-          </div>
-        </template>
       </FullCalendar>
   
       <!-- Event Modal for creating/updating events -->
@@ -85,7 +79,9 @@
             initialView: 'dayGridMonth',
             events: [], // Calendar events will be fetched and set here
             dateClick: this.handleDateClick,
-            eventClick: this.handleEventClick
+            eventClick: this.handleEventClick,
+            displayEventTime: true, // 이벤트에 시간을 표시할지 여부
+            navLinks: true, // 제목을 링크로 만들어 클릭 시 날짜로 이동할 수 있도록 설정
           },
           isModalOpen: false,
           isEditing: false,
@@ -236,15 +232,23 @@
     margin: auto; /* 가운데 정렬 */
     margin-top: 30px;
   }
-  .event-block p {
-    margin: 0;
-    font-size: 0.8rem; /* 설명 텍스트 더 작게 */
-    background-color:#ECF2FE ;
+  .fc-theme-standard td, .fc-theme-standard th {
+    height: 30px;
+    border: 1px solid var(--fc-border-color);
+}
+.fc .fc-daygrid-day-frame {
+    height: 30px;
+    position: relative;
+}
+  .fc-daygrid-day-top {
+    max-height: 30px; /* 날짜 상단 부분의 최대 높이를 설정 */
+    height: 30px;
+    overflow: hidden; /* 넘치는 부분은 숨김 */
   }
+  
   .custom-calendar{
     max-width: 900px; /* 너비를 900px로 제한 */
     height: 800px; /* 높이를 900px로 설정 */
     margin: auto; /* 가운데 정렬 */
   }
   </style>
-  
