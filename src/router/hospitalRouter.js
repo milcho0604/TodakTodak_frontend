@@ -1,5 +1,5 @@
 import HospitalList from "@/views/hospital/HospitalList.vue"
-import HospitalList2 from "@/views/hospital/HospitalList2.vue"
+import HospitalList22 from "@/views/hospital/HospitalList22.vue"
 import HospitalDetail from "@/views/hospital/HospitalDetail.vue"
 import HospitalIntro from "@/views/hospital/HospitalIntro.vue"
 import HospitalMedicalInfo from "@/views/hospital/HospitalMedicalInfo.vue"
@@ -13,8 +13,8 @@ export const hospitalRouter = [
     },
     {
         path: '/hospital/list2',
-        name: 'HospitalList2',
-        component: HospitalList2
+        name: 'HospitalList22',
+        component: HospitalList22
     },
     {
         path: '/hospital/detail/:hospitalId',
