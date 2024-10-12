@@ -184,6 +184,7 @@
               prepend-icon="mdi-crosshairs-gps"
               class="location-button"
               variant="text"
+              @click="getCurrentLocation"
               >
               현위치 병원 보기
             </v-btn>
@@ -231,6 +232,15 @@ export default{
     async mounted(){
         await this.getCurrentLocation(); // 위치 정보를 가져온 후 병원리스트 axios 요청
     },
+    watch: {
+        // dong 값이 변경될 때마다 병원 리스트를 새로 로드
+        dong(newDong) {
+            if (newDong) {
+                this.loadHospitalList();
+            }
+        }
+    },
+
     methods: {
         openAddressSearch() {
             this.locationModal = false; // 위치 모달 먼저 닫음
@@ -310,7 +320,7 @@ export default{
                     latitude: this.latitude,
                     longitude: this.longitude
                     };
-                    
+
                 console.log("요청 파라미터:", params); // 요청 파라미터 로그
                 const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/reservation-service/hospital/list`,{ params }
             );
