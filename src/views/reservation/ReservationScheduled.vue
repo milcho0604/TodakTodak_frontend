@@ -339,6 +339,7 @@ export default {
             selectedTime: null, // 선택된 시간
             reservedModal: false,
             successReserveModal: false,
+            reason: null,
         }
     },
     methods: {
@@ -385,11 +386,13 @@ export default {
             const operatingHours = this.doctor.operatingHours || [];
             const selectedDay = selectedDate.getDay();
 
+            // 운영 시간에 해당하는 요일을 확인.
             const isValiDay = operatingHours.some(hour => {
                 const dayOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'].indexOf(hour.dayOfWeek);
-                return dayOfWeek === selectedDay;
+                return dayOfWeek === selectedDay && !hour.untact;
             })
 
+            // 예약 범위 & 운영 요일
             return selectedDate >= weekStart && selectedDate <= weekEnd && isValiDay; // 범위 체크
         },
         getTimeClass(time) {
@@ -446,7 +449,7 @@ export default {
                 
                 this.doctorList.forEach(doctor =>{
                     doctor.profileImgUrl = doctor.profileImgUrl ? doctor.profileImgUrl :
-                    "https://todak-file.s3.ap-northeast-2.amazonaws.com/default-images/default_user_image.png";
+                    "https://todak-file.s3.ap-northeast-2.amazonaws.com/default-images/doctor-3d-image.png";
                 })
 
                 console.log(this.doctorList);
