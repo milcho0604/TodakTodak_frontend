@@ -87,7 +87,7 @@
                 </v-col>
             </v-row>
             <v-row v-if="date">
-                <v-col v-for="time in timeSlots" :key="time" class="time-slot" :class="getTimeClass(time)"
+                <v-col v-for="time in doctorTimeSlots" :key="time" class="time-slot" :class="getTimeClass(time)"
                     @click="selectTime(time)" style="flex-basis: 20%; max-width: 20%;">
                     {{ time }}
                 </v-col>
@@ -381,7 +381,16 @@ export default {
             const weekEnd = new Date(weekStart);
             weekEnd.setDate(weekStart.getDate() + 7);
 
-            return selectedDate >= weekStart && selectedDate <= weekEnd; // 범위 체크
+            // 현재 선택된 의사 객체에서 운영시간을 가져옴
+            const operatingHours = this.doctor.operatingHours || [];
+            const selectedDay = selectedDate.getDay();
+
+            const isValiDay = operatingHours.some(hour => {
+                const dayOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'].indexOf(hour.dayOfWeek);
+                return dayOfWeek === selectedDay;
+            })
+
+            return selectedDate >= weekStart && selectedDate <= weekEnd && isValiDay; // 범위 체크
         },
         getTimeClass(time) {
             // 시간 상태에 따라 클래스 반환
@@ -489,12 +498,12 @@ export default {
             }
         },
         operatingTime(openTime, closeTime) {
-            console.log(openTime + " " + closeTime)
+            this.doctorTimeSlots = [];
 
             const start = this.timeToMinutes(openTime);
             const end = this.timeToMinutes(closeTime);
             
-            for(let i = start; i<= end ; i += 30){
+            for(let i = start; i< end ; i += 30){
                 this.doctorTimeSlots.push(this.minutesToTime(i))
             }
 
@@ -517,6 +526,12 @@ export default {
     watch: {
         date(newDate) {
             console.log(newDate);
+            const options = { weekday: 'long'}
+            const dayOfWeek = newDate.toLocaleDateString('en-US', options);
+
+            const selectDay = this.doctor.operatingHours.filter(item => item.dayOfWeek === dayOfWeek);
+            console.log(selectDay);
+            this.operatingTime(selectDay[0].openTime, selectDay[0].closeTime);
             this.fetchDoctorTime();
         }
     },
