@@ -32,7 +32,7 @@
                         :class="{ 'selected-child': this.child == child }">
                         <v-row justify="center">
                             <v-col class="text-center" cols="3">
-                                <img :src="child.imageUrl" alt="child image" style="width: 40px; height: 40px;">
+                                <img :src="child.imageUrl" alt="child image" style="width: 50px; height: 50px; border-radius:30px;">
                             </v-col>
                             <v-col class="text-center" cols="5" style="margin-top: 11px;">
                                 <v-row class="inter-bold child-name">{{ child.name }}</v-row>
@@ -56,7 +56,9 @@
                     @click="addDoctor(doctor)" :class="{ 'selected-doctor': this.doctor == doctor }">
                     <v-row>
                         <v-col cols="2">
-                            <img :src="doctor.image" alt="doctor image" style="width: 40px; height: 40px;">
+                            <v-row class="ml-4">
+                                <img :src=doctor.profileImgUrl alt="doctor image" style="width: 65px; height: 65px; border-radius: 30px;">
+                            </v-row>
                         </v-col>
                         <v-col cols="2">
                             <v-row class="inter-bold inline">{{ doctor.name }} 원장</v-row>
@@ -64,7 +66,7 @@
                         <v-col>
                         </v-col>
                         <v-col cols="2">
-                            <div class="mini-button" v-if="this.doctor == doctor" style="margin-top: 5px;">선택됨</div>
+                            <div class="mini-button" v-if="this.doctor == doctor">선택됨</div>
                         </v-col>
                     </v-row>
                 </div>
@@ -431,6 +433,12 @@ export default {
             try {
                 const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/member-service/member/doctorList/${this.hospitalId}`);
                 this.doctorList = response.data.result.content;
+                
+                this.doctorList.forEach(doctor =>{
+                    doctor.profileImgUrl = doctor.profileImgUrl ? doctor.profileImgUrl :
+                    "https://todak-file.s3.ap-northeast-2.amazonaws.com/default-images/default_user_image.png";
+                })
+
                 console.log(this.doctorList);
             } catch (e) {
                 console.log(e);
@@ -510,6 +518,10 @@ export default {
 </script>
 
 <style scoped>
+*{
+    font-weight: bold;
+}
+
 .title {
     margin-top: 50px;
     font-weight: bold;
@@ -554,8 +566,8 @@ export default {
 }
 
 .custom-text3 {
-    background-color: #C2D7FF;
-    color: #00499E;
+    background-color: #0066FF;
+    color: #FFFFFF;
     border-radius: 30px;
     font-size: 15px;
     padding: 2px 15px;
@@ -613,6 +625,7 @@ export default {
 .selected-doctor {
     background-color: #C2D7FF !important;
     color: black;
+    height: 100px;
 }
 
 .selected-medi {
@@ -625,8 +638,9 @@ export default {
     background-color: #F3F3F3;
     border-radius: 15px;
     width: 670px;
+    height: 100px;
     padding: 20px 10px;
-    margin-bottom: 10px;
+    margin-bottom: 20px;
     display: flex;
     align-items: center;
 }
