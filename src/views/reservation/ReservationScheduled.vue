@@ -71,22 +71,22 @@
                     </v-row>
                 </div>
             </v-row>
-            <v-row class="header-row">
+            <v-row v-if="doctor" class="header-row">
                 <v-col class="big-font">
                     날짜 선택
                 </v-col>
             </v-row>
-            <v-row justify="start" class="ml-2">
+            <v-row v-if="doctor" justify="start" class="ml-2">
                 <v-date-picker v-model="date" :allowed-dates="allowedDates" @input="updateDate" :width="650"
                     color="primary">
                 </v-date-picker>
             </v-row>
-            <v-row class="header-row">
+            <v-row v-if="date" class="header-row">
                 <v-col class="big-font">
                     시간 선택
                 </v-col>
             </v-row>
-            <v-row>
+            <v-row v-if="date">
                 <v-col v-for="time in timeSlots" :key="time" class="time-slot" :class="getTimeClass(time)"
                     @click="selectTime(time)" style="flex-basis: 20%; max-width: 20%;">
                     {{ time }}
@@ -313,7 +313,7 @@ export default {
             hostpitalName: "삼성화곡소아청소년과",
             hospitalId: 1,
             child: null,
-            doctor: [],
+            doctor: null,
             childOptions: [],
             doctorList: [],
             symptoms: [],
@@ -328,6 +328,7 @@ export default {
             comment: null,
             date: null,
             reservationType: null,
+            doctorTimeSlots:[],
             timeSlots: [
                 "09:00", "09:30", "10:00", "10:30",
                 "11:00", "11:30", "13:00", "13:30",
@@ -486,6 +487,27 @@ export default {
                 // 여기에 "예약상세내역 페이지 경로"
                 this.$router.push('/member/mypage/reservation')
             }
+        },
+        operatingTime(openTime, closeTime) {
+            console.log(openTime + " " + closeTime)
+
+            const start = this.timeToMinutes(openTime);
+            const end = this.timeToMinutes(closeTime);
+            
+            for(let i = start; i<= end ; i += 30){
+                this.doctorTimeSlots.push(this.minutesToTime(i))
+            }
+
+            console.log(this.doctorTimeSlots);
+        },
+        timeToMinutes(time){
+            const [hours, minutes] = time.split(':').map(Number);
+            return hours*60 + minutes;
+        },
+        minutesToTime(time){
+            const hours = Math.floor(time / 60);
+            const mins = time % 60;
+            return `${hours.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}`;
         }
     },
     async created() {
