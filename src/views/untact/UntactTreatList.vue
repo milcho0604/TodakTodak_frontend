@@ -31,20 +31,22 @@
             </v-col>
         </v-row>
         <v-row justify="center">
-            <div v-for="(doctor, index) in sortedDoctorList" :key="index" class="doctor">
+            <div v-for="doctor in sortedDoctorList" :key=doctor.doctorId class="doctor" @click="$router.push(`/untact/${doctor.memberEmail}/form`)">
                 <v-row>
                     <v-col cols="2">
                         <img :src="doctor.image" alt="doctor image" style="width: 40px; height: 40px;">
                     </v-col>
                     <v-col>
-                        <v-row class="inter-bold big-font">{{ doctor.name }}</v-row>
-                        <v-row class="inter-bold small-font">{{ doctor.hospital }}</v-row>
-                        <v-row class="inter-normal small-font">별 {{ doctor.rating }}</v-row>
+                        <v-row class="inter-bold big-font">{{ doctor.doctorName }}</v-row>
+                        <v-row class="inter-bold small-font">{{ doctor.hospitalName }}</v-row>
+                        <v-row class="inter-normal small-font">
+                            <v-icon class="star-icon">mdi-star</v-icon>
+                            {{ doctor.reviewPoint }} ({{doctor.reviewCount}})</v-row>
                     </v-col>
                     <div class="more">
                         <v-col>
                             <v-row justify="end">
-                                <div class="round inter-normal dark-blue">대기 {{ doctor.waiting }}명</div>
+                                <div class="round inter-normal dark-blue">대기 3명</div>
                             </v-row>
                             <v-row justify="end" class="inter-bold small-font">></v-row>
                         </v-col>
@@ -56,6 +58,7 @@
 </template>
 
 <script>
+import axios from 'axios';
 export default {
     data() {
         return {
@@ -64,76 +67,45 @@ export default {
             cities: ["강남구", "강동구", "강서구", "강북구", "관악구", "광진구", "구로구", "금천구", "노원구", "동대문구", "도봉구", "동작구", "마포구", "서대문구", "성동구", "성북구", "서초구", "송파구", "영등포구", "용산구", "양천구", "은평구", "종로구", "중구", "중랑구"], // city 배열
             searchQuery: '', // 검색어 저장 변수
             sortOrder: 'popular', // 정렬 기준
-            doctorList: [
-                {
-                    id: 1,
-                    name: "천재은지 의사",
-                    hospital: "아이조은성모병원",
-                    rating: 4.5,
-                    waiting: 5,
-                    treat: 10,
-                    cities: "강남구",
-                    untact: "Sunday",
-                    image: "https://todak-file.s3.amazonaws.com/d278dfb1-9275-41ad-8b86-f7a0a904892b_IMG_8641.JPG"
-                },
-                {
-                    id: 2,
-                    name: "박명석 의사",
-                    hospital: "은지사랑병원",
-                    rating: 3.7,
-                    waiting: 3,
-                    treat: 30,
-                    cities: "강동구",
-                    untact: "Friday",
-                    image: "https://todak-file.s3.amazonaws.com/d278dfb1-9275-41ad-8b86-f7a0a904892b_IMG_8641.JPG"
-                },
-                {
-                    id: 3,
-                    name: "최무리 의사",
-                    hospital: "카푸카병원",
-                    rating: 4.0,
-                    waiting: 3,
-                    treat: 25,
-                    cities: "강서구",
-                    untact: "Monday",
-                    image: "https://todak-file.s3.amazonaws.com/d278dfb1-9275-41ad-8b86-f7a0a904892b_IMG_8641.JPG"
-                },
-                {
-                    id: 4,
-                    name: "김창현 의사",
-                    hospital: "애니사랑병원",
-                    rating: 2.8,
-                    waiting: 0,
-                    treat: 2,
-                    cities: "강남구",
-                    untact: "Friday",
-                    image: "https://todak-file.s3.amazonaws.com/d278dfb1-9275-41ad-8b86-f7a0a904892b_IMG_8641.JPG"
-                },
-            ]
+            doctorList: []
         };
+    },
+    created() {
+        this.fetchDoctorList();
     },
     computed: {
         filteredDoctorList() {
-            const query = this.searchQuery.toLowerCase();
-            const today = this.getToday(); // 현재 요일 가져오기
+            const query = this.searchQuery.toLowerCase();            
             return this.doctorList.filter(doctor => {
-                return (doctor.name.toLowerCase().includes(query) ||
-                        doctor.hospital.toLowerCase().includes(query)) &&
-                       (doctor.untact === today); // 현재 요일과 일치하는 의사 필터링
+                return (doctor.doctorName.toLowerCase().includes(query) ||
+                        doctor.hospitalName.toLowerCase().includes(query))
+                        
             });
         },
         sortedDoctorList() {
             // 정렬 기준에 따라 의사 목록을 정렬
             return this.filteredDoctorList.slice().sort((a, b) => {
                 if (this.sortOrder === 'popular') {
-                    return b.rating - a.rating; // 평점 높은 순서
+                    return b.reviewPoint - a.reviewPoint; // 평점 높은 순서
                 } else {
-                    return b.treat - a.treat; // 진료수 많은 순서
+                    return b.reviewCount - a.reviewCount; // 진료수 많은 순서
                 }
             });
         }
     },
     methods: {
+        async fetchDoctorList() {
+            try {
+                // 의사 정보를 가져옴
+                const today = this.getToday();
+                const reservationResponse = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/member-service/member/untact/list/${today}`);
+                const reservationData = reservationResponse.data.result;
+                this.doctorList = reservationData;
+                console.log("Reservation Data:", reservationData);
+            } catch (error) {
+                console.error("Error fetching data:", error);
+            }
+        },
         toggleDropdown() {
             this.isDropdownOpen = !this.isDropdownOpen;
         },
@@ -168,7 +140,7 @@ export default {
 }
 
 .small-font {
-    font-size: 13px;
+    font-size: 12px;
     color: #888888;
 }
 
@@ -248,4 +220,9 @@ export default {
 .dropdown-list li:hover {
     background-color: #f0f0f0;
 }
+
+.star-icon {
+    margin-top: 2px;
+    font-size: 14px;
+  }
 </style>

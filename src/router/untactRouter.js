@@ -11,7 +11,7 @@ export const untactRouter = [
         component: UntactTreatList
     },
     {
-        path: '/untact/:doctorId/form',
+        path: '/untact/:doctorEmail/form',
         name: 'UntactForm',
         component: UntactForm,
         props:true
