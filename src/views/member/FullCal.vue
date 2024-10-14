@@ -24,7 +24,7 @@
         <!-- 캘린더 영역 -->
         <div class="milcho-calendar-container">
           <!-- 일정 추가 버튼 -->
-          <v-btn @click="startNewEvent" class="milcho-btn-add">✏️</v-btn>
+          <v-btn variant="flat" @click="startNewEvent" class="milcho-btn-add">✏️</v-btn>
           <FullCalendar :options="calendarOptions" class="milcho-custom-calendar" />
         </div>
   
@@ -71,7 +71,7 @@
               </div>
               <div class="milcho-reservation-row">
                 <strong>내용</strong>
-                <span>{{ formData.content }}</span>
+                <span class="milcho-custom-span">{{ formData.content }}</span>
               </div>
               <div class="milcho-reservation-row">
                 <strong>타입</strong>
@@ -81,6 +81,7 @@
                 <strong>시작일</strong>
                 <span>{{ formData.startDateText }}</span>
               </div>
+              
               <div class="milcho-reservation-row">
                 <strong>종료일</strong>
                 <span>{{ formData.endDateText }}</span>
@@ -91,7 +92,15 @@
             <!-- 이벤트 수정 및 생성 폼 -->
             <v-form ref="form" v-if="isEditing">
               <v-text-field v-model="formData.title" label="제목" required />
-              <v-text-field v-model="formData.content" label="내용" required />
+              <!-- <v-text-field v-model="formData.content" label="내용" required /> -->
+              <v-textarea
+              v-model="formData.content"
+              label="내용"
+              rows="5"
+              outlined  
+              class="milcho-custom-textarea"
+              />
+            
               <v-select v-model="formData.type" :items="eventTypes" label="타입" required />
               <v-menu
                 v-model="menuStart"
@@ -358,6 +367,7 @@
         })
           .then(() => {
             this.fetchUserEvents(); // 이벤트 저장 후 사용자 이벤트 새로고침
+            this.isEditing = false; // 수정 모드를 해제하고 다시 디테일을 보여줌
           })
           .catch((error) => {
             console.error('Error saving event:', error);
@@ -451,6 +461,7 @@
   
   .milcho-btn-edit {
     background-color: #c2d7ff !important;
+    margin-left: 280px;
   }
   
   .milcho-btn-add {
@@ -481,6 +492,13 @@
     display: flex;
     justify-content: center; /* 버튼을 가운데로 */
     width: 100%; /* 버튼을 부모 크기에 맞춤 */
+  }
+  .milcho-custom-span {
+    display: block;      /* span을 블록 요소로 변경하여 줄바꿈 가능 */
+    width: 400px;        /* 원하는 너비를 설정 */
+    word-wrap: break-word; /* 긴 단어가 있을 경우 줄바꿈 처리 */
+    white-space: normal; /* 텍스트가 자동으로 줄바꿈되도록 설정 */
+    margin-left: 40px;
   }
   </style>
   
