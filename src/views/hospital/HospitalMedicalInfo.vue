@@ -1,6 +1,6 @@
 <template>
     <v-container fluid class="hospital-detail-container">
-        <h3>의사정보</h3>
+        <h3 style="font-weight: bold;">의사정보</h3>
         <v-spacer :style="{ height: '10px' }"></v-spacer>
         <v-row>
             <v-col cols="12" v-for="doctor in doctorList" :key="doctor.id">
