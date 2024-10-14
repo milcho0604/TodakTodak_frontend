@@ -11,102 +11,92 @@
             lg="1"
             class="d-flex flex-column align-items-center"
           >
-            <img class="v-avatar" @click="handleChildClick(child.id)" :src="child.imageUrl" max-width="120" max-height="120" contain />
+            <img class="v-avatar" @click="handleChildClick(child)" :src="child.imageUrl" max-width="120" max-height="120" contain />
             <v-text>{{ child.name }}</v-text>
           </v-col>
         </v-row>
       </div>
   
-      <!-- 기존 코드 -->
-      <div class="calendar-container">
-        <!-- FullCalendar Integration -->
-        <FullCalendar :options="calendarOptions" class="custom-calendar" />
-    
-        <!-- Event Modal for creating/updating events -->
-        <v-dialog v-model="isModalOpen" persistent max-width="500px">
-          <v-card>
-            <v-card-title>{{ isEditing ? 'Update Event' : 'Create Event' }}</v-card-title>
-            <v-card-text>
-              <v-form ref="form">
-                <v-text-field v-model="formData.title" label="Title" required />
-                <v-text-field v-model="formData.content" label="Content" required />
-    
-                <!-- Type Selection -->
-                <v-select
-                  v-model="formData.type"
-                  :items="eventTypes"
-                  label="Event Type"
-                  required
-                />
-    
-                <!-- Date Picker for Start Date -->
-                <v-menu
-                  v-model="menuStart"
-                  :close-on-content-click="false"
-                  transition="scale-transition"
-                  offset-x="true"  
-                  min-width="auto"
-                >
-                  <template v-slot:activator="{ attrs }">
-                    <v-text-field
-                      v-model="formData.startDateText"
-                      label="Start Date"
-                      readonly
-                      v-bind="attrs"
-                      @click.stop="menuStart = true"
-                    />
-                  </template>
-                  <v-date-picker
-                    v-model="formData.startDate"
-                    @input="updateStartDate"
-                    show-current="true"
-                    scrollable
-                    style="margin: 100px;"
+      <div class="d-flex">
+        <!-- 캘린더 영역 -->
+        <div class="calendar-container">
+          <FullCalendar :options="calendarOptions" class="custom-calendar" />
+  
+          <!-- Event Modal for creating/updating events -->
+          <v-dialog v-model="isModalOpen" persistent max-width="500px">
+            <v-card>
+              <v-card-title>{{ isEditing ? 'Update Event' : 'Create Event' }}</v-card-title>
+              <v-card-text>
+                <v-form ref="form">
+                  <v-text-field v-model="formData.title" label="Title" required />
+                  <v-text-field v-model="formData.content" label="Content" required />
+  
+                  <!-- Type Selection -->
+                  <v-select v-model="formData.type" :items="eventTypes" label="Event Type" required />
+  
+                  <!-- Date Picker for Start Date -->
+                  <v-menu
+                    v-model="menuStart"
+                    :close-on-content-click="false"
+                    transition="scale-transition"
+                    offset-x="true"
+                    min-width="auto"
                   >
-                    <template v-slot:actions>
-                      <v-btn text color="primary" @click="confirmStartDate">확인</v-btn>
+                    <template v-slot:activator="{ attrs }">
+                      <v-text-field v-model="formData.startDateText" label="Start Date" readonly v-bind="attrs" @click.stop="menuStart = true" />
                     </template>
-                  </v-date-picker>
-                </v-menu>
-    
-                <!-- Date Picker for End Date -->
-                <v-menu
-                  v-model="menuEnd"
-                  :close-on-content-click="false"
-                  transition="scale-transition"
-                  offset-x="true" 
-                  min-width="auto"
-                >
-                  <template v-slot:activator="{ attrs }">
-                    <v-text-field
-                      v-model="formData.endDateText"
-                      label="End Date"
-                      readonly
-                      v-bind="attrs"
-                      @click.stop="menuEnd = true"
-                    />
-                  </template>
-                  <v-date-picker
-                    v-model="formData.endDate"
-                    @input="updateEndDate"
-                    show-current="true"
-                    scrollable
-                    style="margin: 100px;"
+                    <v-date-picker v-model="formData.startDate" @input="updateStartDate" show-current="true" scrollable style="margin: 100px;">
+                      <template v-slot:actions>
+                        <v-btn text color="primary" @click="confirmStartDate">확인</v-btn>
+                      </template>
+                    </v-date-picker>
+                  </v-menu>
+  
+                  <!-- Date Picker for End Date -->
+                  <v-menu
+                    v-model="menuEnd"
+                    :close-on-content-click="false"
+                    transition="scale-transition"
+                    offset-x="true"
+                    min-width="auto"
                   >
-                    <template v-slot:actions>
-                      <v-btn text color="primary" @click="confirmEndDate">확인</v-btn>
+                    <template v-slot:activator="{ attrs }">
+                      <v-text-field v-model="formData.endDateText" label="End Date" readonly v-bind="attrs" @click.stop="menuEnd = true" />
                     </template>
-                  </v-date-picker>
-                </v-menu>
-              </v-form>
-            </v-card-text>
-            <v-card-actions>
-              <v-spacer></v-spacer>
-              <v-btn color="blue darken-1" text @click="handleSaveEvent">Save</v-btn>
-              <v-btn color="red darken-1" text @click="isModalOpen = false">Cancel</v-btn>
-            </v-card-actions>
-          </v-card>
-        </v-dialog>
+                    <v-date-picker v-model="formData.endDate" @input="updateEndDate" show-current="true" scrollable style="margin: 100px;">
+                      <template v-slot:actions>
+                        <v-btn text color="primary" @click="confirmEndDate">확인</v-btn>
+                      </template>
+                    </v-date-picker>
+                  </v-menu>
+                </v-form>
+              </v-card-text>
+              <v-card-actions>
+                <v-spacer></v-spacer>
+                <v-btn color="blue darken-1" text @click="handleSaveEvent">Save</v-btn>
+                <v-btn color="red darken-1" text @click="isModalOpen = false">Cancel</v-btn>
+              </v-card-actions>
+            </v-card>
+          </v-dialog>
+        </div>
+  
+        <!-- 예약 상세 정보 표시 영역 -->
+        <div class="reservation-details">
+          <h3>예약 상세</h3>
+          <div v-if="selectedReservation">
+            <!-- <img class="v-avatar" @click="handleChildClick(child.id)" :src="child.imageUrl" max-width="120" max-height="120" contain /> -->
+            <img :src="selectedReservation.hospitalImgUrl" class="customHosImage" />
+            <p><strong>병원명:</strong> {{ selectedReservation.hospitalName }}</p>
+            <p><strong>의사명:</strong> {{ selectedReservation.doctorName }}</p>
+            <p><strong>환자명:</strong> {{ selectedChildName }}</p>
+            <p><strong>예약자:</strong> {{ selectedReservation.memberName }}</p>
+            <p><strong>진료타입:</strong> {{ selectedReservation.medicalItem }}</p>
+            <p><strong>예약 날짜:</strong> {{ selectedReservation.reservationDate }} {{ selectedReservation.reservationTime }}</p>
+          </div>
+          <div v-else>
+            <p>No reservation selected</p>
+          </div>
+        </div>
       </div>
     </div>
   </template>
@@ -126,9 +116,9 @@
         calendarOptions: {
           plugins: [dayGridPlugin, interactionPlugin],
           initialView: 'dayGridMonth',
-          events: [], // 결합된 이벤트들이 들어감
+          events: [],
           dateClick: this.handleDateClick,
-          eventClick: this.handleEventClick,
+          eventClick: this.handleEventClick, // 이벤트 클릭 처리
           displayEventTime: true,
           navLinks: true,
         },
@@ -146,9 +136,11 @@
         eventTypes: ['PENDING', 'IN_PROGRESS', 'COMPLETED'],
         menuStart: false,
         menuEnd: false,
-        childList: [], // 자녀 리스트 데이터
-        reservationList: [], // 자녀의 예약 리스트
-        userEvents: [], // 사용자의 개인 이벤트
+        childList: [],
+        reservationList: [],
+        userEvents: [],
+        selectedReservation: null, // 선택된 예약 정보 저장
+        selectedChildName: '',
       };
     },
     methods: {
@@ -163,19 +155,21 @@
           });
       },
   
-      fetchReservationList(childId) {
+      fetchReservationList(child) {
+        console.log(child)
+        this.selectedChildName = child.name;
         axios
-          .get(`http://localhost:8080/reservation-service/reservation/list/child/${childId}`)
+          .get(`http://localhost:8080/reservation-service/reservation/list/child/${child.id}`)
           .then((response) => {
             const reservationEvents = response.data.map((reservation) => ({
               title: `${reservation.hospitalName} - ${reservation.medicalItem}`,
               start: new Date(`${reservation.reservationDate}T${reservation.reservationTime}`),
               end: new Date(`${reservation.reservationDate}T${reservation.reservationTime}`),
-              backgroundColor: '#FF9800', // 예약 이벤트는 주황색으로 표시
+              backgroundColor: '#FF9800', // 예약 이벤트는 주황색
               allDay: false,
-              editable: false, // 예약 이벤트는 편집 불가
+              editable: false,
               extendedProps: {
-                content: reservation.medicalItem,
+                ...reservation, // 예약 정보 전체를 extendedProps에 추가
               },
             }));
             this.reservationList = reservationEvents;
@@ -195,7 +189,7 @@
               title: event.title,
               start: new Date(event.startTime),
               end: new Date(event.endTime),
-              backgroundColor: '#4CAF50', // 개인 이벤트는 초록색
+              backgroundColor: '#4CAF50', // 사용자 이벤트는 초록색
               extendedProps: {
                 content: event.content,
                 type: event.type,
@@ -214,23 +208,25 @@
       },
   
       handleChildClick(childId) {
-        this.fetchReservationList(childId); // 자녀 예약 리스트를 가져옴
+        this.fetchReservationList(childId); // 자녀 예약 리스트 가져오기
       },
   
       handleEventClick(info) {
-        // 예약 이벤트 클릭 시 아무런 동작을 하지 않음
+        // 예약 이벤트 클릭 시 예약 정보를 상세 정보로 표시
         if (info.event.backgroundColor === '#FF9800') {
-          return;
+          this.selectedReservation = info.event.extendedProps;
+        } else {
+          // 사용자 이벤트 수정 모달 열기
+          this.isEditing = true;
+          this.formData.id = info.event.id;
+          this.formData.title = info.event.title;
+          this.formData.content = info.event.extendedProps.content;
+          this.formData.startDate = info.event.start;
+          this.formData.endDate = info.event.end;
+          this.formData.startDateText = this.formatDate(info.event.start);
+          this.formData.endDateText = this.formatDate(info.event.end);
+          this.isModalOpen = true;
         }
-        this.isEditing = true;
-        this.formData.id = info.event.id;
-        this.formData.title = info.event.title;
-        this.formData.content = info.event.extendedProps.content;
-        this.formData.startDate = info.event.start;
-        this.formData.endDate = info.event.end;
-        this.formData.startDateText = this.formatDate(info.event.start);
-        this.formData.endDateText = this.formatDate(info.event.end);
-        this.isModalOpen = true;
       },
   
       handleDateClick(info) {
@@ -247,10 +243,10 @@
         let month = '' + (d.getMonth() + 1);
         let day = '' + d.getDate();
         const year = d.getFullYear();
-    
+  
         if (month.length < 2) month = '0' + month;
         if (day.length < 2) day = '0' + day;
-    
+  
         return [year, month, day].join('-');
       },
   
@@ -300,7 +296,7 @@
         })
           .then(() => {
             this.isModalOpen = false;
-            this.fetchUserEvents(); // Refresh events after saving
+            this.fetchUserEvents(); // 이벤트 저장 후 사용자 이벤트 새로고침
           })
           .catch((error) => {
             console.error('Error saving event:', error);
@@ -315,27 +311,43 @@
   </script>
   
   <style scoped>
-    .calendar-container {
-      max-width: 900px;
-      height: 900px;
-      margin: auto;
-      margin-top: 30px;
-    }
+  .calendar-container {
+    max-width: 900px;
+    height: 900px;
+    margin: auto;
+    margin-top: 30px;
+  }
   
-    .fc-theme-standard td,
-    .fc-theme-standard th {
-      height: 30px;
-      border: 1px solid var(--fc-border-color);
-    }
+  .fc-theme-standard td,
+  .fc-theme-standard th {
+    height: 30px;
+    border: 1px solid var(--fc-border-color);
+  }
   
-    .custom-calendar {
-      max-width: 900px;
-      height: 800px;
-      margin: auto;
-    }
-    .v-avatar {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-      }
+  .custom-calendar {
+    width: 700px;
+    height: 800px;
+    margin: auto;
+    margin-left: 250px;
+  }
+  
+  .reservation-details {
+    width: 400px;
+    padding: 20px;
+    margin-left: 20px;
+    border: 1px solid #ddd;
+    background-color: #f9f9f9;
+    margin-bottom: 30px;
+  }
+  
+  .v-avatar {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .customHosImage{
+    width: 350px;
+    height: 300px;
+  }
   </style>
+  
