@@ -23,9 +23,9 @@
       <div class="d-flex">
         <!-- 캘린더 영역 -->
         <div class="milcho-calendar-container">
-          <v-btn @click="startNewEvent" class="milcho-btn-add">일정 추가</v-btn>
-          <FullCalendar :options="calendarOptions" class="milcho-custom-calendar" />
           <!-- 일정 추가 버튼 -->
+          <v-btn @click="startNewEvent" class="milcho-btn-add">✏️</v-btn>
+          <FullCalendar :options="calendarOptions" class="milcho-custom-calendar" />
         </div>
   
         <!-- 이벤트 및 예약 상세 정보 표시 영역 -->
@@ -103,9 +103,11 @@
                 <template v-slot:activator="{ attrs }">
                   <v-text-field v-model="formData.startDateText" label="시작일" readonly v-bind="attrs" @click.stop="menuStart = true" />
                 </template>
-                <v-date-picker v-model="formData.startDate" @input="updateStartDate" show-current="true" scrollable>
+                <v-date-picker v-model="formData.startDate" @input="updateStartDate" show-current="true" scrollable class="milcho-custom-picker">
                   <template v-slot:actions>
+                    <div class="milcho-center-align">
                     <v-btn text color="primary" @click="confirmStartDate">확인</v-btn>
+                    </div>
                   </template>
                 </v-date-picker>
               </v-menu>
@@ -419,9 +421,11 @@
   
   .milcho-details {
     width: 400px;
+    height: 740px;
     border: 1px solid #ddd;
     background-color: #f9f9f9;
     margin-bottom: 30px;
+    margin-top: 144px;
     margin-right: 30px;
     border-radius: 10px;
     padding: 20px;
@@ -450,8 +454,33 @@
   }
   
   .milcho-btn-add {
-    margin-top: 20px;
-    background-color: #00c853 !important;
+    position: relative; /* 상대적인 위치를 설정 */
+    top: 40px; /* 버튼을 10px 아래로 이동 */
+    background-color: #ECF2FD !important;
+    margin-left: 1330px;
+    width: 40px;  /* 원형을 만들기 위한 가로 크기 */
+    height: 40px; /* 원형을 만들기 위한 세로 크기 */
+    min-width: 50px !important;  /* 최소 너비를 동일하게 설정하여 원형 유지 */
+    min-height: 50px !important; /* 최소 높이도 동일하게 설정 */
+    border-radius: 50% !important; /* 원형을 만들기 위한 테두리 둥글기 */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .milcho-custom-picker {
+    display: flex;
+    justify-content: center; /* date-picker 전체를 가운데로 */
+    align-items: center;
+    margin-left: 700px;
+    margin-top: 200px;
+
+  }
+  
+  .milcho-center-align {
+    display: flex;
+    justify-content: center; /* 버튼을 가운데로 */
+    width: 100%; /* 버튼을 부모 크기에 맞춤 */
   }
   </style>
   
