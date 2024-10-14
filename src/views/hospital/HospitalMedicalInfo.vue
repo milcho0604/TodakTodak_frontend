@@ -89,20 +89,52 @@
                     <v-card class="doctor-bio-card mx-4" variant="flat">
                         <!-- 비대면 요일과 시간을 리스트로 출력 -->
                         <v-row v-for="hours in untactOperatingHours" :key="hours.id">
-                        <v-col cols="6" class="text-center">
-                            <v-card-title class="text-subtitle-1 font-weight-bold">
-                            {{ hours.dayOfWeek }}
-                            </v-card-title>
-                        </v-col>
-                        <v-col cols="6" class="text-center">
-                            <v-card-title class="text-subtitle-1 font-weight-bold">
-                            {{ hours.openTime.slice(0, 5) }} ~ {{ hours.closeTime.slice(0, 5) }}
-                            </v-card-title>
-                        </v-col>
+                            <v-col cols="6" class="text-center">
+                                <v-card-title class="text-subtitle-1 font-weight-bold">
+                                {{ hours.dayOfWeek }}
+                                </v-card-title>
+                            </v-col>
+                            <v-col cols="6" class="text-center">
+                                <v-card-title class="text-subtitle-1 font-weight-bold">
+                                {{ hours.openTime.slice(0, 5) }} ~ {{ hours.closeTime.slice(0, 5) }}
+                                </v-card-title>
+                            </v-col>
                         </v-row>
                     </v-card>
                     </v-col>
                 </v-row>
+
+                <v-row>
+                    <v-col cols="12">
+                        <v-card-title class="ml-4" style="font-weight:bold;">
+                            진료시간
+                        </v-card-title>
+                        <v-card class="doctor-bio-card mx-4" variant="flat">
+                            <v-row v-for="(day, index) in dayOfWeekList" :key="index"
+                            
+                            >
+                                <v-col cols="6" class="text-center">
+                                    <v-card-title class="text-subtitle-1 font-weight-bold">
+                                        {{ dayOfWeekMap[day] }}
+                                    </v-card-title>
+                                </v-col>
+                                <v-col cols="6" class="text-center">
+                                    <v-card-title class="text-subtitle-1 font-weight-bold">
+                                        <!-- 시간 표시 로직 -->
+                                        <template v-if="nonUntactOperatingHours[day]">
+                                            {{ nonUntactOperatingHours[day].openTime.slice(0, 5) }} ~ {{ nonUntactOperatingHours[day].closeTime.slice(0, 5) }}
+                                        </template>
+                                        <template v-else>
+                                            휴무
+                                        </template>
+                                    </v-card-title>
+                                </v-col>
+                            </v-row>
+                        </v-card>
+                    </v-col>
+                </v-row>                
+
+                <v-spacer></v-spacer>
             </v-card>
           </v-dialog>
           
@@ -197,8 +229,22 @@ export default{
                 ...item,
                 dayOfWeek: this.dayOfWeekMap[item.dayOfWeek], // 요일을 한국어로 변환
             };
+        });
+    },
+    // 모든 요일 리스트 (월요일부터 일요일까지)
+    dayOfWeekList() {
+        return ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+    },
+    // 비대면 진료가 아닌 시간을 필터링하고 요일별로 매핑
+    nonUntactOperatingHours() {
+        const result = {};
+        this.selectedDoctor[0].operatingHours
+            .filter(item => !item.untact) // untact가 false인 것만 필터링
+            .forEach(item => {
+                result[item.dayOfWeek] = item; // 요일별로 데이터를 저장
             });
-        },
+        return result;
+        }   
     },
     methods:{
         async loadDoctorList(){
