@@ -138,8 +138,10 @@
                 </v-date-picker>
               </v-menu>
   
-              <v-btn class="milcho-btn-save" elevation="0" @click="handleSaveEvent">저장</v-btn>
               <v-btn v-if="isEditing" class="milcho-btn-delete" elevation="0" @click="deleteEvent">삭제</v-btn>
+              <v-divider vertical class="milcho-vertical-divider"></v-divider>
+              <v-btn class="milcho-btn-save" elevation="0" @click="handleSaveEvent">저장</v-btn>
+
             </v-form>
           </div>
   
@@ -452,11 +454,52 @@
   }
   
   .milcho-btn-save {
-    background-color: #c2d7ff !important;
+    background-color: #C2D7FF !important;
+    color: #00499e;
+    border-radius: 20px;
+    width: 50px;
+    height: 44px;
+    margin-bottom: 40px;
+    margin-top: 10px;
+    margin-left: 20px;
+    font-family: 'Inter';
+    font-style: normal;
+    font-weight: 700;
+    font-size: 20px;
+    line-height: 24px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius : 20px
+
   }
   
   .milcho-btn-delete {
-    background-color: #f9c3c3 !important;
+    background-color: #FFAFAF !important;
+    color: #650101;
+    width: 50px;
+    height: 44px;
+    margin-bottom: 40px;
+    margin-top: 10px;
+    margin-left: 100px;
+    border-radius: 20px;
+    font-family: 'Inter';
+    font-style: normal;
+    font-weight: 700;
+    font-size: 20px;
+    line-height: 24px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius : 20px
+  }
+  .milcho-vertical-divider {
+    width: 2px;
+    height: 30px;
+    background-color: black;
+    margin: 0 10px; 
+    margin-left: 110px;
+
   }
   
   .milcho-btn-edit {
