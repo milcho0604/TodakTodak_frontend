@@ -7,9 +7,12 @@
                   </v-avatar>
             </v-col>
             <v-col class="text-center" cols="7">
-                <v-row class="inter-bold big-font">{{doctor.name}} 의사</v-row>
-                <v-row class="inter-bold small-font">{{doctor.hospital}}</v-row>
-                <v-row class="inter-normal small-font">별{{doctor.rating}}</v-row>
+                <v-row class="inter-bold big-font">{{doctor.doctorName}} 의사</v-row>
+                <v-row class="inter-bold small-font">{{doctor.hospitalName}}</v-row>
+                <v-row class="inter-normal small-font">
+                    <v-icon class="star-icon">mdi-star</v-icon>
+                            {{ doctor.reviewPoint }} ({{doctor.reviewCount}})
+                </v-row>
             </v-col>
         </v-row>
         <v-row class="mt-4">
@@ -99,10 +102,10 @@
                                     <div class="modal-subtitle inter-bold">의사정보</div>
                                 </v-row>
                                 <v-row class="inter-light mt-3">
-                                    {{ doctor.name }}
+                                    {{ doctor.doctorName }}
                                 </v-row>
                                 <v-row class="inter-light">
-                                    {{ doctor.hospital }}
+                                    {{ doctor.hospitalName }}
                                 </v-row>
                                 <v-row>
                                     <div class="modal-subtitle inter-bold mt-3">환자정보</div>
@@ -138,7 +141,7 @@
                     
                     <div style="border-left: 1px solid #ccc; height: 30px; margin: 0 20px;"></div>
                     
-                    <div class="mini-button inter-bold" @click="confirmModal = false">비대면 진료 신청</div>
+                    <div class="mini-button inter-bold" @click="createReservation">비대면 진료 신청</div>
                 </v-card-actions>
                 <br>
             </v-card>
@@ -148,7 +151,7 @@
 <script>
 import axios from 'axios';
 export default {
-    props: ['doctorId'],
+    props: ['doctorEmail'],
     data() {
         return {
             doctor: {
@@ -184,6 +187,7 @@ export default {
         };
     },
     created() {
+        this.fetchDoctor();
         this.fetchChild();
     },
     methods: {
@@ -201,9 +205,29 @@ export default {
             this.child =child;
             console.log(child);
         },
+        async fetchDoctor() {
+            const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/member-service/member/doctor/${this.doctorEmail}`);
+            this.doctor = response.data.result;
+        },
         async fetchChild() {
             const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/member-service/child/`);
             this.childOptions = response.data.result;
+        },
+        async createReservation() {
+            console.log("예약할게");
+            console.log(this.child);
+            const reservation = {
+                childId: this.child.id,
+                hospitalId: this.doctor.hospitalId,
+                doctorEmail: this.doctorEmail,
+                reservationType: "Immediate",
+                untact: true,
+                status: "Confirmed",
+                medicalItem: "일반진료",
+                field: this.symptoms.join(','),
+                message: this.comment
+            }
+            await axios.post(`${process.env.VUE_APP_API_BASE_URL}/reservation-service/reservation/immediate`, reservation );
         }
     },
 }
@@ -214,7 +238,7 @@ export default {
 }
 
 .small-font {
-    font-size: 13px;
+    font-size: 12px;
     color: #888888;
 }
 
@@ -317,4 +341,8 @@ export default {
     width: 90%;
     margin: auto;
 }
+.star-icon {
+    margin-top: 2px;
+    font-size: 14px;
+  }
 </style>
