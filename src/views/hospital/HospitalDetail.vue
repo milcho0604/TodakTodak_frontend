@@ -111,7 +111,7 @@ import axios from 'axios';
 export default{
     data() {
       return {
-        activeTab: 1, // 선택된 탭을 저장
+        activeTab: 0, // 선택된 탭을 저장
         hospitalId: '', // 병원 id
         hospital: [], // 병원정보
         keywordList: [], // 병원 키워드 리스트 
