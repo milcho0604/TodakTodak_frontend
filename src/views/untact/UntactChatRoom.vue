@@ -7,14 +7,15 @@
           <v-row justify="center" class="mt-6">
             <v-col class="text-center" cols="5">
               <v-avatar size="60">
-                <v-img :src="doctor.imageUrl" alt="doctor image" />
+                <v-img :src="doctor.profileImg" alt="doctor image" />
               </v-avatar>
-
             </v-col>
             <v-col class="text-center mt-3" cols="7">
-              <v-row class="inter-bold big-font">김천재 의사</v-row>
-              <v-row class="inter-bold small-font">아이조은성모병원</v-row>
-              <v-row class="inter-normal small-font">별4.5</v-row>
+              <v-row class="inter-bold big-font">{{doctor.doctorName}} 의사</v-row>
+              <v-row class="inter-bold small-font">{{doctor.hospitalName}}</v-row>
+              <v-row class="inter-normal small-font-black">
+                <v-icon class="star-icon">mdi-star</v-icon>
+                {{doctor.reviewPoint}} ({{doctor.reviewCount}})</v-row>
             </v-col>
           </v-row>
         </v-col>
@@ -29,8 +30,8 @@
                   </v-avatar>
                 </v-col>
                 <v-col class="text-center" cols="7" style="margin: 15px auto;">
-                  <v-row class="inter-bold big-font">이한아</v-row>
-                  <v-row class="inter-normal small-font">181227 - 4321121</v-row>
+                  <v-row class="inter-bold big-font">{{child.name}}</v-row>
+                  <v-row class="inter-normal small-font">{{child.ssn}}</v-row>
                 </v-col>
               </v-row>
             </div>
@@ -86,18 +87,43 @@ export default {
       localUserName: localStorage.getItem("token"),
       socket: null,
       isRemoteVideoVisible: false, // 상대방 화면 여부 체크
-      doctor: {imageUrl: "https://todak-file.s3.amazonaws.com/9227db48-1e3a-4559-9ff9-fad2db9cd68b_스크린샷 2024-10-08 오후 2.08.28.png"},
-      child: {imageUrl: "https://todak-file.s3.amazonaws.com/9227db48-1e3a-4559-9ff9-fad2db9cd68b_스크린샷 2024-10-08 오후 2.08.28.png"},
+      doctor: { imageUrl: "https://todak-file.s3.amazonaws.com/9227db48-1e3a-4559-9ff9-fad2db9cd68b_스크린샷 2024-10-08 오후 2.08.28.png" },
+      child: { imageUrl: "https://todak-file.s3.amazonaws.com/9227db48-1e3a-4559-9ff9-fad2db9cd68b_스크린샷 2024-10-08 오후 2.08.28.png" },
       medicalChartId: null,
       chartCreated: false,
       reviewModal: false,
       payModal: false
     };
   },
+  created() {
+    this.fetchReservation();
+  },
   mounted() {
     this.startWebSocketConnection();
   },
   methods: {
+    async fetchReservation() {
+      try {
+    // 예약 정보를 가져옴
+    const reservationResponse = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/reservation-service/reservation/get/${this.sid}`);
+    const reservationData = reservationResponse.data.result;
+    console.log("Reservation Data:", reservationData);
+
+    // doctorEmail로 의사 정보를 가져옴
+    const doctorResponse = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/member-service/member/doctor/${reservationData.doctorEmail}`);
+    this.doctor = doctorResponse.data.result;
+    console.log("Doctor Data:", this.doctor);
+
+    // 자녀 ID로 자녀 정보를 가져옴
+    const childResponse = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/member-service/child/detail/${reservationData.childId}`);
+    this.child = childResponse.data;
+    console.log("Child Data:", this.child);
+
+    // 이후 로직 (예: state에 저장 등)
+  } catch (error) {
+    console.error("Error fetching data:", error);
+  }
+    },
     startWebSocketConnection() {
       // this.socket = new WebSocket(`wss://server.todak.site/reservation-service/signal`);
       this.socket = new WebSocket(`ws://localhost:8080/reservation-service/signal`);
@@ -427,6 +453,10 @@ export default {
   color: #888888;
 }
 
+.small-font-black {
+  font-size: 12px;
+}
+
 .child {
   border: 1px solid #ccc;
   border-radius: 10px;
@@ -439,6 +469,10 @@ export default {
   border-radius: 10px;
   padding: 5px 15px;
   margin-right: 10px;
+  font-size: 14px;
+}
+.star-icon {
+  margin-top: 2px;
   font-size: 14px;
 }
 </style>
