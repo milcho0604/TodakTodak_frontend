@@ -470,7 +470,8 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    border-radius : 20px
+    border-radius : 20px;
+    font-weight: bold;
 
   }
   
@@ -481,7 +482,7 @@
     height: 44px;
     margin-bottom: 40px;
     margin-top: 10px;
-    margin-left: 100px;
+    margin-left: 105px;
     border-radius: 20px;
     font-family: 'Inter';
     font-style: normal;
@@ -491,20 +492,23 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    border-radius : 20px
+    border-radius : 20px;
+    font-weight: bold;
   }
   .milcho-vertical-divider {
-    width: 2px;
-    height: 30px;
-    background-color: black;
-    margin: 0 10px; 
-    margin-left: 110px;
-
+    width: 1px !important;
+    height: 30px !important;
+    background-color: black o !important;
+    margin: 0 10px !important; 
+    margin-left: 10px !important;
+    position: absolute !important;
+    margin-top: 8px !important;
   }
   
   .milcho-btn-edit {
     background-color: #c2d7ff !important;
-    margin-left: 280px;
+    margin-left: 135px;
+    margin-top: 10px;
   }
   
   .milcho-btn-add {
