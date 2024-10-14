@@ -54,15 +54,14 @@
         </v-row>
         <v-spacer></v-spacer>
         <v-container class="hospital-list-container d-flex justify-center align-center">
-            <!-- 병원리스트 -->
+            <!-- 의사리스트 -->
             <v-row>
                 <v-col cols="12" v-for="doctor in doctorList" :key="doctor.doctorId">
                     <v-card style="width:800px !important;" variant="outlined" class="custom-card justify-center"
                         @click="goToDetail(doctor.memberEmail)" clickable>
                         <div class="d-flex flex-no-wrap">
                             <v-avatar size="80" class="ma-5">
-                                <!-- 병원사진 -->
-                                <v-img :src="doctor.profileImg" />
+                                <v-img :src="doctor.profileImg? doctor.profileImg : 'https://todak-file.s3.ap-northeast-2.amazonaws.com/default-images/doctor-3d-image.png'"  />
                             </v-avatar>
 
                             <div style="flex: 1;">

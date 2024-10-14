@@ -3,7 +3,7 @@
         <v-row class="mt-6">
             <v-col class="text-center" cols="2">
                 <v-avatar size="60">
-                    <v-img :src="doctor.imageUrl" alt="doctor image" />
+                    <v-img :src="doctor.profileImg? doctor.profileImg : 'https://todak-file.s3.ap-northeast-2.amazonaws.com/default-images/doctor-3d-image.png'"  />
                   </v-avatar>
             </v-col>
             <v-col class="text-center" cols="7">

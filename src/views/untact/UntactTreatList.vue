@@ -35,7 +35,7 @@
                 <v-row>
                     <v-col cols="2">
                         <v-avatar size="70">
-                            <v-img :src="doctor.profileImg" alt="doctor image"/>
+                            <v-img :src="doctor.profileImgUrl ? doctor.profileImgUrl : 'https://todak-file.s3.ap-northeast-2.amazonaws.com/default-images/doctor-3d-image.png'" />
                         </v-avatar>
                     </v-col>
                     <v-col>
