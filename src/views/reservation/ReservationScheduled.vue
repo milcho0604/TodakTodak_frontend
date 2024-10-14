@@ -71,23 +71,23 @@
                     </v-row>
                 </div>
             </v-row>
-            <v-row class="header-row">
+            <v-row v-if="doctor" class="header-row">
                 <v-col class="big-font">
                     날짜 선택
                 </v-col>
             </v-row>
-            <v-row justify="start" class="ml-2">
+            <v-row v-if="doctor" justify="start" class="ml-2">
                 <v-date-picker v-model="date" :allowed-dates="allowedDates" @input="updateDate" :width="650"
                     color="primary">
                 </v-date-picker>
             </v-row>
-            <v-row class="header-row">
+            <v-row v-if="date" class="header-row">
                 <v-col class="big-font">
                     시간 선택
                 </v-col>
             </v-row>
-            <v-row>
-                <v-col v-for="time in timeSlots" :key="time" class="time-slot" :class="getTimeClass(time)"
+            <v-row v-if="date">
+                <v-col v-for="time in doctorTimeSlots" :key="time" class="time-slot" :class="getTimeClass(time)"
                     @click="selectTime(time)" style="flex-basis: 20%; max-width: 20%;">
                     {{ time }}
                 </v-col>
@@ -313,7 +313,7 @@ export default {
             hostpitalName: "삼성화곡소아청소년과",
             hospitalId: 1,
             child: null,
-            doctor: [],
+            doctor: null,
             childOptions: [],
             doctorList: [],
             symptoms: [],
@@ -328,6 +328,7 @@ export default {
             comment: null,
             date: null,
             reservationType: null,
+            doctorTimeSlots:[],
             timeSlots: [
                 "09:00", "09:30", "10:00", "10:30",
                 "11:00", "11:30", "13:00", "13:30",
@@ -338,6 +339,7 @@ export default {
             selectedTime: null, // 선택된 시간
             reservedModal: false,
             successReserveModal: false,
+            reason: null,
         }
     },
     methods: {
@@ -380,7 +382,18 @@ export default {
             const weekEnd = new Date(weekStart);
             weekEnd.setDate(weekStart.getDate() + 7);
 
-            return selectedDate >= weekStart && selectedDate <= weekEnd; // 범위 체크
+            // 현재 선택된 의사 객체에서 운영시간을 가져옴
+            const operatingHours = this.doctor.operatingHours || [];
+            const selectedDay = selectedDate.getDay();
+
+            // 운영 시간에 해당하는 요일을 확인.
+            const isValiDay = operatingHours.some(hour => {
+                const dayOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'].indexOf(hour.dayOfWeek);
+                return dayOfWeek === selectedDay && !hour.untact;
+            })
+
+            // 예약 범위 & 운영 요일
+            return selectedDate >= weekStart && selectedDate <= weekEnd && isValiDay; // 범위 체크
         },
         getTimeClass(time) {
             // 시간 상태에 따라 클래스 반환
@@ -436,7 +449,7 @@ export default {
                 
                 this.doctorList.forEach(doctor =>{
                     doctor.profileImgUrl = doctor.profileImgUrl ? doctor.profileImgUrl :
-                    "https://todak-file.s3.ap-northeast-2.amazonaws.com/default-images/default_user_image.png";
+                    "https://todak-file.s3.ap-northeast-2.amazonaws.com/default-images/doctor-3d-image.png";
                 })
 
                 console.log(this.doctorList);
@@ -486,6 +499,27 @@ export default {
                 // 여기에 "예약상세내역 페이지 경로"
                 this.$router.push('/member/mypage/reservation')
             }
+        },
+        operatingTime(openTime, closeTime) {
+            this.doctorTimeSlots = [];
+
+            const start = this.timeToMinutes(openTime);
+            const end = this.timeToMinutes(closeTime);
+            
+            for(let i = start; i< end ; i += 30){
+                this.doctorTimeSlots.push(this.minutesToTime(i))
+            }
+
+            console.log(this.doctorTimeSlots);
+        },
+        timeToMinutes(time){
+            const [hours, minutes] = time.split(':').map(Number);
+            return hours*60 + minutes;
+        },
+        minutesToTime(time){
+            const hours = Math.floor(time / 60);
+            const mins = time % 60;
+            return `${hours.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}`;
         }
     },
     async created() {
@@ -495,6 +529,12 @@ export default {
     watch: {
         date(newDate) {
             console.log(newDate);
+            const options = { weekday: 'long'}
+            const dayOfWeek = newDate.toLocaleDateString('en-US', options);
+
+            const selectDay = this.doctor.operatingHours.filter(item => item.dayOfWeek === dayOfWeek);
+            console.log(selectDay);
+            this.operatingTime(selectDay[0].openTime, selectDay[0].closeTime);
             this.fetchDoctorTime();
         }
     },
