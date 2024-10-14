@@ -241,6 +241,7 @@
                 editable: false,
                 extendedProps: {
                 ...reservation, // 예약 정보 전체를 extendedProps에 추가
+                isReservationEvent: true
                 },
             };
             });
@@ -267,6 +268,7 @@
                 content: event.content,
                 type: event.type,
                 border: 'none',
+                isReservationEvent: false // 사용자 이벤트임을 나타내는 플래그 추가
               },
             }));
             this.userEvents = userEvents;
@@ -287,8 +289,12 @@
   
       handleEventClick(info) {
         // 예약 이벤트 클릭 시 예약 정보를 상세 정보로 표시
-        if (info.event.backgroundColor === '#FF9800') {
-          this.selectedReservation = info.event.extendedProps;
+        const isReservationEvent = info.event.extendedProps.isReservationEvent;
+
+
+        if (isReservationEvent) {
+        // 예약 이벤트일 경우 상세 정보를 표시합니다.
+        this.selectedReservation = info.event.extendedProps;
         } else {
           // 사용자 이벤트 수정 모달 열기
           this.isEditing = true;
