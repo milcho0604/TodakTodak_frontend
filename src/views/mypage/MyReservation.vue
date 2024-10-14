@@ -84,7 +84,7 @@
                                 <v-chip v-if="reserveType == '지난예약' &&
                                     item.status == 'Completed'" 
                                     :class="item.review ? 'review' : 'no-review'"
-                                    @click="item.review ? this.$router.push('/') : this.$router.push('/review')"><img src="@/assets/pencil_img.png" /><strong>리뷰쓰기</strong>
+                                    @click="item.review ? this.$router.push('/') : reviewData(item)"><img src="@/assets/pencil_img.png" /><strong>리뷰쓰기</strong>
                                 </v-chip>
                             </v-col>
                         </v-row>
@@ -193,8 +193,27 @@
                     </v-col>
                 </div>
             </v-row>
-        </v-container>
 
+            <v-dialog v-model="dialog" width="500">
+                <v-card class="review-edit-modal">
+                    <v-card-text>
+                        <div class="inter-bold title">{{ dialogReserve.hospitalName}}</div>
+                        <div class="rating-label inter-bold">{{ dialogReserve.doctorName}} 원장</div>
+                        <!-- 평점 입력 -->
+                        <div class="rating-label inter-bold">진료 만족도를 남겨주세요!</div>
+                        <v-rating v-model="rating" length="5" color="#0094FF" background-color="#E7EEF0"
+                            class="modal-rating" justify="center"></v-rating>
+                        <!-- 텍스트 박스 -->
+                        <v-textarea v-model="contents" label="진료 경험에 대해서 상세하게 알려주세요." outlined :counter="500" rows="5"
+                            class="modal-textarea"></v-textarea>
+                        <v-row justify="center">
+                            <v-chip class="text-primary" @click="createReview"><strong>리뷰작성완료</strong></v-chip>
+                        </v-row>
+                        <br>
+                    </v-card-text>
+                </v-card>
+            </v-dialog>
+        </v-container>
     </v-container>
 </template>
 
@@ -210,6 +229,10 @@ export default {
             waiting: 23,
             sort: null,
             filter: null,
+            dialogReserve: null,
+            dialog: false,
+            contents: null,
+            rating: 0,
         }
     },
     methods: {
@@ -313,6 +336,18 @@ export default {
             const day = String(date.getDate()).padStart(2, '0');  // 일
 
             return `${year}-${month}-${day}`;
+        },
+        reviewData(item){
+            this.dialog = true;
+            this.dialogReserve = item; 
+        },
+        async createReview(){
+            await axios.post(`${process.env.VUE_APP_API_BASE_URL}/reservation-service/review/create`, {
+                rating: this.rating,
+                contents: this.contents,
+                reservationId: this.dialogReserve.id
+            });
+            window.location.reload();
         }
     },
     mounted() {
@@ -551,5 +586,38 @@ export default {
     margin-top: -30px;
     background-color: #DBDBDB;
     color: #888888;
+}
+
+.review-edit-modal {
+    width: 500px;
+    background-color: #FFFFFF;
+    border-radius: 30px;
+}
+
+.title {
+    text-align: center;
+    font-size: 25px;
+    margin-top: 10px;
+}
+
+.rating-label {
+    text-align: center;
+    font-size: 18px;
+    color: #777777;
+    margin-top: 15px;
+}
+
+.modal-rating {
+    display: flex;
+    justify-content: center;
+    margin-top: 10px;
+}
+
+.modal-textarea {
+    width: 422px;
+    height: 160px;
+    border: 1px solid #E0E0E0;
+    border-radius: 12px;
+    margin: 20px auto;
 }
 </style>
