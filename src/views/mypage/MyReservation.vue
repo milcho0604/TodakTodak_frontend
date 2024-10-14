@@ -48,6 +48,7 @@
                     <v-chip value="진료완료" :class="filter === '진료완료' ? 'after-completed' : ''" filter><strong>진료완료</strong></v-chip>
                     <v-chip value="예약취소" filter><strong>예약취소</strong></v-chip>
                     <v-chip value="노쇼" :class="filter === '노쇼' ? 'noshow' : ''" filter><strong>노쇼</strong></v-chip>
+                    <v-chip value="비대면" :class="filter === '비대면' ? 'untact' : ''" filter><strong>비대면</strong></v-chip>
                 </v-chip-group>
             </v-row>
             <v-row>
@@ -65,11 +66,14 @@
                                 <v-chip v-if="reserveType == '지난예약' &&
                                     item.status == 'Completed'"
                                     class="after-completed"><strong>진료완료</strong></v-chip>
-                                <v-chip v-if="reserveType == '지난예약' &&
-                                    item.status == 'Cancelled'"><strong>예약취소</strong></v-chip>
+                                <v-chip v-if="item.status == 'Cancelled'"><strong>예약취소</strong></v-chip>
                                 <v-chip v-if="reserveType == '지난예약' &&
                                     item.status == 'Noshow'"
                                     class="noshow"><strong>노쇼</strong></v-chip>
+                                <v-chip v-if="item.untact" class="untact"
+                                    @click="this.$router.push(`/room/${item.id}`)"><img src="@/assets/untact_image.png"/>
+                                    <strong>비대면진료 접속</strong>
+                                </v-chip>
                             </v-col>
                         </v-row>
                         <v-row>
@@ -111,22 +115,33 @@
                             </v-col>
                         </v-row>
                         <v-row>
-                            <v-col cols="2">
-                                <div
+                            <v-col cols="2.5">
+                                <v-chip
+                                    v-if="!item.untact"
                                     :class="{ 'immediate': item.reservationType == 'Immediate', 'scheduled': item.reservationType !== 'Immediate' }">
-                                    {{ formatType(item.reservationType) }}
-                                </div>
+                                    <strong>{{ formatType(item.reservationType) }}</strong>
+                                </v-chip>
+                                <v-chip
+                                    v-if="item.untact" class="untact1">
+                                    <strong>비대면 진료</strong>
+                                </v-chip>
                             </v-col>
                             <v-col cols="2">
-                                <div
-                                    v-if="item.status == 'Completed'"
+                                <v-chip
+                                    v-if="item.status == 'Completed' && !item.untact"
                                     :class="{ 'confirmed': item.status == 'Confirmed', 'completed': item.status !== 'Confirmed' }">
-                                    {{ formatStatus(item.status) }}
-                                </div>
+                                    <strong>{{ formatStatus(item.status) }}</strong>
+                                </v-chip>
+                                <v-chip
+                                    v-if="item.untact" class="payment">
+                                    <strong>결제완료</strong>
+                                </v-chip>
+                                
                             </v-col>
-                            <v-col class="detail ml-6" cols="7">
+                            <v-col cols="2"></v-col>
+                            <v-col class="detail ml-6" cols="5">
                                 <div @click="toggleDetails(index)" style="cursor: pointer;">자세히 보기
-                                    <img v-if="!showDetails" src="@/assets/right_arrow.png" style="color: #FFFFFF;">
+                                    <img v-if="showDetails" src="@/assets/right_arrow.png" style="color: #FFFFFF;">
                                     <img v-else src="@/assets/left_arrow.png" style="color: #FFFFFF;">
                                 </div>
                             </v-col>
@@ -184,10 +199,8 @@
                                     {{ item.message }}
                                 </v-col>
                             </v-row>
-                            <v-row style="width:130px;">
-                                <v-btn class="cancel-btn">
-                                    예약 취소
-                                </v-btn>
+                            <v-row v-if="item.status == 'Confirmed'" justify="center">
+                                <v-chip class="cancel-btn" @click="cancelReserve(item.id)"><strong>예약 취소</strong></v-chip>
                             </v-row>
                         </div>
                     </v-col>
@@ -233,6 +246,8 @@ export default {
             dialog: false,
             contents: null,
             rating: 0,
+            showDetails: true,
+            untact: null,
         }
     },
     methods: {
@@ -257,6 +272,11 @@ export default {
                 await Promise.all(this.reserveList.map(async (item, index) => {
                     await this.isReview(item.id, index);
                 }));
+                await Promise.all(this.reserveList.map(async (item, index) => {
+                    if(item.untact){
+                        await this.medicalChart(item.id, index);
+                    }
+                }))
             }
             this.sortReserveList();
             this.updateType(req);
@@ -288,6 +308,8 @@ export default {
                     this.filteredReserveList = this.reserveList.filter(item => item.status === 'Cancelled')
                 } else if (this.filter === '노쇼') {
                     this.filteredReserveList = this.reserveList.filter(item => item.status === 'Noshow')
+                } else if(this.filter === '비대면'){
+                    this.filteredReserveList = this.reserveList.filter(item=> item.untact)
                 } else {
                     this.filteredReserveList = this.reserveList;
                 }
@@ -324,6 +346,7 @@ export default {
         },
         toggleDetails(index) {
             this.reserveList[index].showDetails = !this.reserveList[index].showDetails;
+            this.showDetails = !this.showDetails;
         },
         async isReview(id, index) {
             const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/reservation-service/review/reserve/${id}`);
@@ -348,6 +371,20 @@ export default {
                 reservationId: this.dialogReserve.id
             });
             window.location.reload();
+        },
+        async cancelReserve(id){
+            await axios.delete(`${process.env.VUE_APP_API_BASE_URL}/reservation-service/reservation/cancel/${id}`);
+
+            alert("예약 취소 완료")
+        },
+        async medicalChart(id, index){
+            try{
+                const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/reservation-service/medical-chart/${id}`);
+                console.log(index);
+                console.log(response);
+            }catch(e){
+                console.log(e)
+            }
         }
     },
     mounted() {
@@ -493,47 +530,42 @@ export default {
 }
 
 .immediate {
-    margin-top: -20px;
-    margin-left: 5px;
-    font-size: 13px;
-    padding: 5px;
+    margin-top: -40px;
     background-color: #0066FF;
-    text-align: center;
     color: #FFFFFF;
-    border-radius: 15px;
 }
 
 .scheduled {
-    margin-top: -20px;
-    margin-left: 5px;
-    font-size: 13px;
-    padding: 5px;
+    margin-top: -40px;
     background-color: #B6CFFF;
-    text-align: center;
     color: #00499E;
-    border-radius: 15px;
 }
 
 .confirmed {
-    margin-top: -20px;
-    margin-left: -10px;
-    padding: 5px;
-    font-size: 13px;
+    margin-top: -40px;
+    margin-left: -25px;
     background-color: #DBDBDB;
-    text-align: center;
-    color: #737373;
-    border-radius: 15px;
+    color: #737373; 
 }
 
 .completed {
-    margin-top: -20px;
-    margin-left: -10px;
-    font-size: 13px;
-    padding: 5px;
+    margin-top: -40px;
+    margin-left: -25px;
     background-color: #FFE792;
-    text-align: center;
     color: #996E00;
-    border-radius: 15px;
+}
+
+.untact1{
+    margin-top: -40px;
+    background-color: #00B2FF;
+    color: #FFFFFF !important;
+}
+
+.payment{
+    margin-top: -40px;
+    margin-left: -25px;
+    background-color: #D0F593;
+    color: #4F7F00;
 }
 
 .detail {
@@ -573,6 +605,11 @@ export default {
 .noshow {
     background-color: #FFA1A1;
     color: #A20000 !important;
+}
+
+.untact{
+    background-color: #00B2FF;
+    color: #FFFFFF !important;
 }
 
 .no-review {
