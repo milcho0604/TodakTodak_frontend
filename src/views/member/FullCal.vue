@@ -102,12 +102,9 @@
       methods: {
         // Fetch all events including holidays and user events
         fetchEvents() {
-            const email = localStorage.getItem('email'); // 로컬 스토리지에서 email을 가져옴
-
             axios
                 .get(`${process.env.VUE_APP_API_BASE_URL}/reservation-service/reservation/list`, {
                 params: {
-                    email: email, // 로컬 스토리지에서 가져온 이메일
                     type: "All" // 예약 타입
                 }
                 })
@@ -235,11 +232,11 @@
   .fc-theme-standard td, .fc-theme-standard th {
     height: 30px;
     border: 1px solid var(--fc-border-color);
-}
+    }
 .fc .fc-daygrid-day-frame {
     height: 30px;
     position: relative;
-}
+    }
   .fc-daygrid-day-top {
     max-height: 30px; /* 날짜 상단 부분의 최대 높이를 설정 */
     height: 30px;
