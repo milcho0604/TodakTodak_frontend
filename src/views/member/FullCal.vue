@@ -1,6 +1,6 @@
 <template>
     <div>
-      <!-- 자녀 리스트 들어가는 곳 -->
+      <!-- 자녀 리스트 -->
       <div>
         <v-row justify="center" align="center">
           <v-col
@@ -11,10 +11,10 @@
             lg="1"
             class="d-flex flex-column align-items-center"
           >
+            <v-spacer :style="{ height: '30px' }"></v-spacer>
             <v-avatar size="70">
-              <v-img @click="handleChildClick(child)" :src="child.imageUrl" max-width="120" max-height="120" contain />
+              <v-img @click="handleChildClick(child)" :src="child.imageUrl" contain />
             </v-avatar>
-  
             <v-text>{{ child.name }}</v-text>
           </v-col>
         </v-row>
@@ -23,106 +23,18 @@
       <div class="d-flex">
         <!-- 캘린더 영역 -->
         <div class="milcho-calendar-container">
+          <v-btn @click="startNewEvent" class="milcho-btn-add">일정 추가</v-btn>
           <FullCalendar :options="calendarOptions" class="milcho-custom-calendar" />
-  
-          <!-- Event Modal for creating/updating events -->
-          <v-dialog v-model="isModalOpen" persistent max-width="500px">
-            <v-card>
-              <v-card-title>{{ isEditing ? '일정 수정' : '일정 생성' }}</v-card-title>
-              <v-card-text>
-                <v-form ref="form">
-                  <v-text-field v-model="formData.title" label="제목" required />
-                  <v-text-field v-model="formData.content" label="내용" required />
-  
-                  <!-- Type Selection -->
-                  <v-select v-model="formData.type" :items="eventTypes" label="타입" required />
-  
-                  <!-- Date Picker for Start Date -->
-                  <v-menu
-                    v-model="menuStart"
-                    :close-on-content-click="false"
-                    transition="scale-transition"
-                    offset-x="true"
-                    min-width="auto"
-                  >
-                    <template v-slot:activator="{ attrs }">
-                      <v-text-field
-                        v-model="formData.startDateText"
-                        label="시작일"
-                        readonly
-                        v-bind="attrs"
-                        @click.stop="menuStart = true"
-                      />
-                    </template>
-                    <v-date-picker
-                      v-model="formData.startDate"
-                      @input="updateStartDate"
-                      show-current="true"
-                      scrollable
-                      style="margin: 100px;"
-                    >
-                      <template v-slot:actions>
-                        <v-btn text color="primary" @click="confirmStartDate">확인</v-btn>
-                      </template>
-                    </v-date-picker>
-                  </v-menu>
-  
-                  <!-- Date Picker for End Date -->
-                  <v-menu
-                    v-model="menuEnd"
-                    :close-on-content-click="false"
-                    transition="scale-transition"
-                    offset-x="true"
-                    min-width="auto"
-                  >
-                    <template v-slot:activator="{ attrs }">
-                      <v-text-field
-                        v-model="formData.endDateText"
-                        label="종료일"
-                        readonly
-                        v-bind="attrs"
-                        @click.stop="menuEnd = true"
-                      />
-                    </template>
-                    <v-date-picker
-                      v-model="formData.endDate"
-                      @input="updateEndDate"
-                      show-current="true"
-                      scrollable
-                      style="margin: 100px;"
-                    >
-                      <template v-slot:actions>
-                        <v-btn text color="primary" @click="confirmEndDate">확인</v-btn>
-                      </template>
-                    </v-date-picker>
-                  </v-menu>
-                </v-form>
-              </v-card-text>
-              <v-card-actions>
-                <v-spacer></v-spacer>
-                <v-btn class="milcho-btn-save" elevation="0" @click="handleSaveEvent">저장</v-btn>
-                <v-btn class="milcho-btn-delete" elevation="0" @click="deleteEvent">삭제</v-btn>
-                <v-btn class="milcho-btn-cancel" elevation="0" @click="isModalOpen = false">취소</v-btn>
-              </v-card-actions>              
-            </v-card>
-          </v-dialog>
+          <!-- 일정 추가 버튼 -->
         </div>
   
-        <!-- 예약 상세 정보 표시 영역 -->
-        <div class="milcho-reservation-details">
-          <div v-if="selectedReservation">
-            <v-avatar
-              class="ma-5"
-              style="height:200px; width:350px; border-radius: 10px; object-fit:cover;"
-            >
-              <img
-                :src="selectedReservation.hospitalImgUrl"
-                class="milcho-customHosImage"
-                style="width: 100%; height: 100%; object-fit: cover;"
-              />
+        <!-- 이벤트 및 예약 상세 정보 표시 영역 -->
+        <div class="milcho-details">
+          <!-- 예약 상세 정보 -->
+          <div v-if="selectedReservation && isReservationEvent">
+            <v-avatar class="ma-5" style="height:200px; width:350px; border-radius: 10px; object-fit:cover;">
+              <img :src="selectedReservation.hospitalImgUrl" class="milcho-customHosImage" style="width: 100%; height: 100%; object-fit: cover;" />
             </v-avatar>
-          </div>
-          <div v-if="selectedReservation">
             <div class="milcho-reservation-row">
               <strong>병원명</strong>
               <span>{{ selectedReservation.hospitalName }}</span>
@@ -148,11 +60,86 @@
               <span>{{ selectedReservation.reservationDate }} {{ selectedReservation.reservationTime }}</span>
             </div>
           </div>
+  
+          <!-- 사용자 이벤트 상세 정보 또는 생성 양식 -->
+          <div v-else-if="selectedEvent && !isReservationEvent || isEditing ">
+            <!-- 이벤트 디테일 보기 -->
+            <div v-if="!isEditing">
+              <div class="milcho-reservation-row">
+                <strong>제목</strong>
+                <span>{{ formData.title }}</span>
+              </div>
+              <div class="milcho-reservation-row">
+                <strong>내용</strong>
+                <span>{{ formData.content }}</span>
+              </div>
+              <div class="milcho-reservation-row">
+                <strong>타입</strong>
+                <span>{{ formData.type }}</span>
+              </div>
+              <div class="milcho-reservation-row">
+                <strong>시작일</strong>
+                <span>{{ formData.startDateText }}</span>
+              </div>
+              <div class="milcho-reservation-row">
+                <strong>종료일</strong>
+                <span>{{ formData.endDateText }}</span>
+              </div>
+              <v-btn class="milcho-btn-edit" @click="isEditing = true">수정하기</v-btn>
+            </div>
+  
+            <!-- 이벤트 수정 및 생성 폼 -->
+            <v-form ref="form" v-if="isEditing">
+              <v-text-field v-model="formData.title" label="제목" required />
+              <v-text-field v-model="formData.content" label="내용" required />
+              <v-select v-model="formData.type" :items="eventTypes" label="타입" required />
+              <v-menu
+                v-model="menuStart"
+                :close-on-content-click="false"
+                transition="scale-transition"
+                offset-x="true"
+                min-width="auto"
+              >
+                <template v-slot:activator="{ attrs }">
+                  <v-text-field v-model="formData.startDateText" label="시작일" readonly v-bind="attrs" @click.stop="menuStart = true" />
+                </template>
+                <v-date-picker v-model="formData.startDate" @input="updateStartDate" show-current="true" scrollable>
+                  <template v-slot:actions>
+                    <v-btn text color="primary" @click="confirmStartDate">확인</v-btn>
+                  </template>
+                </v-date-picker>
+              </v-menu>
+  
+              <v-menu
+                v-model="menuEnd"
+                :close-on-content-click="false"
+                transition="scale-transition"
+                offset-x="true"
+                min-width="auto"
+              >
+                <template v-slot:activator="{ attrs }">
+                  <v-text-field v-model="formData.endDateText" label="종료일" readonly v-bind="attrs" @click.stop="menuEnd = true" />
+                </template>
+                <v-date-picker v-model="formData.endDate" @input="updateEndDate" show-current="true" scrollable>
+                  <template v-slot:actions>
+                    <v-btn text color="primary" @click="confirmEndDate">확인</v-btn>
+                  </template>
+                </v-date-picker>
+              </v-menu>
+  
+              <v-btn class="milcho-btn-save" elevation="0" @click="handleSaveEvent">저장</v-btn>
+              <v-btn v-if="isEditing" class="milcho-btn-delete" elevation="0" @click="deleteEvent">삭제</v-btn>
+            </v-form>
+          </div>
+  
+          <!-- 아무것도 선택되지 않은 경우 -->
+          <div v-else>
+            <p>선택된 예약 또는 이벤트가 없습니다.</p>
+          </div>
         </div>
       </div>
     </div>
   </template>
-  
   
   <script>
   import FullCalendar from '@fullcalendar/vue3';
@@ -171,7 +158,7 @@
           initialView: 'dayGridMonth',
           events: [],
           dateClick: this.handleDateClick,
-          eventClick: this.handleEventClick, // 이벤트 클릭 처리
+          eventClick: this.handleEventClick,
           displayEventTime: true,
           navLinks: true,
         },
@@ -193,11 +180,13 @@
         childList: [],
         reservationList: [],
         userEvents: [],
-        selectedReservation: null, // 선택된 예약 정보 저장
+        selectedReservation: null,
+        selectedEvent: null,
+        isReservationEvent: false,
         selectedChildName: '',
         colorPalette: ['#FF9800', '#4CAF50', '#FFC107', '#2196F3', '#9C27B0', '#E91E63', '#00BCD4', '#3F51B5', '#8BC34A', '#FF5722'],
-        colorIndex: 0, // 색상 인덱스 초기화 변수
-        memberColors: {}, // memberName별로 색상을 저장할 객체
+        colorIndex: 0,
+        memberColors: {},
       };
     },
     methods: {
@@ -213,37 +202,32 @@
       },
   
       fetchReservationList(child) {
-        console.log(child)
         this.selectedChildName = child.name;
-        this.colorIndex = 0; // child가 바뀔 때마다 색상 인덱스를 초기화
-        this.memberColors = {}; // 색상 매핑 초기화
+        this.colorIndex = 0;
+        this.memberColors = {};
         axios
           .get(`http://localhost:8080/reservation-service/reservation/list/child/${child.id}`)
           .then((response) => {
-            console.log(response)
-
             const reservationEvents = response.data.map((reservation) => {
-            let memberName = reservation.memberName;
-
-            // memberName별 색상이 이미 설정되어 있지 않다면 새로 할당
-            if (!this.memberColors[memberName]) {
+              let memberName = reservation.memberName;
+  
+              if (!this.memberColors[memberName]) {
                 this.memberColors[memberName] = this.colorPalette[this.colorIndex];
-                // 색상 인덱스를 순차적으로 증가시킴 , 10개의 색상 이후에는 다시 처음으로 돌아가도록 함
                 this.colorIndex = (this.colorIndex + 1) % this.colorPalette.length;
-            }
-
-            return {
+              }
+  
+              return {
                 title: `${reservation.hospitalName} - ${reservation.medicalItem}`,
                 start: new Date(`${reservation.reservationDate}T${reservation.reservationTime}`),
                 end: new Date(`${reservation.reservationDate}T${reservation.reservationTime}`),
-                backgroundColor: this.memberColors[memberName], // memberName에 해당하는 색상 사용
+                backgroundColor: this.memberColors[memberName],
                 allDay: false,
                 editable: false,
                 extendedProps: {
-                ...reservation, // 예약 정보 전체를 extendedProps에 추가
-                isReservationEvent: true
+                  ...reservation,
+                  isReservationEvent: true,
                 },
-            };
+              };
             });
             this.reservationList = reservationEvents;
             this.combineEvents();
@@ -267,8 +251,7 @@
               extendedProps: {
                 content: event.content,
                 type: event.type,
-                border: 'none',
-                isReservationEvent: false // 사용자 이벤트임을 나타내는 플래그 추가
+                isReservationEvent: false,
               },
             }));
             this.userEvents = userEvents;
@@ -284,20 +267,18 @@
       },
   
       handleChildClick(childId) {
-        this.fetchReservationList(childId); // 자녀 예약 리스트 가져오기
+        this.fetchReservationList(childId);
       },
   
       handleEventClick(info) {
-        // 예약 이벤트 클릭 시 예약 정보를 상세 정보로 표시
         const isReservationEvent = info.event.extendedProps.isReservationEvent;
-
-
+  
         if (isReservationEvent) {
-        // 예약 이벤트일 경우 상세 정보를 표시합니다.
-        this.selectedReservation = info.event.extendedProps;
+          this.selectedReservation = info.event.extendedProps;
+          this.isReservationEvent = true;
         } else {
-          // 사용자 이벤트 수정 모달 열기
-          this.isEditing = true;
+          this.isEditing = false; // 처음엔 수정모드가 아님
+          this.selectedEvent = info.event.extendedProps;
           this.formData.id = info.event.id;
           this.formData.title = info.event.title;
           this.formData.content = info.event.extendedProps.content;
@@ -305,8 +286,8 @@
           this.formData.endDate = info.event.end;
           this.formData.startDateText = this.formatDate(info.event.start);
           this.formData.endDateText = this.formatDate(info.event.end);
-          this.formData.type = info.event.extendedProps.type || '';  
-          this.isModalOpen = true;
+          this.formData.type = info.event.extendedProps.type || '';
+          this.isReservationEvent = false;
         }
       },
   
@@ -316,7 +297,8 @@
         this.formData.endDate = info.date;
         this.formData.startDateText = this.formatDate(info.date);
         this.formData.endDateText = this.formatDate(info.date);
-        this.isModalOpen = true;
+        this.selectedEvent = null;
+        this.isReservationEvent = false;
       },
   
       formatDate(date) {
@@ -351,55 +333,66 @@
         this.formData.endDateText = this.formatDate(val);
       },
   
+      handleSaveEvent() {
+        const url = this.isEditing
+          ? `${process.env.VUE_APP_API_BASE_URL}/member-service/event/update/${this.formData.id}`
+          : `${process.env.VUE_APP_API_BASE_URL}/member-service/event/create`;
+  
+        const payload = {
+          title: this.formData.title,
+          content: this.formData.content,
+          startTime: `${this.formData.startDateText}T00:00:00`,
+          endTime: `${this.formData.endDateText}T23:59:59`,
+          type: this.formData.type,
+        };
+  
+        axios({
+          method: 'post',
+          url: url,
+          data: payload,
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
+          },
+        })
+          .then(() => {
+            this.fetchUserEvents(); // 이벤트 저장 후 사용자 이벤트 새로고침
+          })
+          .catch((error) => {
+            console.error('Error saving event:', error);
+          });
+      },
+  
       deleteEvent() {
         const id = this.formData.id;
-
+  
         axios
-            .get(`http://localhost:8080/member-service/event/delete/${id}`) // 백틱 사용
-            .then((response) => {
-            console.log('Event deleted successfully:', response.data);
-            this.isModalOpen = false; // 모달 닫기
+          .get(`http://localhost:8080/member-service/event/delete/${id}`)
+          .then(() => {
             this.fetchUserEvents(); // 삭제 후 사용자 이벤트 새로고침
-            })
-            .catch((error) => {
+          })
+          .catch((error) => {
             console.error('Error deleting event:', error);
-            });
-        },
-      handleSaveEvent() {
-        const startTime = `${this.formData.startDateText}T00:00:00`;
-        const endTime = `${this.formData.endDateText}T23:59:59`;
-
-        const url = this.isEditing
-            ? `${process.env.VUE_APP_API_BASE_URL}/member-service/event/update/${this.formData.id}`
-            : `${process.env.VUE_APP_API_BASE_URL}/member-service/event/create`;
-
-        const payload = {
-            title: this.formData.title,
-            content: this.formData.content,
-            startTime: startTime,
-            endTime: endTime,
-            type: this.formData.type,  // 이벤트 타입을 포함하여 전송
+          });
+      },
+  
+      startNewEvent() {
+        console.log("startNewEvent triggered");
+        this.isEditing = true;
+        this.formData = {
+          id: null,
+          title: '',
+          content: '',
+          startDate: new Date(),
+          endDate: new Date(),
+          startDateText: this.formatDate(new Date()),
+          endDateText: this.formatDate(new Date()),
+          type: '',
         };
-
-        console.log(payload)
-
-        axios({
-            method: 'post',
-            url: url,
-            data: payload,
-            headers: {
-            Authorization: `Bearer ${localStorage.getItem('token')}`,
-            },
-        })
-            .then(() => {
-            this.isModalOpen = false;
-            this.fetchUserEvents(); // 이벤트 저장 후 사용자 이벤트 새로고침
-            })
-            .catch((error) => {
-            console.error('Error saving event:', error);
-            });
-        },
+        this.selectedEvent = null;
+        this.isReservationEvent = false;
+      },
     },
+  
     mounted() {
       this.fetchUserEvents(); // Fetch user events on mount
       this.fetchChildList(); // Fetch child list on mount
@@ -407,88 +400,58 @@
   };
   </script>
   
-<style>
+  <style>
   .milcho-calendar-container {
     max-width: 900px;
     height: 900px;
     margin: auto;
     margin-top: 30px;
-}
-
-.milcho-fc-theme-standard td,
-.milcho-fc-theme-standard th {
-    height: 30px;
-    border: 1px solid var(--fc-border-color);
-}
-
-.milcho-custom-calendar {
+  }
+  .milcho-custom-calendar {
     width: 700px;
     height: 800px;
     margin: auto;
     margin-left: 250px;
-}
-
-.milcho-custom-calendar .fc-h-event {
+  }
+  .milcho-custom-calendar .fc-h-event {
     border: none !important; /* 테두리 완전히 제거 */
-}
-
-.milcho-reservation-details {
+  }
+  
+  .milcho-details {
     width: 400px;
     border: 1px solid #ddd;
     background-color: #f9f9f9;
     margin-bottom: 30px;
+    margin-right: 30px;
     border-radius: 10px;
-}
-
-.milcho-v-avatar {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
-
-.milcho-customHosImage {
-    width: 358px;
-    height: 200px;
-    object-fit: cover;
-}
-
-.milcho-reservation-row {
+    padding: 20px;
+  }
+  
+  .milcho-reservation-row {
     display: flex;
     margin-bottom: 10px;
     margin-left: 20px;
-}
-
-.milcho-reservation-row strong {
-    width: 100px; /* 레이블의 고정 너비 */
-    flex-shrink: 0; /* 레이블이 줄어들지 않도록 고정 */
-}
-
-.milcho-reservation-row span {
-    flex-grow: 1; /* 값 부분이 남은 공간을 채움 */
-}
-
-.milcho-reservations {
-    width: 100%;  /* div의 너비를 지정, 필요에 맞게 조정 가능 */
-    height: 100%; /* div의 높이도 지정 가능 */
-    position: relative; /* 이미지에 절대 위치를 줄 경우 필요할 수 있음 */
-}
-
-.milcho-reservations img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover; /* 이미지의 비율을 유지하면서 div를 가득 채움 */
-}
-.milcho-btn-save {
-    background-color: #C2D7FF !important;
-}
-
-.milcho-btn-cancel {
-    background-color: #D3D3D3 !important;
-}
-
-.milcho-btn-delete {
-    background-color: #F9C3C3 !important;
-}
-</style>
-
-
+  }
+  
+  .milcho-reservation-row strong {
+    width: 100px;
+  }
+  
+  .milcho-btn-save {
+    background-color: #c2d7ff !important;
+  }
+  
+  .milcho-btn-delete {
+    background-color: #f9c3c3 !important;
+  }
+  
+  .milcho-btn-edit {
+    background-color: #c2d7ff !important;
+  }
+  
+  .milcho-btn-add {
+    margin-top: 20px;
+    background-color: #00c853 !important;
+  }
+  </style>
+  
