@@ -145,6 +145,7 @@
                             닫기
                         </v-btn>
                     </v-col>
+                    <v-spacer :style="{ height: '20px' }"></v-spacer>
                 </v-row>                
             </v-card>
           </v-dialog>
