@@ -1,14 +1,20 @@
 import RtcTest from '@/views/untact/RtcTest.vue';
 import UntactChatRoom from '@/views/untact/UntactChatRoom.vue';
 import UntactTreatList from '@/views/untact/UntactTreatList.vue';
+import UntactTreatList2 from '@/views/untact/UntactTreatList2.vue';
 import UntactForm from '@/views/untact/UntactForm.vue';
 
 
 export const untactRouter = [
     {
-        path: '/untact/list',
+        path: '/untact/list2',
         name: 'UntactTreatList',
         component: UntactTreatList
+    },
+    {
+        path: '/untact/list',
+        name: 'UntactTreatList2',
+        component: UntactTreatList2
     },
     {
         path: '/untact/:doctorEmail/form',
