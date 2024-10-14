@@ -43,7 +43,7 @@
             </v-row>
         </v-card>
 
-        <!-- 월 ~ 금 영ㅇ업시간 -->
+        <!-- 월 ~ 금 영업시간 -->
         <v-spacer :style="{ height: '10px' }"></v-spacer>
         <v-card class="notice-card mt-3" variant="flat">
             <v-row align="center">
