@@ -10,7 +10,6 @@
             md="2"
             lg="1"
             class="d-flex flex-column align-items-center"
-            
           >
             <img class="v-avatar" @click="handleChildClick(child.id)" :src="child.imageUrl" max-width="120" max-height="120" contain />
             <v-text>{{ child.name }}</v-text>
@@ -18,7 +17,7 @@
         </v-row>
       </div>
   
-      <!-- 기존의 캘린더 코드 -->
+      <!-- 기존 코드 -->
       <div class="calendar-container">
         <!-- FullCalendar Integration -->
         <FullCalendar :options="calendarOptions" class="custom-calendar" />
@@ -31,7 +30,7 @@
               <v-form ref="form">
                 <v-text-field v-model="formData.title" label="Title" required />
                 <v-text-field v-model="formData.content" label="Content" required />
-  
+    
                 <!-- Type Selection -->
                 <v-select
                   v-model="formData.type"
@@ -39,7 +38,7 @@
                   label="Event Type"
                   required
                 />
-  
+    
                 <!-- Date Picker for Start Date -->
                 <v-menu
                   v-model="menuStart"
@@ -69,7 +68,7 @@
                     </template>
                   </v-date-picker>
                 </v-menu>
-  
+    
                 <!-- Date Picker for End Date -->
                 <v-menu
                   v-model="menuEnd"
@@ -129,7 +128,7 @@
           initialView: 'dayGridMonth',
           events: [], // 결합된 이벤트들이 들어감
           dateClick: this.handleDateClick,
-          eventClick: this.handleReservationClick, // 예약 클릭 이벤트를 막음
+          eventClick: this.handleEventClick,
           displayEventTime: true,
           navLinks: true,
         },
@@ -218,9 +217,20 @@
         this.fetchReservationList(childId); // 자녀 예약 리스트를 가져옴
       },
   
-      handleReservationClick(info) {
+      handleEventClick(info) {
         // 예약 이벤트 클릭 시 아무런 동작을 하지 않음
-        if (info.event.extendedProps.content) return;
+        if (info.event.backgroundColor === '#FF9800') {
+          return;
+        }
+        this.isEditing = true;
+        this.formData.id = info.event.id;
+        this.formData.title = info.event.title;
+        this.formData.content = info.event.extendedProps.content;
+        this.formData.startDate = info.event.start;
+        this.formData.endDate = info.event.end;
+        this.formData.startDateText = this.formatDate(info.event.start);
+        this.formData.endDateText = this.formatDate(info.event.end);
+        this.isModalOpen = true;
       },
   
       handleDateClick(info) {
@@ -243,38 +253,89 @@
     
         return [year, month, day].join('-');
       },
+  
+      confirmStartDate() {
+        this.updateStartDate(this.formData.startDate);
+        this.menuStart = false;
+      },
+  
+      confirmEndDate() {
+        this.updateEndDate(this.formData.endDate);
+        this.menuEnd = false;
+      },
+  
+      updateStartDate(val) {
+        this.formData.startDate = val;
+        this.formData.startDateText = this.formatDate(val);
+      },
+  
+      updateEndDate(val) {
+        this.formData.endDate = val;
+        this.formData.endDateText = this.formatDate(val);
+      },
+  
+      handleSaveEvent() {
+        const startTime = `${this.formData.startDateText}T00:00:00`;
+        const endTime = `${this.formData.endDateText}T23:59:59`;
+  
+        const url = this.isEditing
+          ? `${process.env.VUE_APP_API_BASE_URL}/member-service/event/update/${this.formData.id}`
+          : `${process.env.VUE_APP_API_BASE_URL}/member-service/event/create`;
+  
+        const payload = {
+          title: this.formData.title,
+          content: this.formData.content,
+          startTime: startTime,
+          endTime: endTime,
+          type: this.formData.type,
+        };
+  
+        axios({
+          method: 'post',
+          url: url,
+          data: payload,
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
+          },
+        })
+          .then(() => {
+            this.isModalOpen = false;
+            this.fetchUserEvents(); // Refresh events after saving
+          })
+          .catch((error) => {
+            console.error('Error saving event:', error);
+          });
+      },
     },
     mounted() {
-      this.fetchUserEvents(); // 사용자의 개인 이벤트를 가져옴
-      this.fetchChildList(); // 자녀 리스트를 가져옴
+      this.fetchUserEvents(); // Fetch user events on mount
+      this.fetchChildList(); // Fetch child list on mount
     },
   };
   </script>
   
   <style scoped>
-  .calendar-container {
-    max-width: 900px;
-    height: 900px;
-    margin: auto;
-    margin-top: 30px;
-  }
+    .calendar-container {
+      max-width: 900px;
+      height: 900px;
+      margin: auto;
+      margin-top: 30px;
+    }
   
-  .fc-theme-standard td,
-  .fc-theme-standard th {
-    height: 30px;
-    border: 1px solid var(--fc-border-color);
-  }
+    .fc-theme-standard td,
+    .fc-theme-standard th {
+      height: 30px;
+      border: 1px solid var(--fc-border-color);
+    }
   
-  .custom-calendar {
-    max-width: 900px;
-    height: 800px;
-    margin: auto;
-  }
-  
-  .v-avatar {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
+    .custom-calendar {
+      max-width: 900px;
+      height: 800px;
+      margin: auto;
+    }
+    .v-avatar {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
   </style>
-  
