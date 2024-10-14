@@ -44,6 +44,7 @@
             <v-row v-if="reserveType == '지난예약'">
                 <v-chip-group selected-class="text-primary" v-model="filter">
                     <v-chip value="전체" filter><strong>전체</strong></v-chip>
+                    <v-chip value="오늘" filter><strong>오늘</strong></v-chip>
                     <v-chip value="진료완료" :class="filter === '진료완료' ? 'after-completed' : ''" filter><strong>진료완료</strong></v-chip>
                     <v-chip value="예약취소" filter><strong>예약취소</strong></v-chip>
                     <v-chip value="노쇼" :class="filter === '노쇼' ? 'noshow' : ''" filter><strong>노쇼</strong></v-chip>
@@ -250,7 +251,6 @@ export default {
             if (this.reserveType === '오는예약') {
                 if (this.sort === "오늘") {
                     const today = this.dateFormat(new Date());
-                    console.log(this.reserveList);
                     this.filteredReserveList = this.reserveList.filter(item => item.reservationDate === today);
                 } else {
                     this.filteredReserveList = this.reserveList;
@@ -258,6 +258,9 @@ export default {
             } else if (this.reserveType === '지난예약') {
                 if (this.filter === '진료완료') {
                     this.filteredReserveList = this.reserveList.filter(item => item.status === 'Completed')
+                }else if(this.filter === '오늘'){
+                    const today = this.dateFormat(new Date());
+                    this.filteredReserveList = this.reserveList.filter(item => item.reservationDate === today);
                 } else if (this.filter === '예약취소') {
                     this.filteredReserveList = this.reserveList.filter(item => item.status === 'Cancelled')
                 } else if (this.filter === '노쇼') {
