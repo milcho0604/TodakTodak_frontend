@@ -24,22 +24,33 @@
 
             <v-row>
                 <v-col cols="6" style="text-align: right">
-                    <div class="type-style" 
-                        :class="{ 'select-style': reserveType == '오늘예약' }"
-                        @click="updateReserveList('오늘예약')">
-                        오늘 예약
+                    <div class="type-style" :class="{ 'select-style': reserveType == '오는예약' }"
+                        @click="updateReserveList('오는예약')">
+                        오는 예약
                     </div>
                 </v-col>
                 <v-col cols="6" style="text-align: left;">
-                    <div class="type-style" 
-                        :class="{ 'select-style': reserveType == '지난예약' }"
+                    <div class="type-style" :class="{ 'select-style': reserveType == '지난예약' }"
                         @click="updateReserveList('지난예약')">
                         지난 예약
-                    </div>  
+                    </div>
                 </v-col>
             </v-row>
+            <v-row v-if="reserveType == '오는예약'">
+                <v-chip-group selected-class="text-primary" v-model="sort">
+                    <v-chip value="오늘" filter><strong>오늘</strong></v-chip>
+                </v-chip-group>
+            </v-row>
+            <v-row v-if="reserveType == '지난예약'">
+                <v-chip-group selected-class="text-primary" v-model="filter">
+                    <v-chip value="전체" filter><strong>전체</strong></v-chip>
+                    <v-chip value="진료완료" :class="filter === '진료완료' ? 'after-completed' : ''" filter><strong>진료완료</strong></v-chip>
+                    <v-chip value="예약취소" filter><strong>예약취소</strong></v-chip>
+                    <v-chip value="노쇼" :class="filter === '노쇼' ? 'noshow' : ''" filter><strong>노쇼</strong></v-chip>
+                </v-chip-group>
+            </v-row>
             <v-row>
-                <div v-for="(item, index) in reserveList" class="reservelist" :key="index" cols="12" sm="6">
+                <div v-for="(item, index) in filteredReserveList" class="reservelist" :key="index" cols="12" sm="6">
                     <v-col class="ml-7">
                         <v-row>
                             <v-col cols="4">
@@ -49,11 +60,15 @@
                                     {{ item.childName }}</div>
                             </v-col>
                             <v-col cols="4"></v-col>
-                            <v-col cols="3" style="text-align: end;">
-                                <div v-if="reserveType == '지난예약' && 
-                                           item.status == 'Completed'" class="after-completed">진료완료</div>
-                                <div v-if="reserveType == '지난예약' && 
-                                           item.status == 'Noshow'" class="noshow"> 노쇼 </div>
+                            <v-col cols="4" style="text-align: end;">
+                                <v-chip v-if="reserveType == '지난예약' &&
+                                    item.status == 'Completed'"
+                                    class="after-completed"><strong>진료완료</strong></v-chip>
+                                <v-chip v-if="reserveType == '지난예약' &&
+                                    item.status == 'Cancelled'"><strong>예약취소</strong></v-chip>
+                                <v-chip v-if="reserveType == '지난예약' &&
+                                    item.status == 'Noshow'"
+                                    class="noshow"><strong>노쇼</strong></v-chip>
                             </v-col>
                         </v-row>
                         <v-row>
@@ -64,12 +79,12 @@
                                     {{ formatTime(item.reservationTime) }} 진료 예약</div>
                             </v-col>
                             <v-col cols="4"></v-col>
-                            <v-col cols="3">
-                                <div v-if="reserveType == '지난예약' && 
-                                           item.status == 'Completed'" :class=" item.review ? 'review' : 'no-review'"
-                                           @click="this.$router('')">
-                                           <img src="@/assets/pencil_img.png"/>리뷰쓰기
-                                </div>
+                            <v-col cols="4" style="text-align: end;">
+                                <v-chip v-if="reserveType == '지난예약' &&
+                                    item.status == 'Completed'" 
+                                    :class="item.review ? 'review' : 'no-review'"
+                                    @click="item.review ? this.$router.push('/') : this.$router.push('/review')"><img src="@/assets/pencil_img.png" /><strong>리뷰쓰기</strong>
+                                </v-chip>
                             </v-col>
                         </v-row>
                         <v-row>
@@ -91,22 +106,25 @@
                         </v-row>
                         <v-row>
                             <v-col cols="12">
-                            <div class="list-line"></div>
-                        </v-col>
+                                <div class="list-line"></div>
+                            </v-col>
                         </v-row>
                         <v-row>
                             <v-col cols="2">
-                                <div :class="{'immediate': item.reservationType == 'Immediate', 'scheduled': item.reservationType !== 'Immediate'}">
+                                <div
+                                    :class="{ 'immediate': item.reservationType == 'Immediate', 'scheduled': item.reservationType !== 'Immediate' }">
                                     {{ formatType(item.reservationType) }}
                                 </div>
                             </v-col>
                             <v-col cols="2">
-                                <div :class="{'confirmed': item.status == 'Confirmed', 'completed': item.status !== 'Confirmed'}">
+                                <div
+                                    v-if="item.status == 'Completed'"
+                                    :class="{ 'confirmed': item.status == 'Confirmed', 'completed': item.status !== 'Confirmed' }">
                                     {{ formatStatus(item.status) }}
                                 </div>
                             </v-col>
                             <v-col class="detail ml-6" cols="7">
-                                <div @click="toggleDetails(index)" style="cursor: pointer;">자세히 보기 
+                                <div @click="toggleDetails(index)" style="cursor: pointer;">자세히 보기
                                     <img v-if="!showDetails" src="@/assets/right_arrow.png" style="color: #FFFFFF;">
                                     <img v-else src="@/assets/left_arrow.png" style="color: #FFFFFF;">
                                 </div>
@@ -185,9 +203,12 @@ import axios from 'axios';
 export default {
     data() {
         return {
-            reserveType: '오늘예약',
+            reserveType: '오는예약',
             reserveList: [], // 실제 예약 데이터가 여기에 있음
+            filteredReserveList: [],
             waiting: 23,
+            sort: null,
+            filter: null,
         }
     },
     methods: {
@@ -195,15 +216,16 @@ export default {
             this.reserveType = type;
         },
         async updateReserveList(req) {
-            if (req == '오늘예약') {
-                const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/reservation-service/reservation/list/today`);
-                this.reserveList = response.data.map(item  =>({
+            if (req == '오는예약') {
+                const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/reservation-service/reservation/list/comes`);
+                this.sort = null;
+                this.reserveList = response.data.map(item => ({
                     ...item,
                     showDetails: false,
                 }));
             } else if (req == '지난예약') {
                 const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/reservation-service/reservation/list/yesterday`);
-                this.reserveList = response.data.map(item  =>({
+                this.reserveList = response.data.map(item => ({
                     ...item,
                     showDetails: false,
                     review: false
@@ -212,14 +234,38 @@ export default {
                     await this.isReview(item.id, index);
                 }));
             }
-            this.reserveList.sort((a,b) => {
+            this.sortReserveList();
+            this.updateType(req);
+            this.filteredReserveList = this.reserveList;
+        },
+        sortReserveList() {
+            this.reserveList.sort((a, b) => {
                 const dateA = new Date(a.reservationDate + ' ' + a.reservationTime);
                 const dateB = new Date(b.reservationDate + ' ' + b.reservationTime);
 
                 return dateA - dateB;
             })
-
-            this.reserveType = req;
+        },
+        filterReserveList() {
+            if (this.reserveType === '오는예약') {
+                if (this.sort === "오늘") {
+                    const today = this.dateFormat(new Date());
+                    console.log(this.reserveList);
+                    this.filteredReserveList = this.reserveList.filter(item => item.reservationDate === today);
+                } else {
+                    this.filteredReserveList = this.reserveList;
+                }
+            } else if (this.reserveType === '지난예약') {
+                if (this.filter === '진료완료') {
+                    this.filteredReserveList = this.reserveList.filter(item => item.status === 'Completed')
+                } else if (this.filter === '예약취소') {
+                    this.filteredReserveList = this.reserveList.filter(item => item.status === 'Cancelled')
+                } else if (this.filter === '노쇼') {
+                    this.filteredReserveList = this.reserveList.filter(item => item.status === 'Noshow')
+                } else {
+                    this.filteredReserveList = this.reserveList;
+                }
+            }
         },
         formatDate(date) {
             const option = {
@@ -236,36 +282,51 @@ export default {
             if (!time) return '';
             return time.substring(0, 5);
         },
-        formatType(data){
-            if(data == 'Immediate'){
+        formatType(data) {
+            if (data == 'Immediate') {
                 return "당일접수"
-            }else{
+            } else {
                 return "예약접수"
             }
         },
-        formatStatus(data){
-            if(data == 'Confirmed'){
+        formatStatus(data) {
+            if (data == 'Confirmed') {
                 return "내원 전"
-            }else{
+            } else {
                 return "내원 완료"
             }
         },
         toggleDetails(index) {
             this.reserveList[index].showDetails = !this.reserveList[index].showDetails;
         },
-        async isReview(id, index){
+        async isReview(id, index) {
             const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/reservation-service/review/reserve/${id}`);
             this.reserveList[index].review = response.data;
             console.log(this.reserveList);
+        },
+        dateFormat(date) {
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');  // 월은 0부터 시작하므로 1을 더함
+            const day = String(date.getDate()).padStart(2, '0');  // 일
+
+            return `${year}-${month}-${day}`;
         }
     },
     mounted() {
         this.updateReserveList(this.reserveType)
     },
+    watch: {
+        sort(newVal) {
+            this.filterReserveList(newVal);
+        },
+        filter(newVal) {
+            this.filterReserveList(newVal);
+        }
+    }
 }
 </script>
 <style scoped>
-*{
+* {
     user-select: none;
     font-family: "Inter";
     font-weight: bold;
@@ -385,15 +446,15 @@ export default {
     color: #676767;
 }
 
-.list-line{
-    border-top: 1px solid #ccc; 
-    margin: 10px 0; 
+.list-line {
+    border-top: 1px solid #ccc;
+    margin: 10px 0;
     margin-left: -10px;
     margin-top: -15px;
     width: 580px;
 }
 
-.immediate{
+.immediate {
     margin-top: -20px;
     margin-left: 5px;
     font-size: 13px;
@@ -404,7 +465,7 @@ export default {
     border-radius: 15px;
 }
 
-.scheduled{
+.scheduled {
     margin-top: -20px;
     margin-left: 5px;
     font-size: 13px;
@@ -414,7 +475,8 @@ export default {
     color: #00499E;
     border-radius: 15px;
 }
-.confirmed{
+
+.confirmed {
     margin-top: -20px;
     margin-left: -10px;
     padding: 5px;
@@ -424,7 +486,8 @@ export default {
     color: #737373;
     border-radius: 15px;
 }
-.completed{
+
+.completed {
     margin-top: -20px;
     margin-left: -10px;
     font-size: 13px;
@@ -435,7 +498,7 @@ export default {
     border-radius: 15px;
 }
 
-.detail{
+.detail {
     margin-top: -25px;
     text-align: end;
     color: #676767;
@@ -448,7 +511,7 @@ export default {
     color: #00499E;
 }
 
-.detail-text{
+.detail-text {
     margin-top: -20px;
     font-size: 12px;
     color: black;
@@ -459,38 +522,31 @@ export default {
     background-color: #0066FF;
     color: #FFFFFF;
     border-radius: 30px;
-    padding: 5px 15px; /* 텍스트 주변에 여백 추가 */
-    cursor: pointer; /* 클릭 가능하게 커서 스타일 변경 */
+    padding: 5px 15px;
+    /* 텍스트 주변에 여백 추가 */
+    cursor: pointer;
+    /* 클릭 가능하게 커서 스타일 변경 */
 }
-.after-completed{
-    padding: 5px;
+.after-completed {
     background-color: #CDFFB5;
-    text-align: center;
-    color: #4E7E00;
-    border-radius: 15px;
-}
-.noshow{
-    padding: 5px;
-    background-color: #FFA1A1;
-    text-align: center;
-    color: #A20000;
-    border-radius: 15px;
+    color: #4E7E00 !important;
 }
 
-.no-review{
-    padding: 5px;
+.noshow {
+    background-color: #FFA1A1;
+    color: #A20000 !important;
+}
+
+.no-review {
+    margin-top: -30px;
     background-color: #0066FF;
-    text-align: center;
     color: #FFFFFF;
-    border-radius: 15px;
     cursor: pointer;
 }
 
-.review{
-    padding: 5px;
+.review {
+    margin-top: -30px;
     background-color: #DBDBDB;
-    text-align: center;
     color: #888888;
-    border-radius: 15px;
 }
 </style>
