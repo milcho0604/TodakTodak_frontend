@@ -111,7 +111,7 @@ import axios from 'axios';
 export default{
     data() {
       return {
-        activeTab: 0, // 선택된 탭을 저장
+        activeTab: 1, // 선택된 탭을 저장
         hospitalId: '', // 병원 id
         hospital: [], // 병원정보
         keywordList: [], // 병원 키워드 리스트 
@@ -150,8 +150,8 @@ export default{
         this.hospitalId = route.params.hospitalId; 
 
     },
-    mounted(){
-        this.loadHospitalDetail();
+    async mounted(){
+        await this.getCurrentLocation(); // 사용자 위치 정보 가져온 후 병원 detail 조회 axios 요청
     },
     computed: {
         currentComponent() {
@@ -167,6 +167,32 @@ export default{
     methods: {
         updateTab(tabIndex) {
             this.activeTab = tabIndex; // 선택된 탭의 인덱스를 업데이트
+        },
+        async getCurrentLocation() {
+            return new Promise((resolve, reject) => {
+                if (navigator.geolocation) {
+                    navigator.geolocation.getCurrentPosition(
+                        async position => {
+                            this.latitude = position.coords.latitude;
+                            this.longitude = position.coords.longitude;
+                            console.log("사용자 위도", this.latitude);
+                            console.log("사용자 경도", this.longitude);
+
+                            // 위치 정보를 가져온 후, 병원 디테일 조회
+                            this.loadHospitalDetail(); // 병원 디테일 조회
+                            resolve(); // 성공 시 resolve 호출
+                        },
+                        error => {
+                            console.log("위치 정보를 가져오지 못했습니다.", error);
+                            this.loadHospitalDetail(); // 초기값으로 병원 디테일 조회
+                            reject(error); // 실패 시 reject 호출
+                        }
+                    );
+                } else {
+                    console.log("Geolocation을 지원하지 않는 브라우저입니다.");
+                    reject(new Error("Geolocation을 지원하지 않는 브라우저입니다."));
+                }
+            });
         },
         async loadHospitalDetail(){
             try{

@@ -184,7 +184,7 @@
               prepend-icon="mdi-crosshairs-gps"
               class="location-button"
               variant="text"
-              @click="getCurrentLocation"
+              @click="handleCurrentLocationClick"
               >
               현위치 병원 보기
             </v-btn>
@@ -250,6 +250,10 @@ export default{
                     this.dong = data.bname || "주소 선택 안됨";
                 }
             }).open();
+        },
+        handleCurrentLocationClick() {
+            this.locationModal = false; // 모달 창 닫기
+            this.getCurrentLocation();  // 현재 위치로 병원 리스트 가져오기  
         },
         async getCurrentLocation() {
             return new Promise((resolve, reject) => {
