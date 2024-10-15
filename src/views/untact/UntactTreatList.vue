@@ -34,21 +34,23 @@
             <div v-for="doctor in sortedDoctorList" :key=doctor.doctorId class="doctor" @click="$router.push(`/untact/${doctor.memberEmail}/form`)">
                 <v-row>
                     <v-col cols="2">
-                        <img :src="doctor.image" alt="doctor image" style="width: 40px; height: 40px;">
+                        <v-avatar size="70">
+                            <v-img :src="doctor.profileImgUrl ? doctor.profileImgUrl : 'https://todak-file.s3.ap-northeast-2.amazonaws.com/default-images/doctor-3d-image.png'" />
+                        </v-avatar>
                     </v-col>
                     <v-col>
-                        <v-row class="inter-bold big-font">{{ doctor.doctorName }}</v-row>
+                        <v-row class="inter-bold big-font mt-1">{{ doctor.doctorName }}</v-row>
                         <v-row class="inter-bold small-font">{{ doctor.hospitalName }}</v-row>
                         <v-row class="inter-normal small-font">
                             <v-icon class="star-icon">mdi-star</v-icon>
                             {{ doctor.reviewPoint }} ({{doctor.reviewCount}})</v-row>
                     </v-col>
-                    <div class="more">
+                    <div class="more mt-2">
                         <v-col>
                             <v-row justify="end">
-                                <div class="round inter-normal dark-blue">대기 3명</div>
+                                <div class="round inter-normal dark-blue mr-12">대기 3명</div>
                             </v-row>
-                            <v-row justify="end" class="inter-bold small-font">></v-row>
+                            <v-row justify="end" class="inter-bold small-font mr-2">></v-row>
                         </v-col>
                     </div>
                 </v-row>
@@ -131,7 +133,7 @@ export default {
     border: 1px solid #ccc;
     border-radius: 10px;
     width: 80%;
-    padding: 40px 10px;
+    padding: 20px 10px;
     margin-bottom: 10px;
 }
 
