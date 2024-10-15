@@ -289,7 +289,7 @@ export default {
   width: 120px; /* 고정된 너비 */
   background-color: #E6EEFE !important;
   color: #00499E !important;
-  border-radius: 20px !important; /* 둥근 모서리 */
+  border-radius: 10px !important; /* 둥근 모서리 */
   padding: 10px !important; /* 패딩 */
   box-shadow: none !important; /* 그림자 없애기 */
   font-weight: bold !important; /* 글자 굵게 */
