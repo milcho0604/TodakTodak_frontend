@@ -176,9 +176,11 @@
           plugins: [dayGridPlugin, interactionPlugin],
           initialView: 'dayGridMonth',
           events: [],
+          editable: true,
           dateClick: this.handleDateClick,
           eventClick: this.handleEventClick,
           displayEventTime: true,
+          eventDrop: this.handleEventDrop, // 이벤트 드래그
           navLinks: true,
           dayCellClassNames: (arg) => {
             const day = arg.date.getDay();
@@ -501,6 +503,33 @@ methods: {
         this.selectedEvent = null;
         this.isReservationEvent = false;
       },
+
+    handleEventDrop(info) {
+        const eventId = info.event.id;  // 이벤트 ID
+        const newStartDate = info.event.startStr.split('+')[0];  // 새로운 시작 날짜에서 오프셋 제거
+        const newEndDate = info.event.endStr ? info.event.endStr.split('+')[0] : newStartDate;  // 종료 날짜
+    
+    // 서버로 업데이트 요청
+    axios({
+      method: 'post',
+      url: `${process.env.VUE_APP_API_BASE_URL}/member-service/event/update/${eventId}`,
+      data: {
+        startTime: newStartDate,  // 새로운 시작 날짜
+        endTime: newEndDate,  // 새로운 종료 날짜
+      },
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('token')}`,
+      },
+    })
+    .then(() => {
+      this.fetchUserEvents();  // 이벤트를 다시 불러옴
+    })
+    .catch((error) => {
+      console.error('Error updating event:', error);
+      // 이벤트 드래그가 실패하면 원래 위치로 되돌림
+      info.revert();
+    });
+  },
     },
   
     mounted() {
