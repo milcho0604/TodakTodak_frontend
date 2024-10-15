@@ -25,7 +25,7 @@
         <div class="milcho-calendar-container">
           <!-- 일정 추가 버튼 -->
           <v-btn variant="flat" @click="startNewEvent" class="milcho-btn-add">✏️</v-btn>
-          <FullCalendar :options="calendarOptions" class="milcho-custom-calendar" />
+          <FullCalendar :options="calendarOptions" ref="fullCalendar" class="milcho-custom-calendar" />
         </div>
   
         <!-- 이벤트 및 예약 상세 정보 표시 영역 -->
@@ -62,7 +62,7 @@
           </div>
   
           <!-- 사용자 이벤트 상세 정보 또는 생성 양식 -->
-          <div v-else-if="selectedEvent && !isReservationEvent || isEditing ">
+          <div v-else-if="selectedEvent && !isReservationEvent || isEditing">
             <!-- 이벤트 디테일 보기 -->
             <div v-if="!isEditing">
               <div class="milcho-reservation-row">
@@ -81,7 +81,7 @@
                 <strong>시작일</strong>
                 <span>{{ formData.startDateText }}</span>
               </div>
-              
+  
               <div class="milcho-reservation-row">
                 <strong>종료일</strong>
                 <span>{{ formData.endDateText }}</span>
@@ -92,13 +92,12 @@
             <!-- 이벤트 수정 및 생성 폼 -->
             <v-form ref="form" v-if="isEditing">
               <v-text-field v-model="formData.title" variant="underlined" label="제목" required />
-              <!-- <v-text-field v-model="formData.content" label="내용" required /> -->
               <v-textarea
-              v-model="formData.content"
-              label="내용"
-              rows="5"
-              outlined  
-              class="milcho-custom-textarea"
+                v-model="formData.content"
+                label="내용"
+                rows="5"
+                outlined  
+                class="milcho-custom-textarea"
               />
               <v-select
                 v-model="formData.type"
@@ -107,7 +106,7 @@
                 item-value="type"
                 label="타입"
                 required
-                />
+              />
               <v-menu
                 v-model="menuStart"
                 :close-on-content-click="false"
@@ -148,7 +147,6 @@
               <v-btn v-if="isEditing" class="milcho-btn-delete" elevation="0" @click="deleteEvent">삭제</v-btn>
               <v-divider vertical class="milcho-vertical-divider"></v-divider>
               <v-btn class="milcho-btn-save" elevation="0" @click="handleSaveEvent">저장</v-btn>
-
             </v-form>
           </div>
   
@@ -182,27 +180,9 @@
           eventClick: this.handleEventClick,
           displayEventTime: true,
           navLinks: true,
-          dayCellClassNames: (arg) => {
-            const day = arg.date.getDay();
-            if (day === 0) {
-            return 'fc-sunday';
-            } else if (day === 6) {
-            return 'fc-saturday';
-            } else {
-            return 'fc-weekday';
-            }
-        },
-        dayHeaderClassNames: (arg) => {
-            const day = arg.date.getDay();
-            if (day === 0) {
-            return 'fc-sunday-header';
-            } else if (day === 6) {
-            return 'fc-saturday-header';
-            } else {
-            return 'fc-weekday-header';
-            }
-        },
-        locale: 'ko', // 한국어 로케일 설정
+          titleFormat: { year: 'numeric', month: 'long' },
+          datesSet: this.handleDatesSet,
+          locale: 'ko',
         },
         isModalOpen: false,
         isEditing: false,
@@ -220,7 +200,6 @@
           endDateText: '',
           type: '',
         },
-
         menuStart: false,
         menuEnd: false,
         childList: [],
@@ -252,7 +231,7 @@
         this.colorIndex = 0;
         this.memberColors = {};
         axios
-          .get(`${process.env.VUE_APP_API_BASE_URL}/reservation-service/reservation/list/child/${child.id}`)
+          .get(`http://localhost:8080/reservation-service/reservation/list/child/${child.id}`)
           .then((response) => {
             const reservationEvents = response.data.map((reservation) => {
               let memberName = reservation.memberName;
@@ -306,6 +285,47 @@
           .catch((error) => {
             console.error('Error fetching user events:', error);
           });
+      },
+  
+      // 기존 공휴일 이벤트를 제거하는 메서드
+      clearHolidayEvents() {
+        const calendarApi = this.$refs.fullCalendar.getApi();
+        const holidayEvents = calendarApi.getEvents().filter(event => event.extendedProps.isHoliday);
+        holidayEvents.forEach(event => event.remove());
+      },
+  
+      fetchHolidays(start, end) {
+        console.log(`Fetching holidays for: ${start} to ${end}`);
+        this.clearHolidayEvents();  // 공휴일 데이터 갱신 전 기존 공휴일 삭제
+        axios
+          .get(`${process.env.VUE_APP_API_BASE_URL}/member-service/api/google-calendar-holidays`, {
+            params: {
+              start: start.toISOString().split('T')[0],
+              end: end.toISOString().split('T')[0],
+            },
+          })
+          .then((response) => {
+            const holidayEvents = response.data.items.map((holiday) => ({
+              title: holiday.summary,
+              start: holiday.start.date || holiday.start.dateTime,
+              end: holiday.end.date || holiday.end.dateTime,
+              allDay: true,
+              extendedProps: {
+                isHoliday: true, // 공휴일임을 표시
+              },
+            }));
+  
+            this.calendarOptions.events = [...this.calendarOptions.events, ...holidayEvents];
+          })
+          .catch((error) => {
+            console.error('Error fetching holidays:', error);
+          });
+      },
+  
+      handleDatesSet(info) {
+        const start = info.start;
+        const end = info.end;
+        this.fetchHolidays(start, end); // 보이는 범위에 맞춰 공휴일을 가져옴
       },
   
       combineEvents() {
@@ -423,7 +443,6 @@
       },
   
       startNewEvent() {
-        console.log("startNewEvent triggered");
         this.isEditing = true;
         this.formData = {
           id: null,
@@ -441,32 +460,17 @@
     },
   
     mounted() {
-        this.fetchUserEvents(); 
-        this.fetchChildList(); 
-
-        // 비동기로 연휴 데이터를 불러오도록 함
-        setTimeout(() => {
-            axios.get(`${process.env.VUE_APP_API_BASE_URL}/member-service/api/google-calendar-holidays`)
-            .then(response => {
-                const holidays = response.data.items.map(korea => ({
-                title: korea.summary,
-                start: korea.start.date || korea.start.dateTime,
-                end: korea.end.date || korea.end.dateTime,
-                allDay: true
-                }));
-                this.calendarOptions.events = [...this.calendarOptions.events, ...holidays];
-                this.$nextTick(() => {
-                if (this.$refs.fullCalendar) {
-                    this.$refs.fullCalendar.getApi().refetchEvents();
-                }
-                });
-            })
-            .catch(error => {
-                console.error('Error fetching holidays:', error);
-            });
-        }, 0); // 비동기로 처리하여 다른 작업이 먼저 실행되도록
+      this.fetchUserEvents();
+      this.fetchChildList();
+      this.$nextTick(() => {
+        const calendarApi = this.$refs.fullCalendar?.getApi();
+        if (calendarApi) {
+          calendarApi.refetchEvents();
+        } else {
+          console.error('FullCalendar API not found');
+        }
+      });
     },
-
   };
   </script>
   
@@ -632,4 +636,3 @@
   }
   
   </style>
-  
