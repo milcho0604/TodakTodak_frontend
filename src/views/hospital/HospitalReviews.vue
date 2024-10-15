@@ -5,7 +5,7 @@
             <!-- 리뷰개수 chip -->
             <v-chip class="ml-3 mb-1 review-count" variant="flat">{{ reviewCount }}</v-chip>
         </v-row>
-        <v-row>
+        <v-row align="center">
             <v-col cols="12">
               <v-card class="rating-card" variant="flat">
                 <v-row>
@@ -33,7 +33,7 @@
                     <!-- 오른쪽: 각 평점과 progress-linear -->
                     <v-col cols="6" class="d-flex flex-column justify-start">
                         <!-- 매우 만족 -->
-                        <div class="d-flex align-center rating-div">
+                        <div class="d-flex align-center rating-div mt-2">
                             <v-card-text style="font-weight: bold;">매우 만족</v-card-text>
                             <v-progress-linear
                                 color="#0075FF"
@@ -85,7 +85,7 @@
                         </div>
             
                         <!-- 매우 별로 -->
-                        <div class="d-flex align-center review-count-bar rating-div">
+                        <div class="d-flex align-center review-count-bar rating-div mb-2">
                         <v-card-text style="font-weight: bold;">매우 별로</v-card-text>
                         <v-progress-linear
                             color="#0075FF"
@@ -178,16 +178,16 @@ export default{
 .rating-card{
     background-color: #F3F3F3;
     border-radius: 10px; /* 모서리 둥글기 */
-    width: 700px;
+    width: 650px;
     margin: 0 auto; /* 중앙정렬 */
 }
 .review-count-bar{
     margin-top: -15px;
 }
 .rating-div{
-    margin-left: -40px;
+    margin-left: -50px;
 }
 .rating-bar{
-    min-width: 280px;
+    min-width: 250px;
 }
 </style>
