@@ -3,7 +3,7 @@
         <!-- 병원소개 -->
         <h3 style="font-weight: bold;">병원소개</h3>
         <v-card class="notice-card mt-3" variant="flat">
-            <v-card-title style="font-size: 15px; font-weight: bold;">
+            <v-card-title style="font-size: 18px; font-weight: bold;">
                 {{ hospitalDescriptionFirstLine }}
             </v-card-title>
 
