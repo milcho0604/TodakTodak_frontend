@@ -91,7 +91,7 @@
   
             <!-- 이벤트 수정 및 생성 폼 -->
             <v-form ref="form" v-if="isEditing">
-              <v-text-field v-model="formData.title" label="제목" required />
+              <v-text-field v-model="formData.title" variant="underlined" label="제목" required />
               <!-- <v-text-field v-model="formData.content" label="내용" required /> -->
               <v-textarea
               v-model="formData.content"
@@ -100,8 +100,14 @@
               outlined  
               class="milcho-custom-textarea"
               />
-            
-              <v-select v-model="formData.type" :items="eventTypes" label="타입" required />
+              <v-select
+                v-model="formData.type"
+                :items="eventTypes"
+                item-title="name"
+                item-value="type"
+                label="타입"
+                required
+                />
               <v-menu
                 v-model="menuStart"
                 :close-on-content-click="false"
@@ -131,7 +137,8 @@
                 <template v-slot:activator="{ attrs }">
                   <v-text-field v-model="formData.endDateText" label="종료일" readonly v-bind="attrs" @click.stop="menuEnd = true" />
                 </template>
-                <v-date-picker v-model="formData.endDate" @input="updateEndDate" show-current="true" scrollable>
+                <v-date-picker v-model="formData.endDate" @input="updateEndDate" show-current="true" scrollable 
+                class="milcho-custom-picker">
                   <template v-slot:actions>
                     <v-btn text color="primary" @click="confirmEndDate">확인</v-btn>
                   </template>
@@ -177,6 +184,10 @@
         },
         isModalOpen: false,
         isEditing: false,
+        eventTypes: [
+            { name: '진행 중', type: 'IN_PROGRESS' },
+            { name: '완료됨', type: 'COMPLETED' }
+        ],
         formData: {
           id: null,
           title: '',
@@ -187,7 +198,7 @@
           endDateText: '',
           type: '',
         },
-        eventTypes: ['IN_PROGRESS', 'COMPLETED'],
+
         menuStart: false,
         menuEnd: false,
         childList: [],
@@ -408,8 +419,8 @@
     },
   
     mounted() {
-      this.fetchUserEvents(); // Fetch user events on mount
-      this.fetchChildList(); // Fetch child list on mount
+      this.fetchUserEvents(); 
+      this.fetchChildList(); 
     },
   };
   </script>
