@@ -3,14 +3,8 @@
         <v-container style="width: 700px;">
             <v-spacer :style="{ height: '50px' }"></v-spacer>
             <v-row class="header-row">
-                <v-col cols="4" :class="fontSize">
-                    <div class="hospital" >{{ hostpitalName }}</div>
-                </v-col>
-                <v-col cols="3">
-                    <div class="custom-text" >
-                        오늘예약
-                    </div>
-                </v-col>
+                <h2>{{this.hospitalName}}</h2>
+                <v-chip class="schedule-chip ml-3" variant="flat" size="x-large" label>오늘 예약</v-chip>
             </v-row>
             <v-row class="header-row">
                 <v-col class="big-font">
@@ -294,13 +288,14 @@
 import axios from 'axios';
 import { initializeApp } from 'firebase/app';
 import { getDatabase, ref, onValue } from 'firebase/database';
+import { useRoute } from 'vue-router';
 
 export default {
     data() {
         return {
             medicalType: "Immediate",
-            hostpitalName: "파닥닥닥닥닥닥닥닥닥병원",
-            hospitalId: 1,
+            hospitalName: "파닥닥닥닥닥닥닥닥닥병원",
+            hospitalId: '',
             child: null,
             doctor: [],
             childOptions: [],
@@ -424,6 +419,9 @@ export default {
     async created() {
         this.fetchDoctorList();
         this.fetchChildList();
+        const route = useRoute();
+        this.hospitalId = route.params.hospitalId; 
+        this.hospitalName = this.$route.query.hospitalName;
     },
     computed: {
         fontSize(){
@@ -729,5 +727,12 @@ export default {
 
 .smalll-font{
     font-size: 17px;
+}
+.schedule-chip{
+    font-weight: bold;
+    font-size:25px;
+    color:#00499E;
+    background-color: #ECF2FD;
+    border-radius: 10px;
 }
 </style>

@@ -68,8 +68,8 @@
 
         <!-- 오늘예약, 스케쥴예약 버튼 (click 이벤트 이후 추가예정) -->
         <v-row class="my-7 ml-2">
-            <v-btn size="large" class="schedule-button" rounded="lg" variant="flat">스케쥴 예약</v-btn>
-            <v-btn size="large" class="today-button ml-5" rounded="lg" variant="flat">오늘 예약</v-btn>
+            <v-btn size="large" class="schedule-button" rounded="lg" variant="flat" @click="scheduleReservation">스케쥴 예약</v-btn>
+            <v-btn size="large" class="today-button ml-5" rounded="lg" variant="flat" @click="todayReservation">오늘 예약</v-btn>
         </v-row>
 
         <!-- 병원소개, 진료정보, 리뷰 메뉴 tab -->
@@ -212,8 +212,21 @@ export default{
             }catch(error){
                 console.log(error);
             }
-        }
-        
+        },
+        scheduleReservation() {
+            // 스케쥴예약 페이지로 이동
+            this.$router.push({
+                path: `/reservation/scheduled/${this.hospitalId}`,
+                query: { hospitalName: this.hospital.name }
+                });
+        },
+        todayReservation() {
+            // 스케쥴예약 페이지로 이동
+            this.$router.push({ 
+                path: `/reservation/immediate/${this.hospitalId}`, 
+                query: { hospitalName: this.hospital.name }
+            });
+        } 
     }
 }
 </script>

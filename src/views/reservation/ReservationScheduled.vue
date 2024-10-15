@@ -3,14 +3,8 @@
         <v-container style="width: 700px;">
             <v-spacer :style="{ height: '50px' }"></v-spacer>
             <v-row class="header-row">
-                <v-col cols="4" :class="fontSize">
-                    <div class="hospital" >{{ hostpitalName }}</div>
-                </v-col>
-                <v-col cols="4">
-                    <div class="custom-text" >
-                        스케줄예약
-                    </div>
-                </v-col>
+                <h2>{{this.hospitalName}}</h2>
+                <v-chip class="schedule-chip ml-3" variant="flat" size="x-large" label>스케쥴 예약</v-chip>
             </v-row>
             <v-row class="header-row">
                 <v-col class="big-font">
@@ -78,7 +72,8 @@
             </v-row>
             <v-row v-if="doctor" justify="start" class="ml-2">
                 <v-date-picker v-model="date" :allowed-dates="allowedDates" @input="updateDate" :width="650"
-                    color="primary">
+                style="border-radius: 10px;"    
+                color="#C2D7FF">
                 </v-date-picker>
             </v-row>
             <v-row v-if="date" class="header-row">
@@ -113,9 +108,15 @@
                 </v-col>
             </v-row>
             <v-row>
-                <div class="mt-3">
+                <div class="mt-n5 ml-5">
                     <v-chip-group v-if="symptoms.length > 0">
-                        <v-chip v-for="(symptom, index) in symptoms" :key="index" class="mr-2">
+                        <v-chip 
+                        v-for="(symptom, index) in symptoms" :key="index" 
+                        class="mr-2" 
+                        size="large" 
+                        variant="flat"
+                        style="color:#00499E; background-color:#ECF2FD; font-weight:bold;"
+                        >
                             {{ symptom }}
                         </v-chip>
                     </v-chip-group>
@@ -305,13 +306,14 @@
 
 <script>
 import axios from 'axios';
+import { useRoute } from 'vue-router';
 
 export default {
     data() {
         return {
             medicalType: "Scheduled",
-            hostpitalName: "삼성화곡소아청소년과",
-            hospitalId: 1,
+            hostpitalName: "파다다닥",
+            hospitalId: '',
             child: null,
             doctor: null,
             childOptions: [],
@@ -329,12 +331,6 @@ export default {
             date: null,
             reservationType: null,
             doctorTimeSlots:[],
-            timeSlots: [
-                "09:00", "09:30", "10:00", "10:30",
-                "11:00", "11:30", "13:00", "13:30",
-                "14:00", "14:30", "15:00", "15:30",
-                "16:00", "16:30", "17:00", "17:30"
-            ], // 시간 슬롯 설정
             reservedTimes: [], // 이미 예약된 시간
             selectedTime: null, // 선택된 시간
             reservedModal: false,
@@ -525,6 +521,9 @@ export default {
     async created() {
         this.fetchDoctorList();
         this.fetchChildList();
+        const route = useRoute();
+        this.hospitalId = route.params.hospitalId; 
+        this.hospitalName = this.$route.query.hospitalName;
     },
     watch: {
         date(newDate) {
@@ -726,7 +725,7 @@ export default {
     padding: 10px 20px;
     margin-right: 10px;
     font-size: 17px;
-    color: #010565;
+    color: #00499E;
 }
 
 .text {
@@ -764,13 +763,15 @@ export default {
 }
 
 .available {
-    background-color: #e3f2fd;
-    color: #000;
+    background-color: #ECF2FD;
+    color: #00499E;
+    font-weight: bold;
 }
 
 .selected {
-    background-color: #2196f3;
+    background-color: #0066FF;
     color: #fff;
+    font-weight: bold;
 }
 
 .reserved {
@@ -863,5 +864,12 @@ export default {
 
 .smalll-font{
     font-size: 17px;
+}
+.schedule-chip{
+    font-weight: bold;
+    font-size:25px;
+    color:#00499E;
+    background-color: #ECF2FD;
+    border-radius: 10px;
 }
 </style>
