@@ -165,6 +165,7 @@
   import FullCalendar from '@fullcalendar/vue3';
   import dayGridPlugin from '@fullcalendar/daygrid';
   import interactionPlugin from '@fullcalendar/interaction';
+  import googleCalendarPlugin from '@fullcalendar/google-calendar';
   import axios from 'axios';
   
   export default {
@@ -174,13 +175,34 @@
     data() {
       return {
         calendarOptions: {
-          plugins: [dayGridPlugin, interactionPlugin],
+          plugins: [dayGridPlugin, interactionPlugin, googleCalendarPlugin],
           initialView: 'dayGridMonth',
           events: [],
           dateClick: this.handleDateClick,
           eventClick: this.handleEventClick,
           displayEventTime: true,
           navLinks: true,
+          dayCellClassNames: (arg) => {
+            const day = arg.date.getDay();
+            if (day === 0) {
+            return 'fc-sunday';
+            } else if (day === 6) {
+            return 'fc-saturday';
+            } else {
+            return 'fc-weekday';
+            }
+        },
+        dayHeaderClassNames: (arg) => {
+            const day = arg.date.getDay();
+            if (day === 0) {
+            return 'fc-sunday-header';
+            } else if (day === 6) {
+            return 'fc-saturday-header';
+            } else {
+            return 'fc-weekday-header';
+            }
+        },
+        locale: 'ko', // 한국어 로케일 설정
         },
         isModalOpen: false,
         isEditing: false,
@@ -216,7 +238,7 @@
     methods: {
       fetchChildList() {
         axios
-          .get('http://localhost:8080/member-service/child/')
+          .get(`${process.env.VUE_APP_API_BASE_URL}/member-service/child/`)
           .then((response) => {
             this.childList = response.data.result;
           })
@@ -230,7 +252,7 @@
         this.colorIndex = 0;
         this.memberColors = {};
         axios
-          .get(`http://localhost:8080/reservation-service/reservation/list/child/${child.id}`)
+          .get(`${process.env.VUE_APP_API_BASE_URL}/reservation-service/reservation/list/child/${child.id}`)
           .then((response) => {
             const reservationEvents = response.data.map((reservation) => {
               let memberName = reservation.memberName;
@@ -391,7 +413,7 @@
         const id = this.formData.id;
   
         axios
-          .get(`http://localhost:8080/member-service/event/delete/${id}`)
+          .get(`${process.env.VUE_APP_API_BASE_URL}/member-service/event/delete/${id}`)
           .then(() => {
             this.fetchUserEvents(); // 삭제 후 사용자 이벤트 새로고침
           })
@@ -419,9 +441,32 @@
     },
   
     mounted() {
-      this.fetchUserEvents(); 
-      this.fetchChildList(); 
+        this.fetchUserEvents(); 
+        this.fetchChildList(); 
+
+        // 비동기로 연휴 데이터를 불러오도록 함
+        setTimeout(() => {
+            axios.get(`${process.env.VUE_APP_API_BASE_URL}/member-service/api/google-calendar-holidays`)
+            .then(response => {
+                const holidays = response.data.items.map(korea => ({
+                title: korea.summary,
+                start: korea.start.date || korea.start.dateTime,
+                end: korea.end.date || korea.end.dateTime,
+                allDay: true
+                }));
+                this.calendarOptions.events = [...this.calendarOptions.events, ...holidays];
+                this.$nextTick(() => {
+                if (this.$refs.fullCalendar) {
+                    this.$refs.fullCalendar.getApi().refetchEvents();
+                }
+                });
+            })
+            .catch(error => {
+                console.error('Error fetching holidays:', error);
+            });
+        }, 0); // 비동기로 처리하여 다른 작업이 먼저 실행되도록
     },
+
   };
   </script>
   
@@ -558,5 +603,33 @@
     white-space: normal; /* 텍스트가 자동으로 줄바꿈되도록 설정 */
     margin-left: 40px;
   }
+  .fc-weekday .fc-daygrid-day-number {
+    color: black;
+  }
+  
+  /* 토요일 텍스트 색상 */
+  .fc-saturday .fc-daygrid-day-number {
+    color: blue;
+  }
+  
+  /* 일요일 텍스트 색상 */
+  .fc-sunday .fc-daygrid-day-number {
+    color: red;
+  }
+/* 월~금요일 헤더 텍스트 색상 */
+.fc-weekday-header .fc-col-header-cell-cushion {
+    color: black !important;
+  }
+  
+  /* 토요일 헤더 텍스트 색상 */
+  .fc-saturday-header .fc-col-header-cell-cushion {
+    color: blue !important;
+  }
+  
+  /* 일요일 헤더 텍스트 색상 */
+  .fc-sunday-header .fc-col-header-cell-cushion {
+    color: red !important;
+  }
+  
   </style>
   
