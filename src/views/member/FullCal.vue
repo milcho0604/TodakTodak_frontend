@@ -219,7 +219,7 @@
           endDateText: '',
           type: '',
         },
-
+        holidays: [], // 공휴일 초기화
         menuStart: false,
         menuEnd: false,
         childList: [],
@@ -229,21 +229,22 @@
         selectedEvent: null,
         isReservationEvent: false,
         selectedChildName: '',
+        selectedChild: null,
         colorPalette: ['#FF9800', '#4CAF50', '#FFC107', '#2196F3', '#9C27B0', '#E91E63', '#00BCD4', '#3F51B5', '#8BC34A', '#FF5722'],
         colorIndex: 0,
         memberColors: {},
       };
     },
-    methods: {
-        handleDatesSet(info) {
-      // info.start와 info.end는 풀캘린더에서 보여주고 있는 범위의 시작일과 종료일
-      const startDate = info.start.toISOString(); // 시작일 ISO 포맷
-      const endDate = info.end.toISOString();     // 종료일 ISO 포맷
+methods: {
+    handleDatesSet(info) {
+    const startDate = info.start.toISOString(); // 시작일 ISO 포맷
+    const endDate = info.end.toISOString();     // 종료일 ISO 포맷
 
-      this.fetchHolidays(startDate, endDate);
-      this.combineEvents();  // 예약 및 사용자 이벤트는 따로 결합
+    this.fetchHolidays(startDate, endDate);
+    if (this.selectedChild) {
+        this.fetchReservationList(this.selectedChild, startDate, endDate);
+    }
     },
-
 
 
     fetchHolidays(startDate, endDate) {
@@ -254,82 +255,80 @@
                 end: endDate,
             },
             })
-            .then((response) => {
-            const holidays = response.data.items.map(korea => ({
+        .then((response) => {
+            // 공휴일 데이터를 저장
+            this.holidays = response.data.items.map(korea => ({
                 title: korea.summary,
                 start: korea.start.date || korea.start.dateTime,
                 end: korea.end.date || korea.end.dateTime,
                 allDay: true,
                 backgroundColor: 'red',
-                editable: false,  // 공휴일은 수정 불가능하게 설정
+                editable: false,
                 extendedProps: {
-                isHoliday: true,
+                    isHoliday: true,
                 }
             }));
 
-            // 공휴일과 사용자 이벤트를 다시 결합하여 calendarOptions.events에 설정
-            this.calendarOptions.events = [...holidays, ...this.userEvents, ...this.reservationList];
-            
-            this.$nextTick(() => {
-                if (this.$refs.fullCalendar) {
-                this.$refs.fullCalendar.getApi().refetchEvents();
-                }
-            });
-            })
-            .catch((error) => {
+            // 공휴일을 가져온 후 이벤트 결합
+            this.combineEvents();
+        })
+        .catch((error) => {
             console.error('Error fetching holidays:', error);
-            });
-        },
+        });
+    },
 
 
 
-      fetchChildList() {
-        axios
-          .get(`${process.env.VUE_APP_API_BASE_URL}/member-service/child/`)
-          .then((response) => {
+    fetchChildList() {
+    axios
+        .get(`${process.env.VUE_APP_API_BASE_URL}/member-service/child/`)
+        .then((response) => {
             this.childList = response.data.result;
-          })
-          .catch((error) => {
+        })
+        .catch((error) => {
             console.error('Error fetching child list:', error);
-          });
-      },
-  
-      fetchReservationList(child) {
+        });
+    },
+        
+    fetchReservationList(child) {
+        console.log(child)
         this.selectedChildName = child.name;
         this.colorIndex = 0;
         this.memberColors = {};
+
         axios
-          .get(`http://localhost:8080/reservation-service/reservation/list/child/${child.id}`)
-          .then((response) => {
-            const reservationEvents = response.data.map((reservation) => {
-              let memberName = reservation.memberName;
-  
-              if (!this.memberColors[memberName]) {
-                this.memberColors[memberName] = this.colorPalette[this.colorIndex];
-                this.colorIndex = (this.colorIndex + 1) % this.colorPalette.length;
-              }
-  
-              return {
-                title: `${reservation.hospitalName} - ${reservation.medicalItem}`,
-                start: new Date(`${reservation.reservationDate}T${reservation.reservationTime}`),
-                end: new Date(`${reservation.reservationDate}T${reservation.reservationTime}`),
-                backgroundColor: this.memberColors[memberName],
-                allDay: false,
-                editable: false,
-                extendedProps: {
-                  ...reservation,
-                  isReservationEvent: true,
-                },
-              };
+            .get(`http://localhost:8080/reservation-service/reservation/list/child/${child.id}`)
+            .then((response) => {
+                const reservationEvents = response.data.map((reservation) => {
+                    let memberName = reservation.memberName;
+
+                    if (!this.memberColors[memberName]) {
+                        this.memberColors[memberName] = this.colorPalette[this.colorIndex];
+                        this.colorIndex = (this.colorIndex + 1) % this.colorPalette.length;
+                    }
+
+                    return {
+                        title: `${reservation.hospitalName} - ${reservation.medicalItem}`,
+                        start: new Date(`${reservation.reservationDate}T${reservation.reservationTime}`),
+                        end: new Date(`${reservation.reservationDate}T${reservation.reservationTime}`),
+                        backgroundColor: this.memberColors[memberName],
+                        allDay: false,
+                        editable: false,
+                        extendedProps: {
+                            ...reservation,
+                            isReservationEvent: true,
+                        },
+                    };
+                });
+                this.reservationList = reservationEvents;
+
+                // 예약 리스트를 가져온 후 이벤트 결합
+                this.combineEvents(); 
+            })
+            .catch((error) => {
+                console.error('Error fetching reservation list:', error);
             });
-            this.reservationList = reservationEvents;
-            this.combineEvents();
-          })
-          .catch((error) => {
-            console.error('Error fetching reservation list:', error);
-          });
-      },
-  
+    },
       fetchUserEvents() {
         axios
           .get(`${process.env.VUE_APP_API_BASE_URL}/member-service/event/list`)
@@ -355,15 +354,25 @@
           });
       },
   
-      combineEvents() {
-        // 공휴일 이벤트는 fetchHolidays에서 처리되므로 여기서는 userEvents와 reservationList만 결합
-        this.calendarOptions.events = [...this.userEvents, ...this.reservationList];
-        },
+
+    combineEvents() {
+    // 공휴일, 사용자 이벤트, 예약 리스트를 모두 결합
+    this.calendarOptions.events = [...this.holidays, ...this.userEvents, ...this.reservationList];
+    
+    this.$nextTick(() => {
+        if (this.$refs.fullCalendar) {
+            this.$refs.fullCalendar.getApi().refetchEvents();
+        }
+    });
+    },
 
   
-      handleChildClick(childId) {
-        this.fetchReservationList(childId);
-      },
+    handleChildClick(child) {
+    // 자녀 선택 후 selectedChild에 저장
+        this.selectedChild = child;
+        this.fetchReservationList(child);
+    },
+
   
       handleEventClick(info) {
         const isReservationEvent = info.event.extendedProps.isReservationEvent;
