@@ -53,16 +53,23 @@ export default {
      // 비동기적으로 댓글 데이터 로드
      try {
       const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/community-service/post/detail/${this.postId}`);
-      this.fetchedComments = response.data.result.comments;
+      console.log('Full Response:', response.data.result.comments); // 전체 응답 출력
+      
+      this.fetchedComments = response.data.result.comments[0]; // result에 접근
+      console.log('fetchedComments: ', this.fetchedComments);
     } catch (error) {
       console.error('Error fetching comments:', error);
     }
   },
   methods: {
     async submitReport() {
-      const comment = this.fetchedComments.find(c => c.id === this.commentId); // commentId로 특정 댓글 찾기
-      console.log('Comment ID:', this.commentId);
-
+      console.log('Comment ID:', this.fetchedComments.id);
+      if (!this.fetchedComments.id) {
+        console.error("댓글 데이터가 없습니다.");
+        return;
+      }
+      
+      const comment = this.fetchedComments;
       if (!comment) {
         console.error("댓글을 찾을 수 없습니다.");
         return;
@@ -76,8 +83,9 @@ export default {
           reporterEmail,
           reportedEmail,
           reason: this.reportContent,
-          commentId: this.comment.id || null,
+          commentId: this.fetchedComments.id || null,
         };
+        console.log(payload.reporterEmail, payload.reportedEmail, payload.reason, payload.commentId);
         const response = await axios.post(`${process.env.VUE_APP_API_BASE_URL}/community-service/report/create`, payload);
         if (response.status === 201) {
           this.close();

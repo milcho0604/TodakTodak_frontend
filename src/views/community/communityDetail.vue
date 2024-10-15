@@ -176,14 +176,14 @@
               </v-card>
 
               <!-- 대댓글 표시 -->
-              <v-list v-if="comment.replies && comment.replies.length" class="ml-4">
+              <v-list v-if="comment.replies && comment.replies.length" class="ml-4" style="background-color: #FCFCFC;">
                 <v-list-item v-for="reply in comment.replies" :key="reply.id">
                   <v-card :style="{ flexDirection: 'column' , boxShadow: 'none' }" class="mb-2 enlarged-reply-card" outlined>
                     <v-card-text>
                       <div class="d-flex justify-space-between align-center">
                         <div style="flex: 9;">
                           <v-list-item-title> <v-icon small>mdi-arrow-right-bottom</v-icon>&nbsp;{{ reply.name }}</v-list-item-title>
-                          <v-list-item-subtitle style="overflow-wrap: break-word; margin-left: 30px; margin-bottom: 10px; line-height: 1.5;" > 
+                          <v-list-item-subtitle style="overflow-wrap: break-word; margin-left: 30px; margin-bottom: 10px; line-height: 1.5; display: block;" > 
                             <span v-html="formatContent(reply.content)"> </span> <br>
                             <span style="font-size : 13px;"> {{ formatDate(reply.createdTimeAt) }}</span>
                           </v-list-item-subtitle>
@@ -192,21 +192,20 @@
                           <span v-if="reply.doctorEmail === currentUserEmail" @click="deleteReply(reply)" class="d-flex align-center action-link">
                             <v-icon small>mdi-trash-can-outline</v-icon> 삭제 &nbsp;
                           </span>
-                          <span class="d-flex align-center action-link" 
+                          <span @click="openReportModal('reply',reply)"  class="d-flex align-center action-link" 
                                 :style="{ visibility: reply.doctorEmail === currentUserEmail ? 'visible' : 'hidden' }">
                             <v-icon small>mdi-alarm-light-outline</v-icon> 신고
                           </span>
-                          <span v-if="reply.doctorEmail !== currentUserEmail" @click="openReportModal('reply', reply)" class="d-flex align-center action-link mr-2">
+                          <span v-if="reply.doctorEmail !== currentUserEmail" class="d-flex align-center action-link mr-2">
                             <v-icon>mdi-alarm-light-outline</v-icon> 신고
                           </span>
-                          <ReportComment
-                            v-if="showReportCommentModal"
+                          <ReportReply
+                            v-if="showReportReplyModal"
                             :postId="reportData.postId"
-                            :commentId="reportData.replyId"
-                            :replyId="reply.replyId"
+                            :commentId="reply.replyId"
                             :reportedEmail="reply.doctorEmail"
                             :comments="postDetail.comments"
-                            @close="closeReportCommentModal"
+                            @close="closeReportReplyModal"
                           />     
                         </div>                        
                       </div>
@@ -227,11 +226,13 @@
 import axios from 'axios';
 import ReportPost from './ReportPost.vue';
 import ReportComment from './ReportComment.vue';
+import ReportReply from './ReportReply.vue';
 
 export default {
   components: {
     ReportPost,
     ReportComment,
+    ReportReply
   },
   data() {
     return {
@@ -239,6 +240,7 @@ export default {
       error: null,
       showReportPostModal: false,
       showReportCommentModal: false,
+      showReportReplyModal: false,
       reportData: {},
       newPostComment: '',
       showCommentTextarea: false,
@@ -294,8 +296,6 @@ export default {
         const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/community-service/post/detail/${postId}`);
         this.postDetail = response.data.result;
         
-        console.log('여기');
-        console.log(this.postDetail);
 
         // 댓글 및 대댓글 초기화
         this.postDetail.comments.forEach(comment => {
@@ -317,9 +317,9 @@ export default {
         // 부모 댓글만 필터링하고 정렬
         this.postDetail.comments = this.postDetail.comments.filter(comment => !comment.parentId);
         this.postDetail.comments.sort((a, b) => new Date(a.createdTimeAt) - new Date(b.createdTimeAt));
-        console.log('댓글 정보')
-        console.log(this.postDetail.comments)
-      } catch (error) {
+
+        console.log('댓글 구조 어캐 생김?', this.postDetail.comments);
+      } catch (error) { 
         console.error("게시글 정보를 불러오는 중 오류가 발생했습니다.", error);
         this.error = error.response ? error.response.data.message : '게시글 정보를 불러오는 중 오류가 발생했습니다.';
       }
@@ -391,15 +391,14 @@ export default {
       console.log('comment : ', comment);
       this.reportData = {
         postId: this.postDetail.id,
-        commentId: comment && !comment.parentId ? comment.id : null,
-        replyId: comment && comment.parentId ? comment.id : null
+        commentId: comment ? comment.id : null,
       };
       if (type === 'post') {
         this.showReportPostModal = true;
       } else if (type === 'comment') {
         this.showReportCommentModal = true;
       } else if (type === 'reply') {
-        this.showReportCommentModal = true;
+        this.showReportReplyModal = true;
       }
     },
     closeReportPostModal() {
@@ -407,6 +406,9 @@ export default {
     },
     closeReportCommentModal() {
       this.showReportCommentModal = false;
+    },
+    closeReportReplyModal(){
+      this.showReportReplyModal = false;
     },
     formatDate(date) {
       if (!date) return '';
