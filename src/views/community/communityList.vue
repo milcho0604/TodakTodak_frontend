@@ -1,10 +1,12 @@
 <template>
   <v-app>
     <v-container class="text-center">
+      <v-spacer :style="{ height: '50px' }"></v-spacer>
       <v-row justify="center">
         <v-col cols="12" md="8">
           <div class="d-flex align-center">
-            <v-col class="inter-bold title" style="text-align: center;"><img src="@/assets/community.png" width="50px"/> 의사 Q&A</v-col>
+            
+            <v-col ><h2 class="inter-bold" style="text-align: center;"><img src="@/assets/community.png" width="50px"/>의사 Q&A</h2></v-col>
           </div>
           <br><br>
           <div class="searchBox">
@@ -90,6 +92,7 @@
           </v-row>          
         </v-col>
       </v-row>
+      <v-spacer :style="{ height: '50px' }"></v-spacer>
     </v-container>
   </v-app>
 </template>
@@ -216,7 +219,7 @@ export default {
 <style scoped>
 .title {
   text-align: left;
-  font-size: 20px;
+  font-size: 30px;
 }
 
 .icon {
@@ -241,6 +244,7 @@ export default {
   margin: 0 auto;
   box-sizing: border-box; /* 패딩과 보더를 포함하여 너비를 계산 */
   background-color: #FCFCFC; /* 배경색 변경 */
+  border-radius: 10px;
 }
 
 .searchBox {
