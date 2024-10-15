@@ -1,7 +1,7 @@
 <template>
     <v-container fluid class="hospital-detail-container">
         <v-row align="center" justify="start">
-            <h3 style="font-weight: bold;">진료 리뷰</h3>
+            <h3 style="font-weight: bold;" class="ml-3">진료 리뷰</h3>
             <!-- 리뷰개수 chip -->
             <v-chip class="ml-3 mb-1 review-count" variant="flat">{{ reviewCount }}</v-chip>
         </v-row>
@@ -100,11 +100,61 @@
                 </v-row>
               </v-card>
             </v-col>
-          </v-row>
-          
-          
+        </v-row>
+        <v-spacer :style="{ height: '30px' }"></v-spacer>
 
-        
+        <!-- 리뷰 리스트 -->
+        <v-container v-for="review in reviewList" :key="review.id">
+            <v-divider style="width: 650px;"></v-divider>
+            <v-spacer :style="{ height: '30px' }"></v-spacer>
+            <v-row>
+                <!-- 의사이름 -->
+                <h4 style="font-weight: bold; font-size:20px;">
+                    {{ review.doctorName }} 의사
+                </h4>
+                <!-- 병원 명 -->
+                <v-text style="color:#898787" class="ml-2">
+                    {{ review.hospitalName }}
+                </v-text>
+            </v-row> 
+            <v-row>
+                <!-- 별점 -->
+                <v-rating 
+                :model-value="review.rating"
+                readonly
+                :length="5"
+                size="small"
+                density="compact"
+                color="#CACACA"
+                active-color="#0075FF"
+                />
+            </v-row>
+            <v-row>
+                <v-text class="mt-2" :style="{ whiteSpace: 'pre-line' }">
+                    {{ review.contents }}
+                </v-text>
+            </v-row>
+            <v-row>
+                <v-text class="mt-2 mr-3" style="color:#898787;">
+                    {{ review.name }}
+                </v-text>
+                <v-text class="mt-2 mr-3" style="color:#898787;">
+                    {{ review.createdAt.slice(0, 10) }}
+                </v-text>
+                <v-text style="color:#898787" class="mt-2" v-if="review.untact">
+                    비대면 진료
+                </v-text>
+            </v-row>
+        </v-container>
+
+        <!-- 페이징 UI -->
+        <v-pagination
+        v-model="currentPage"
+        :length="totalPages"
+        @input="loadReviewList" 
+        class="mt-4"
+        ></v-pagination>
+                
     </v-container>
    
 </template>
@@ -118,7 +168,21 @@ export default{
             hospitalId: '',
             reviewList:[],
             reviewAvgList:[],
-            reviewCount:'',
+
+            currentPage: 1,  // 현재 페이지
+            totalPages: 0,   // 총 페이지 수
+            reviewCount: 0,  // 총 리뷰 수
+            //예시데이터
+            // review:[{
+            //     id:'1',
+            //     name: '정*기',
+            //     hospitalName : "삼성드림소아청소년과의원",
+            //     doctorName: "김창현",
+            //     rating: '4',
+            //     contents: "창창핑 원장님 새로오셨는데 진료 잘해주시네요! \n 하지만 4점입니다 \n 왜냐하면 병원원무과 선생님들이 조금 까칠하셨어요 \n 바쁘신건 알지만 조금 속상했네요^^ \n 다음엔 잘부탁드릴게요 병원시설은 좋습니다!",
+            //     createdAt: "2024-10-11T14:18:45",
+            //     untact : true
+            // }],
 
         }
     },
@@ -130,14 +194,29 @@ export default{
         this.loadReviewList();
         this.loadReviewAvgList();
     },
+    watch:{
+        currentPage(newCurrnetPage){
+            if(newCurrnetPage){
+                this.loadReviewList();
+            }
+        }
+
+    },
     methods:{
         // 리뷰리스트
         async loadReviewList(){
+            console.log("currentPage",this.currentPage);
             try{
+                let params = {
+                    page: this.currentPage -1
+                };
                 // http://localhost:8080/reservation-service/review/list/2
-                const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/reservation-service/review/list/${this.hospitalId}`);
+                const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/reservation-service/review/list/${this.hospitalId}`,{params});
                 console.log(response.data);
                 this.reviewList = response.data.result.content;
+                this.totalPages = response.data.result.totalPages;  // 총 페이지 수 저장
+                this.reviewCount = response.data.result.totalElements; // 총 리뷰 수
+                console.log(this.reviewList);
 
             } catch(error){
                 console.log(error);
@@ -150,11 +229,11 @@ export default{
                 const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/reservation-service/review/detail/${this.hospitalId}`);
                 this.reviewAvgList = response.data;
                 // 리뷰 개수 계산
-                this.reviewCount = this.reviewAvgList.count1Star 
-                                + this.reviewAvgList.count2Stars
-                                + this.reviewAvgList.count3Stars
-                                + this.reviewAvgList.count4Stars
-                                + this.reviewAvgList.count5Stars;
+                // this.reviewCount = this.reviewAvgList.count1Star 
+                //                 + this.reviewAvgList.count2Stars
+                //                 + this.reviewAvgList.count3Stars
+                //                 + this.reviewAvgList.count4Stars
+                //                 + this.reviewAvgList.count5Stars;
             }catch(error){
                 console.log(error);
             }
