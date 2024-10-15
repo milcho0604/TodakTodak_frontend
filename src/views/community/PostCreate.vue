@@ -61,6 +61,7 @@
         selectedFile: null,
         fileError: false,
         imagePreview: null,
+        submitted: false
       };
     },
     methods: {
@@ -101,6 +102,7 @@
         });
         console.log("저장 완료!", response.data);
         alert('게시글이 저장되었습니다.');
+        this.submitted = true; 
         this.$router.back();
     } catch (error) {
         console.error("저장 실패!", error);
@@ -142,6 +144,9 @@
           this.fileError = false;
           this.imagePreview = null;
         }
+      },
+      formatContent(content) {
+        return content.replace(/\n/g, '<br>'); // 줄바꿈 처리
       },
     },
   };
