@@ -54,25 +54,22 @@ export default {
      try {
       const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/community-service/post/detail/${this.postId}`);
       console.log('Full Response:', response.data.result.comments); // 전체 응답 출력
-      this.fetchedComments = response.data.result.comments; // result에 접근
+      
+      this.fetchedComments = response.data.result.comments[0]; // result에 접근
+      console.log('fetchedComments: ', this.fetchedComments);
     } catch (error) {
       console.error('Error fetching comments:', error);
     }
   },
   methods: {
     async submitReport() {
-      if (!this.commentId) {
+      console.log('Comment ID:', this.fetchedComments.id);
+      if (!this.fetchedComments.id) {
         console.error("댓글 데이터가 없습니다.");
         return;
       }
-
-      if (!Array.isArray(this.comments)) {
-        console.error("댓글 데이터가 배열이 아닙니다.");
-        return;
-      }
       
-      const comment = this.fetchedComments.find(comment => comment.id === this.commentId);
-      console.log(comment);
+      const comment = this.fetchedComments;
       if (!comment) {
         console.error("댓글을 찾을 수 없습니다.");
         return;
@@ -86,8 +83,7 @@ export default {
           reporterEmail,
           reportedEmail,
           reason: this.reportContent,
-          commentId: this.commentId,
-          postIdL:this.postId
+          commentId: this.fetchedComments.id || null,
         };
         console.log(payload.reporterEmail, payload.reportedEmail, payload.reason, payload.commentId);
         const response = await axios.post(`${process.env.VUE_APP_API_BASE_URL}/community-service/report/create`, payload);
