@@ -3,14 +3,8 @@
         <v-container style="width: 700px;">
             <v-spacer :style="{ height: '50px' }"></v-spacer>
             <v-row class="header-row">
-                <v-col cols="4" :class="fontSize">
-                    <div class="hospital" >{{ hostpitalName }}</div>
-                </v-col>
-                <v-col cols="3">
-                    <div class="custom-text" >
-                        오늘예약
-                    </div>
-                </v-col>
+                <h2>{{this.hospitalName}}</h2>
+                <v-chip class="schedule-chip ml-3" variant="flat" size="x-large" label>오늘 예약</v-chip>
             </v-row>
             <v-row class="header-row">
                 <v-col class="big-font">
@@ -53,21 +47,15 @@
             <v-row justify="center">
                 <div v-for="(doctor, index) in doctorList" :key="index" class="doctor" @click="addDoctor(doctor)"
                     :class="{ 'selected-doctor': this.doctor == doctor }">
-                    <v-row>
-                        <v-col cols="2">
-                            <v-row class="ml-4">
-                                <img :src=doctor.profileImgUrl alt="doctor image" style="width: 65px; height: 65px; border-radius: 30px;">
-                            </v-row>
-                        </v-col>
-                        <v-col cols="2">
-                            <v-row class="inter-bold inline">{{ doctor.name }}</v-row>
-                        </v-col>
-                        <v-col>
-                            <v-row class="inter-bold custom-text3 inline">대기 {{ doctor.waiting }}명</v-row>
-                        </v-col>
-                        <v-col cols="2">
-                            <div class="mini-button" v-if="this.doctor == doctor">선택됨</div>
-                        </v-col>
+                    <v-row class="inter-bold inline" align="center">
+                        <div class="d-flex align-center mx-3">
+                            <img :src="doctor.profileImgUrl ? doctor.profileImgUrl : 'https://todak-file.s3.ap-northeast-2.amazonaws.com/default-images/doctor-3d-image.png'" alt="doctor image" class="mx-2" style="width: 65px; height: 65px; border-radius: 30px;" />
+                            <v-text class="ml-2">{{ doctor.name }}</v-text>
+                            <v-chip class="mx-3" style="font-weight:bold; color:white; background-color:#0066FF" variant="flat">대기 {{ doctor.waiting }}명</v-chip>
+                            <div class="d-flex justify-end" style="flex-grow: 1;">
+                                <v-chip class="mini-button" v-if="this.doctor == doctor" variant="flat" label>선택됨</v-chip>
+                            </div>
+                        </div>
                     </v-row>
                 </div>
             </v-row>
@@ -92,9 +80,15 @@
                 </v-col>
             </v-row>
             <v-row>
-                <div class="mt-3">
+                <div class="mt-n5 ml-5">
                     <v-chip-group v-if="symptoms.length > 0">
-                        <v-chip v-for="(symptom, index) in symptoms" :key="index" class="mr-2">
+                        <v-chip 
+                        v-for="(symptom, index) in symptoms" :key="index" 
+                        class="mr-2"
+                        size="large" 
+                        variant="flat"
+                        style="color:#00499E; background-color:#ECF2FD; font-weight:bold;"
+                        >
                             {{ symptom }}
                         </v-chip>
                     </v-chip-group>
@@ -294,13 +288,14 @@
 import axios from 'axios';
 import { initializeApp } from 'firebase/app';
 import { getDatabase, ref, onValue } from 'firebase/database';
+import { useRoute } from 'vue-router';
 
 export default {
     data() {
         return {
             medicalType: "Immediate",
-            hostpitalName: "파닥닥닥닥닥닥닥닥닥병원",
-            hospitalId: 1,
+            hospitalName: "파닥닥닥닥닥닥닥닥닥병원",
+            hospitalId: '',
             child: null,
             doctor: [],
             childOptions: [],
@@ -348,12 +343,11 @@ export default {
         async fetchDoctorList() {
             try {
                 const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/member-service/member/doctorList/${this.hospitalId}`);
-                this.doctorList = response.data.result.content;
-                
-                this.doctorList.forEach(doctor =>{
-                    doctor.profileImgUrl = doctor.profileImgUrl ? doctor.profileImgUrl :
-                    "https://todak-file.s3.ap-northeast-2.amazonaws.com/default-images/default_user_image.png";
-                })
+
+                this.doctorList = response.data.result.content.map(item => ({
+                    ...item,
+                    waiting: 0
+                }));
 
                 console.log(this.doctorList);
             } catch (e) {
@@ -424,6 +418,9 @@ export default {
     async created() {
         this.fetchDoctorList();
         this.fetchChildList();
+        const route = useRoute();
+        this.hospitalId = route.params.hospitalId; 
+        this.hospitalName = this.$route.query.hospitalName;
     },
     computed: {
         fontSize(){
@@ -729,5 +726,12 @@ export default {
 
 .smalll-font{
     font-size: 17px;
+}
+.schedule-chip{
+    font-weight: bold;
+    font-size:25px;
+    color:#00499E;
+    background-color: #ECF2FD;
+    border-radius: 10px;
 }
 </style>

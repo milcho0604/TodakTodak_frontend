@@ -1,9 +1,9 @@
 <template>
     <v-container fluid class="hospital-detail-container">
         <!-- 병원소개 -->
-        <h3 >병원소개</h3>
+        <h3 style="font-weight: bold;">병원소개</h3>
         <v-card class="notice-card mt-3" variant="flat">
-            <v-card-title style="font-size: 15px; font-weight: bold;">
+            <v-card-title style="font-size: 18px; font-weight: bold;">
                 {{ hospitalDescriptionFirstLine }}
             </v-card-title>
 
@@ -13,7 +13,7 @@
         </v-card>
 
         <!-- 병원공지 -->
-        <h3 class="mt-5">병원공지</h3>
+        <h3 class="mt-5" style="font-weight: bold;">병원공지</h3>
         <v-card class="notice-card mt-3" variant="flat">
             <v-card-text :style="{ whiteSpace: 'pre-line' }">
                 {{ hospital.notice }}
@@ -28,7 +28,7 @@
         <v-spacer :style="{ height: '20px' }"></v-spacer>
 
         <!-- 진료시간 -->
-        <h3 >진료시간</h3>
+        <h3 style="font-weight: bold;">진료시간</h3>
         <v-card class="notice-card mt-3" variant="flat">
             <v-row align="center">
               <!-- 왼쪽: '점심시간' -->
@@ -124,7 +124,7 @@
         </v-row>
         <v-spacer :style="{ height: '20px' }"></v-spacer>
 
-        <h3 >병원위치</h3>
+        <h3 style="font-weight: bold;">병원위치</h3>
         <h4 style="font-size: 17px">{{hospital.address}}</h4>
         <v-spacer :style="{ height: '20px' }"></v-spacer>
 

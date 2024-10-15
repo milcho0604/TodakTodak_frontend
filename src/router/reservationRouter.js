@@ -3,12 +3,12 @@ import ReservationScheduled from "@/views/reservation/ReservationScheduled.vue"
 
 export const reservationRouter = [
     {
-        path: '/reservation/immediate',
+        path: '/reservation/immediate/:hospitalId',
         name: 'ReservationImmediate',
         component: ReservationImmediate
     },
     {
-        path: '/reservation/scheduled',
+        path: '/reservation/scheduled/:hospitalId',
         name: 'ReservationScheduled',
         component: ReservationScheduled
     }
