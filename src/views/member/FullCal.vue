@@ -25,7 +25,7 @@
         <div class="milcho-calendar-container">
           <!-- 일정 추가 버튼 -->
           <v-btn variant="flat" @click="startNewEvent" class="milcho-btn-add">✏️</v-btn>
-          <FullCalendar :options="calendarOptions" ref="fullCalendar" class="milcho-custom-calendar" />
+          <FullCalendar :options="calendarOptions" class="milcho-custom-calendar" />
         </div>
   
         <!-- 이벤트 및 예약 상세 정보 표시 영역 -->
@@ -62,7 +62,7 @@
           </div>
   
           <!-- 사용자 이벤트 상세 정보 또는 생성 양식 -->
-          <div v-else-if="selectedEvent && !isReservationEvent || isEditing">
+          <div v-else-if="selectedEvent && !isReservationEvent || isEditing ">
             <!-- 이벤트 디테일 보기 -->
             <div v-if="!isEditing">
               <div class="milcho-reservation-row">
@@ -81,7 +81,7 @@
                 <strong>시작일</strong>
                 <span>{{ formData.startDateText }}</span>
               </div>
-  
+              
               <div class="milcho-reservation-row">
                 <strong>종료일</strong>
                 <span>{{ formData.endDateText }}</span>
@@ -147,6 +147,7 @@
               <v-btn v-if="isEditing" class="milcho-btn-delete" elevation="0" @click="deleteEvent">삭제</v-btn>
               <v-divider vertical class="milcho-vertical-divider"></v-divider>
               <v-btn class="milcho-btn-save" elevation="0" @click="handleSaveEvent">저장</v-btn>
+
             </v-form>
           </div>
   
@@ -163,7 +164,6 @@
   import FullCalendar from '@fullcalendar/vue3';
   import dayGridPlugin from '@fullcalendar/daygrid';
   import interactionPlugin from '@fullcalendar/interaction';
-  import googleCalendarPlugin from '@fullcalendar/google-calendar';
   import axios from 'axios';
   
   export default {
@@ -173,16 +173,35 @@
     data() {
       return {
         calendarOptions: {
-          plugins: [dayGridPlugin, interactionPlugin, googleCalendarPlugin],
+          plugins: [dayGridPlugin, interactionPlugin],
           initialView: 'dayGridMonth',
           events: [],
           dateClick: this.handleDateClick,
           eventClick: this.handleEventClick,
           displayEventTime: true,
           navLinks: true,
-          titleFormat: { year: 'numeric', month: 'long' },
-          datesSet: this.handleDatesSet,
-          locale: 'ko',
+          dayCellClassNames: (arg) => {
+            const day = arg.date.getDay();
+            if (day === 0) {
+            return 'fc-sunday';
+            } else if (day === 6) {
+            return 'fc-saturday';
+            } else {
+            return 'fc-weekday';
+            }
+        },
+        dayHeaderClassNames: (arg) => {
+            const day = arg.date.getDay();
+            if (day === 0) {
+            return 'fc-sunday-header';
+            } else if (day === 6) {
+            return 'fc-saturday-header';
+            } else {
+            return 'fc-weekday-header';
+            }
+        },
+        datesSet: this.handleDatesSet,
+        locale: 'ko', // 한국어 로케일 설정
         },
         isModalOpen: false,
         isEditing: false,
@@ -200,6 +219,7 @@
           endDateText: '',
           type: '',
         },
+
         menuStart: false,
         menuEnd: false,
         childList: [],
@@ -215,6 +235,54 @@
       };
     },
     methods: {
+        handleDatesSet(info) {
+      // info.start와 info.end는 풀캘린더에서 보여주고 있는 범위의 시작일과 종료일
+      const startDate = info.start.toISOString(); // 시작일 ISO 포맷
+      const endDate = info.end.toISOString();     // 종료일 ISO 포맷
+
+      this.fetchHolidays(startDate, endDate);
+      this.combineEvents();  // 예약 및 사용자 이벤트는 따로 결합
+    },
+
+
+
+    fetchHolidays(startDate, endDate) {
+        axios
+            .get(`${process.env.VUE_APP_API_BASE_URL}/member-service/api/google-calendar-holidays`, {
+            params: {
+                start: startDate,
+                end: endDate,
+            },
+            })
+            .then((response) => {
+            const holidays = response.data.items.map(korea => ({
+                title: korea.summary,
+                start: korea.start.date || korea.start.dateTime,
+                end: korea.end.date || korea.end.dateTime,
+                allDay: true,
+                backgroundColor: 'red',
+                editable: false,  // 공휴일은 수정 불가능하게 설정
+                extendedProps: {
+                isHoliday: true,
+                }
+            }));
+
+            // 공휴일과 사용자 이벤트를 다시 결합하여 calendarOptions.events에 설정
+            this.calendarOptions.events = [...holidays, ...this.userEvents, ...this.reservationList];
+            
+            this.$nextTick(() => {
+                if (this.$refs.fullCalendar) {
+                this.$refs.fullCalendar.getApi().refetchEvents();
+                }
+            });
+            })
+            .catch((error) => {
+            console.error('Error fetching holidays:', error);
+            });
+        },
+
+
+
       fetchChildList() {
         axios
           .get(`${process.env.VUE_APP_API_BASE_URL}/member-service/child/`)
@@ -287,50 +355,11 @@
           });
       },
   
-      // 기존 공휴일 이벤트를 제거하는 메서드
-      clearHolidayEvents() {
-        const calendarApi = this.$refs.fullCalendar.getApi();
-        const holidayEvents = calendarApi.getEvents().filter(event => event.extendedProps.isHoliday);
-        holidayEvents.forEach(event => event.remove());
-      },
-  
-      fetchHolidays(start, end) {
-        console.log(`Fetching holidays for: ${start} to ${end}`);
-        this.clearHolidayEvents();  // 공휴일 데이터 갱신 전 기존 공휴일 삭제
-        axios
-          .get(`${process.env.VUE_APP_API_BASE_URL}/member-service/api/google-calendar-holidays`, {
-            params: {
-              start: start.toISOString().split('T')[0],
-              end: end.toISOString().split('T')[0],
-            },
-          })
-          .then((response) => {
-            const holidayEvents = response.data.items.map((holiday) => ({
-              title: holiday.summary,
-              start: holiday.start.date || holiday.start.dateTime,
-              end: holiday.end.date || holiday.end.dateTime,
-              allDay: true,
-              extendedProps: {
-                isHoliday: true, // 공휴일임을 표시
-              },
-            }));
-  
-            this.calendarOptions.events = [...this.calendarOptions.events, ...holidayEvents];
-          })
-          .catch((error) => {
-            console.error('Error fetching holidays:', error);
-          });
-      },
-  
-      handleDatesSet(info) {
-        const start = info.start;
-        const end = info.end;
-        this.fetchHolidays(start, end); // 보이는 범위에 맞춰 공휴일을 가져옴
-      },
-  
       combineEvents() {
+        // 공휴일 이벤트는 fetchHolidays에서 처리되므로 여기서는 userEvents와 reservationList만 결합
         this.calendarOptions.events = [...this.userEvents, ...this.reservationList];
-      },
+        },
+
   
       handleChildClick(childId) {
         this.fetchReservationList(childId);
@@ -338,6 +367,12 @@
   
       handleEventClick(info) {
         const isReservationEvent = info.event.extendedProps.isReservationEvent;
+        const isHoliday = info.event.extendedProps.isHoliday;
+
+        // 공휴일일 경우 아무 동작도 하지 않음
+        if (isHoliday) {
+        return;  // 클릭 이벤트를 무시
+        }
   
         if (isReservationEvent) {
           this.selectedReservation = info.event.extendedProps;
@@ -460,20 +495,12 @@
     },
   
     mounted() {
-      this.fetchUserEvents();
-      this.fetchChildList();
-      this.$nextTick(() => {
-        const calendarApi = this.$refs.fullCalendar?.getApi();
-        if (calendarApi) {
-          calendarApi.refetchEvents();
-        } else {
-          console.error('FullCalendar API not found');
-        }
-      });
+        this.fetchUserEvents(); 
+        this.fetchChildList(); 
     },
   };
   </script>
-  
+
   <style>
   .milcho-calendar-container {
     max-width: 900px;
@@ -636,3 +663,4 @@
   }
   
   </style>
+  
