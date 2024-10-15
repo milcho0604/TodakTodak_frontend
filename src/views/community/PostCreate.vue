@@ -173,6 +173,7 @@
     min-width: 300px;
     max-width: 770px;
     background-color: #f0f0f0;
+    border-radius: 10px;
   }
   
   .title-input,
@@ -188,6 +189,7 @@
     border-radius: 0;
     outline: none;
     box-shadow: none;
+    border-radius: 10px;
   }
   
   .content-input {
