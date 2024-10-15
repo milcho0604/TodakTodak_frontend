@@ -3,48 +3,48 @@
     <v-row align="center">
       <v-col cols="6" md="8" class="d-flex justify-end">
         <div class="d-flex align-center">
-          <v-col class="inter-bold title" style="text-align: center;"><img src="@/assets/community.png" width="50px"/> 의사 Q&A</v-col>
+          <v-col ><h2 class="inter-bold" style="text-align: center;"><img src="@/assets/community.png" width="50px"/>의사 Q&A</h2></v-col>
         </div>
       </v-col>
-    </v-row> <br>
+    </v-row>
     <v-card class="pa-5" v-if="postDetail">
       <div class="d-flex justify-space-between align-center mb-3">
-        <v-divider>
-          <v-list-item-title class="text-subtitle-1" style="font-weight: bold; font-size: 20px !important;">{{ postDetail.name }}</v-list-item-title>
-          <v-list-item-subtitle>{{ formatDate(postDetail.createdTimeAt) }}</v-list-item-subtitle>
-        </v-divider>
-
-        <v-col class="d-flex justify-end" style="flex-grow: 1;">
-          <!-- 로그인한 사용자의 이메일을 가져옵니다. -->
-          <template v-if="currentUserEmail === postDetail.memberEmail">
-            <span @click="edit" class="d-flex align-center action-link mr-2">
-              <v-icon small>mdi-pencil</v-icon>
-              수정
+        <v-row class="flex-grow-1">
+          <v-col>
+            <v-list-item-title style="font-weight: bold; font-size: 20px !important;">{{ postDetail.name }}</v-list-item-title>
+            <v-list-item-subtitle style="font-size: 15px !important;">{{ formatDate(postDetail.createdTimeAt) }}</v-list-item-subtitle>
+          </v-col>
+          <v-col class="d-flex justify-end">
+            <template v-if="currentUserEmail === postDetail.memberEmail">
+              <span @click="edit" class="d-flex align-center action-link mr-2">
+                <v-icon small>mdi-pencil</v-icon>
+                수정
+              </span>
+              <span @click="deletePost" class="d-flex align-center action-link">
+                <v-icon small>mdi-trash-can-outline</v-icon>
+                삭제&nbsp;&nbsp; 
+              </span>
+            </template>
+            <span @click="openReportModal('post', post)" class="d-flex align-center action-link">
+              <v-icon small>mdi-alarm-light-outline</v-icon>
+              &nbsp;신고
             </span>
-            <span @click="deletePost" class="d-flex align-center action-link">
-              <v-icon small>mdi-trash-can-outline</v-icon>
-              삭제&nbsp;&nbsp; 
-            </span>
-          </template>
-          <span @click="openReportModal('post', post)" class="d-flex align-center action-link">
-            <v-icon small>mdi-alarm-light-outline</v-icon>
-            &nbsp;신고
-          </span>
-          <ReportPost
-            v-if="showReportPostModal"
-            :postId="reportData.postId"
-            @close="closeReportPostModal"
+            <ReportPost
+              v-if="showReportPostModal"
+              :postId="reportData.postId"
+              @close="closeReportPostModal"
             />
-        </v-col>
+          </v-col>
+        </v-row>
       </div>
-
+      
       <v-row class="mb-5 no-margin">
         <v-col cols="12" md="12">
-          <v-card flat class="pa-0">
+          <v-card flat class="custom-card">
             <v-card-text>
               <div>
-                <v-list-item-title class="text-subtitle-1" style="font-weight: bold; font-size: 30px !important; margin-bottom: 10px;">{{ postDetail.title }}</v-list-item-title>
-                <v-list-item-subtitle style="font-size:20px; margin-bottom: 10px; line-height: 1.5;">{{ postDetail.content }}</v-list-item-subtitle>
+                <v-list-item-title style="font-weight: bold; font-size: 25px !important; margin-bottom: 10px;">{{ postDetail.title }}</v-list-item-title>
+                <v-list-item-subtitle style="font-size:20px; margin-bottom: 10px; line-height: 1.5;" v-html="formatContent(postDetail.content)"></v-list-item-subtitle>
               </div>
             </v-card-text>
             <div class="image-container">
@@ -66,9 +66,7 @@
         </span>
       </v-col>
 
-      <v-divider></v-divider>
-
-      <v-row v-if="showCommentTextarea" class="mt-3">
+      <v-row v-if="showCommentTextarea">
         <v-col cols="12">
           <v-form @submit.prevent="submitPostComment">
             <v-textarea
@@ -90,34 +88,36 @@
 
       <v-row>
         <v-divider></v-divider>
-
         <v-col cols="12">
           <h4 class="text-h6 font-weight-bold">댓글</h4>
-          <v-list>
-            <v-list-item v-for="comment in postDetail.comments" :key="comment.id" class="py-2" style="padding: 10px;">
-              <v-card :style="{ backgroundColor: comment.memberEmail === currentUserEmail ? '#F9F9F9' : '#ECF2FE', padding: '10px 5px 10px 25px' }" class="mb-2" outlined>
+          <v-list style="background-color: #FCFCFC;">
+            <v-list-item v-for="comment in postDetail.comments" :key="comment.id" style="padding: 10px;">
+              <v-card :style="{ backgroundColor:'#ECF2FE', padding: '10px 5px 10px 25px', boxShadow: 'none' , height: 'auto', overflow: 'visible'}" class="mb-2">
                 <v-card-text>
                   <div class="d-flex justify-space-between align-center">
                     <div style="flex: 9;">
-                      <div class="comment-text">
-                        <v-list-item-title class="text-subtitle-1" style="font-weight: bold; font-size: 20px !important; margin-bottom: 8px;">
-                          {{ comment.name }}
-                        </v-list-item-title>
-                        <v-list-item-subtitle style="font-size: 18px; margin-bottom: 8px;">
-                          <span v-if="!comment.isEditing">{{ comment.content }}</span>
-                          <span v-else>
+                      <v-list-item-title style="font-weight: bold; font-size: 20px !important; margin-bottom: 8px;">
+                        {{ comment.name }}
+                      </v-list-item-title>
+                      <div>
+                        <v-list-item-subtitle style="font-size: 18px; overflow-wrap: break-word; word-break: break-word; display: block;">
+                          <template v-if="!comment.isEditing">
+                            <div v-html="formatContent(comment.content)"></div>
+                          </template>
+                          <template v-else>
                             <v-textarea
                               v-model="comment.editContent"
                               label="수정할 댓글을 입력해주세요"
                               outlined
                               required
                             ></v-textarea>
-                          </span>
+                          </template>
+                          <br>
+                          <span style="font-size: 14px; color: gray;">{{ formatDate(comment.createdTimeAt) }}</span>
                         </v-list-item-subtitle>
-                        <v-list-item-subtitle>{{ formatDate(comment.createdTimeAt) }}</v-list-item-subtitle>
-                      </div>                      
+                      </div>
                     </div>
-                    <div style="flex: 2.5;" class="d-flex align-center">
+                    <div style="flex:3;" class="d-flex align-center">
                       <span 
                         v-if="comment.doctorEmail === currentUserEmail && !comment.isEditing" 
                         @click="startEditComment(comment)" 
@@ -130,9 +130,8 @@
                         @click="updateComment(comment)" 
                         class="d-flex align-center action-link"
                       >
-                        <v-icon small>mdi-pencil</v-icon> 수정하기
+                        <v-icon small>mdi-pencil</v-icon> 수정
                       </span>
-                      
                       <span 
                         v-if="comment.doctorEmail === currentUserEmail" 
                         @click="deleteComment(comment)" 
@@ -140,32 +139,20 @@
                       >
                         <v-icon small>mdi-trash-can-outline</v-icon> 삭제
                       </span>
-                    
-                      <!-- 신고 버튼은 항상 보이도록 -->
-                      <span @click="openReportModal('comment', comment)" class="d-flex align-center action-link mr-2" 
-                            style="margin-left: auto;">
+                      <span @click="openReportModal('comment', comment)" class="d-flex align-center action-link mr-2" style="margin-left: auto;">
                         <v-icon small>mdi-alarm-light-outline</v-icon> 신고
                       </span>
                       <ReportComment
                         v-if="showReportCommentModal"
                         :postId="reportData.postId"
-                        :commentId="comment.commentId"
+                        :commentId="comment.id"
                         :reportedEmail="comment.doctorEmail"
                         :comments="postDetail.comments"
                         @close="closeReportCommentModal"
-                      />
-                    </div>                
+                      /> 
+                    </div>
                   </div>
                 </v-card-text>
-                <v-card-actions v-if="comment.isEditing">
-                  <span 
-                    @click="updateComment(comment)" 
-                    class="d-flex align-center action-link"
-                    style="cursor: pointer;"
-                  >
-                    <v-icon small>mdi-pencil</v-icon> 수정하기
-                  </span>
-                </v-card-actions>
                 <v-card-actions>
                   <span @click="comment.showTextarea = !comment.showTextarea" class="d-flex align-center action-link mr-2">
                     <v-icon small>mdi-comment-outline</v-icon>&nbsp;댓글달기
@@ -187,20 +174,21 @@
                   </span>
                 </v-form>
               </v-card>
+
               <!-- 대댓글 표시 -->
               <v-list v-if="comment.replies && comment.replies.length" class="ml-4">
                 <v-list-item v-for="reply in comment.replies" :key="reply.id">
-                  <v-card :style=" {padding: '10px 5px 10px 25px'}" class="mb-2 enlarged-reply-card" outlined>
+                  <v-card :style="{ flexDirection: 'column' , boxShadow: 'none' }" class="mb-2 enlarged-reply-card" outlined>
                     <v-card-text>
                       <div class="d-flex justify-space-between align-center">
                         <div style="flex: 9;">
-                          <div class="comment-text">
-                            <v-list-item-title class="text-subtitle-1"> <v-icon small>mdi-arrow-right-bottom</v-icon>&nbsp;{{ reply.name }}</v-list-item-title>
-                            <v-list-item-subtitle>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ reply.content }}</v-list-item-subtitle>
-                            <v-list-item-subtitle>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ formatDate(reply.createdTimeAt) }}</v-list-item-subtitle>
-                          </div>
+                          <v-list-item-title> <v-icon small>mdi-arrow-right-bottom</v-icon>&nbsp;{{ reply.name }}</v-list-item-title>
+                          <v-list-item-subtitle style="overflow-wrap: break-word; margin-left: 30px; margin-bottom: 10px; line-height: 1.5;" > 
+                            <span v-html="formatContent(reply.content)"> </span> <br>
+                            <span style="font-size : 13px;"> {{ formatDate(reply.createdTimeAt) }}</span>
+                          </v-list-item-subtitle>
                         </div>
-                        <div style="flex: 1.7;" class="d-flex align-center">
+                        <div style="flex: 2;" class="d-flex align-center">
                           <span v-if="reply.doctorEmail === currentUserEmail" @click="deleteReply(reply)" class="d-flex align-center action-link">
                             <v-icon small>mdi-trash-can-outline</v-icon> 삭제 &nbsp;
                           </span>
@@ -212,13 +200,13 @@
                             <v-icon>mdi-alarm-light-outline</v-icon> 신고
                           </span>
                           <ReportComment
-                          v-if="showReportCommentModal"
-                          :postId="reportData.postId"
-                          :commentId="reportData.replyId"
-                          :replyId="reply.replyId"
-                          :reportedEmail="reply.doctorEmail"
-                          :comments="postDetail.comments"
-                          @close="closeReportCommentModal"
+                            v-if="showReportCommentModal"
+                            :postId="reportData.postId"
+                            :commentId="reportData.replyId"
+                            :replyId="reply.replyId"
+                            :reportedEmail="reply.doctorEmail"
+                            :comments="postDetail.comments"
+                            @close="closeReportCommentModal"
                           />     
                         </div>                        
                       </div>
@@ -227,14 +215,13 @@
                 </v-list-item>
               </v-list>
             </v-list-item>                            
-          </v-list>          
+          </v-list>                   
         </v-col>     
       </v-row>
     </v-card>
     <v-alert type="error" v-if="error">{{ error }}</v-alert>
   </v-container>
 </template>
-
 
 <script>
 import axios from 'axios';
@@ -306,6 +293,9 @@ export default {
       try {
         const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/community-service/post/detail/${postId}`);
         this.postDetail = response.data.result;
+        
+        console.log('여기');
+        console.log(this.postDetail);
 
         // 댓글 및 대댓글 초기화
         this.postDetail.comments.forEach(comment => {
@@ -327,6 +317,8 @@ export default {
         // 부모 댓글만 필터링하고 정렬
         this.postDetail.comments = this.postDetail.comments.filter(comment => !comment.parentId);
         this.postDetail.comments.sort((a, b) => new Date(a.createdTimeAt) - new Date(b.createdTimeAt));
+        console.log('댓글 정보')
+        console.log(this.postDetail.comments)
       } catch (error) {
         console.error("게시글 정보를 불러오는 중 오류가 발생했습니다.", error);
         this.error = error.response ? error.response.data.message : '게시글 정보를 불러오는 중 오류가 발생했습니다.';
@@ -335,8 +327,9 @@ export default {
     async submitPostComment() {
       const postId = this.$route.params.id;
       try {
+        const formattedComment = this.newPostComment.replace(/\n/g, '<br>');
         await axios.post(`${process.env.VUE_APP_API_BASE_URL}/community-service/comment/create`, {
-          content: this.newPostComment,
+          content: formattedComment,
           postId: postId,
           parentId: null,
         });
@@ -365,6 +358,23 @@ export default {
         
       }
     },
+    startEditComment(comment) {
+    comment.isEditing = true; // 댓글 수정 모드 활성화
+    comment.editContent = comment.content; // 기존 내용을 editContent에 설정
+  },
+  
+  async updateComment(comment) {
+    try {
+      await axios.post(`${process.env.VUE_APP_API_BASE_URL}/community-service/comment/update/${comment.id}`, {
+        content: comment.editContent, // 수정된 내용을 API로 전송
+      });
+      comment.content = comment.editContent; // 댓글 내용 업데이트
+      comment.isEditing = false; // 수정 모드 비활성화
+    } catch (error) {
+      console.error("댓글 수정에 실패했습니다.", error);
+      this.error = '댓글 수정에 실패했습니다.';
+    }
+  },
     async deleteComment(comment) {
       if (confirm("댓글을 정말 삭제하시겠습니까?")) {
         try {
@@ -377,9 +387,11 @@ export default {
       }
     },
     openReportModal(type, comment = null) {
+      console.log(type, type);
+      console.log('comment : ', comment);
       this.reportData = {
         postId: this.postDetail.id,
-        commentId: comment ? comment.id : null,
+        commentId: comment && !comment.parentId ? comment.id : null,
         replyId: comment && comment.parentId ? comment.id : null
       };
       if (type === 'post') {
@@ -401,18 +413,20 @@ export default {
       const options = { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' };
       return new Date(date).toLocaleDateString('ko-KR', options);
     },
+    formatContent(content) {
+    return content.replace(/\n/g, '<br>');
+    },
   },
 };
 </script>
 
-
 <style scoped>
-.pa-5{
+.pa-5 {
   max-width: 770px;
   width: 100%;
   margin: 0 auto;
-  box-sizing: border-box; /* 패딩과 보더를 포함하여 너비를 계산 */
-  background-color: #FCFCFC; /* 배경색 변경 */
+  box-sizing: border-box;
+  background-color: #FCFCFC;
 }
 
 .v-container {
@@ -420,55 +434,41 @@ export default {
   margin: 0 auto;
 }
 
-.text-body-1 {
-  font-size: 1rem;
-  line-height: 1.5;
-  color: #000000;
-}
-
 .action-link {
   cursor: pointer;
-  color: #6A6A6A; 
+  color: #6A6A6A;
 }
 
 .action-link:hover {
-  color: #0D47A1; 
+  color: #0D47A1;
 }
 
 h4.text-h6 {
   color: #6A6A6A;
 }
 
-h2.text-h5 {
-  color: #333;
-}
-
-.v-btn {
-  font-weight: bold;
-  border-radius: 0;
-  min-width: 100px;
-}
-
-.image-container {
-  display: flex;
-  justify-content: center; 
-  align-items: center; 
-}
-
-.center-image {
-  max-width: 60%;
-  height: auto;
-}
-
-.btn_solid {
-  background-color: #ffdb69 !important;
-  color: rgb(255, 255, 255);
-  border-radius: 8px;
+.custom-card {
+  background-color: #FCFCFC;
+  box-shadow: none;
+  border-bottom: none;
 }
 
 .enlarged-reply-card {
-  padding: 16px;
   margin: 8px 0;
+  height: auto;
   background-color: #f9f9f9;
+  flex-direction: column; /* flex 방향 설정 */
+  padding: 10px 5px 10px 25px; /* 따옴표 제거 */
+  display: flex; /* 따옴표 제거 */
+}
+
+.comment-content {
+  margin-bottom: 30px;
+  width: 100%;
+  max-width: 500px;
+  line-height: 1.5; /* 줄 간격 설정 (1.5배) */
+  white-space: normal; /* 일반적인 줄바꿈 */
+  word-wrap: break-word;
+  overflow-wrap: break-word;
 }
 </style>
