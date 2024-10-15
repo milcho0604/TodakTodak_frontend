@@ -45,7 +45,8 @@
                 <v-chip-group selected-class="text-primary" v-model="filter">
                     <v-chip value="전체" filter><strong>전체</strong></v-chip>
                     <v-chip value="오늘" filter><strong>오늘</strong></v-chip>
-                    <v-chip value="진료완료" :class="filter === '진료완료' ? 'after-completed' : ''" filter><strong>진료완료</strong></v-chip>
+                    <v-chip value="진료완료" :class="filter === '진료완료' ? 'after-completed' : ''"
+                        filter><strong>진료완료</strong></v-chip>
                     <v-chip value="예약취소" filter><strong>예약취소</strong></v-chip>
                     <v-chip value="노쇼" :class="filter === '노쇼' ? 'noshow' : ''" filter><strong>노쇼</strong></v-chip>
                     <v-chip value="비대면" :class="filter === '비대면' ? 'untact' : ''" filter><strong>비대면</strong></v-chip>
@@ -64,16 +65,10 @@
                             <v-col cols="4"></v-col>
                             <v-col cols="4" style="text-align: end;">
                                 <v-chip v-if="reserveType == '지난예약' &&
-                                    item.status == 'Completed'"
-                                    class="after-completed"><strong>진료완료</strong></v-chip>
+                                    item.status == 'Completed'" class="after-completed"><strong>진료완료</strong></v-chip>
                                 <v-chip v-if="item.status == 'Cancelled'"><strong>예약취소</strong></v-chip>
                                 <v-chip v-if="reserveType == '지난예약' &&
-                                    item.status == 'Noshow'"
-                                    class="noshow"><strong>노쇼</strong></v-chip>
-                                <v-chip v-if="item.untact" class="untact"
-                                    @click="this.$router.push(`/room/${item.id}`)"><img src="@/assets/untact_image.png"/>
-                                    <strong>비대면진료 접속</strong>
-                                </v-chip>
+                                    item.status == 'Noshow'" class="noshow"><strong>노쇼</strong></v-chip>
                             </v-col>
                         </v-row>
                         <v-row>
@@ -86,9 +81,14 @@
                             <v-col cols="4"></v-col>
                             <v-col cols="4" style="text-align: end;">
                                 <v-chip v-if="reserveType == '지난예약' &&
-                                    item.status == 'Completed'" 
-                                    :class="item.review ? 'review' : 'no-review'"
-                                    @click="item.review ? this.$router.push('/') : reviewData(item)"><img src="@/assets/pencil_img.png" /><strong>리뷰쓰기</strong>
+                                    item.status == 'Completed' && item.medichart !='진료중'" :class="item.review ? 'review' : 'no-review'"
+                                    @click="item.review ? this.$router.push('/') : reviewData(item)"><img
+                                        src="@/assets/pencil_img.png" /><strong>리뷰쓰기</strong>
+                                </v-chip>
+                                <v-chip v-else-if="item.untact && item.medichart == '진료중'" class="no-untact"
+                                    @click="this.$router.push(`/room/${item.id}`)"><img
+                                        src="@/assets/untact_image.png" />
+                                    <strong>비대면진료 접속</strong>
                                 </v-chip>
                             </v-col>
                         </v-row>
@@ -116,27 +116,28 @@
                         </v-row>
                         <v-row>
                             <v-col cols="2.5">
-                                <v-chip
-                                    v-if="!item.untact"
+                                <v-chip v-if="!item.untact"
                                     :class="{ 'immediate': item.reservationType == 'Immediate', 'scheduled': item.reservationType !== 'Immediate' }">
                                     <strong>{{ formatType(item.reservationType) }}</strong>
                                 </v-chip>
-                                <v-chip
-                                    v-if="item.untact" class="untact1">
+                                <v-chip v-else-if="item.untact" class="untact1">
                                     <strong>비대면 진료</strong>
                                 </v-chip>
                             </v-col>
                             <v-col cols="2">
-                                <v-chip
-                                    v-if="item.status == 'Completed' && !item.untact"
+                                <v-chip v-if="item.status == 'Completed' && !item.untact"
                                     :class="{ 'confirmed': item.status == 'Confirmed', 'completed': item.status !== 'Confirmed' }">
                                     <strong>{{ formatStatus(item.status) }}</strong>
                                 </v-chip>
-                                <v-chip
-                                    v-if="item.untact" class="payment">
+                                <v-chip v-else-if="item.untact && item.medichart == '결제완료'" class="payment">
                                     <strong>결제완료</strong>
                                 </v-chip>
-                                
+                                <v-chip v-else-if="item.untact && item.medichart == '진료완료'" class="payment">
+                                    <strong>결제전</strong>
+                                </v-chip>
+                                <v-chip v-else-if="item.untact && item.medichart == '진료중'" class="beforeuntact">
+                                    <strong>진료전</strong>
+                                </v-chip>
                             </v-col>
                             <v-col cols="2"></v-col>
                             <v-col class="detail ml-6" cols="5">
@@ -200,7 +201,8 @@
                                 </v-col>
                             </v-row>
                             <v-row v-if="item.status == 'Confirmed'" justify="center">
-                                <v-chip class="cancel-btn" @click="cancelReserve(item.id)"><strong>예약 취소</strong></v-chip>
+                                <v-chip class="cancel-btn" @click="cancelReserve(item.id)"><strong>예약
+                                        취소</strong></v-chip>
                             </v-row>
                         </div>
                     </v-col>
@@ -210,8 +212,8 @@
             <v-dialog v-model="dialog" width="500">
                 <v-card class="review-edit-modal">
                     <v-card-text>
-                        <div class="inter-bold title">{{ dialogReserve.hospitalName}}</div>
-                        <div class="rating-label inter-bold">{{ dialogReserve.doctorName}} 원장</div>
+                        <div class="inter-bold title">{{ dialogReserve.hospitalName }}</div>
+                        <div class="rating-label inter-bold">{{ dialogReserve.doctorName }} 원장</div>
                         <!-- 평점 입력 -->
                         <div class="rating-label inter-bold">진료 만족도를 남겨주세요!</div>
                         <v-rating v-model="rating" length="5" color="#0094FF" background-color="#E7EEF0"
@@ -248,6 +250,7 @@ export default {
             rating: 0,
             showDetails: true,
             untact: null,
+            mediChart: null,
         }
     },
     methods: {
@@ -264,10 +267,12 @@ export default {
                 }));
             } else if (req == '지난예약') {
                 const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/reservation-service/reservation/list/yesterday`);
+                this.filter = null;
                 this.reserveList = response.data.map(item => ({
                     ...item,
                     showDetails: false,
-                    review: false
+                    review: false,
+                    medichart: ""
                 }));
                 await Promise.all(this.reserveList.map(async (item, index) => {
                     await this.isReview(item.id, index);
@@ -275,8 +280,10 @@ export default {
                 await Promise.all(this.reserveList.map(async (item, index) => {
                     if(item.untact){
                         await this.medicalChart(item.id, index);
+                        this.reserveList[this.mediChart.id].medichart = this.mediChart.status;
                     }
                 }))
+                console.log(this.reserveList)
             }
             this.sortReserveList();
             this.updateType(req);
@@ -301,15 +308,15 @@ export default {
             } else if (this.reserveType === '지난예약') {
                 if (this.filter === '진료완료') {
                     this.filteredReserveList = this.reserveList.filter(item => item.status === 'Completed')
-                }else if(this.filter === '오늘'){
+                } else if (this.filter === '오늘') {
                     const today = this.dateFormat(new Date());
                     this.filteredReserveList = this.reserveList.filter(item => item.reservationDate === today);
                 } else if (this.filter === '예약취소') {
                     this.filteredReserveList = this.reserveList.filter(item => item.status === 'Cancelled')
                 } else if (this.filter === '노쇼') {
                     this.filteredReserveList = this.reserveList.filter(item => item.status === 'Noshow')
-                } else if(this.filter === '비대면'){
-                    this.filteredReserveList = this.reserveList.filter(item=> item.untact)
+                } else if (this.filter === '비대면') {
+                    this.filteredReserveList = this.reserveList.filter(item => item.untact)
                 } else {
                     this.filteredReserveList = this.reserveList;
                 }
@@ -351,7 +358,6 @@ export default {
         async isReview(id, index) {
             const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/reservation-service/review/reserve/${id}`);
             this.reserveList[index].review = response.data;
-            console.log(this.reserveList);
         },
         dateFormat(date) {
             const year = date.getFullYear();
@@ -360,11 +366,11 @@ export default {
 
             return `${year}-${month}-${day}`;
         },
-        reviewData(item){
+        reviewData(item) {
             this.dialog = true;
-            this.dialogReserve = item; 
+            this.dialogReserve = item;
         },
-        async createReview(){
+        async createReview() {
             await axios.post(`${process.env.VUE_APP_API_BASE_URL}/reservation-service/review/create`, {
                 rating: this.rating,
                 contents: this.contents,
@@ -372,17 +378,19 @@ export default {
             });
             window.location.reload();
         },
-        async cancelReserve(id){
+        async cancelReserve(id) {
             await axios.delete(`${process.env.VUE_APP_API_BASE_URL}/reservation-service/reservation/cancel/${id}`);
 
             alert("예약 취소 완료")
         },
-        async medicalChart(id, index){
-            try{
+        async medicalChart(id, index) {
+            try {
                 const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/reservation-service/medical-chart/${id}`);
-                console.log(index);
-                console.log(response);
-            }catch(e){
+                this.mediChart = {
+                    id : index,
+                    status : response.data.result.medicalStatus
+                }
+            } catch (e) {
                 console.log(e)
             }
         }
@@ -545,7 +553,7 @@ export default {
     margin-top: -40px;
     margin-left: -25px;
     background-color: #DBDBDB;
-    color: #737373; 
+    color: #737373;
 }
 
 .completed {
@@ -555,17 +563,24 @@ export default {
     color: #996E00;
 }
 
-.untact1{
+.untact1 {
     margin-top: -40px;
     background-color: #00B2FF;
     color: #FFFFFF !important;
 }
 
-.payment{
+.payment {
     margin-top: -40px;
     margin-left: -25px;
     background-color: #D0F593;
     color: #4F7F00;
+}
+
+.beforeuntact {
+    margin-top: -40px;
+    margin-left: -25px;
+    background-color: #DBDBDB;
+    color: #737373;
 }
 
 .detail {
@@ -597,6 +612,7 @@ export default {
     cursor: pointer;
     /* 클릭 가능하게 커서 스타일 변경 */
 }
+
 .after-completed {
     background-color: #CDFFB5;
     color: #4E7E00 !important;
@@ -607,7 +623,7 @@ export default {
     color: #A20000 !important;
 }
 
-.untact{
+.untact {
     background-color: #00B2FF;
     color: #FFFFFF !important;
 }
@@ -623,6 +639,12 @@ export default {
     margin-top: -30px;
     background-color: #DBDBDB;
     color: #888888;
+}
+
+.no-untact{
+    margin-top: -30px;
+    background-color: #00B2FF;
+    color: #FFFFFF !important;
 }
 
 .review-edit-modal {
