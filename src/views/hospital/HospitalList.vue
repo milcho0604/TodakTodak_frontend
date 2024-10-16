@@ -56,6 +56,7 @@
         <v-spacer></v-spacer>
         <v-row>
             <v-col cols="2">
+                <!-- 정렬맞춰주기 위한 빈cols -->
             </v-col>
 
             <v-col cols="8">
@@ -73,6 +74,7 @@
             </v-col>
 
             <v-col cols="2">
+                <!-- 정렬 맞춰주기위한 빈 cols -->
             </v-col>
         </v-row>
         <v-spacer></v-spacer>
@@ -81,7 +83,7 @@
             <v-row>
                 <v-col cols="12" v-for="hospital in hospitalList" :key="hospital.id">
                     <v-card
-                        style="width:800px !important;"
+                        style="width:780px !important;"
                         variant="outlined"
                         class="custom-card justify-center"
                         @click="goToDetail(hospital.id)"
@@ -361,7 +363,7 @@ export default{
     border: 2px solid #DBDBDB; /* 테두리 색상만 변경 */
     border-radius: 10px; /* 모서리 둥글기 */
     background-color: white !important; /* 카드 내부 배경색 고정 */
-    width: 1000px !important;
+    /* width: 1000px !important; */
     margin: 0 auto;
   }
 /* v-avatar border-radius */
