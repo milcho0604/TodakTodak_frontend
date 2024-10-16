@@ -32,7 +32,7 @@
 
         <v-list-item
         :prepend-avatar="child"
-        title="자녀설정"
+        title="자녀관리"
         value="childConfig"
         @click="toMyChild"
         ></v-list-item>
@@ -64,7 +64,7 @@
         value="doctorQnA"
         @click="toMyQnA"
         ></v-list-item>
-        
+
         <v-list-item
         :prepend-avatar="cs"
         title="고객센터"

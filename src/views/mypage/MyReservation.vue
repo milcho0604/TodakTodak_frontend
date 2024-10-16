@@ -230,12 +230,17 @@
             </v-dialog>
         </v-container>
     </v-container>
+    <MyPageSideBar/>
 </template>
 
 <script>
 import axios from 'axios';
+import MyPageSideBar from "@/components/sidebar/MyPageSideBar.vue";
 
 export default {
+    components: { 
+        MyPageSideBar 
+    },
     data() {
         return {
             reserveType: '오는예약',

@@ -118,8 +118,9 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
-    <MyPageSideBar/>
+    
   </v-container>
+  <MyPageSideBar/>
 </template>
 
 <script>
@@ -129,9 +130,6 @@ import MyPageSideBar from "@/components/sidebar/MyPageSideBar.vue";
 export default {
   components: { MyPageSideBar },
   name: "MyPage",
-  compoents: {
-    MyPageSideBar,
-  },
   data() {
     return {
       isEditMode: false,
