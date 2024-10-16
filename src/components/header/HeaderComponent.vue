@@ -46,7 +46,7 @@
               <v-list-item :to="{ path: '/member/child'}">
                 <v-list-item-title>자녀 관리</v-list-item-title>
               </v-list-item>
-              <v-list-item :to="{ path: '/'}">
+              <v-list-item :to="{ path: '/chat'}">
                 <v-list-item-title>내 채팅</v-list-item-title>
               </v-list-item>
               <v-list-item :to="{ path: '/member/fullcal'}">
