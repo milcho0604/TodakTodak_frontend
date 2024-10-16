@@ -11,7 +11,12 @@
       <div class="d-flex justify-space-between align-center mb-3">
         <v-row class="flex-grow-1">
           <v-col>
-            <v-list-item-title style="font-weight: bold; font-size: 20px !important;">{{ postDetail.name }}</v-list-item-title>
+            <v-list-item-title style="font-weight: bold; font-size: 20px !important; margin-bottom: 10px;">
+              <v-avatar size="40">
+                <v-img :src="postDetail.profileImgUrl" alt="profileImgUrl"></v-img>
+              </v-avatar> 
+              {{ postDetail.name }}
+            </v-list-item-title>
             <v-list-item-subtitle style="font-size: 15px !important;">{{ formatDate(postDetail.createdTimeAt) }}</v-list-item-subtitle>
           </v-col>
           <v-col class="d-flex justify-end">
@@ -39,22 +44,19 @@
       </div>
       
       <v-row class="mb-5 no-margin">
-        <v-col cols="12" md="12">
-          <v-card flat class="custom-card">
-            <v-card-text>
-              <div>
-                <v-list-item-title style="font-weight: bold; font-size: 25px !important; margin-bottom: 10px;">{{ postDetail.title }}</v-list-item-title>
-                <v-list-item-subtitle style="font-size:20px; margin-bottom: 10px; line-height: 1.5;" v-html="formatContent(postDetail.content)"></v-list-item-subtitle>
-              </div>
-            </v-card-text>
-            <div class="image-container">
-              <v-img v-if="postDetail.postImgUrl" :src="postDetail.postImgUrl" alt="게시글 이미지" class="mb-3 rounded" />
-            </div>
-          </v-card>
+        <v-col cols="12">            
+          <v-list-item-title style="font-weight: bold; font-size: 25px !important; margin-bottom: 10px;">
+            {{ postDetail.title }}
+          </v-list-item-title>
+          <v-list-item-subtitle style="font-size:20px; margin-bottom: 10px; line-height: 1.5;" v-html="formatContent(postDetail.content)"></v-list-item-subtitle>
+          <div class="image-container">
+            <v-img v-if="postDetail.postImgUrl" :src="postDetail.postImgUrl" alt="게시글 이미지" class="mb-3 rounded" />
+          </div>
         </v-col>
       </v-row>
+      
 
-      <v-col class="d-flex justify" style="flex-grow: 1;">
+      <v-col class="d-flex justify pa-0">
         <span @click="toggleLike" class="d-flex align-center action-link mr-2">
           <v-icon small>{{ liked ? 'mdi-heart' : 'mdi-heart-outline' }}</v-icon> &nbsp; 좋아요 {{ postDetail.likeCount }}  · 
         </span>
@@ -92,7 +94,7 @@
           <h4 class="text-h6 font-weight-bold">댓글</h4>
           <v-list style="background-color: #FCFCFC;">
             <v-list-item v-for="comment in postDetail.comments" :key="comment.id" style="padding: 10px;">
-              <v-card :style="{ backgroundColor:'#ECF2FE', padding: '10px 5px 10px 25px', boxShadow: 'none' , height: 'auto', overflow: 'visible'}" class="mb-2">
+              <v-card :style="{ backgroundColor:'#ECF2FE', padding: '10px 5px 10px 25px', boxShadow: 'none', height: 'auto', overflow: 'visible'}" class="mb-2" style="flex: 1;">
                 <v-card-text>
                   <div class="d-flex justify-space-between align-center">
                     <div style="flex: 9;">
@@ -174,7 +176,7 @@
                   </span>
                 </v-form>
               </v-card>
-
+              
               <!-- 대댓글 표시 -->
               <v-list v-if="comment.replies && comment.replies.length" class="ml-4" style="background-color: #FCFCFC;">
                 <v-list-item v-for="reply in comment.replies" :key="reply.id">
@@ -295,7 +297,7 @@ export default {
       try {
         const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/community-service/post/detail/${postId}`);
         this.postDetail = response.data.result;
-        
+        console.log("여기!!!", this.postDetail);
 
         // 댓글 및 대댓글 초기화
         this.postDetail.comments.forEach(comment => {
@@ -464,13 +466,4 @@ h4.text-h6 {
   display: flex; /* 따옴표 제거 */
 }
 
-.comment-content {
-  margin-bottom: 30px;
-  width: 100%;
-  max-width: 500px;
-  line-height: 1.5; /* 줄 간격 설정 (1.5배) */
-  white-space: normal; /* 일반적인 줄바꿈 */
-  word-wrap: break-word;
-  overflow-wrap: break-word;
-}
 </style>
