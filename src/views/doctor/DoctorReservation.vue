@@ -1,6 +1,6 @@
 <template>
     <v-container class="custom-container">
-        <div class="hospitalName inter-bold">병원이름</div>
+        <div class="hospitalName inter-bold">{{hospitalName}}</div>
         <div>
             <input type="date" v-model="date" class="datePick">
         </div>
@@ -140,8 +140,9 @@ export default {
     methods: {
         // 병원 이름 불러오기
         async fetchHospitalName() {
-            // const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/reservation-service/reservation/hospital/list`)
-            // console.log('response: ', response.data);
+            const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/member-service/member/hospitalName`)
+            console.log('response: ', response.data);
+            this.hospitalName = response.data.result.name;
         },
         async fetchConfirm(date) {
             const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/reservation-service/reservation/hospital/list`,
