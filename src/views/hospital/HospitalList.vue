@@ -66,9 +66,9 @@
                 selected-class="text-primary"
                 mandatory
                 >
-                    <v-chip value="거리 순" size="large" filter>거리 순</v-chip>
-                    <v-chip value="별점 순" size="large" filter>별점 순</v-chip>
-                    <v-chip value="리뷰 순" size="large" filter>리뷰 순</v-chip>
+                    <v-chip value="distance" size="large" filter>거리 순</v-chip>
+                    <v-chip value="rating" size="large" filter>별점 순</v-chip>
+                    <v-chip value="reviewCount" size="large" filter>리뷰 순</v-chip>
 
                 </v-chip-group>
             </v-col>
@@ -79,8 +79,8 @@
         </v-row>
         <v-spacer></v-spacer>
         <v-container class="hospital-list-container d-flex justify-center align-center">
-            <!-- 병원리스트 -->
-            <v-row>
+            <!-- 병원리스트 (데이터 로딩상태 아닐 때)-->
+            <v-row v-if="!loading">
                 <v-col cols="12" v-for="hospital in hospitalList" :key="hospital.id">
                     <v-card
                         style="width:780px !important;"
@@ -193,6 +193,31 @@
         
             </v-card>
           </v-dialog>
+          <!-- 데이터 로딩 중일때 띄워줄 모달 -->
+          <v-dialog v-model="loading" max-width="500px">
+            <v-card class="loading-modal">
+                <!-- 로딩 진행 표시 (v-progress-linear) -->
+                <v-progress-linear
+                color="#0075FF"
+                height="4"
+                indeterminate
+                ></v-progress-linear>
+
+                <v-card-title class="loading-title">
+                    데이터 로딩중
+                </v-card-title>
+                <!-- <v-container class="text-center">
+                    <v-progress-circular
+                    :size="50"
+                    color="primary"
+                    indeterminate
+                  ></v-progress-circular>
+                </v-container> -->
+                <v-card-text class="loading-text">
+                    회원님의 현재 위치 정보를 기반으로 <br>병원 리스트를 불러오고 있습니다.
+                </v-card-text>
+            </v-card>
+          </v-dialog>
           
           
     </v-container>
@@ -214,11 +239,11 @@ export default{
         dong:"신대방동",
         search:"", 
         sort:"거리 순", // 사용자가 선택한 정렬조건
-        sortOptions: [
-            { text: "거리 순", value: "distance" }, // 서버로 넘길 값: distance
-            { text: "별점 순", value: "rating" },    // 서버로 넘길 값: rating
-            { text: "리뷰 순", value: "review" }     // 서버로 넘길 값: review
-        ], // 정렬 옵션
+        // sortOptions: [
+        //     { text: "거리 순", value: "distance" }, // 서버로 넘길 값: distance
+        //     { text: "별점 순", value: "rating" },    // 서버로 넘길 값: rating
+        //     { text: "리뷰 순", value: "review" }     // 서버로 넘길 값: review
+        // ], // 정렬 옵션
         selectedTag: "전체",
         latitude: '37.544444', // 사용자 현재 위도
         longitude: '127.063087', // 사용자 현재 경도
@@ -226,6 +251,9 @@ export default{
         keywordList:[], // 키워드 리스트 (, 기준으로 split)
         isOperating: "operating",
         locationModal: false,
+        loading : false, // 로딩상태변수 추가
+        isLoading: true, // 모달 테스트 
+        hospital: 'https://todak-file.s3.ap-northeast-2.amazonaws.com/default-images/hospital-icon.png',
       }
     },
     created() {
@@ -258,6 +286,7 @@ export default{
             this.getCurrentLocation();  // 현재 위치로 병원 리스트 가져오기  
         },
         async getCurrentLocation() {
+            this.loading = true; // 로딩 시작
             return new Promise((resolve, reject) => {
                 if (navigator.geolocation) {
                     navigator.geolocation.getCurrentPosition(
@@ -273,16 +302,21 @@ export default{
 
                             // 위치 정보를 가져온 후, 동 정보를 업데이트
                             await this.getDongFromCoordinates(this.latitude, this.longitude);
+                            
+                            this.loading = false; // 로딩 종료
                             resolve(); // 성공 시 resolve 호출
                         },
                         error => {
                             console.log("위치 정보를 가져오지 못했습니다.", error);
+                            this.loading = false; // 로딩 종료
+
                             this.loadHospitalList(); // 초기값으로 병원 리스트 로드
                             reject(error); // 실패 시 reject 호출
                         }
                     );
                 } else {
                     console.log("Geolocation을 지원하지 않는 브라우저입니다.");
+                    this.loading = false; // 로딩 종료
                     reject(new Error("Geolocation을 지원하지 않는 브라우저입니다."));
                 }
             });
@@ -422,8 +456,22 @@ export default{
     margin-left: auto;
     margin-right: auto; /* 버튼을 수평 중앙에 정렬 */
   }
-
-  
-  
+.loading-modal{
+    width: 500px;
+    height: 240px;
+    background-color: #FFFFFF;
+    border-radius: 20px; /* 모서리 둥글기 */
+}
+.loading-title{
+    font-weight: bold; /* 글씨 굵게 */
+    font-size: 30px; /* 원하는 폰트 크기 설정 */
+    color: #00499E;
+    text-align: center;
+    margin-top: 20px;
+}  
+.loading-text{
+    font-size: 15px;
+    text-align: center;
+}  
 
 </style>
