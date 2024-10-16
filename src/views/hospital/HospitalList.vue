@@ -265,6 +265,10 @@ export default{
                             console.log("사용자 위도", this.latitude);
                             console.log("사용자 경도", this.longitude);
 
+                            // 로컬스토리지에 사용자 현재위치 위도,경도 저장
+                            localStorage.setItem('latitude', this.latitude);
+                            localStorage.setItem('longitude', this.longitude);
+
                             // 위치 정보를 가져온 후, 동 정보를 업데이트
                             await this.getDongFromCoordinates(this.latitude, this.longitude);
                             resolve(); // 성공 시 resolve 호출

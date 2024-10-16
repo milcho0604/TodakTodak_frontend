@@ -1,5 +1,5 @@
 <template>
-  <v-container>
+  <v-container class="custome-container">
     <!-- 리뷰 관리 제목과 연필 아이콘 -->
     <v-row class="review-header" justify="center" align="center">
       <v-col cols="auto" class="d-flex flex-column align-center">
@@ -104,12 +104,17 @@
       </v-card>
     </v-dialog>
   </v-container>
+  <MyPageSideBar/>
 </template>
 
 <script>
 import axios from "axios";
+import MyPageSideBar from "@/components/sidebar/MyPageSideBar.vue";
 
 export default {
+  components: { 
+        MyPageSideBar 
+    },
   data() {
     return {
       reviews: [],

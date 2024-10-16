@@ -76,6 +76,7 @@
             </v-card>
         </v-dialog>
     </v-container>
+    <MyPageSideBar/>    
 </template>
 
 <script>
@@ -84,12 +85,14 @@ import ChildCreateModal from './ChildCreateModal.vue';
 import ChildDeleteModal from './ChildDeleteModal.vue';
 import ChildUpdateModal from './ChildUpdateModal.vue';
 import ChildShareModal from './ChildShareModal.vue';
+import MyPageSideBar from "@/components/sidebar/MyPageSideBar.vue";
 export default {
     components: {
         ChildCreateModal,
         ChildUpdateModal,
         ChildDeleteModal,
-        ChildShareModal
+        ChildShareModal,
+        MyPageSideBar,
     },
     data() {
         return {
