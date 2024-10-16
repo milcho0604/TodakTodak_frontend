@@ -1,5 +1,5 @@
 <template>
-  <v-container class="main-content d-flex align-center justify-center">
+  <v-container class="custom-container">
     <v-row justify="center">
       <v-col cols="12" sm="9" md="8" lg="7">
         <!-- 프로필 섹션 -->
@@ -118,14 +118,20 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
+    <MyPageSideBar/>
   </v-container>
 </template>
 
 <script>
 import axios from "axios";
+import MyPageSideBar from "@/components/sidebar/MyPageSideBar.vue";
 
 export default {
+  components: { MyPageSideBar },
   name: "MyPage",
+  compoents: {
+    MyPageSideBar,
+  },
   data() {
     return {
       isEditMode: false,

@@ -107,10 +107,11 @@ export default {
         this.name = response.data.result.name;
         this.role = response.data.result.role;
         // 프로필 이미지가 null이면 기본 이미지 경로로 설정
-    this.profileImgUrl = response.data.result.profileImgUrl 
-        ? response.data.result.profileImgUrl
-        : "https://todak-file.s3.ap-northeast-2.amazonaws.com/default-images/default_user_image.png"
-
+        this.profileImgUrl = response.data.result.profileImgUrl 
+            ? response.data.result.profileImgUrl
+            : "https://todak-file.s3.ap-northeast-2.amazonaws.com/default-images/default_user_image.png";
+        localStorage.setItem('name', this.name);
+        localStorage.setItem('profileImgUrl', this.profileImgUrl);
       }catch(error){
         console.error("사용자 프로필 loading error : ",error);
       }

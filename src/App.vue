@@ -2,8 +2,9 @@
   <v-app class="app global_bg">
     <HeaderComponent/>
     <AppSidebar ref="sidebar" />
+    
     <v-main class="main-content">
-      <router-view content="회원가입"/>
+      <router-view/>
     </v-main>
     <FooterComponent/>
   </v-app>
@@ -22,7 +23,7 @@ export default {
   name: 'App',
   components: {
     HeaderComponent,
-    FooterComponent
+    FooterComponent,
   },
   async mounted() {
     await this.initializeFCM();
