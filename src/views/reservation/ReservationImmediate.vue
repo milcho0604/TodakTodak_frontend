@@ -53,7 +53,7 @@
                             <img :src="doctor.profileImgUrl ? doctor.profileImgUrl : 'https://todak-file.s3.ap-northeast-2.amazonaws.com/default-images/doctor-3d-image.png'"
                                 alt="doctor image" class="mx-2"
                                 style="width: 65px; height: 65px; border-radius: 30px;" />
-                            <v-text class="ml-2">{{ doctor.name }}</v-text>
+                            <v-text class="ml-2">{{ doctor.name }} 원장</v-text>
                             <v-chip class="mx-3" style="font-weight:bold; color:white; background-color:#0066FF"
                                 variant="flat">대기 {{ doctor.waiting }}명</v-chip>
                             <div class="d-flex justify-end" style="flex-grow: 1;">
@@ -315,8 +315,8 @@ export default {
             reservedModal: false,
             successReserveModal: false,
             waitingData: null,
-            totalWaiting: 42,
-            myWaiting: 43,
+            totalWaiting: null,
+            myWaiting: null,
         }
     },
     methods: {
@@ -394,8 +394,17 @@ export default {
                 const response = await axios.post(`${process.env.VUE_APP_API_BASE_URL}/reservation-service/reservation/immediate`,
                     req);
 
-                console.log(response)
+                const reservationId = response.data.result.id;
+                const doctorId = this.doctorList.find(item => item.doctorEmail === response.data.result.doctorEmail).id;
+                
+                console.log(reservationId + " " + doctorId);
+
+                const waitingEntry = this.waitingData ? this.waitingData[doctorId] : null;
+                const entryValues = Object.values(waitingEntry);
+
                 this.reservedModal = false;
+                this.totalWaiting = entryValues.length;
+                this.myWaiting = this.totalWaiting+1;
                 this.successReserveModal = true;
             } catch (e) {
                 alert(e.message)
