@@ -21,7 +21,7 @@ export const mypageRouter = [
     {
 
         path: '/member/mypage/myPost',
-        name: 'MyPosts',
+        name: 'MyPost',
         component: MyPost
     },
     {
