@@ -228,12 +228,6 @@ export default{
                 // http://localhost:8080/reservation-service/review/detail/2
                 const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/reservation-service/review/detail/${this.hospitalId}`);
                 this.reviewAvgList = response.data;
-                // 리뷰 개수 계산
-                // this.reviewCount = this.reviewAvgList.count1Star 
-                //                 + this.reviewAvgList.count2Stars
-                //                 + this.reviewAvgList.count3Stars
-                //                 + this.reviewAvgList.count4Stars
-                //                 + this.reviewAvgList.count5Stars;
             }catch(error){
                 console.log(error);
             }
