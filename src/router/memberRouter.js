@@ -4,7 +4,7 @@ import Authentication from "@/views/member/EmailAuthentication.vue"
 import FindEmailPage from "@/views/member/FindEmailPage.vue";
 import FindPasswordPage from "@/views/member/FindPasswordPage.vue";
 import ResetPasswordPage from "@/views/member/ResetPasswordPage.vue";
-
+import MyNotification from "@/views/member/MyNotification.vue";
 import MyReviewList from "@/views/member/MyReviewList.vue";
 import AdminLoginPage from "@/views/member/AdminLoginPage.vue";
 import MyChild from "@/views/child/MyChild.vue";
@@ -61,6 +61,11 @@ export const memberRouter = [
         path: '/member/fullcal',
         name: 'FullCal',
         component: FullCal  
+    },
+    {
+        path: '/notification/list',
+        name: 'MyNotification',
+        component: MyNotification
     },
     {
         path: '/loginSuccess',
