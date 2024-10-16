@@ -2,8 +2,9 @@
   <v-app class="app global_bg">
     <HeaderComponent/>
     <AppSidebar ref="sidebar" />
+    
     <v-main class="main-content">
-      <router-view content="회원가입"/>
+      <router-view/>
     </v-main>
     <FooterComponent/>
   </v-app>
@@ -15,14 +16,14 @@ import HeaderComponent from './components/header/HeaderComponent.vue';
 import FooterComponent from './components/footer/FooterComponent.vue';
 
 // FCM 관련 Firebase SDK
-import { initializeApp } from 'firebase/app';
 import { getMessaging, getToken, onMessage } from 'firebase/messaging';
 
 export default {
+  inject: ['firebase'],
   name: 'App',
   components: {
     HeaderComponent,
-    FooterComponent
+    FooterComponent,
   },
   async mounted() {
     await this.initializeFCM();
@@ -30,18 +31,7 @@ export default {
   methods: {
     // FCM 초기화 및 알림 권한 요청
     async initializeFCM() {
-      const firebaseConfig = {
-        apiKey: "AIzaSyBSH8wJ7aoblNAj8Kj7iNTfsJhlEL4KEcE",
-        authDomain: "padak-todak.firebaseapp.com",
-        projectId: "padak-todak",
-        storageBucket: "padak-todak.appspot.com",
-        messagingSenderId: "22351664979",
-        appId: "1:22351664979:web:536ae135a5a43c0f88b3a6",
-        databaseURL: "https://padak-todak-default-rtdb.asia-southeast1.firebasedatabase.app"
-      };
-
-      const firebase = initializeApp(firebaseConfig);
-      const messaging = getMessaging(firebase);
+      const messaging = getMessaging(this.firebase);
 
       // 서비스 워커가 준비될 때까지 대기
       await navigator.serviceWorker.ready;

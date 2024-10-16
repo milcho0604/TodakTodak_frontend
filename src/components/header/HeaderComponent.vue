@@ -40,20 +40,17 @@
               <v-list-item :href="`/member/mypage/reservation`">
                 <v-list-item-title>나의 예약내역</v-list-item-title>
               </v-list-item>
-              <v-list-item :to="{ path: '/'}">
-                <v-list-item-title>우리아이 캘린더                                                                             </v-list-item-title>
-              </v-list-item>
               <v-list-item :to="{ path: '/member/mypage'}">
                 <v-list-item-title>마이 페이지</v-list-item-title>
               </v-list-item>
               <v-list-item :to="{ path: '/member/child'}">
-                <v-list-item-title>자녀 설정</v-list-item-title>
+                <v-list-item-title>자녀 관리</v-list-item-title>
               </v-list-item>
-              <v-list-item :to="{ path: '/'}">
+              <v-list-item :to="{ path: '/chat'}">
                 <v-list-item-title>내 채팅</v-list-item-title>
               </v-list-item>
               <v-list-item :to="{ path: '/member/fullcal'}">
-                <v-list-item-title>캘린더</v-list-item-title>
+                <v-list-item-title>우리아이 캘린더</v-list-item-title>
               </v-list-item>
               <v-list-item @click="logout">
                 <v-list-item-title>로그아웃</v-list-item-title>
@@ -107,10 +104,11 @@ export default {
         this.name = response.data.result.name;
         this.role = response.data.result.role;
         // 프로필 이미지가 null이면 기본 이미지 경로로 설정
-    this.profileImgUrl = response.data.result.profileImgUrl 
-        ? response.data.result.profileImgUrl
-        : "https://todak-file.s3.ap-northeast-2.amazonaws.com/default-images/default_user_image.png"
-
+        this.profileImgUrl = response.data.result.profileImgUrl 
+            ? response.data.result.profileImgUrl
+            : "https://todak-file.s3.ap-northeast-2.amazonaws.com/default-images/default_user_image.png";
+        localStorage.setItem('name', this.name);
+        localStorage.setItem('profileImgUrl', this.profileImgUrl);
       }catch(error){
         console.error("사용자 프로필 loading error : ",error);
       }

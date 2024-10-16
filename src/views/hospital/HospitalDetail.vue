@@ -117,41 +117,18 @@ export default{
         keywordList: [], // 병원 키워드 리스트 
         latitude: '37.544444', // 사용자 현재 위도
         longitude: '127.063087', // 사용자 현재 경도
-
-        // 예시데이터
-        // keywordList:['전문의','주차장','예방접종'],
-        // hospital:[{
-        //     id:'1', // 병원 id
-        //     standby: '5', // 실시간 대기인원
-        //     distance: '252m', // 내위치 ~ 병원 직선거리
-        //     name: '서초아이 소아청소년과의원', // 병원이름
-        //     hospitalImageUrl :'https://todak-file.s3.ap-northeast-2.amazonaws.com/default-images/hospital-example-image.png',
-        //     address: '서울 강남구 삼성로14 (개포자이 프레지던스) 자이스퀘어 상가 216호', // 병원주소
-        //     dong: '방배동', // 병원주소(동)
-        //     phoneNumber: '02-465-1234', // 병원전화번호
-        //     description: '', // 병원소개
-        //     notice: '', // 병원공지
-        //     keywords: '전문의, 주차장, 예방접종', // 병원 keywords
-        //     latitude: '', // 위도
-        //     longitude: '', // 경도
-        //     dayOfWeek: '화요일', // 요일
-        //     openTime: '08:30', // 영업시작 시각
-        //     closeTime: '19:00', // 영업종료 시각
-        //     todaySchedule: '화요일 08:30 ~ 19:00', // 오늘 영업시간(최종)
-        //     averageRating: '4.5', // 병원 평균평점
-        //     reviewCount: '32', // 병원리뷰개수
-        //     breakTime: '12:30 ~ 13:30' // 오늘 휴게시간
-        // }]
-        
       }
     },
     created() {
         const route = useRoute();
         this.hospitalId = route.params.hospitalId; 
+        this.latitude = localStorage.getItem('latitude');
+        this.longitude = localStorage.getItem('longitude');
 
     },
     async mounted(){
-        await this.getCurrentLocation(); // 사용자 위치 정보 가져온 후 병원 detail 조회 axios 요청
+        // await this.getCurrentLocation(); // 사용자 위치 정보 가져온 후 병원 detail 조회 axios 요청
+        this.loadHospitalDetail(); // 병원 디테일 조회
     },
     computed: {
         currentComponent() {
@@ -168,32 +145,33 @@ export default{
         updateTab(tabIndex) {
             this.activeTab = tabIndex; // 선택된 탭의 인덱스를 업데이트
         },
-        async getCurrentLocation() {
-            return new Promise((resolve, reject) => {
-                if (navigator.geolocation) {
-                    navigator.geolocation.getCurrentPosition(
-                        async position => {
-                            this.latitude = position.coords.latitude;
-                            this.longitude = position.coords.longitude;
-                            console.log("사용자 위도", this.latitude);
-                            console.log("사용자 경도", this.longitude);
+        // async getCurrentLocation() {
+        //      //사용자 현재위치 좌표조회
+        //     return new Promise((resolve, reject) => {
+        //         if (navigator.geolocation) {
+        //             navigator.geolocation.getCurrentPosition(
+        //                 async position => {
+        //                     this.latitude = position.coords.latitude;
+        //                     this.longitude = position.coords.longitude;
+        //                     console.log("사용자 위도", this.latitude);
+        //                     console.log("사용자 경도", this.longitude);
 
-                            // 위치 정보를 가져온 후, 병원 디테일 조회
-                            this.loadHospitalDetail(); // 병원 디테일 조회
-                            resolve(); // 성공 시 resolve 호출
-                        },
-                        error => {
-                            console.log("위치 정보를 가져오지 못했습니다.", error);
-                            this.loadHospitalDetail(); // 초기값으로 병원 디테일 조회
-                            reject(error); // 실패 시 reject 호출
-                        }
-                    );
-                } else {
-                    console.log("Geolocation을 지원하지 않는 브라우저입니다.");
-                    reject(new Error("Geolocation을 지원하지 않는 브라우저입니다."));
-                }
-            });
-        },
+        //                     // 위치 정보를 가져온 후, 병원 디테일 조회
+        //                     this.loadHospitalDetail(); // 병원 디테일 조회
+        //                     resolve(); // 성공 시 resolve 호출
+        //                 },
+        //                 error => {
+        //                     console.log("위치 정보를 가져오지 못했습니다.", error);
+        //                     this.loadHospitalDetail(); // 초기값으로 병원 디테일 조회
+        //                     reject(error); // 실패 시 reject 호출
+        //                 }
+        //             );
+        //         } else {
+        //             console.log("Geolocation을 지원하지 않는 브라우저입니다.");
+        //             reject(new Error("Geolocation을 지원하지 않는 브라우저입니다."));
+        //         }
+        //     });
+        // },
         async loadHospitalDetail(){
             try{
                 let params = {

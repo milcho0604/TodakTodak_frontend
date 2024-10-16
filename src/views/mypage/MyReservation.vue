@@ -1,5 +1,5 @@
 <template>
-    <v-container style="width: 1200px">
+    <v-container class="custome-container">
         <v-container style="width: 700px;">
             <v-spacer :style="{ height: '70px' }"></v-spacer>
             <v-row justify="center">
@@ -230,12 +230,17 @@
             </v-dialog>
         </v-container>
     </v-container>
+    <MyPageSideBar/>
 </template>
 
 <script>
 import axios from 'axios';
+import MyPageSideBar from "@/components/sidebar/MyPageSideBar.vue";
 
 export default {
+    components: { 
+        MyPageSideBar 
+    },
     data() {
         return {
             reserveType: '오는예약',
