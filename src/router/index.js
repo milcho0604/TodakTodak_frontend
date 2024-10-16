@@ -14,6 +14,7 @@ import { communityRouter } from './communityRouter';
 import { mypageRouter } from './mypageRouter';
 import { todakRouter } from './todakRouter';
 import { doctorRouter } from './doctorRouter';
+import { adminRouter } from './adminRouter';
 
 const routes = [
     {
@@ -30,7 +31,8 @@ const routes = [
     ...communityRouter,
     ...mypageRouter,
     ...todakRouter,
-    ...doctorRouter
+    ...doctorRouter,
+    ...adminRouter,
 ]
 
 const router = createRouter({
