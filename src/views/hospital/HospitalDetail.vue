@@ -122,10 +122,13 @@ export default{
     created() {
         const route = useRoute();
         this.hospitalId = route.params.hospitalId; 
+        this.latitude = localStorage.getItem('latitude');
+        this.longitude = localStorage.getItem('longitude');
 
     },
     async mounted(){
-        await this.getCurrentLocation(); // 사용자 위치 정보 가져온 후 병원 detail 조회 axios 요청
+        // await this.getCurrentLocation(); // 사용자 위치 정보 가져온 후 병원 detail 조회 axios 요청
+        this.loadHospitalDetail(); // 병원 디테일 조회
     },
     computed: {
         currentComponent() {
@@ -142,32 +145,33 @@ export default{
         updateTab(tabIndex) {
             this.activeTab = tabIndex; // 선택된 탭의 인덱스를 업데이트
         },
-        async getCurrentLocation() {
-            return new Promise((resolve, reject) => {
-                if (navigator.geolocation) {
-                    navigator.geolocation.getCurrentPosition(
-                        async position => {
-                            this.latitude = position.coords.latitude;
-                            this.longitude = position.coords.longitude;
-                            console.log("사용자 위도", this.latitude);
-                            console.log("사용자 경도", this.longitude);
+        // async getCurrentLocation() {
+        //      //사용자 현재위치 좌표조회
+        //     return new Promise((resolve, reject) => {
+        //         if (navigator.geolocation) {
+        //             navigator.geolocation.getCurrentPosition(
+        //                 async position => {
+        //                     this.latitude = position.coords.latitude;
+        //                     this.longitude = position.coords.longitude;
+        //                     console.log("사용자 위도", this.latitude);
+        //                     console.log("사용자 경도", this.longitude);
 
-                            // 위치 정보를 가져온 후, 병원 디테일 조회
-                            this.loadHospitalDetail(); // 병원 디테일 조회
-                            resolve(); // 성공 시 resolve 호출
-                        },
-                        error => {
-                            console.log("위치 정보를 가져오지 못했습니다.", error);
-                            this.loadHospitalDetail(); // 초기값으로 병원 디테일 조회
-                            reject(error); // 실패 시 reject 호출
-                        }
-                    );
-                } else {
-                    console.log("Geolocation을 지원하지 않는 브라우저입니다.");
-                    reject(new Error("Geolocation을 지원하지 않는 브라우저입니다."));
-                }
-            });
-        },
+        //                     // 위치 정보를 가져온 후, 병원 디테일 조회
+        //                     this.loadHospitalDetail(); // 병원 디테일 조회
+        //                     resolve(); // 성공 시 resolve 호출
+        //                 },
+        //                 error => {
+        //                     console.log("위치 정보를 가져오지 못했습니다.", error);
+        //                     this.loadHospitalDetail(); // 초기값으로 병원 디테일 조회
+        //                     reject(error); // 실패 시 reject 호출
+        //                 }
+        //             );
+        //         } else {
+        //             console.log("Geolocation을 지원하지 않는 브라우저입니다.");
+        //             reject(new Error("Geolocation을 지원하지 않는 브라우저입니다."));
+        //         }
+        //     });
+        // },
         async loadHospitalDetail(){
             try{
                 let params = {
