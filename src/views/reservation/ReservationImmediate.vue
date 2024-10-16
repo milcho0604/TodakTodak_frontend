@@ -3,7 +3,7 @@
         <v-container style="width: 700px;">
             <v-spacer :style="{ height: '50px' }"></v-spacer>
             <v-row class="header-row">
-                <h2>{{this.hospitalName}}</h2>
+                <h2>{{ this.hospitalName }}</h2>
                 <v-chip class="schedule-chip ml-3" variant="flat" size="x-large" label>오늘 예약</v-chip>
             </v-row>
             <v-row class="header-row">
@@ -25,7 +25,8 @@
                     <div class="child" @click="addChild(child)" :class="{ 'selected-child': this.child == child }">
                         <v-row justify="center">
                             <v-col class="text-center" cols="3">
-                                <img :src="child.imageUrl" alt="child image" style="width: 50px; height: 50px; border-radius:30px;">
+                                <img :src="child.imageUrl" alt="child image"
+                                    style="width: 50px; height: 50px; border-radius:30px;">
                             </v-col>
                             <v-col class="text-center" cols="5" style="margin-top: 11px;">
                                 <v-row class="inter-bold child-name">{{ child.name }}</v-row>
@@ -49,11 +50,15 @@
                     :class="{ 'selected-doctor': this.doctor == doctor }">
                     <v-row class="inter-bold inline" align="center">
                         <div class="d-flex align-center mx-3">
-                            <img :src="doctor.profileImgUrl ? doctor.profileImgUrl : 'https://todak-file.s3.ap-northeast-2.amazonaws.com/default-images/doctor-3d-image.png'" alt="doctor image" class="mx-2" style="width: 65px; height: 65px; border-radius: 30px;" />
-                            <v-text class="ml-2">{{ doctor.name }}</v-text>
-                            <v-chip class="mx-3" style="font-weight:bold; color:white; background-color:#0066FF" variant="flat">대기 {{ doctor.waiting }}명</v-chip>
+                            <img :src="doctor.profileImgUrl ? doctor.profileImgUrl : 'https://todak-file.s3.ap-northeast-2.amazonaws.com/default-images/doctor-3d-image.png'"
+                                alt="doctor image" class="mx-2"
+                                style="width: 65px; height: 65px; border-radius: 30px;" />
+                            <v-text class="ml-2">{{ doctor.name }} 원장</v-text>
+                            <v-chip class="mx-3" style="font-weight:bold; color:white; background-color:#0066FF"
+                                variant="flat">대기 {{ doctor.waiting }}명</v-chip>
                             <div class="d-flex justify-end" style="flex-grow: 1;">
-                                <v-chip class="mini-button" v-if="this.doctor == doctor" variant="flat" label>선택됨</v-chip>
+                                <v-chip class="mini-button" v-if="this.doctor == doctor" variant="flat"
+                                    label>선택됨</v-chip>
                             </div>
                         </div>
                     </v-row>
@@ -82,13 +87,8 @@
             <v-row>
                 <div class="mt-n5 ml-5">
                     <v-chip-group v-if="symptoms.length > 0">
-                        <v-chip 
-                        v-for="(symptom, index) in symptoms" :key="index" 
-                        class="mr-2"
-                        size="large" 
-                        variant="flat"
-                        style="color:#00499E; background-color:#ECF2FD; font-weight:bold;"
-                        >
+                        <v-chip v-for="(symptom, index) in symptoms" :key="index" class="mr-2" size="large"
+                            variant="flat" style="color:#00499E; background-color:#ECF2FD; font-weight:bold;">
                             {{ symptom }}
                         </v-chip>
                     </v-chip-group>
@@ -272,7 +272,8 @@
                             <v-col cols="4" class="modal-success-home" @click="this.$router.push('/')">
                                 홈으로 가기
                             </v-col>
-                            <v-col cols="4" class="modal-success-detail" @click="this.$router.push('/member/mypage/reservation')">
+                            <v-col cols="4" class="modal-success-detail"
+                                @click="this.$router.push('/member/mypage/reservation')">
                                 예약상세내역 확인
                             </v-col>
                         </v-row>
@@ -286,15 +287,15 @@
 
 <script>
 import axios from 'axios';
-import { initializeApp } from 'firebase/app';
-import { getDatabase, ref, onValue } from 'firebase/database';
+import { ref, onValue } from 'firebase/database';
 import { useRoute } from 'vue-router';
 
 export default {
+    inject: ['firebaseDatabase'],
     data() {
         return {
             medicalType: "Immediate",
-            hospitalName: "파닥닥닥닥닥닥닥닥닥병원",
+            hospitalName: "",
             hospitalId: '',
             child: null,
             doctor: [],
@@ -313,8 +314,9 @@ export default {
             mediData: [],
             reservedModal: false,
             successReserveModal: false,
-            totalWaiting: 42,
-            myWaiting: 43
+            waitingData: null,
+            totalWaiting: null,
+            myWaiting: null,
         }
     },
     methods: {
@@ -344,10 +346,20 @@ export default {
             try {
                 const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/member-service/member/doctorList/${this.hospitalId}`);
 
-                this.doctorList = response.data.result.content.map(item => ({
-                    ...item,
-                    waiting: 0
-                }));
+                this.doctorList = response.data.result.content.map(item => {
+                    const waitingEntry = this.waitingData ? this.waitingData[item.id] : null;
+                    let waitingTurn = 0;
+                    if (waitingEntry) {
+                        const entryValues = Object.values(waitingEntry);
+                        if (entryValues.length > 0) {
+                            waitingTurn = entryValues.length;
+                        }
+                    }
+                    return {
+                        ...item,
+                        waiting: waitingTurn,
+                    }
+                });
 
                 console.log(this.doctorList);
             } catch (e) {
@@ -382,69 +394,56 @@ export default {
                 const response = await axios.post(`${process.env.VUE_APP_API_BASE_URL}/reservation-service/reservation/immediate`,
                     req);
 
-                console.log(response)
+                const reservationId = response.data.result.id;
+                const doctorId = this.doctorList.find(item => item.doctorEmail === response.data.result.doctorEmail).id;
+                
+                console.log(reservationId + " " + doctorId);
+
+                const waitingEntry = this.waitingData ? this.waitingData[doctorId] : null;
+                const entryValues = waitingEntry ? Object.values(waitingEntry) : [];
+
                 this.reservedModal = false;
+                this.successReserveModal = true;
+                this.totalWaiting = entryValues.length;
+                this.myWaiting = this.totalWaiting+1;
                 this.successReserveModal = true;
             } catch (e) {
                 alert(e.message)
             }
         },
-        fetchMediData() {
-            const firebaseConfig = {
-                apiKey: "AIzaSyBSH8wJ7aoblNAj8Kj7iNTfsJhlEL4KEcE",
-                authDomain: "padak-todak.firebaseapp.com",
-                projectId: "padak-todak",
-                storageBucket: "padak-todak.appspot.com",
-                messagingSenderId: "22351664979",
-                appId: "1:22351664979:web:f8a3cc4b2f5e249d88b3a6",
-                databaseURL: "https://padak-todak-default-rtdb.asia-southeast1.firebasedatabase.app"
-            };
-
-            const app = initializeApp(firebaseConfig);
-            const db = getDatabase(app);
-            const mediRef = ref(db, 'medi');
-
-            onValue(mediRef, (snapshot) => {
+        fetchWaitingData() {
+            const waitingRef = ref(this.firebaseDatabase, `todakpadak/${this.hospitalName}`);
+            onValue(waitingRef, (snapshot) => {
                 const data = snapshot.val();
-                console.log(data);
                 if (data) {
-                    this.mediData = Object.keys(data)
-                        .filter(key => data[key] && data[key].data)
-                        .map(key => data[key]);
+                    this.waitingData = { ...data }; // 데이터를 갱신
+                    console.log("Waiting data updated:", this.waitingData); // 데이터 변경 시 콘솔에 로그
+                    this.fetchDoctorList();
+                } else {
+                    this.waitingData = null; // 데이터가 없으면 null로 설정
+                    this.fetchDoctorList();
                 }
             });
         },
     },
     async created() {
-        this.fetchDoctorList();
         this.fetchChildList();
         const route = useRoute();
-        this.hospitalId = route.params.hospitalId; 
+        this.hospitalId = route.params.hospitalId;
         this.hospitalName = this.$route.query.hospitalName;
+        this.fetchWaitingData();
+        this.fetchDoctorList();
     },
     computed: {
-        fontSize(){
-            const length = this.hostpitalName.length;
-            console.log(length)
-            if(length <= 5){
-                return "large-font";
-            }else if(length <= 8){
-                return 'lm-font';
-            }
-            else if(length <= 10){
-                return "medium-font";
-            }else{
-                return "smalll-font";
-            }
-        }
     }
 }
 </script>
 
 <style scoped>
-*{
+* {
     font-weight: bold;
 }
+
 .title {
     margin-top: 50px;
     font-weight: bold;
@@ -696,41 +695,29 @@ export default {
     font-weight: bold;
 }
 
-.waiting{
+.waiting {
     color: #0029FF;
     font-size: 35px;
     text-align: center;
     font-weight: bold;
     margin-top: -25px;
 }
-.waiting-text{
+
+.waiting-text {
     color: #888888;
     font-size: 20px;
     text-align: center;
     font-weight: bold;
 }
-.hospital{
+
+.hospital {
     font-weight: bold !important;
 }
 
-.large-font{
-    font-size: 30px;
-    margin-right: -60px;
-}
-.lm-font{
-    font-size: 25px;
-}
-.medium-font{
-    font-size: 20px;
-}
-
-.smalll-font{
-    font-size: 17px;
-}
-.schedule-chip{
+.schedule-chip {
     font-weight: bold;
-    font-size:25px;
-    color:#00499E;
+    font-size: 25px;
+    color: #00499E;
     background-color: #ECF2FD;
     border-radius: 10px;
 }

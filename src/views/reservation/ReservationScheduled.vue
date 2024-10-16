@@ -538,20 +538,6 @@ export default {
         }
     },
     computed: {
-        fontSize(){
-            const length = this.hostpitalName.length;
-            console.log(length)
-            if(length <= 5){
-                return "large-font";
-            }else if(length <= 8){
-                return 'lm-font';
-            }
-            else if(length <= 10){
-                return "medium-font";
-            }else{
-                return "smalll-font";
-            }
-        }
     }
 }
 </script>
@@ -849,21 +835,6 @@ export default {
 
 .hospital{
     font-weight: bold !important;
-}
-
-.large-font{
-    font-size: 30px;
-    margin-right: -60px;
-}
-.lm-font{
-    font-size: 25px;
-}
-.medium-font{
-    font-size: 20px;
-}
-
-.smalll-font{
-    font-size: 17px;
 }
 .schedule-chip{
     font-weight: bold;

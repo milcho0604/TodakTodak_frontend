@@ -1,28 +1,30 @@
 <template>
   <v-app>
     <v-container class="text-center">
+      <v-spacer :style="{ height: '50px' }"></v-spacer>
       <v-row justify="center">
         <v-col cols="12" md="8">
           <div class="d-flex align-center">
-            <v-col class="inter-bold title" style="text-align: center;"><img src="@/assets/community.png" width="50px"/> 의사 Q&A</v-col>
+            
+            <v-col ><h2 class="inter-bold" style="text-align: center;"><img src="@/assets/community.png" width="50px"/>의사 Q&A</h2></v-col>
           </div>
           <br><br>
           <div class="searchBox">
             <v-row class="header-row" align="center" style="flex-grow: 0; justify-content: flex-start;">
-              <v-col style="padding: 10px; flex: 0 0 150px; display: flex; justify-content: center;">
+              <v-col cols="4" style="padding: 10px; flex: 0 0 150px; display: flex; justify-content: center;">
                 <select class="select" v-model="sortOrder" @change="sortPosts" style="text-align: center;">
                   <option value="popular">인기 순</option>
                   <option value="views">조회 순</option>
                   <option value="latest">최신 순</option>
                 </select>
               </v-col>
-              <v-col style="padding: 10px; flex: 1; display: flex; justify-content: center;">
+              <v-col  cols="5.5"  style="padding: 10px; flex: 1; display: flex; justify-content: center;">
                 <div class="search" style="display: flex; align-items: center; margin-right: 10px;">
                   <input type="text" v-model="searchQuery" class="search-input" placeholder="검색..." style="flex-grow: 1;">
                   <span>🔍</span>
                 </div>
               </v-col>
-              <v-col class="text-left" style="padding: 10px; flex: 0 0 120px; display: flex; justify-content: center;">
+              <v-col cols="2.5" class="text-left" style="padding: 10px; flex: 0 0 120px; display: flex; justify-content: center;">
                 <v-btn class="search-button" style="width: 100%; height: 40px; text-align: left;" @click="goToCreatePost">
                   <v-icon small>mdi-pencil-outline</v-icon> 글작성
                 </v-btn>
@@ -90,6 +92,7 @@
           </v-row>          
         </v-col>
       </v-row>
+      <v-spacer :style="{ height: '50px' }"></v-spacer>
     </v-container>
   </v-app>
 </template>
@@ -216,7 +219,7 @@ export default {
 <style scoped>
 .title {
   text-align: left;
-  font-size: 20px;
+  font-size: 30px;
 }
 
 .icon {
@@ -241,6 +244,7 @@ export default {
   margin: 0 auto;
   box-sizing: border-box; /* 패딩과 보더를 포함하여 너비를 계산 */
   background-color: #FCFCFC; /* 배경색 변경 */
+  border-radius: 10px;
 }
 
 .searchBox {
@@ -263,7 +267,7 @@ export default {
 
 .search {
   flex: 1; /* 검색창이 가능한 공간을 모두 차지하도록 설정 */
-  max-width: 300px; /* 최대 너비 설정 */
+  max-width: 500px; /* 최대 너비 설정 */
   min-width: 150px; /* 최소 너비 설정 */
   margin-right: 10px; /* 글 작성 버튼과의 간격 설정 */
   border-radius: 10px;
@@ -285,7 +289,7 @@ export default {
   width: 120px; /* 고정된 너비 */
   background-color: #E6EEFE !important;
   color: #00499E !important;
-  border-radius: 20px !important; /* 둥근 모서리 */
+  border-radius: 10px !important; /* 둥근 모서리 */
   padding: 10px !important; /* 패딩 */
   box-shadow: none !important; /* 그림자 없애기 */
   font-weight: bold !important; /* 글자 굵게 */

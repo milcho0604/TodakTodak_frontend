@@ -11,11 +11,30 @@ import mitt from 'mitt';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap';
 
+import { getDatabase } from 'firebase/database';
+import { initializeApp } from 'firebase/app';
 
 const app = createApp(App);
 // mitt를 사용한 Event Bus 설정
 const emitter = mitt();
 app.config.globalProperties.emitter = emitter;
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBSH8wJ7aoblNAj8Kj7iNTfsJhlEL4KEcE",
+  authDomain: "padak-todak.firebaseapp.com",
+  projectId: "padak-todak",
+  storageBucket: "padak-todak.appspot.com",
+  messagingSenderId: "22351664979",
+  appId: "1:22351664979:web:f8a3cc4b2f5e249d88b3a6",
+  databaseURL: "https://padak-todak-default-rtdb.asia-southeast1.firebasedatabase.app"
+
+};
+
+const firebaseApp = initializeApp(firebaseConfig);
+const database = getDatabase(firebaseApp);
+
+app.provide('firebaseDatabase', database);
+app.provide('firebase', firebaseApp);
 
 // 서비스 워커 등록
 if ('serviceWorker' in navigator) {

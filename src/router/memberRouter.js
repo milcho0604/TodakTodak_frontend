@@ -4,6 +4,7 @@ import Authentication from "@/views/member/EmailAuthentication.vue"
 import FindEmailPage from "@/views/member/FindEmailPage.vue";
 import FindPasswordPage from "@/views/member/FindPasswordPage.vue";
 import ResetPasswordPage from "@/views/member/ResetPasswordPage.vue";
+import MyNotification from "@/views/member/MyNotification.vue";
 import AdminLoginPage from "@/views/member/AdminLoginPage.vue";
 
 
@@ -45,6 +46,11 @@ export const memberRouter = [
         component: ResetPasswordPage  
     },
     
+    {
+        path: '/notification/list',
+        name: 'MyNotification',
+        component: MyNotification
+    },
     {
         path: '/loginSuccess',
         component: LoginPage,
