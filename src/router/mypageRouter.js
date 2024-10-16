@@ -1,9 +1,11 @@
 import MyPage from "@/views/mypage/MyPage.vue";
 import MyReservation from "@/views/mypage/MyReservation.vue";
+import MyPost from "@/views/mypage/MyPost.vue";
 import MyChild from "@/views/child/MyChild.vue";
 import FullCal from "@/views/member/FullCal.vue";
 import MyReviewList from "@/views/member/MyReviewList.vue";
 import FullCal2 from "@/views/member/FullCal2.vue";
+
 
 export const mypageRouter = [
     {
@@ -15,6 +17,12 @@ export const mypageRouter = [
         path: '/member/mypage/reservation',
         name: 'MyReservation',
         component: MyReservation
+    },
+    {
+
+        path: '/member/mypage/myPost',
+        name: 'MyPosts',
+        component: MyPost
     },
     {
         path: '/member/myReviewList',
