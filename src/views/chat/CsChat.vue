@@ -14,13 +14,18 @@
         <button @click="sendMessage">전송</button>
       </div>
     </div>
+    <MyPageSideBar/>  
   </template>
   
   <script>
     import { Stomp } from "@stomp/stompjs";
     import SockJS from "sockjs-client";
+    import MyPageSideBar from "@/components/sidebar/MyPageSideBar.vue";
   
   export default {
+    components:{
+      MyPageSideBar
+    },
     data() {
       return {
         stompClient: null,
