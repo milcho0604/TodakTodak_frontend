@@ -400,9 +400,10 @@ export default {
                 console.log(reservationId + " " + doctorId);
 
                 const waitingEntry = this.waitingData ? this.waitingData[doctorId] : null;
-                const entryValues = Object.values(waitingEntry);
+                const entryValues = waitingEntry ? Object.values(waitingEntry) : [];
 
                 this.reservedModal = false;
+                this.successReserveModal = true;
                 this.totalWaiting = entryValues.length;
                 this.myWaiting = this.totalWaiting+1;
                 this.successReserveModal = true;
