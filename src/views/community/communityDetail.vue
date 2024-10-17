@@ -5,7 +5,7 @@
         <div class="d-flex align-center">
           <v-col>
             <h2 class="inter-bold" style="text-align: center;">
-              <img src="@/assets/community.png" width="50px"/> 의사 Q&A
+              <img src="@/assets/community.png" width="50px" /> 의사 Q&A
             </h2>
           </v-col>
         </div>
@@ -37,11 +37,7 @@
             <span @click="openReportModal('post', post)" class="d-flex align-center action-link">
               <v-icon small>mdi-alarm-light-outline</v-icon>&nbsp;신고
             </span>
-            <ReportPost
-              v-if="showReportPostModal"
-              :postId="reportData.postId"
-              @close="closeReportPostModal"
-            />
+            <ReportPost v-if="showReportPostModal" :postId="reportData.postId" @close="closeReportPostModal" />
           </v-col>
         </v-row>
       </div>
@@ -51,7 +47,8 @@
           <v-list-item-title style="font-weight: bold; font-size: 25px !important; margin-bottom: 10px;">
             {{ postDetail.title }}
           </v-list-item-title>
-          <v-list-item-subtitle style="font-size:20px; margin-bottom: 10px; line-height: 1.5;" v-html="formatContent(postDetail.content)"></v-list-item-subtitle>
+          <v-list-item-subtitle style="font-size:20px; margin-bottom: 10px; line-height: 1.5;"
+            v-html="formatContent(postDetail.content)"></v-list-item-subtitle>
           <div class="image-container">
             <v-img v-if="postDetail.postImgUrl" :src="postDetail.postImgUrl" alt="게시글 이미지" class="mb-3 rounded" />
           </div>
@@ -60,30 +57,21 @@
 
       <v-col class="d-flex justify pa-0">
         <span @click="toggleLike" class="d-flex align-center action-link mr-2">
-          <v-icon small>{{ liked ? 'mdi-heart' : 'mdi-heart-outline' }}</v-icon> &nbsp; 좋아요 {{ postDetail.likeCount }}  · 
+          <v-icon small>{{ liked ? 'mdi-heart' : 'mdi-heart-outline' }}</v-icon> &nbsp; 좋아요 {{ postDetail.likeCount }} ·
         </span>
         <span @click="showCommentTextarea = !showCommentTextarea" class="d-flex align-center action-link mr-2">
-          <v-icon small>mdi-comment-outline</v-icon> &nbsp; 댓글 {{ postDetail.comments.length }} ·
+          <v-icon small>mdi-comment-outline</v-icon> &nbsp; 댓글 ·
         </span>
         <span class="d-flex align-center action-link">
-          &nbsp;<v-icon small>mdi-eye-outline</v-icon> &nbsp; 조회수 {{ postDetail.viewCount }}   
+          &nbsp;<v-icon small>mdi-eye-outline</v-icon> &nbsp; 조회수 {{ postDetail.viewCount }}
         </span>
       </v-col>
 
       <v-row v-if="showCommentTextarea">
         <v-col cols="12">
           <v-form @submit.prevent="submitPostComment">
-            <v-textarea
-              v-model="newPostComment"
-              label="댓글을 작성해주세요"
-              outlined
-              required
-            ></v-textarea>
-            <span 
-              @click="submitPostComment" 
-              class="d-flex align-center action-link mr-2" 
-              style="cursor: pointer;"
-            >
+            <v-textarea v-model="newPostComment" label="댓글을 작성해주세요" outlined required></v-textarea>
+            <span @click="submitPostComment" class="d-flex align-center action-link mr-2" style="cursor: pointer;">
               <v-icon small>mdi-comment-outline</v-icon>&nbsp; 댓글 작성
             </span>
           </v-form>
@@ -94,127 +82,119 @@
         <v-divider></v-divider>
         <v-col cols="12">
           <h4 class="text-h6 font-weight-bold">댓글</h4>
-          <v-list style="background-color: #FCFCFC; overflow: hidden;">
-            <v-list-item v-for="comment in postDetail.comments" :key="comment.id" style="padding: 10px; margin-bottom: -15px;">
-              <v-card :style="{ backgroundColor:'#ECF2FE', padding: '10px 5px 10px 25px', boxShadow: 'none', height: 'auto', overflow: 'visible'}" class="mb-2" style=" width: 700px;">
+          <v-list style="overflow: hidden;">
+            <v-list-item v-for="comment in postDetail.comments" :key="comment.id"
+              style="padding: 10px; margin-bottom: -15px;">
+              <v-card
+                :style="{ backgroundColor: '#ECF2FE', padding: '10px 5px 10px 25px', boxShadow: 'none', height: 'auto', overflow: 'visible' }"
+                class="mb-2" style=" max-width: 700px; border-radius: 20px;">
                 <v-card-text>
-                  <div class="d-flex justify-space-between align-center">
-                    <div style="flex: 9;">
-                      <v-list-item-title style="font-weight: bold; font-size: 20px !important; margin-bottom: 8px;">
+                  <v-row class="align-center" style="margin-bottom: 10px;">
+                    <v-col cols="6">
+                      <v-list-item-title style="font-weight: bold; font-size: 20px !important;">
+                        <v-avatar size="40">
+                          <v-img :src="comment.profileImgUrl" alt="profileImgUrl"></v-img>
+                        </v-avatar>
                         {{ comment.name }}
                       </v-list-item-title>
-                      <div>
-                        <v-list-item-subtitle style="font-size: 18px; overflow-wrap: break-word; word-break: break-word; display: block;">
-                          <template v-if="!comment.isEditing">
-                            <div v-html="formatContent(comment.content)"></div>
-                          </template>
-                          <template v-else>
-                            <v-textarea
-                              v-model="comment.editContent"
-                              label="수정할 댓글을 입력해주세요"
-                              outlined
-                              required
-                            ></v-textarea>
-                          </template>
-                          <br>
-                          <span style="font-size: 14px; color: gray;">{{ formatDate(comment.createdTimeAt) }}</span>
-                        </v-list-item-subtitle>
+                    </v-col>
+                    <v-col cols="6">
+                      <div class="d-flex align-center justify-end" style="margin-right: 25px;">
+                        <span v-if="comment.doctorEmail === currentUserEmail && !comment.isEditing"
+                          @click="startEditComment(comment)" class="d-flex align-center action-link mr-2">
+                          <v-icon small>mdi-pencil</v-icon> 수정
+                        </span>
+                        <span v-if="comment.doctorEmail === currentUserEmail && comment.isEditing"
+                          @click="updateComment(comment)" class="d-flex align-center action-link mr-2">
+                          <v-icon small>mdi-pencil</v-icon> 수정
+                        </span>
+                        <span v-if="comment.doctorEmail === currentUserEmail" @click="deleteComment(comment)"
+                          class="d-flex align-center action-link mr-2">
+                          <v-icon small>mdi-trash-can-outline</v-icon> 삭제
+                        </span>
+                        <span @click="openReportModal('comment', comment)" class="d-flex align-center action-link">
+                          <v-icon small>mdi-alarm-light-outline</v-icon> 신고
+                        </span>
+                        <ReportComment v-if="showReportCommentModal" :postId="reportData.postId" :commentId="comment.id"
+                          :reportedEmail="comment.doctorEmail" :comments="postDetail.comments"
+                          @close="closeReportCommentModal" />
                       </div>
-                    </div>
-                    <div style="flex:3;" class="d-flex align-center">
-                      <span 
-                        v-if="comment.doctorEmail === currentUserEmail && !comment.isEditing" 
-                        @click="startEditComment(comment)" 
-                        class="d-flex align-center action-link"
-                      >
-                        <v-icon small>mdi-pencil</v-icon> 수정&nbsp;&nbsp;
-                      </span>
-                      <span 
-                        v-if="comment.doctorEmail === currentUserEmail && comment.isEditing" 
-                        @click="updateComment(comment)" 
-                        class="d-flex align-center action-link"
-                      >
-                        <v-icon small>mdi-pencil</v-icon> 수정
-                      </span>
-                      <span 
-                        v-if="comment.doctorEmail === currentUserEmail" 
-                        @click="deleteComment(comment)" 
-                        class="d-flex align-center action-link"
-                      >
-                        <v-icon small>mdi-trash-can-outline</v-icon> 삭제
-                      </span>
-                      <span @click="openReportModal('comment', comment)" class="d-flex align-center action-link mr-2" style="margin-left: auto;">
-                        <v-icon small>mdi-alarm-light-outline</v-icon> 신고
-                      </span>
-                      <ReportComment
-                        v-if="showReportCommentModal"
-                        :postId="reportData.postId"
-                        :commentId="comment.id"
-                        :reportedEmail="comment.doctorEmail"
-                        :comments="postDetail.comments"
-                        @close="closeReportCommentModal"
-                      />
-                    </div>
+                    </v-col>
+                  </v-row>
+                  <div>
+                    <v-list-item-subtitle
+                      style="font-size: 18px; overflow-wrap: break-word; word-break: break-word; display: block;">
+                      <template v-if="!comment.isEditing">
+                        <div v-html="formatContent(comment.content)"></div>
+                      </template>
+                      <template v-else>
+                        <v-textarea v-model="comment.editContent" label="수정할 댓글을 입력해주세요" outlined required></v-textarea>
+                      </template>
+                      <br>
+                      <span style="font-size: 14px; color: gray;">{{ formatDate(comment.createdTimeAt) }}</span>
+                    </v-list-item-subtitle>
                   </div>
                 </v-card-text>
                 <v-card-actions>
-                  <span @click="comment.showTextarea = !comment.showTextarea" class="d-flex align-center action-link mr-2">
+                  <span @click="comment.showTextarea = !comment.showTextarea"
+                    class="d-flex align-center action-link mr-2">
                     <v-icon small>mdi-comment-outline</v-icon>&nbsp;댓글달기
                   </span>
                 </v-card-actions>
                 <v-form v-if="comment.showTextarea" @submit.prevent="submitComment(comment)">
-                  <v-textarea
-                    v-model="comment.newComment"
-                    :label="comment.parentId ? getParentComment(comment.parentId).content : '대댓글을 작성해주세요'"
-                    outlined
-                    required
-                    style="max-width: 97%"
-                  ></v-textarea>
-                  <span 
-                    @click="submitComment(comment)" 
-                    class="d-flex align-center action-link mr-2" 
-                    style="cursor: pointer;"
-                  >
+                  <v-textarea v-model="comment.newComment"
+                    :label="comment.parentId ? getParentComment(comment.parentId).content : '대댓글을 작성해주세요'" outlined
+                    required style="max-width: 97%"></v-textarea>
+                  <span @click="submitComment(comment)" class="d-flex align-center action-link mr-2"
+                    style="cursor: pointer;">
                     <v-icon small>mdi-comment-outline</v-icon> &nbsp; 대댓글 작성
                   </span>
                 </v-form>
               </v-card>
 
-              <v-list v-if="comment.replies && comment.replies.length" style="background-color: #FCFCFC;">
-                <v-list-item v-for="reply in comment.replies" :key="reply.id" style="padding: 0px; margin-bottom: 15px;">
-                  <v-card :style="{ backgroundColor:'#F9F9F9', padding: '20px 5px 10px 25px', boxShadow: 'none', height: 'auto', overflow: 'visible'}" style=" width: 700px;">
+              <v-list v-if="comment.replies && comment.replies.length">
+                <v-list-item v-for="reply in comment.replies" :key="reply.id"
+                  style="padding: 0px; margin-bottom: 15px;">
+                  <v-card
+                    :style="{ backgroundColor: '#F9F9F9', padding: '10px 0px 10px 10px', boxShadow: 'none', height: 'auto', overflow: 'visible' }"
+                    style=" max-width: 700px; border-radius: 20px;">
                     <v-card-text>
-                      <div class="d-flex justify-space-between align-center">
-                        <div style="flex: 9;">
-                          <v-list-item-title style="font-size: 20px; margin-bottom: 4px;"> 
-                            <v-icon small>mdi-arrow-right-bottom</v-icon>&nbsp;{{ reply.name }}
+                      <div class="d-flex justify-space-between align-center" style="margin-bottom: 5px;">
+                        <v-col cols="6">
+                          <v-list-item-title style="font-size: 20px; margin-bottom: 4px;">
+                            <v-icon small>mdi-arrow-right-bottom</v-icon>
+                            <v-avatar size="40">
+                              <v-img :src="comment.profileImgUrl" alt="profileImgUrl"></v-img>
+                            </v-avatar>
+                            &nbsp;{{ reply.name }}
                           </v-list-item-title>
-                          <v-list-item-subtitle style="overflow-wrap: break-word; margin-left: 30px; line-height: 1.5; display: block;"> 
-                            <span style="font-size: 17px; display: block; margin-bottom: 8px;" v-html="formatContent(reply.content)"></span>
-                            <span style="font-size: 13px; display: block;">{{ formatDate(reply.createdTimeAt) }}</span>
-                          </v-list-item-subtitle>                          
-                        </div>
-                        <div style="flex: 2;" class="d-flex align-center">
-                          <span v-if="reply.doctorEmail === currentUserEmail" @click="deleteReply(reply)" class="d-flex align-center action-link">
-                            <v-icon small>mdi-trash-can-outline</v-icon> 삭제 &nbsp;
-                          </span>
-                          <span @click="openReportModal('reply', reply)" class="d-flex align-center action-link" 
-                                :style="{ visibility: reply.doctorEmail === currentUserEmail ? 'visible' : 'hidden' }">
-                            <v-icon small>mdi-alarm-light-outline</v-icon> 신고
-                          </span>
-                          <span v-if="reply.doctorEmail !== currentUserEmail" class="d-flex align-center action-link mr-2">
-                            <v-icon>mdi-alarm-light-outline</v-icon> 신고
-                          </span>
-                          <ReportReply
-                            v-if="showReportReplyModal"
-                            :postId="reportData.postId"
-                            :commentId="reply.replyId"
-                            :reportedEmail="reply.doctorEmail"
-                            :comments="postDetail.comments"
-                            @close="closeReportReplyModal"
-                          />
-                        </div>
+                        </v-col>
+                        <v-col cols="6">
+                          <div class="d-flex align-center justify-end" style="margin-right: 15px;">
+                            <span v-if="reply.doctorEmail === currentUserEmail" @click="deleteReply(reply)"
+                              class="d-flex align-center action-link">
+                              <v-icon small>mdi-trash-can-outline</v-icon> 삭제 &nbsp;
+                            </span>
+                            <span @click="openReportModal('reply', reply)" class="d-flex align-center action-link"
+                              :style="{ visibility: reply.doctorEmail === currentUserEmail ? 'visible' : 'hidden' }">
+                              <v-icon small>mdi-alarm-light-outline</v-icon> 신고
+                            </span>
+                            <span v-if="reply.doctorEmail !== currentUserEmail"
+                              class="d-flex align-center action-link mr-2">
+                              <v-icon>mdi-alarm-light-outline</v-icon> 신고
+                            </span>
+                            <ReportReply v-if="showReportReplyModal" :postId="reportData.postId"
+                              :commentId="reply.replyId" :reportedEmail="reply.doctorEmail"
+                              :comments="postDetail.comments" @close="closeReportReplyModal" />
+                          </div>
+                        </v-col>
                       </div>
+                      <v-list-item-subtitle
+                        style="overflow-wrap: break-word; margin-left: 30px; line-height: 1.5; display: block;">
+                        <span style="font-size: 17px; display: block; margin-bottom: 5px;"
+                          v-html="formatContent(reply.content)"></span>
+                        <span style="font-size: 13px; display: block;">{{ formatDate(reply.createdTimeAt) }}</span>
+                      </v-list-item-subtitle>
                     </v-card-text>
                   </v-card>
                 </v-list-item>
@@ -303,11 +283,81 @@ export default {
         this.postDetail = response.data.result;
         console.log("여기!!!", this.postDetail);
 
+        this.postDetail.comments = [
+          {
+            id: 1,
+            name: '홍길동',
+            content: '이 게시글 정말 유익하네요!',
+            createdTimeAt: new Date().toISOString(),
+            doctorEmail: 'example1@test.com',
+            profileImgUrl: require('@/assets/padak.jpg'), // 프로필 이미지 URL
+            parentId: null,
+            isEditing: false,
+            showTextarea: false,
+            newComment: '',
+            replies: [
+              {
+                id: 1,
+                name: '이순신',
+                content: '저도 동의합니다!',
+                createdTimeAt: new Date(Date.now() - 1000 * 60 * 2).toISOString(), // 2분 전
+                doctorEmail: 'example4@test.com',
+                profileImgUrl: require('@/assets/padak.jpg'), // 대댓글 프로필 이미지 URL
+                parentId: 1
+              },
+              {
+                id: 3,
+                name: '김장군',
+                content: '저는 동의하지 않습니다!',
+                createdTimeAt: new Date(Date.now() - 1000 * 60 * 2).toISOString(), // 2분 전
+                doctorEmail: 'example4@test.com',
+                profileImgUrl: require('@/assets/padak.jpg'), // 대댓글 프로필 이미지 URL
+                parentId: 1
+              }
+            ]
+          },
+          {
+            id: 2,
+            name: '김철수',
+            content: '더 많은 정보를 알고 싶어요.',
+            createdTimeAt: new Date(Date.now() - 1000 * 60 * 5).toISOString(), // 5분 전
+            doctorEmail: 'example2@test.com',
+            profileImgUrl: require('@/assets/padak.jpg'), // 프로필 이미지 URL
+            parentId: null,
+            isEditing: false,
+            showTextarea: false,
+            newComment: '',
+            replies: [
+              {
+                id: 2,
+                name: '박영희',
+                content: '제가 아는 내용입니다.',
+                createdTimeAt: new Date(Date.now() - 1000 * 60 * 3).toISOString(), // 3분 전
+                doctorEmail: 'example5@test.com',
+                profileImgUrl: require('@/assets/padak.jpg'), // 대댓글 프로필 이미지 URL
+                parentId: 2
+              }
+            ]
+          },
+          {
+            id: 3,
+            name: '무무무2',
+            email: 'momomo2@naver.com',
+            content: '정말 좋은 게시글입니다! 감사합니다.',
+            createdTimeAt: new Date(Date.now() - 1000 * 60 * 10).toISOString(), // 10분 전
+            doctorEmail: 'example3@test.com',
+            profileImgUrl: require('@/assets/padak.jpg'), // 프로필 이미지 URL
+            parentId: null,
+            isEditing: false,
+            showTextarea: false,
+            newComment: '',
+            replies: [] // 대댓글이 없는 경우
+          }
+        ];
+
         // 댓글 및 대댓글 초기화
         this.postDetail.comments.forEach(comment => {
-          comment.showTextarea = false;
-          comment.newComment = '';
-          comment.replies = [];
+          comment.replies = comment.replies || []; // 대댓글 배열 초기화
         });
 
         // 대댓글 구조화
@@ -325,7 +375,7 @@ export default {
         this.postDetail.comments.sort((a, b) => new Date(a.createdTimeAt) - new Date(b.createdTimeAt));
 
         console.log('댓글 구조 어캐 생김?', this.postDetail.comments);
-      } catch (error) { 
+      } catch (error) {
         console.error("게시글 정보를 불러오는 중 오류가 발생했습니다.", error);
         this.error = error.response ? error.response.data.message : '게시글 정보를 불러오는 중 오류가 발생했습니다.';
       }
@@ -361,26 +411,26 @@ export default {
       } catch (error) {
         const message = error.response.data.status_message;
         alert(message);
-        
+
       }
     },
     startEditComment(comment) {
-    comment.isEditing = true; // 댓글 수정 모드 활성화
-    comment.editContent = comment.content; // 기존 내용을 editContent에 설정
-  },
-  
-  async updateComment(comment) {
-    try {
-      await axios.post(`${process.env.VUE_APP_API_BASE_URL}/community-service/comment/update/${comment.id}`, {
-        content: comment.editContent, // 수정된 내용을 API로 전송
-      });
-      comment.content = comment.editContent; // 댓글 내용 업데이트
-      comment.isEditing = false; // 수정 모드 비활성화
-    } catch (error) {
-      console.error("댓글 수정에 실패했습니다.", error);
-      this.error = '댓글 수정에 실패했습니다.';
-    }
-  },
+      comment.isEditing = true; // 댓글 수정 모드 활성화
+      comment.editContent = comment.content; // 기존 내용을 editContent에 설정
+    },
+
+    async updateComment(comment) {
+      try {
+        await axios.post(`${process.env.VUE_APP_API_BASE_URL}/community-service/comment/update/${comment.id}`, {
+          content: comment.editContent, // 수정된 내용을 API로 전송
+        });
+        comment.content = comment.editContent; // 댓글 내용 업데이트
+        comment.isEditing = false; // 수정 모드 비활성화
+      } catch (error) {
+        console.error("댓글 수정에 실패했습니다.", error);
+        this.error = '댓글 수정에 실패했습니다.';
+      }
+    },
     async deleteComment(comment) {
       if (confirm("댓글을 정말 삭제하시겠습니까?")) {
         try {
@@ -413,7 +463,7 @@ export default {
     closeReportCommentModal() {
       this.showReportCommentModal = false;
     },
-    closeReportReplyModal(){
+    closeReportReplyModal() {
       this.showReportReplyModal = false;
     },
     formatDate(date) {
@@ -422,7 +472,7 @@ export default {
       return new Date(date).toLocaleDateString('ko-KR', options);
     },
     formatContent(content) {
-    return content.replace(/\n/g, '<br>');
+      return content.replace(/\n/g, '<br>');
     },
   },
 };
@@ -434,7 +484,6 @@ export default {
   width: 100%;
   margin: 0 auto;
   box-sizing: border-box;
-  background-color: #FCFCFC;
 }
 
 .v-container {
@@ -456,7 +505,6 @@ h4.text-h6 {
 }
 
 .custom-card {
-  background-color: #FCFCFC;
   box-shadow: none;
   border-bottom: none;
 }
@@ -465,9 +513,11 @@ h4.text-h6 {
   margin: 8px 0;
   height: auto;
   background-color: #f9f9f9;
-  flex-direction: column; /* flex 방향 설정 */
-  padding: 10px 5px 10px 25px; /* 따옴표 제거 */
-  display: flex; /* 따옴표 제거 */
+  flex-direction: column;
+  /* flex 방향 설정 */
+  padding: 10px 5px 10px 25px;
+  /* 따옴표 제거 */
+  display: flex;
+  /* 따옴표 제거 */
 }
-
 </style>
