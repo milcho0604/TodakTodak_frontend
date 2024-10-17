@@ -135,12 +135,18 @@ export default {
     created() {
         this.fetchMembers();
     },
+    watch: {
+        page(newPage) {
+            console.log(newPage)
+            this.fetchMembers(); // 페이지 변경 시 목록 다시 로드
+        },
+    },
     methods: {
         async fetchMembers() {
             try {
                 const params = {
                     page: this.page - 1, // 페이지는 0부터 시작
-                    size: 10, // 페이지당 10개씩
+                    size: 3, // 페이지당 10개씩
                     verified: this.filterVerifiedStatus, // 선택된 인증 필터
                     deleted: this.filterDeletedStatus, // 선택된 탈퇴 필터
                 };
@@ -195,20 +201,6 @@ export default {
         onSearchInput() {
             this.page = 1; // 검색어 입력 시 페이지를 1로 초기화
             this.fetchMembers(); // 검색어에 맞는 목록 가져오기
-        },
-
-        // 인증 필터 토글
-        toggleVerifiedFilter(value) {
-            this.filterVerifiedStatus = value;
-            this.page = 1;
-            this.fetchMembers();
-        },
-
-        // 탈퇴 필터 토글
-        toggleDeletedFilter(value) {
-            this.filterDeletedStatus = value;
-            this.page = 1;
-            this.fetchMembers();
         },
     },
 };
