@@ -3,7 +3,7 @@ import {createRouter, createWebHistory} from 'vue-router';
 // 파일 내부에 export default있는 경우에는 {}가 필요없고, 그렇지 않으면 {}필요
 // import 하는 요소가 여러개 있을 때에도 {}를 붙인다.
 // import TestComponent from '@/components/TestComponent.vue';
-import HomePage from '@/views/HomePage.vue';
+import HomePage from '@/views/MainPage.vue';
 import { memberRouter } from './memberRouter';
 import { paymentRouter } from './paymentRouter';
 import { untactRouter } from './untactRouter';
