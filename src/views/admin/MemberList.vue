@@ -20,13 +20,32 @@
 
         <!-- 필터 버튼 -->
         <v-row>
-            <v-chip-group>
-                <v-chip @click="filterVerified('all')" class="mr-2 ml-3" filter>전체 회원</v-chip>
-                <v-chip @click="filterVerified(true)" class="mr-2" filter>인증 회원</v-chip>
-                <v-chip @click="filterVerified(false)" class="mr-2" filter>미인증 회원</v-chip>
-                <v-chip @click="filterDeleted('all')" class="mr-2" filter>전체 상태</v-chip>
-                <v-chip @click="filterDeleted(false)" class="mr-2" filter>정상 회원</v-chip>
-                <v-chip @click="filterDeleted(true)" class="mr-2" filter>탈퇴 회원</v-chip>
+            <!-- 인증 상태 필터 -->
+            <v-chip-group active-class="selected-chip">
+                <v-chip
+                    v-for="(label, value) in verifiedOptions"
+                    :key="value"
+                    @click="filterVerifiedStatus = value; fetchMembers();"
+                    :input-value="filterVerifiedStatus === value"
+                    class="mr-2"
+                    filter
+                >
+                    {{ label }}
+                </v-chip>
+            </v-chip-group>
+
+            <!-- 회원 상태 필터 -->
+            <v-chip-group active-class="selected-chip">
+                <v-chip
+                    v-for="(label, value) in deletedOptions"
+                    :key="value"
+                    @click="filterDeletedStatus = value; fetchMembers();"
+                    :input-value="filterDeletedStatus === value"
+                    class="mr-2"
+                    filter
+                >
+                    {{ label }}
+                </v-chip>
             </v-chip-group>
         </v-row>
 
@@ -36,7 +55,7 @@
                 <v-table>
                     <thead>
                         <tr>
-                            <th><input type="checkbox" @change="toggleSelectAll" /></th> 
+                            <th><input type="checkbox" @change="toggleSelectAll" /></th>
                             <th>ID</th>
                             <th>이름</th>
                             <th>이메일</th>
@@ -101,18 +120,20 @@ export default {
             selectedMembers: [], // 선택된 항목의 ID만 저장할 배열
             page: 1, // 현재 페이지
             totalPages: 1, // 전체 페이지 수
-            filterVerifiedStatus: 'true', // 인증 필터 상태 기본값
-            filterDeletedStatus: 'false', // 탈퇴 필터 상태 기본값
+            filterVerifiedStatus: 'true', // 선택된 인증 필터 상태 (초기값 true)
+            filterDeletedStatus: 'false', // 선택된 탈퇴 필터 상태 (초기값 false)
+            verifiedOptions: {
+                true: '인증 회원',
+                false: '미인증 회원',
+            },
+            deletedOptions: {
+                false: '정상 회원',
+                true: '탈퇴 회원',
+            },
         };
     },
     created() {
         this.fetchMembers();
-    },
-    watch: {
-        page(newPage) {
-            console.log(newPage)
-            this.fetchMembers(); // 페이지 변경 시 목록 다시 로드
-        },
     },
     methods: {
         async fetchMembers() {
@@ -120,13 +141,12 @@ export default {
                 const params = {
                     page: this.page - 1, // 페이지는 0부터 시작
                     size: 10, // 페이지당 10개씩
+                    verified: this.filterVerifiedStatus, // 선택된 인증 필터
+                    deleted: this.filterDeletedStatus, // 선택된 탈퇴 필터
                 };
 
                 if (this.searchQuery) {
                     params.query = this.searchQuery;
-                } else {
-                    params.verified = this.filterVerifiedStatus !== 'all' ? this.filterVerifiedStatus : undefined;
-                    params.deleted = this.filterDeletedStatus !== 'all' ? this.filterDeletedStatus : undefined;
                 }
 
                 const url = this.searchQuery
@@ -177,20 +197,19 @@ export default {
             this.fetchMembers(); // 검색어에 맞는 목록 가져오기
         },
 
-        // 인증 상태 필터링
-        filterVerified(status) {
-            this.filterVerifiedStatus = status;
-            this.page = 1; // 필터 적용 시 페이지를 1로 초기화
-            this.fetchMembers(); // 필터 조건에 맞는 목록 다시 로드
+        // 인증 필터 토글
+        toggleVerifiedFilter(value) {
+            this.filterVerifiedStatus = value;
+            this.page = 1;
+            this.fetchMembers();
         },
 
-        // 탈퇴 상태 필터링
-        filterDeleted(status) {
-            this.filterDeletedStatus = status;
-            this.page = 1; // 필터 적용 시 페이지를 1로 초기화
-            this.fetchMembers(); // 필터 조건에 맞는 목록 다시 로드
+        // 탈퇴 필터 토글
+        toggleDeletedFilter(value) {
+            this.filterDeletedStatus = value;
+            this.page = 1;
+            this.fetchMembers();
         },
-
     },
 };
 </script>
@@ -250,5 +269,10 @@ export default {
     color: #000000;
     text-align: center;
     margin-bottom: 10px;
+}
+
+.selected-chip {
+    background-color: #1976d2 !important;
+    color: white !important;
 }
 </style>
