@@ -156,7 +156,7 @@
                 <v-list-item v-for="reply in comment.replies" :key="reply.id"
                   style="padding: 0px; margin-bottom: 15px;">
                   <v-card
-                    :style="{ backgroundColor: '#F9F9F9', padding: '10px 0px 10px 10px', boxShadow: 'none', height: 'auto', overflow: 'visible' }"
+                    :style="{ backgroundColor: '#F9F9F9', padding: '0px 0px 10px 10px', boxShadow: 'none', height: 'auto', overflow: 'visible' }"
                     style=" max-width: 700px; border-radius: 20px;">
                     <v-card-text>
                       <div class="d-flex justify-space-between align-center" style="margin-bottom: 5px;">
@@ -191,10 +191,13 @@
                       </div>
                       <v-list-item-subtitle
                         style="overflow-wrap: break-word; margin-left: 30px; line-height: 1.5; display: block;">
-                        <span style="font-size: 17px; display: block; margin-bottom: 5px;"
+                        <span style="font-size: 17px; display: block; margin-bottom: 7px;"
                           v-html="formatContent(reply.content)"></span>
-                        <span style="font-size: 13px; display: block;">{{ formatDate(reply.createdTimeAt) }}</span>
                       </v-list-item-subtitle>
+                      <v-list-item-subtitle
+                      style="overflow-wrap: break-word; margin-left: 30px; line-height: 1.5; display: block;">
+                      <span style="font-size: 13px; display: block;">{{ formatDate(reply.createdTimeAt) }}</span>
+                    </v-list-item-subtitle>
                     </v-card-text>
                   </v-card>
                 </v-list-item>
