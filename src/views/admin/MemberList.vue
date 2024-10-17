@@ -47,6 +47,20 @@
                     {{ label }}
                 </v-chip>
             </v-chip-group>
+
+            <!-- Role 체크 -->
+            <v-chip-group active-class="selected-chip">
+                <v-chip
+                    v-for="(label, value) in roleOptions"
+                    :key="value"
+                    @click="filterRoleStatus = value; fetchMembers();"
+                    :input-value="filterRoleStatus === value"
+                    class="mr-2"
+                    filter
+                >
+                    {{ label }}
+                </v-chip>
+            </v-chip-group>
         </v-row>
 
         <!-- 멤버 리스트 -->
@@ -122,6 +136,7 @@ export default {
             totalPages: 1, // 전체 페이지 수
             filterVerifiedStatus: 'true', // 선택된 인증 필터 상태 (초기값 true)
             filterDeletedStatus: 'false', // 선택된 탈퇴 필터 상태 (초기값 false)
+            filterRoleStatus: '', // 선택된 Role 필터 상태
             verifiedOptions: {
                 true: '인증 회원',
                 false: '미인증 회원',
@@ -129,6 +144,12 @@ export default {
             deletedOptions: {
                 false: '정상 회원',
                 true: '탈퇴 회원',
+            },
+            roleOptions: {
+                TodakAdmin: '관리자',
+                HospitalAdmin: '병원관리자',
+                Member: '회원',
+                Doctor: '의사',
             },
         };
     },
@@ -149,6 +170,7 @@ export default {
                     size: 3, // 페이지당 10개씩
                     verified: this.filterVerifiedStatus, // 선택된 인증 필터
                     deleted: this.filterDeletedStatus, // 선택된 탈퇴 필터
+                    role: this.filterRoleStatus, // 선택된 Role 필터
                 };
 
                 if (this.searchQuery) {
