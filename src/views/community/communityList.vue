@@ -203,7 +203,7 @@ export default {
       this.$router.push(`/post/${id}`);
     },
     goToCreatePost() {
-    this.$router.push('/post/Create');
+    this.$router.push('/post/create');
     },
   },
   computed: {

@@ -1,6 +1,7 @@
 import CommunityList from "@/views/community/communityList.vue";
 import communityDetail from "@/views/community/communityDetail.vue";
 import PostCreate from "@/views/community/PostCreate.vue";
+import PostUpdate from "@/views/community/PostUpdate.vue";
 
 export const communityRouter = [
     {
@@ -9,7 +10,7 @@ export const communityRouter = [
         component: CommunityList
     },
     {
-        path: '/post/Create',
+        path: '/post/create',
         name: 'PostCreate',
         component: PostCreate
     },
@@ -17,5 +18,10 @@ export const communityRouter = [
         path: '/post/:id',
         name: 'communityDetail',
         component: communityDetail
+    },
+    {
+        path: '/update/:postId',
+        name: 'PostUpdate',
+        component: PostUpdate
     }
 ]
