@@ -20,7 +20,7 @@
         <!-- 필터 버튼 -->
         <v-row>
             <!-- 인증 상태 필터 -->
-            <v-chip-group active-class="selected-chip">
+            <v-chip-group active-class="selected-chip" class="ml-3">
                 <v-chip
                     v-for="(label, value) in verifiedOptions"
                     :key="value"
@@ -170,7 +170,7 @@ export default {
             try {
                 const params = {
                     page: this.page - 1, // 페이지는 0부터 시작
-                    size: 3, // 페이지당 10개씩
+                    size: 10, // 페이지당 10개씩
                     verified: this.filterVerifiedStatus, // 선택된 인증 필터
                     deleted: this.filterDeletedStatus, // 선택된 탈퇴 필터
                     role: this.filterRoleStatus, // 선택된 Role 필터
