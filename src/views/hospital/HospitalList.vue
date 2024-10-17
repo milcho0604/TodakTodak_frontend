@@ -238,12 +238,7 @@ export default{
       return {
         dong:"신대방동",
         search:"", 
-        sort:"거리 순", // 사용자가 선택한 정렬조건
-        // sortOptions: [
-        //     { text: "거리 순", value: "distance" }, // 서버로 넘길 값: distance
-        //     { text: "별점 순", value: "rating" },    // 서버로 넘길 값: rating
-        //     { text: "리뷰 순", value: "review" }     // 서버로 넘길 값: review
-        // ], // 정렬 옵션
+        sort:"distance", // 사용자가 선택한 정렬조건
         selectedTag: "전체",
         latitude: '37.544444', // 사용자 현재 위도
         longitude: '127.063087', // 사용자 현재 경도
