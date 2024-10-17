@@ -3,7 +3,11 @@
     <v-row align="center">
       <v-col cols="6" md="8" class="d-flex justify-end">
         <div class="d-flex align-center">
-          <v-col ><h2 class="inter-bold" style="text-align: center;"><img src="@/assets/community.png" width="50px"/>의사 Q&A</h2></v-col>
+          <v-col>
+            <h2 class="inter-bold" style="text-align: center;">
+              <img src="@/assets/community.png" width="50px"/> 의사 Q&A
+            </h2>
+          </v-col>
         </div>
       </v-col>
     </v-row>
@@ -11,23 +15,27 @@
       <div class="d-flex justify-space-between align-center mb-3">
         <v-row class="flex-grow-1">
           <v-col>
-            <v-list-item-title style="font-weight: bold; font-size: 20px !important;">{{ postDetail.name }}</v-list-item-title>
-            <v-list-item-subtitle style="font-size: 15px !important;">{{ formatDate(postDetail.createdTimeAt) }}</v-list-item-subtitle>
+            <v-list-item-title style="font-weight: bold; font-size: 20px !important; margin-bottom: 10px;">
+              <v-avatar size="40">
+                <v-img :src="postDetail.profileImgUrl" alt="profileImgUrl"></v-img>
+              </v-avatar>
+              {{ postDetail.name }}
+            </v-list-item-title>
+            <v-list-item-subtitle style="font-size: 15px !important;">
+              {{ formatDate(postDetail.createdTimeAt) }}
+            </v-list-item-subtitle>
           </v-col>
           <v-col class="d-flex justify-end">
             <template v-if="currentUserEmail === postDetail.memberEmail">
               <span @click="edit" class="d-flex align-center action-link mr-2">
-                <v-icon small>mdi-pencil</v-icon>
-                수정
+                <v-icon small>mdi-pencil</v-icon> 수정
               </span>
               <span @click="deletePost" class="d-flex align-center action-link">
-                <v-icon small>mdi-trash-can-outline</v-icon>
-                삭제&nbsp;&nbsp; 
+                <v-icon small>mdi-trash-can-outline</v-icon> 삭제&nbsp;&nbsp;
               </span>
             </template>
             <span @click="openReportModal('post', post)" class="d-flex align-center action-link">
-              <v-icon small>mdi-alarm-light-outline</v-icon>
-              &nbsp;신고
+              <v-icon small>mdi-alarm-light-outline</v-icon>&nbsp;신고
             </span>
             <ReportPost
               v-if="showReportPostModal"
@@ -37,24 +45,20 @@
           </v-col>
         </v-row>
       </div>
-      
+
       <v-row class="mb-5 no-margin">
-        <v-col cols="12" md="12">
-          <v-card flat class="custom-card">
-            <v-card-text>
-              <div>
-                <v-list-item-title style="font-weight: bold; font-size: 25px !important; margin-bottom: 10px;">{{ postDetail.title }}</v-list-item-title>
-                <v-list-item-subtitle style="font-size:20px; margin-bottom: 10px; line-height: 1.5;" v-html="formatContent(postDetail.content)"></v-list-item-subtitle>
-              </div>
-            </v-card-text>
-            <div class="image-container">
-              <v-img v-if="postDetail.postImgUrl" :src="postDetail.postImgUrl" alt="게시글 이미지" class="mb-3 rounded" />
-            </div>
-          </v-card>
+        <v-col cols="12">
+          <v-list-item-title style="font-weight: bold; font-size: 25px !important; margin-bottom: 10px;">
+            {{ postDetail.title }}
+          </v-list-item-title>
+          <v-list-item-subtitle style="font-size:20px; margin-bottom: 10px; line-height: 1.5;" v-html="formatContent(postDetail.content)"></v-list-item-subtitle>
+          <div class="image-container">
+            <v-img v-if="postDetail.postImgUrl" :src="postDetail.postImgUrl" alt="게시글 이미지" class="mb-3 rounded" />
+          </div>
         </v-col>
       </v-row>
 
-      <v-col class="d-flex justify" style="flex-grow: 1;">
+      <v-col class="d-flex justify pa-0">
         <span @click="toggleLike" class="d-flex align-center action-link mr-2">
           <v-icon small>{{ liked ? 'mdi-heart' : 'mdi-heart-outline' }}</v-icon> &nbsp; 좋아요 {{ postDetail.likeCount }}  · 
         </span>
@@ -90,9 +94,9 @@
         <v-divider></v-divider>
         <v-col cols="12">
           <h4 class="text-h6 font-weight-bold">댓글</h4>
-          <v-list style="background-color: #FCFCFC;">
-            <v-list-item v-for="comment in postDetail.comments" :key="comment.id" style="padding: 10px;">
-              <v-card :style="{ backgroundColor:'#ECF2FE', padding: '10px 5px 10px 25px', boxShadow: 'none' , height: 'auto', overflow: 'visible'}" class="mb-2">
+          <v-list style="background-color: #FCFCFC; overflow: hidden;">
+            <v-list-item v-for="comment in postDetail.comments" :key="comment.id" style="padding: 10px; margin-bottom: -15px;">
+              <v-card :style="{ backgroundColor:'#ECF2FE', padding: '10px 5px 10px 25px', boxShadow: 'none', height: 'auto', overflow: 'visible'}" class="mb-2" style=" width: 700px;">
                 <v-card-text>
                   <div class="d-flex justify-space-between align-center">
                     <div style="flex: 9;">
@@ -149,7 +153,7 @@
                         :reportedEmail="comment.doctorEmail"
                         :comments="postDetail.comments"
                         @close="closeReportCommentModal"
-                      /> 
+                      />
                     </div>
                   </div>
                 </v-card-text>
@@ -164,6 +168,7 @@
                     :label="comment.parentId ? getParentComment(comment.parentId).content : '대댓글을 작성해주세요'"
                     outlined
                     required
+                    style="max-width: 97%"
                   ></v-textarea>
                   <span 
                     @click="submitComment(comment)" 
@@ -175,24 +180,25 @@
                 </v-form>
               </v-card>
 
-              <!-- 대댓글 표시 -->
-              <v-list v-if="comment.replies && comment.replies.length" class="ml-4" style="background-color: #FCFCFC;">
-                <v-list-item v-for="reply in comment.replies" :key="reply.id">
-                  <v-card :style="{ flexDirection: 'column' , boxShadow: 'none' }" class="mb-2 enlarged-reply-card" outlined>
+              <v-list v-if="comment.replies && comment.replies.length" style="background-color: #FCFCFC;">
+                <v-list-item v-for="reply in comment.replies" :key="reply.id" style="padding: 0px; margin-bottom: 15px;">
+                  <v-card :style="{ backgroundColor:'#F9F9F9', padding: '20px 5px 10px 25px', boxShadow: 'none', height: 'auto', overflow: 'visible'}" style=" width: 700px;">
                     <v-card-text>
                       <div class="d-flex justify-space-between align-center">
                         <div style="flex: 9;">
-                          <v-list-item-title> <v-icon small>mdi-arrow-right-bottom</v-icon>&nbsp;{{ reply.name }}</v-list-item-title>
-                          <v-list-item-subtitle style="overflow-wrap: break-word; margin-left: 30px; margin-bottom: 10px; line-height: 1.5; display: block;" > 
-                            <span v-html="formatContent(reply.content)"> </span> <br>
-                            <span style="font-size : 13px;"> {{ formatDate(reply.createdTimeAt) }}</span>
-                          </v-list-item-subtitle>
+                          <v-list-item-title style="font-size: 20px; margin-bottom: 4px;"> 
+                            <v-icon small>mdi-arrow-right-bottom</v-icon>&nbsp;{{ reply.name }}
+                          </v-list-item-title>
+                          <v-list-item-subtitle style="overflow-wrap: break-word; margin-left: 30px; line-height: 1.5; display: block;"> 
+                            <span style="font-size: 17px; display: block; margin-bottom: 8px;" v-html="formatContent(reply.content)"></span>
+                            <span style="font-size: 13px; display: block;">{{ formatDate(reply.createdTimeAt) }}</span>
+                          </v-list-item-subtitle>                          
                         </div>
                         <div style="flex: 2;" class="d-flex align-center">
                           <span v-if="reply.doctorEmail === currentUserEmail" @click="deleteReply(reply)" class="d-flex align-center action-link">
                             <v-icon small>mdi-trash-can-outline</v-icon> 삭제 &nbsp;
                           </span>
-                          <span @click="openReportModal('reply',reply)"  class="d-flex align-center action-link" 
+                          <span @click="openReportModal('reply', reply)" class="d-flex align-center action-link" 
                                 :style="{ visibility: reply.doctorEmail === currentUserEmail ? 'visible' : 'hidden' }">
                             <v-icon small>mdi-alarm-light-outline</v-icon> 신고
                           </span>
@@ -206,16 +212,16 @@
                             :reportedEmail="reply.doctorEmail"
                             :comments="postDetail.comments"
                             @close="closeReportReplyModal"
-                          />     
-                        </div>                        
+                          />
+                        </div>
                       </div>
                     </v-card-text>
-                  </v-card>                  
+                  </v-card>
                 </v-list-item>
               </v-list>
-            </v-list-item>                            
-          </v-list>                   
-        </v-col>     
+            </v-list-item>
+          </v-list>
+        </v-col>
       </v-row>
     </v-card>
     <v-alert type="error" v-if="error">{{ error }}</v-alert>
@@ -295,7 +301,7 @@ export default {
       try {
         const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/community-service/post/detail/${postId}`);
         this.postDetail = response.data.result;
-        
+        console.log("여기!!!", this.postDetail);
 
         // 댓글 및 대댓글 초기화
         this.postDetail.comments.forEach(comment => {
@@ -464,13 +470,4 @@ h4.text-h6 {
   display: flex; /* 따옴표 제거 */
 }
 
-.comment-content {
-  margin-bottom: 30px;
-  width: 100%;
-  max-width: 500px;
-  line-height: 1.5; /* 줄 간격 설정 (1.5배) */
-  white-space: normal; /* 일반적인 줄바꿈 */
-  word-wrap: break-word;
-  overflow-wrap: break-word;
-}
 </style>
