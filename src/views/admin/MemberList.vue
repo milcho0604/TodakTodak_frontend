@@ -1,7 +1,7 @@
 <template>
     <v-container>
         <v-row>
-            <div class="member-title inter-bold mt-10">일반 회원 목록</div>
+            <div class="member-title inter-bold mt-10">회원 목록</div>
         </v-row>
 
         <!-- 검색어 입력 -->
@@ -20,12 +20,14 @@
 
         <!-- 필터 버튼 -->
         <v-row>
-            <v-chip @click="filterVerified('all')" class="mr-2 ml-3">전체 회원</v-chip>
-            <v-chip @click="filterVerified(true)" class="mr-2">인증 회원</v-chip>
-            <v-chip @click="filterVerified(false)" class="mr-2">미인증 회원</v-chip>
-            <v-chip @click="filterDeleted('all')" class="mr-2">전체 상태</v-chip>
-            <v-chip @click="filterDeleted('true')" class="mr-2">정상 회원</v-chip>
-            <v-chip @click="filterDeleted('false')" class="mr-2">탈퇴 회원</v-chip>
+            <v-chip-group>
+                <v-chip @click="filterVerified('all')" class="mr-2 ml-3" filter>전체 회원</v-chip>
+                <v-chip @click="filterVerified(true)" class="mr-2" filter>인증 회원</v-chip>
+                <v-chip @click="filterVerified(false)" class="mr-2" filter>미인증 회원</v-chip>
+                <v-chip @click="filterDeleted('all')" class="mr-2" filter>전체 상태</v-chip>
+                <v-chip @click="filterDeleted(false)" class="mr-2" filter>정상 회원</v-chip>
+                <v-chip @click="filterDeleted(true)" class="mr-2" filter>탈퇴 회원</v-chip>
+            </v-chip-group>
         </v-row>
 
         <!-- 멤버 리스트 -->
@@ -40,6 +42,7 @@
                             <th>이메일</th>
                             <th>전화번호</th>
                             <th>주소</th>
+                            <th>회원 타입</th>
                             <th>인증 상태</th>
                             <th>회원 상태</th>
                         </tr>
@@ -52,6 +55,11 @@
                             <td>{{ member.memberEmail }}</td>
                             <td>{{ member.phone }}</td>
                             <td>{{ member.address.city }}, {{ member.address.street }} ({{ member.address.zipcode }})</td>
+                            <td>
+                                <v-chip :color="getRoleColor(member.role)" dark small>
+                                    {{ getRoleLabel(member.role) }}
+                                </v-chip>
+                            </td>
                             <td>
                                 <v-chip :color="member.verified ? '' : 'red'" dark small>
                                     {{ member.verified ? '인증' : '미인증' }}
@@ -93,76 +101,96 @@ export default {
             selectedMembers: [], // 선택된 항목의 ID만 저장할 배열
             page: 1, // 현재 페이지
             totalPages: 1, // 전체 페이지 수
-            filterVerifiedStatus: 'all', // 인증 필터 상태
-            filterDeletedStatus: 'all', // 탈퇴 필터 상태
+            filterVerifiedStatus: 'true', // 인증 필터 상태 기본값
+            filterDeletedStatus: 'false', // 탈퇴 필터 상태 기본값
         };
     },
     created() {
         this.fetchMembers();
     },
     watch: {
-        selectedItems(val) {
-            this.selectedMembers = val.map((item) => item.id);
-        },
         page(newPage) {
             console.log(newPage)
-            this.fetchMembers(); // 페이지 변경 시 멤버 목록을 다시 로드
+            this.fetchMembers(); // 페이지 변경 시 목록 다시 로드
         },
     },
     methods: {
         async fetchMembers() {
-            const url = this.searchQuery
-                ? `${process.env.VUE_APP_API_BASE_URL}/member-service/member/search`
-                : `${process.env.VUE_APP_API_BASE_URL}/member-service/member/list`;
-
             try {
-                const response = await axios.get(url, {
-                    params: {
-                        query: this.searchQuery || undefined, // 검색어가 있을 때만 추가
-                        page: this.page - 1, // Spring에서 페이지는 0부터 시작
-                        size: 10, // 페이지당 10개의 항목을 표시
-                    },
-                });
+                const params = {
+                    page: this.page - 1, // 페이지는 0부터 시작
+                    size: 10, // 페이지당 10개씩
+                };
+
+                if (this.searchQuery) {
+                    params.query = this.searchQuery;
+                } else {
+                    params.verified = this.filterVerifiedStatus !== 'all' ? this.filterVerifiedStatus : undefined;
+                    params.deleted = this.filterDeletedStatus !== 'all' ? this.filterDeletedStatus : undefined;
+                }
+
+                const url = this.searchQuery
+                    ? `${process.env.VUE_APP_API_BASE_URL}/member-service/member/search`
+                    : `${process.env.VUE_APP_API_BASE_URL}/member-service/member/list`;
+
+                const response = await axios.get(url, { params });
                 this.members = response.data.result.content;
                 this.filteredMembers = this.members; // 필터링된 회원 목록 초기화
                 this.totalPages = response.data.result.totalPages; // 전체 페이지 수 설정
-                this.applyFilters(); // 필터 적용
             } catch (error) {
                 console.error('Error fetching members:', error);
+            }
+        },
+
+        getRoleLabel(role) {
+            switch (role) {
+                case 'TodakAdmin':
+                    return '관리자';
+                case 'HospitalAdmin':
+                    return '병원관리자';
+                case 'Member':
+                    return '회원';
+                case 'Doctor':
+                    return '의사';
+                default:
+                    return '알 수 없음';
+            }
+        },
+        getRoleColor(role) {
+            switch (role) {
+                case 'TodakAdmin':
+                    return 'blue'; // 관리자: 파란색
+                case 'HospitalAdmin':
+                    return 'green'; // 병원관리자: 초록색
+                case 'Member':
+                    return 'grey'; // 회원: 회색
+                case 'Doctor':
+                    return 'purple'; // 의사: 보라색
+                default:
+                    return 'grey'; // 기본 색상: 회색
             }
         },
 
         // 검색어 입력 시 호출되는 메서드
         onSearchInput() {
             this.page = 1; // 검색어 입력 시 페이지를 1로 초기화
-            this.fetchMembers(); // 검색어에 맞는 목록을 가져옴
+            this.fetchMembers(); // 검색어에 맞는 목록 가져오기
         },
 
         // 인증 상태 필터링
         filterVerified(status) {
             this.filterVerifiedStatus = status;
-            this.applyFilters();
+            this.page = 1; // 필터 적용 시 페이지를 1로 초기화
+            this.fetchMembers(); // 필터 조건에 맞는 목록 다시 로드
         },
 
         // 탈퇴 상태 필터링
         filterDeleted(status) {
             this.filterDeletedStatus = status;
-            this.applyFilters();
+            this.page = 1; // 필터 적용 시 페이지를 1로 초기화
+            this.fetchMembers(); // 필터 조건에 맞는 목록 다시 로드
         },
 
-        // 필터 적용
-        applyFilters() {
-            this.filteredMembers = this.members.filter((member) => {
-                const matchVerified =
-                    this.filterVerifiedStatus === 'all' ||
-                    member.verified === this.filterVerifiedStatus;
-                const matchDeleted =
-                    this.filterDeletedStatus === 'all' ||
-                    (member.deletedAt ? true : false) === this.filterDeletedStatus;
-
-                return matchVerified && matchDeleted;
-            });
-        },
     },
 };
 </script>
