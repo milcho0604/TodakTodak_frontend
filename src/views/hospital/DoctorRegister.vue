@@ -31,7 +31,9 @@
                         <tr v-for="doctor in doctors" :key="doctor.id">
                             <td style="text-align: center;">{{ doctor.id }}</td>
                             <td style="text-align: center;">
-                                <v-img :src="doctor.profileImgUrl || 'https://via.placeholder.com/55'" alt="doctor image" style="width: 55px; margin: auto;" />
+                                <v-avatar size="40" class="mr-4">
+                                    <v-img :src="doctor.profileImgUrl" />
+                                </v-avatar>
                             </td>
                             <td style="text-align: center; white-space: nowrap;">{{ doctor.name }}</td>
                             <td style="text-align: center;">{{ doctor.doctorEmail }}</td>
