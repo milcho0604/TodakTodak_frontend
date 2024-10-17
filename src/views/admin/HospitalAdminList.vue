@@ -50,6 +50,7 @@
                             <th>대표자명</th>
                             <th>이메일</th>
                             <th>승인 상태</th>
+                            <th></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -64,6 +65,9 @@
                                 <v-chip :color="hospital.isAccept ? 'green' : 'red'" dark small>
                                     {{ hospital.isAccept ? '승인됨' : '미승인' }}
                                 </v-chip>
+                            </td>
+                            <td>
+                                <v-icon @click="nextLevel(hospital.id)">mdi-chevron-right</v-icon> <!-- Vuetify 아이콘, 필요에 따라 다른 화살표 아이콘 사용 가능 -->
                             </td>
                         </tr>
                     </tbody>
@@ -138,7 +142,9 @@ export default {
                 console.error('Error fetching hospitals:', error);
             }
         },
-
+        nextLevel(hospitalId) {
+            this.$router.push(`/admin/hospital/detail/${hospitalId}`); // 병원의 id를 사용하여 상세 페이지로 이동
+        },
         // 검색어 입력 시 호출되는 메서드
         onSearchInput() {
             this.page = 1; // 검색어 입력 시 페이지를 1로 초기화
