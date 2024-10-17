@@ -17,7 +17,6 @@
                 />
             </v-col>
         </v-row>
-
         <!-- 필터 버튼 -->
         <v-row>
             <!-- 인증 상태 필터 -->
@@ -34,6 +33,8 @@
                 </v-chip>
             </v-chip-group>
 
+            <v-divider vertical class="mr-2"></v-divider>
+
             <!-- 회원 상태 필터 -->
             <v-chip-group active-class="selected-chip">
                 <v-chip
@@ -47,6 +48,8 @@
                     {{ label }}
                 </v-chip>
             </v-chip-group>
+
+            <v-divider vertical class="mr-2"></v-divider>
 
             <!-- Role 체크 -->
             <v-chip-group active-class="selected-chip">
