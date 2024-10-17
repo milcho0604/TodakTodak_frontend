@@ -35,7 +35,7 @@
                                     <v-img :src="doctor.profileImgUrl" />
                                 </v-avatar>
                             </td>
-                            <td style="text-align: center; white-space: nowrap;">{{ doctor.name }}</td>
+                            <td style="text-align: center; white-space: nowrap;" @click="goToDoctorDetail(doctor.doctorEmail)" class="clickable">{{ doctor.name }}</td>
                             <td style="text-align: center;">{{ doctor.doctorEmail }}</td>
                             <td style="text-align: center;">
                                 <v-chip :color="doctor.verified ? 'green' : 'red'" dark>
@@ -102,7 +102,6 @@ export default {
                     }
                 });
                 this.doctors = response.data.result.content; // 데이터가 비어있지 않은지 확인
-                console.log(response.data.result);
             } catch (error) {
                 console.error('Failed to fetch doctors:', error);
             }
@@ -115,6 +114,11 @@ export default {
                 this.selectedDoctorEmail = doctor.doctorEmail;
             }
         },
+        goToDoctorDetail(email) {
+            this.$store.commit('setDoctorEmail', email);
+            // 디테일 페이지로 이동
+            this.$router.push({ path: '/doctor/detail' });
+        }
     }
 }
 </script>
