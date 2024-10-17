@@ -71,17 +71,39 @@
                                     item.status == 'Noshow'" class="noshow"><strong>노쇼</strong></v-chip>
                             </v-col>
                         </v-row>
-                        <v-row>
+                        <!-- 스케줄 예약일 떄  -->
+                        <v-row v-if="item.reservationType == 'Scheduled'">
                             <v-col cols="4">
-                                <div class="ml-1 waiting" v-if="item.reservationType == 'Immediate'">{{ waiting }}명 대기중
-                                </div>
                                 <div class="ml-1 waiting" v-if="item.reservationType == 'Scheduled'">
                                     {{ formatTime(item.reservationTime) }} 진료 예약</div>
                             </v-col>
                             <v-col cols="4"></v-col>
                             <v-col cols="4" style="text-align: end;">
                                 <v-chip v-if="reserveType == '지난예약' &&
-                                    item.status == 'Completed' && item.medichart !='진료중'" :class="item.review ? 'review' : 'no-review'"
+                                    item.status == 'Completed' && item.medichart != '진료중'"
+                                    :class="item.review ? 'review' : 'no-review'"
+                                    @click="item.review ? this.$router.push('/') : reviewData(item)"><img
+                                        src="@/assets/pencil_img.png" /><strong>리뷰쓰기</strong>
+                                </v-chip>
+                                <v-chip v-else-if="item.untact && item.medichart == '진료중'" class="no-untact"
+                                    @click="this.$router.push(`/room/${item.id}`)"><img
+                                        src="@/assets/untact_image.png" />
+                                    <strong>비대면진료 접속</strong>
+                                </v-chip>
+                            </v-col>
+                        </v-row>
+                        <v-row v-else-if="item.reservationType == 'Immediate' && item.status == 'Confirmed'">
+                            <v-col cols="4">
+                                <div class="ml-1 waiting"
+                                    v-if="item.reservationType == 'Immediate' && item.status == 'Confirmed'">{{
+                                        item.waiting }}명 대기중
+                                </div>
+                            </v-col>
+                            <v-col cols="4"></v-col>
+                            <v-col cols="4" style="text-align: end;">
+                                <v-chip v-if="reserveType == '지난예약' &&
+                                    item.status == 'Completed' && item.medichart != '진료중'"
+                                    :class="item.review ? 'review' : 'no-review'"
                                     @click="item.review ? this.$router.push('/') : reviewData(item)"><img
                                         src="@/assets/pencil_img.png" /><strong>리뷰쓰기</strong>
                                 </v-chip>
@@ -93,8 +115,20 @@
                             </v-col>
                         </v-row>
                         <v-row>
-                            <v-col cols="4">
-                                <div class="ml-1 hospitalname">{{ item.hospitalName }}</div>
+                            <p class="ml-4">{{ item.hospitalName }}</p>
+                            <v-col cols="3"></v-col>
+                            <v-col cols="4" style="text-align: end; margin-left : 19px;">
+                                <v-chip v-if="reserveType == '지난예약' &&
+                                    item.status == 'Completed' && item.medichart != '진료중'"
+                                    :class="item.review ? 'review' : 'no-review'"
+                                    @click="item.review ? this.$router.push('/') : reviewData(item)"><img
+                                        src="@/assets/pencil_img.png" /><strong>리뷰쓰기</strong>
+                                </v-chip>
+                                <v-chip v-else-if="item.untact && item.medichart == '진료중'" class="no-untact"
+                                    @click="this.$router.push(`/room/${item.id}`)"><img
+                                        src="@/assets/untact_image.png" />
+                                    <strong>비대면진료 접속</strong>
+                                </v-chip>
                             </v-col>
                         </v-row>
                         <v-row>
@@ -234,14 +268,15 @@
 
 <script>
 import axios from 'axios';
+import { ref, onValue } from 'firebase/database';
 
 export default {
+    inject: ['firebaseDatabase'],
     data() {
         return {
             reserveType: '오는예약',
             reserveList: [], // 실제 예약 데이터가 여기에 있음
             filteredReserveList: [],
-            waiting: 23,
             sort: null,
             filter: null,
             dialogReserve: null,
@@ -251,6 +286,7 @@ export default {
             showDetails: true,
             untact: null,
             mediChart: null,
+            waiting: null,
         }
     },
     methods: {
@@ -261,9 +297,20 @@ export default {
             if (req == '오는예약') {
                 const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/reservation-service/reservation/list/comes`);
                 this.sort = null;
-                this.reserveList = response.data.map(item => ({
-                    ...item,
-                    showDetails: false,
+                this.reserveList = await Promise.all(response.data.map(async (item) => {
+                    let wait = null;
+                    if (item.reservationType == 'Immediate') {
+                        try {
+                            wait = await this.fetchWaitingData(item.hospitalName, item.doctorId, item.id);  // 대기
+                        } catch (e) {
+                            console.log(e);
+                        }
+                    }
+                    return {
+                        ...item,
+                        showDetails: false,
+                        waiting: wait,
+                    }
                 }));
             } else if (req == '지난예약') {
                 const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/reservation-service/reservation/list/yesterday`);
@@ -278,12 +325,11 @@ export default {
                     await this.isReview(item.id, index);
                 }));
                 await Promise.all(this.reserveList.map(async (item, index) => {
-                    if(item.untact){
+                    if (item.untact) {
                         await this.medicalChart(item.id, index);
                         this.reserveList[this.mediChart.id].medichart = this.mediChart.status;
                     }
                 }))
-                console.log(this.reserveList)
             }
             this.sortReserveList();
             this.updateType(req);
@@ -387,15 +433,30 @@ export default {
             try {
                 const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/reservation-service/medical-chart/${id}`);
                 this.mediChart = {
-                    id : index,
-                    status : response.data.result.medicalStatus
+                    id: index,
+                    status: response.data.result.medicalStatus
                 }
             } catch (e) {
                 console.log(e)
             }
+        },
+        fetchWaitingData(hospitalName, doctorId, id) {
+            return new Promise((resolve, reject) => {
+                const waitingRef = ref(this.firebaseDatabase, `todakpadak/${hospitalName}/${doctorId}/${id}`);
+                onValue(waitingRef, (snapshot) => {
+                    const data = snapshot.val();
+                    if (data) {
+                        this.waiting = data.turn;
+                        resolve(this.waiting);  // resolve waiting 값을 반환
+                    } else {
+                        this.waitingData = null;
+                        reject('No waiting data found');  // 에러 처리
+                    }
+                });
+            });
         }
     },
-    mounted() {
+    created() {
         this.updateReserveList(this.reserveType)
     },
     watch: {
@@ -641,7 +702,7 @@ export default {
     color: #888888;
 }
 
-.no-untact{
+.no-untact {
     margin-top: -30px;
     background-color: #00B2FF;
     color: #FFFFFF !important;
