@@ -53,27 +53,38 @@
         <DoctorCreateModal v-model="createModal" @update:dialog="createModal = $event; this.fetchDoctor()"
             @doctor-exists="openChildExistsDialog"></DoctorCreateModal>
 
+        <DoctorDeleteModal 
+            v-model="doctorDeleteModal"
+            :doctor-id="selectedDoctorId"
+            :doctor-email="selectedDoctorEmail"
+            @update:dialog="doctorDeleteModal = $event"
+            @deleted="fetchDoctor" >
+        </DoctorDeleteModal>
+
     </v-container>
     <MyPageSideBar/>
 </template>
-
 
 <script>
 import axios from 'axios';
 import MyPageSideBar from "@/components/sidebar/MyPageSideBar.vue";
 import DoctorCreateModal from './DoctorCreateModal.vue';
+import DoctorDeleteModal from './DoctorDeleteModal.vue';
 
 export default {
     components: {
         DoctorCreateModal,
+        DoctorDeleteModal,
         MyPageSideBar,
     },
     data() {
         return {
             createModal: false,
+            doctorDeleteModal: false, // 변수 이름 수정
             doctors: [],
-            selectedChildId: null,
+            selectedDoctorId: null,
             doctorExistsMessage: [],
+            selectedDoctorEmail: '',
         }
     },
     created() {
@@ -84,18 +95,28 @@ export default {
             const token = localStorage.getItem('token');
             try {
                 const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/member-service/member/doctors`, {
-            headers: {
-                Authorization: `Bearer ${token}`
-            }});
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                });
                 this.doctors = response.data.result.content; // 데이터가 비어있지 않은지 확인
                 console.log(response.data.result);
             } catch (error) {
                 console.error('Failed to fetch doctors:', error);
             }
         },
+        openDeleteModal(doctorId) {
+            const doctor = this.doctors.find(doc => doc.id === doctorId);
+            if(doctor){
+                this.selectedDoctorId = doctorId;
+                this.doctorDeleteModal = true; // 변수 이름 수정
+                this.selectedDoctorEmail = doctor.doctorEmail;
+            }
+        },
     }
 }
 </script>
+
 
 <style scoped>
 
