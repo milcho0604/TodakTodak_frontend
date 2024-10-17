@@ -1,10 +1,10 @@
 <template>
     <v-card
-      style="background-color: #FFFFFF; border-radius: 15px; padding: 20px; max-width: 1200px; width: 100%;"
+      style="background-color: #F5F5F5; border-radius: 15px; padding: 20px; max-width: 1200px; width: 100%;"
       rounded="0"
       flat
     >
-      <v-window v-model="onboarding" style="width: 1080px;">
+      <v-window v-model="onboarding" style="width: 1080px;" class="d-flex justify-center">
         <!-- v-model="onboarding": 현재 활성화된 슬라이드의 인덱스를 바인딩 -->
         <v-window-item v-for="n in windowCount" :key="`window-${n}`" :value="n">
           <v-row class="d-flex justify-center">
@@ -16,30 +16,36 @@
               class="d-flex justify-center"
             >
               <v-card 
-              style="width:250px; height:350px;"
-              @click="() => moveToHospital(hospital.id)"
+                style="width:330px; height:380px;"
+                @click="() => moveToHospital(hospital.id)"
+                variant="flat"
               >
-                <v-img
-                  class="custom-img"
-                  width="250px"
-                  height="250px"
-                  :src="hospital.hospitalImageUrl"
-                  alt="병원 썸네일"
-                  cover
-                />
-                <v-card-title class="d-flex justify-space-between align-center">
-                  <span style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                <v-row class="d-flex justify-center mt-4">
+                  <v-avatar 
+                    class="hospital-avatar"
+                  >
+                    <v-img
+                      :src="hospital.hospitalImageUrl"
+                      alt="병원 썸네일"
+                      cover
+                    />
+                  </v-avatar>
+                </v-row>
+                <v-card-title class="d-flex justify-space-between align-center ml-2">
+                  <span class="hospital-name" style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
                     {{ hospital.name }}
                   </span>
-                  <v-card-text color="primary" text-color="white">
+                  <v-card-text class="hospital-rating">
                     <v-icon>mdi-star</v-icon> {{ hospital.averageRating }} ({{ hospital.reviewCount }})
                   </v-card-text>
-                </v-card-title>
-                <v-card-subtitle class="pt-3 mb-5 mr-5 custom-contents" style="color:#888888;">
-                  <v-icon>mdi-map-marker-outline</v-icon>
-                  <div>{{ hospital.address }}</div>
+                </v-card-title>                
+
+                <v-card-subtitle class="hospital-address" style="color:#888888;">
+                    <v-icon>mdi-map-marker-outline</v-icon>
+                    <v-card-text class="ml-n3">{{hospital.address}}</v-card-text>
                 </v-card-subtitle>
               </v-card>
+          
             </v-col>
           </v-row>
         </v-window-item>
@@ -110,6 +116,29 @@
   </script>
   
   <style scoped>
+  .hospital-avatar{
+    width: 280px !important;
+    height: 250px !important;
+    border-radius: 10px;
+    object-fit: contain; /* 콘텐츠를 컨테이너 안에 맞추되 비율을 유지함. */
+  }
+  .hospital-address {
+    display: flex;
+    align-items: center;
+  }
+  
+  .hospital-address v-card-text {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    width: 100% !important;
+  }
+  
+  .hospital-rating {
+    text-align: right; /* 병원 평점 부분을 오른쪽 정렬 */
+    white-space: nowrap; /* 텍스트가 한 줄로 나오도록 */
+  }
+  
 
   </style>
   
