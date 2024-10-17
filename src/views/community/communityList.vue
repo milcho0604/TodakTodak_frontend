@@ -5,8 +5,11 @@
       <v-row justify="center">
         <v-col cols="12" md="8">
           <div class="d-flex align-center">
-            
-            <v-col ><h2 class="inter-bold" style="text-align: center;"><img src="@/assets/community.png" width="50px"/>의사 Q&A</h2></v-col>
+
+            <v-col>
+              <h2 class="inter-bold" style="text-align: center;"><img src="@/assets/community.png" width="50px" />의사 Q&A
+              </h2>
+            </v-col>
           </div>
           <br><br>
           <div class="searchBox">
@@ -18,40 +21,48 @@
                   <option value="latest">최신 순</option>
                 </select>
               </v-col>
-              <v-col  cols="5.5"  style="padding: 10px; flex: 1; display: flex; justify-content: center;">
+              <v-col cols="5.5" style="padding: 10px; flex: 1; display: flex; justify-content: center;">
                 <div class="search" style="display: flex; align-items: center; margin-right: 10px;">
-                  <input type="text" v-model="searchQuery" class="search-input" placeholder="검색..." style="flex-grow: 1;">
+                  <input type="text" v-model="searchQuery" class="search-input" placeholder="검색..."
+                    style="flex-grow: 1;">
                   <span>🔍</span>
                 </div>
               </v-col>
-              <v-col cols="2.5" class="text-left" style="padding: 10px; flex: 0 0 120px; display: flex; justify-content: center;">
-                <v-btn class="search-button" style="width: 100%; height: 40px; text-align: left;" @click="goToCreatePost">
+              <v-col cols="2.5" class="text-left"
+                style="padding: 10px; flex: 0 0 120px; display: flex; justify-content: center;">
+                <v-btn class="search-button" style="width: 100%; height: 40px; text-align: left;"
+                  @click="goToCreatePost">
                   <v-icon small>mdi-pencil-outline</v-icon> 글작성
                 </v-btn>
               </v-col>
             </v-row>
-          </div>                        
+          </div>
           <br>
           <v-row justify="center">
             <v-col cols="12">
               <v-list>
                 <v-list-item-group>
                   <v-list-item v-for="post in postList" :key="post.id">
-                    <v-card class="custom-card" elevation="0" @click="goToPost(post.id)" style="cursor: pointer; border: 1px solid #D2D2D2; padding: 16px;">
+                    <v-card class="custom-card" elevation="0" @click="goToPost(post.id)"
+                      style="cursor: pointer; border: 1px solid #D2D2D2; padding: 16px;">
                       <v-row>
                         <v-col cols="9" class="text-left" style="padding: 10px;">
                           <div class="d-flex" style="height: auto;">
                             <div style="flex: 1; padding-right: 10px;">
-                              <v-card-title class="text-left" style="font-size: 18px; display: flex; justify-content: space-between;">
+                              <v-card-title class="text-left"
+                                style="font-size: 18px; display: flex; justify-content: space-between;">
                                 <span>{{ post.title }}</span>
                               </v-card-title>
-                              <v-card-text class="text-left post-content" style="margin: 0; font-size: 18px;">{{ post.content }}</v-card-text>
+                              <v-card-text class="text-left post-content" style="margin: 0; font-size: 18px;">{{
+                                post.content }}</v-card-text>
                               <div class="d-flex align-left">
                                 <div style="flex: 9; padding-left: 0px; text-align: left;">
                                   <div class="d-flex align-left">
-                                    <div style="flex: 1; padding-left: 10px; display: flex; align-items: center; color: #6A6A6A; margin: 0px;">
+                                    <div
+                                      style="flex: 1; padding-left: 10px; display: flex; align-items: center; color: #6A6A6A; margin: 0px;">
                                       <v-icon small class="icon">mdi-heart</v-icon>
-                                      <span class="like-text">{{ post.likeCount }} · 댓글 {{ post.comments }} · 조회수 {{ post.viewCount }} {{ post.createdTimeAt.slice(0, 10) }}</span>
+                                      <span class="like-text">{{ post.likeCount }} · 댓글 {{ post.comments }} · 조회수 {{
+                                        post.viewCount }} {{ post.createdTimeAt.slice(0, 10) }}</span>
                                     </div>
                                   </div>
                                 </div>
@@ -59,37 +70,36 @@
                             </div>
                           </div>
                         </v-col>
-                        <v-col cols="3" class="text-left" style="padding: 10px; display: flex; align-items: center; justify-content: center;">
-                          <div class="image-container" style=" width : 100%; height: 100px; overflow: hidden; position: relative;">
+                        <v-col cols="3" class="text-left"
+                          style="padding: 10px; display: flex; align-items: center; justify-content: center;">
+                          <div class="image-container"
+                            style=" width : 100%; height: 100px; overflow: hidden; position: relative;">
                             <template v-if="post.postImgUrl">
-                              <v-img
-                                :src="post.postImgUrl"   
-                                alt="게시글 이미지"
-                                style="object-fit: cover; position: absolute; top: 50%; left: 50%; width: 100%; height: 100%; transform: translate(-50%, -50%);"
-                              />
+                              <v-img :src="post.postImgUrl" alt="게시글 이미지"
+                                style="object-fit: cover; position: absolute; top: 50%; left: 50%; width: 100%; height: 100%; transform: translate(-50%, -50%);" />
                             </template>
                           </div>
-                        </v-col>                        
+                        </v-col>
                       </v-row>
                     </v-card>
                   </v-list-item>
-                </v-list-item-group>                
-              </v-list>              
+                </v-list-item-group>
+              </v-list>
             </v-col>
-          </v-row>          
+          </v-row>
           <v-row justify="center" class="pagination">
             <span @click="prevPage" :disabled="currentPage === 1" class="d-flex align-center action-link">
               <v-icon small>mdi-arrow-left-thin</v-icon>&nbsp;Previous&nbsp;&nbsp;
             </span>
-            <span v-for="page in Math.ceil(totalPosts / itemsPerPage)" :key="page" @click="goToPage(page)" 
-                  class="page-number" :class="{ active: currentPage === page, 'hover-link': currentPage !== page }">
+            <span v-for="page in Math.ceil(totalPosts / itemsPerPage)" :key="page" @click="goToPage(page)"
+              class="page-number" :class="{ active: currentPage === page, 'hover-link': currentPage !== page }">
               &nbsp;{{ page }}&nbsp;
             </span>
-            <span @click="nextPage" :disabled="currentPage === Math.ceil(totalPosts / itemsPerPage)" 
-                  class="d-flex align-center action-link">
+            <span @click="nextPage" :disabled="currentPage === Math.ceil(totalPosts / itemsPerPage)"
+              class="d-flex align-center action-link">
               &nbsp;&nbsp;Next&nbsp;<v-icon small>mdi-arrow-right-thin</v-icon>
-            </span>            
-          </v-row>          
+            </span>
+          </v-row>
         </v-col>
       </v-row>
       <v-spacer :style="{ height: '50px' }"></v-spacer>
@@ -123,47 +133,23 @@ export default {
   methods: {
     async fetchPosts() {
       try {
-        const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/community-service/post/list`, {
-          params: {
-            size: 100
-          }
-        });
-    
+        const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/community-service/post/list`);
+        console.log(response.data);
         if (response.data.status_code === 200) {
-          const posts = response.data.result.content.map(post => ({
-            id: post.id,
-            title: post.title,
-            content: post.content,
-            viewCount: post.viewCount || 0,
-            createdTimeAt: post.createdTimeAt,
-            postImgUrl: post.postImgUrl
-          }));
 
-        // likeCounts를 비동기로 처리
-        const likeCounts = await Promise.all(posts.map(post => 
-          axios.get(`${process.env.VUE_APP_API_BASE_URL}/community-service/post/detail/${post.id}/likes`)
-            .then(likeResponse => likeResponse.data.likeCount || 0)
-            .catch(() => 0)
-        ));
+          this.postList = response.data.result;
+          this.totalPosts = response.data.result.length; // 전체 게시글 수
 
-        // posts와 likeCounts를 결합
-        this.postList = posts.map((post, index) => ({
-          ...post,
-          likeCount: likeCounts[index],
-        }));
+          // 정렬
+          this.sortPosts();
 
-        this.totalPosts = response.data.result.totalElements; // 전체 게시글 수
-
-        // 정렬
-        this.sortPosts();
-      
-        // 페이지네이션
-        this.updatePaginatedPosts();
+          // 페이지네이션
+          this.updatePaginatedPosts();
 
         }
       } catch (error) {
-      console.error('Error fetching posts:', error);
-     }
+        console.error('Error fetching posts:', error);
+      }
     },
     sortPosts() {
       if (this.sortOrder === "popular") {
@@ -203,7 +189,7 @@ export default {
       this.$router.push(`/post/${id}`);
     },
     goToCreatePost() {
-    this.$router.push('/post/create');
+      this.$router.push('/post/create');
     },
   },
   computed: {
@@ -356,6 +342,3 @@ export default {
 }
 
 </style>
-
-
-
