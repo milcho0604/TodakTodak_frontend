@@ -25,7 +25,7 @@
                     v-for="(label, value) in acceptOptions"
                     :key="value"
                     @click="() => { 
-                        filterAcceptStatus = value; // 이미 문자열이므로 강제 변환 필요 없음
+                        filterAcceptStatus = value; 
                         fetchHospitals(); 
                     }"
                     :input-value="filterAcceptStatus === value.toString()"
@@ -106,45 +106,49 @@ export default {
         this.fetchHospitals();
     },
     methods: {
-async fetchHospitals() {
-    try {
-        const params = {
-            page: this.page - 1, // 페이지는 0부터 시작
-            size: 10, // 페이지당 10개씩
-            accept: this.filterAcceptStatus !== 'all' ? this.filterAcceptStatus : null, // 필터 적용
-        };
+        async fetchHospitals() {
+            try {
+                const params = {
+                    page: this.page - 1, // 페이지는 0부터 시작
+                    size: 2, // 페이지당 10개씩
+                    accept: this.filterAcceptStatus !== 'all' ? this.filterAcceptStatus : null, // 필터 적용
+                };
 
-        if (this.searchQuery) {
-            params.query = this.searchQuery;
-        }
+                if (this.searchQuery) {
+                    params.query = this.searchQuery;
+                }
 
-        const url = this.searchQuery
-            ? `${process.env.VUE_APP_API_BASE_URL}/reservation-service/hospital/search`
-            : `${process.env.VUE_APP_API_BASE_URL}/reservation-service/hospital/admin/hospital/list`;
+                const url = this.searchQuery
+                    ? `${process.env.VUE_APP_API_BASE_URL}/reservation-service/hospital/search`
+                    : `${process.env.VUE_APP_API_BASE_URL}/reservation-service/hospital/admin/hospital/list`;
 
-        const response = await axios.get(url, { params });
+                const response = await axios.get(url, { params });
 
-        // 응답 데이터의 구조를 확인하고, result나 content가 없을 경우 대비
-        if (response.data && response.data.result && response.data.result.content) {
-            this.hospitals = response.data.result.content;
-            this.filteredHospitals = this.hospitals; // 필터링된 병원 목록 초기화
-            this.totalPages = response.data.result.totalPages; // 전체 페이지 수 설정
-        } else {
-            console.error('Invalid response structure:', response.data);
-            // 초기화하여 빈 목록 처리
-            this.hospitals = [];
-            this.filteredHospitals = [];
-            this.totalPages = 1;
-        }
-    } catch (error) {
-        console.error('Error fetching hospitals:', error);
-    }
-},
+                if (response.data && response.data.result && response.data.result.content) {
+                    this.hospitals = response.data.result.content;
+                    this.filteredHospitals = this.hospitals;
+                    this.totalPages = response.data.result.totalPages;
+                } else {
+                    console.error('Invalid response structure:', response.data);
+                    this.hospitals = [];
+                    this.filteredHospitals = [];
+                    this.totalPages = 1;
+                }
+            } catch (error) {
+                console.error('Error fetching hospitals:', error);
+            }
+        },
 
         // 검색어 입력 시 호출되는 메서드
         onSearchInput() {
             this.page = 1; // 검색어 입력 시 페이지를 1로 초기화
             this.fetchHospitals(); // 검색어에 맞는 목록 가져오기
+        },
+    },
+    watch: {
+        page(newPage) {
+            console.log(newPage)
+            this.fetchHospitals(); // 페이지 변경 시 목록 다시 로드
         },
     },
 };
