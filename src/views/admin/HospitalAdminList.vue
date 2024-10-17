@@ -20,7 +20,7 @@
 
         <!-- 필터 버튼 -->
         <v-row>
-            <v-chip-group active-class="selected-chip">
+            <v-chip-group active-class="selected-chip" class="ml-3">
                 <v-chip
                     v-for="(label, value) in acceptOptions"
                     :key="value"
@@ -119,7 +119,7 @@ export default {
                 }
 
                 const url = this.searchQuery
-                    ? `${process.env.VUE_APP_API_BASE_URL}/reservation-service/hospital/search`
+                    ? `${process.env.VUE_APP_API_BASE_URL}/reservation-service/hospital/admin/hospital/search`
                     : `${process.env.VUE_APP_API_BASE_URL}/reservation-service/hospital/admin/hospital/list`;
 
                 const response = await axios.get(url, { params });

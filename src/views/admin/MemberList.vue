@@ -20,7 +20,7 @@
         <!-- 필터 버튼 -->
         <v-row>
             <!-- 인증 상태 필터 -->
-            <v-chip-group active-class="selected-chip">
+            <v-chip-group active-class="selected-chip" class="ml-3">
                 <v-chip
                     v-for="(label, value) in verifiedOptions"
                     :key="value"
