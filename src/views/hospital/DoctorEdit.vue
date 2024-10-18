@@ -197,14 +197,19 @@ export default {
                 console.error("프로필 업데이트 실패:", error);
             }
 
-            // 영업시간 업데이트
+            // 근무시간 업데이트
             for (const hour of this.koreanDays) {
+                const openTime = `${this.selectedOpenTime[hour.id].toString().padStart(2, '0')}:${this.selectedOpenMinute[hour.id].toString().padStart(2, '0')}:00`;
+                const closeTime = `${this.selectedCloseTime[hour.id].toString().padStart(2, '0')}:${this.selectedCloseMinute[hour.id].toString().padStart(2, '0')}:00`;
+
                 const operatingHourData = {
                     dayOfWeek: hour.dayOfWeek,
-                    openTime: `${this.selectedOpenTime[hour.id]}:${this.selectedOpenMinute[hour.id]}:00`,
-                    closeTime: `${this.selectedCloseTime[hour.id]}:${this.selectedCloseMinute[hour.id]}:00`,
+                    openTime: openTime,
+                    closeTime: closeTime,
                     untact: hour.untact.toString()
                 };
+
+                console.log(`영업시간 업데이트 요청 데이터:`, operatingHourData);
 
                 try {
                     await axios.post(`${process.env.VUE_APP_API_BASE_URL}/member-service/doctor-operating-hours/update/${hour.id}`, operatingHourData);
@@ -213,6 +218,7 @@ export default {
                     console.error(`영업시간 업데이트 실패(${hour.dayOfWeek}):`, error);
                 }
             }
+            this.$router.push('/doctor/detail');
         },
     },
     mounted() {
