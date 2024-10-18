@@ -126,25 +126,25 @@
                                 {{ reservationDetail.medicalItem }}
                             </v-col>
                         </v-row>
+                        <br>
                         <v-row justify="center" align="center">
-                            <v-col cols="3" class="modal-noshow" @click="toCompleted('Noshow')">
+                            <v-col cols="2" class="modal-completed" @click="toCompleted('Completed')">
+                                접수완료
+                            </v-col>
+                            <v-col cols="1"></v-col>
+                            <v-col cols="2" class="modal-noshow" @click="toCompleted('Noshow')">
                                 노쇼
                             </v-col>
                             <v-col cols="1"></v-col>
-                            <v-col cols="3" class="modal-close" @click="toCompletedModal = false">
-                                닫기
-                            </v-col>
-                            <v-col cols="1"></v-col>
-                            <v-col cols="3" class="modal-completed" @click="toCompleted('Completed')">
-                                접수완료
-                            </v-col>
-                        </v-row>
-                        <v-row justify="center" align="center">
-                            <v-col cols="3" class="modal-cancelled" @click="checkCompletedModal = true">
+                            <v-col cols="2" class="modal-cancelled" @click="checkCompletedModal = true">
                                 예약취소
                             </v-col>
+                            <v-col cols="1"></v-col>
+                            <v-col cols="2" class="modal-close" @click="toCompletedModal = false">
+                                닫기
+                            </v-col>
                         </v-row>
-                        <br><br>
+                        <br>
                     </v-container>
                 </v-card>
             </v-dialog>
