@@ -9,7 +9,7 @@
                 <v-col class="list-box">
                     <div class="subtitle inter-bold">당일 예약내역</div>
                     <!-- 날짜별 당일 예약 내역 가져오기 -->
-                    <div v-for="r in paginatedList" :key="r.id">
+                    <div v-for="r in paginatedImmediateList" :key="r.id">
                         <div class="reservation" @click="setDetail(r)">
                             <v-row>
                                 <v-col cols="4" class="doctor inter-normal">
@@ -32,9 +32,11 @@
                     <v-row>
                         <v-col>
                             <div style="text-align: right;" class="mr-2">
-                                <button @click="prevPage" :disabled="currentPage === 1">이전 </button>
-                                <span>{{ currentPage }} / {{ totalPages }}</span>
-                                <button @click="nextPage" :disabled="currentPage === totalPages"> 다음</button>
+                                <button @click="prevPage('immediate')"
+                                    :disabled="immediateCurrentPage === 1">이전</button>
+                                <span>{{ immediateCurrentPage }} / {{ immediateTotalPages }}</span>
+                                <button @click="nextPage('immediate')"
+                                    :disabled="immediateCurrentPage === immediateTotalPages">다음</button>
                             </div>
                         </v-col>
                     </v-row>
@@ -42,7 +44,7 @@
                 <v-col class="list-box">
                     <div class="subtitle inter-bold">스케쥴 예약내역</div>
                     <!-- 날짜별 스케쥴 예약 내역 가져오기 -->
-                    <div v-for="r in scheduledList" :key="r.id">
+                    <div v-for="r in paginatedScheduledList" :key="r.id">
                         <div class="screservation" @click="setDetail(r)">
                             <v-row>
                                 <v-col cols="4" class="doctor inter-normal">
@@ -62,11 +64,22 @@
                             </v-row>
                         </div>
                     </div>
+                    <v-row>
+                        <v-col>
+                            <div style="text-align: right;" class="mr-2">
+                                <button @click="prevPage('scheduled')"
+                                    :disabled="scheduledCurrentPage === 1">이전</button>
+                                <span>{{ scheduledCurrentPage }} / {{ scheduledTotalPages }}</span>
+                                <button @click="nextPage('scheduled')"
+                                    :disabled="scheduledCurrentPage === scheduledTotalPages">다음</button>
+                            </div>
+                        </v-col>
+                    </v-row>
                 </v-col>
                 <v-col class="list-box">
                     <div class="subtitle inter-bold">접수 내역</div>
                     <!-- 날짜별 접수 내역 가져오기 -->
-                    <div v-for="r in completedList" :key="r.id">
+                    <div v-for="r in paginatedCompletedList" :key="r.id">
                         <div class="completed" @click="showDetail(r)">
                             <v-row>
                                 <v-col cols="4" class="doctor inter-normal">
@@ -86,6 +99,17 @@
                             </v-row>
                         </div>
                     </div>
+                    <v-row>
+                        <v-col>
+                            <div style="text-align: right;" class="mr-2">
+                                <button @click="prevPage('completed')"
+                                    :disabled="completedCurrentPage === 1">이전</button>
+                                <span>{{ completedCurrentPage }} / {{ completedTotalPages }}</span>
+                                <button @click="nextPage('completed')"
+                                    :disabled="completedCurrentPage === completedTotalPages">다음</button>
+                            </div>
+                        </v-col>
+                    </v-row>
                 </v-col>
             </v-row>
             <v-dialog v-model="toCompletedModal" max-width="600px">
@@ -271,8 +295,10 @@ export default {
             toCompletedModal: false,
             checkCompletedModal: false,
             reserveDetailModal: false,
-            currentPage: 1, // 현재 페이지
-            itemsPerPage: 10, // 한 페이지에 표시할 항목 수
+            immediateCurrentPage: 1,
+            scheduledCurrentPage: 1,
+            completedCurrentPage: 1,
+            itemsPerPage: 5, // 한 페이지에 표시할 항목 수
         }
     },
     watch: {
@@ -371,26 +397,50 @@ export default {
                 console.log(e)
             }
         },
-        nextPage() {
-            if (this.currentPage < this.totalPages) {
-                this.currentPage++;
+        nextPage(listType) {
+            if (listType === 'immediate' && this.immediateCurrentPage < this.immediateTotalPages) {
+                this.immediateCurrentPage++;
+            } else if (listType === 'scheduled' && this.scheduledCurrentPage < this.scheduledTotalPages) {
+                this.scheduledCurrentPage++;
+            } else if (listType === 'completed' && this.completedCurrentPage < this.completedTotalPages) {
+                this.completedCurrentPage++;
             }
         },
-        prevPage() {
-            if (this.currentPage > 1) {
-                this.currentPage--;
+        prevPage(listType) {
+            if (listType === 'immediate' && this.immediateCurrentPage > 1) {
+                this.immediateCurrentPage--;
+            } else if (listType === 'scheduled' && this.scheduledCurrentPage > 1) {
+                this.scheduledCurrentPage--;
+            } else if (listType === 'completed' && this.completedCurrentPage > 1) {
+                this.completedCurrentPage--;
             }
         },
     },
     computed: {
-        totalPages() {
+        immediateTotalPages() {
             return Math.ceil(this.immediateList.length / this.itemsPerPage);
         },
-        paginatedList() {
-            const start = (this.currentPage - 1) * this.itemsPerPage;
+        scheduledTotalPages() {
+            return Math.ceil(this.scheduledList.length / this.itemsPerPage);
+        },
+        completedTotalPages() {
+            return Math.ceil(this.completedList.length / this.itemsPerPage);
+        },
+        paginatedImmediateList() {
+            const start = (this.immediateCurrentPage - 1) * this.itemsPerPage;
             const end = start + this.itemsPerPage;
             return this.immediateList.slice(start, end);
         },
+        paginatedScheduledList() {
+            const start = (this.scheduledCurrentPage - 1) * this.itemsPerPage;
+            const end = start + this.itemsPerPage;
+            return this.scheduledList.slice(start, end);
+        },
+        paginatedCompletedList() {
+            const start = (this.completedCurrentPage - 1) * this.itemsPerPage;
+            const end = start + this.itemsPerPage;
+            return this.completedList.slice(start, end);
+        }
     }
 }
 </script>
