@@ -86,7 +86,7 @@
                     </v-card-title>
                     <v-container style="text-align: center;" class="mt-3">
                         <v-row justify="center">
-                            <v-col v-if="reservationDetail.reservationType = 'Immediate'" class="inter-bold subtitle-3">
+                            <v-col v-if="reservationDetail.reservationType == 'Immediate'" class="inter-bold subtitle-3">
                                 당일 예약
                             </v-col>
                             <v-col v-else class="inter-bold subtitle-3">
