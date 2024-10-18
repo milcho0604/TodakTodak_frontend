@@ -5,7 +5,7 @@
       rounded="0"
       flat
     >
-      <v-window v-model="onboarding" style="width: 1080px;" class="d-flex justify-center">
+      <v-window v-model="onboarding" style="width: 100%;" class="d-flex justify-center">
         <!-- v-model="onboarding": 현재 활성화된 슬라이드의 인덱스를 바인딩 -->
         <v-window-item v-for="n in windowCount" :key="`window-${n}`" :value="n">
           <v-row class="d-flex justify-center">
@@ -18,7 +18,7 @@
             >
             <!-- 병원 정보 담는 v-card -->
               <v-card 
-                style="width:330px; height:380px; border-radius: 10px;"
+                style="width:340px; height:390px; border-radius: 10px;"
                 @click="() => moveToHospital(hospital.id)"
                 variant="flat"
               >
@@ -34,6 +34,7 @@
                     />
                   </v-avatar>
                 </v-row>
+
                 <!-- 병원이름 -->
                 <v-card-title class="d-flex justify-space-between align-center ml-2">
                   <span class="hospital-name" style="overflow: hidden; white-space: nowrap; font-weight:bold;">
@@ -43,16 +44,29 @@
                   <v-card-text class="hospital-rating">
                     <v-icon>mdi-star</v-icon> {{ hospital.averageRating }} ({{ hospital.reviewCount }})
                   </v-card-text>
-                </v-card-title>                
+                </v-card-title>  
+
                 <!-- 병원주소 -->
-                <v-card-subtitle class="hospital-address d-flex align-center mt-n7" style="color:#888888;">
+                <v-card-subtitle class="hospital-address d-flex align-center mt-n7" style="color:#6A6A6A;">
                     <v-icon>mdi-map-marker-outline</v-icon>
                     <v-card-text class="hospital-address-text ml-n3">
                       {{ hospital.address ? hospital.address.slice(0, 25) + '..' : '' }}
                     </v-card-text>
                 </v-card-subtitle>
+
+                <!-- 병원키워드 -->
+                <v-row class="ml-5">
+                  <v-chip
+                  v-for="(keyword, index) in hospital.keywordList"
+                  :key="index"
+                  color="#00499E"
+                  size="default"
+                  class="mr-2"
+                  >
+                  {{ keyword }} 
+              </v-chip>
+                </v-row>
               </v-card>
-          
             </v-col>
           </v-row>
         </v-window-item>
@@ -68,7 +82,7 @@
             :value="n"
           >
             <v-btn
-              :color="isSelected ? 'primary' : 'secondary'"
+              :color="isSelected ? '#0075FF' : '#ABABAB'"
               icon="mdi-circle-small"
               @click="toggle"
             ></v-btn>
@@ -89,7 +103,7 @@
       hospitalList: {
         type: Array,
         default: () => []
-      }
+      },
     },
     data() {
       return {
@@ -124,7 +138,7 @@
   
   <style scoped>
   .hospital-avatar{
-    width: 280px !important;
+    width: 290px !important;
     height: 250px !important;
     border-radius: 10px;
     object-fit: contain; /* 콘텐츠를 컨테이너 안에 맞추되 비율을 유지함. */

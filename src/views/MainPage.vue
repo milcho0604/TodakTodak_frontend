@@ -20,13 +20,20 @@
       
       <v-spacer></v-spacer>
 
+      <!-- 우리동네 인기 소아과 타이틀 -->
       <v-row justify="center" align="center">
         <h2 style="font-weight: bold;">🏥 우리동네 인기 소아과</h2>
       </v-row>
 
+      <v-row justify="center" align="center" class="mt-3">
+        <h5 style="text-align: center; color: #828282;">
+            믿고 찾는 우리 아이 병원
+        </h5>
+      </v-row>
+
       <v-spacer :style="{ height: '50px' }"></v-spacer>
 
-      <v-container style="background-color: #F3F3F3; border-radius:15px; max-width: 1200px;">
+      <v-container style="background-color: #F5F5F5; border-radius:15px; max-width: 1200px;">
         <!-- 인기소아과 window -->
         <v-row justify="center">
           <HospitalCarousel 
@@ -40,6 +47,7 @@
               class="custom-button"
               style="background-color: #E6E6E6;"
               text :to="{path:'/hospital/list'}"
+              variant="flat"
           >주변소아과 더보기</v-btn>
         </v-row> 
 
@@ -95,12 +103,12 @@ export default {
       // 인기소아과 데이터 
       keywordList: ['주차장', '전문의', '예방접종'],
       hospitalList:[
-        {id:'1', hospitalImageUrl:'https://todak-file.s3.ap-northeast-2.amazonaws.com/default-images/hospital-example-image.png', name: '삼성화곡소아청소년과', averageRating:'4.5', reviewCount:'32', address: '서울 강남구 삼성로14 (개포자이 프레지던스) 자이스퀘어 상가 216호', keywords: '예방접종, 주차장, 전문의'},
-        {id:'2', hospitalImageUrl:'https://todak-file.s3.ap-northeast-2.amazonaws.com/default-images/hospital1.jpeg', name: '연세드림소아청소년과', averageRating:'4.5', reviewCount:'32', address: '서울 강남구 삼성로14 (개포자이 프레지던스) 자이스퀘어 상가 216호', keywords: '예방접종, 주차장, 전문의'},
-        {id:'3', hospitalImageUrl:'https://todak-file.s3.ap-northeast-2.amazonaws.com/default-images/hospital2.png', name: '아이조은청소년과', averageRating:'4.5', reviewCount:'32', address: '서울 강남구 삼성로14 (개포자이 프레지던스) 자이스퀘어 상가 216호', keywords: '예방접종, 주차장, 전문의'},
-        {id:'4', hospitalImageUrl:'https://todak-file.s3.ap-northeast-2.amazonaws.com/default-images/hospital1.jpeg', name: '방은지소아청소년과', averageRating:'4.5', reviewCount:'32', address: '서울 강남구 삼성로14 (개포자이 프레지던스) 자이스퀘어 상가 216호', keywords: '예방접종, 주차장, 전문의'},
-        {id:'5', hospitalImageUrl:'https://todak-file.s3.ap-northeast-2.amazonaws.com/default-images/hospital1.jpeg', name: '김창현소아청소년과', averageRating:'4.5', reviewCount:'32', address: '서울 강남구 삼성로14 (개포자이 프레지던스) 자이스퀘어 상가 216호', keywords: '예방접종, 주차장, 전문의'},
-        {id:'6', hospitalImageUrl:'https://todak-file.s3.ap-northeast-2.amazonaws.com/default-images/hospital1.jpeg', name: '무무소아청소년과', averageRating:'4.5', reviewCount:'32', address: '서울 강남구 삼성로14 (개포자이 프레지던스) 자이스퀘어 상가 216호', keywords: '예방접종, 주차장, 전문의'},
+        {id:'1', hospitalImageUrl:'https://todak-file.s3.ap-northeast-2.amazonaws.com/default-images/hospital-example-image.png', name: '삼성화곡소아청소년과', averageRating:'4.5', reviewCount:'32', address: '서울 강남구 삼성로14 (개포자이 프레지던스) 자이스퀘어 상가 216호', keywordList: ['예방접종', '주차장', '전문의']},
+        {id:'2', hospitalImageUrl:'https://todak-file.s3.ap-northeast-2.amazonaws.com/default-images/hospital1.jpeg', name: '연세드림소아청소년과', averageRating:'4.5', reviewCount:'32', address: '서울 강남구 삼성로14 (개포자이 프레지던스) 자이스퀘어 상가 216호', keywordList: ['예방접종', '주차장', '전문의']},
+        {id:'3', hospitalImageUrl:'https://todak-file.s3.ap-northeast-2.amazonaws.com/default-images/hospital2.png', name: '아이조은청소년과', averageRating:'4.5', reviewCount:'32', address: '서울 강남구 삼성로14 (개포자이 프레지던스) 자이스퀘어 상가 216호', keywordList: ['예방접종', '주차장', '전문의']},
+        {id:'4', hospitalImageUrl:'https://todak-file.s3.ap-northeast-2.amazonaws.com/default-images/hospital1.jpeg', name: '방은지소아청소년과', averageRating:'4.5', reviewCount:'32', address: '서울 강남구 삼성로14 (개포자이 프레지던스) 자이스퀘어 상가 216호', keywordList: ['예방접종', '주차장', '전문의']},
+        {id:'5', hospitalImageUrl:'https://todak-file.s3.ap-northeast-2.amazonaws.com/default-images/hospital1.jpeg', name: '김창현소아청소년과', averageRating:'4.5', reviewCount:'32', address: '서울 강남구 삼성로14 (개포자이 프레지던스) 자이스퀘어 상가 216호', keywordList: ['예방접종', '주차장', '전문의']},
+        {id:'6', hospitalImageUrl:'https://todak-file.s3.ap-northeast-2.amazonaws.com/default-images/hospital1.jpeg', name: '무무소아청소년과', averageRating:'4.5', reviewCount:'32', address: '서울 강남구 삼성로14 (개포자이 프레지던스) 자이스퀘어 상가 216호', keywordList: ['예방접종', '주차장', '전문의']},
       ],
       doctorList:[
         {id:'1', profileImg:'https://todak-file.s3.ap-northeast-2.amazonaws.com/default-images/male-doctor.png', doctorName:'신현도', hospitalName:'아이조은청소년과', reviewPoint:'4.5', reviewCount:'32' },
