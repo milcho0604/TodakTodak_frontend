@@ -14,7 +14,7 @@
                             <v-row>
                                 <v-col cols="4" class="doctor inter-normal">
                                     {{ r.doctorName }} 의사 <br>
-                                    {{ r.reservationTime }}
+                                    {{ formatTime(r.reservationTime) }}
                                 </v-col>
                                 <div style="border-left: 1px solid #ccc; height: 40px; margin: 12px 0;"></div>
                                 <v-col>
@@ -50,7 +50,7 @@
                             <v-row>
                                 <v-col cols="5" class="doctor inter-normal">
                                     {{ r.doctorName }} 의사 <br>
-                                    {{ r.reservationTime }}
+                                    {{ formatTime(r.reservationTime) }}
                                 </v-col>
                                 <div style="border-left: 1px solid #ccc; height: 40px; margin: 12px 0;"></div>
                                 <v-col>
@@ -86,7 +86,7 @@
                             <v-row>
                                 <v-col cols="4" class="doctor inter-normal">
                                     {{ r.doctorName }} 의사<br>
-                                    {{ r.reservationTime }}
+                                    {{ formatTime(r.reservationTime) }}
                                 </v-col>
                                 <div style="border-left: 1px solid #ccc; height: 40px; margin: 12px 0;"></div>
                                 <v-col>
@@ -418,6 +418,9 @@ export default {
                 this.completedCurrentPage--;
             }
         },
+        formatTime(time){
+            return time.slice(0,5);
+        }
     },
     computed: {
         immediateTotalPages() {
