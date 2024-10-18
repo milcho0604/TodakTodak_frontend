@@ -1,4 +1,5 @@
 <template>
+    <!-- 병원 Carousel 담는 회색 v-card -->
     <v-card
       style="background-color: #F5F5F5; border-radius: 15px; padding: 20px; max-width: 1200px; width: 100%;"
       rounded="0"
@@ -15,34 +16,40 @@
               md="4"
               class="d-flex justify-center"
             >
+            <!-- 병원 정보 담는 v-card -->
               <v-card 
-                style="width:330px; height:380px;"
+                style="width:330px; height:380px; border-radius: 10px;"
                 @click="() => moveToHospital(hospital.id)"
                 variant="flat"
               >
+                <!-- 병원사진 -->
                 <v-row class="d-flex justify-center mt-4">
                   <v-avatar 
                     class="hospital-avatar"
                   >
                     <v-img
                       :src="hospital.hospitalImageUrl"
-                      alt="병원 썸네일"
+                      alt="병원사진"
                       cover
                     />
                   </v-avatar>
                 </v-row>
+                <!-- 병원이름 -->
                 <v-card-title class="d-flex justify-space-between align-center ml-2">
-                  <span class="hospital-name" style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                  <span class="hospital-name" style="overflow: hidden; white-space: nowrap; font-weight:bold;">
                     {{ hospital.name }}
                   </span>
+                  <!-- 병원 별점, 리뷰개수 -->
                   <v-card-text class="hospital-rating">
                     <v-icon>mdi-star</v-icon> {{ hospital.averageRating }} ({{ hospital.reviewCount }})
                   </v-card-text>
                 </v-card-title>                
-
-                <v-card-subtitle class="hospital-address" style="color:#888888;">
+                <!-- 병원주소 -->
+                <v-card-subtitle class="hospital-address d-flex align-center mt-n7" style="color:#888888;">
                     <v-icon>mdi-map-marker-outline</v-icon>
-                    <v-card-text class="ml-n3">{{hospital.address}}</v-card-text>
+                    <v-card-text class="hospital-address-text ml-n3">
+                      {{ hospital.address ? hospital.address.slice(0, 25) + '..' : '' }}
+                    </v-card-text>
                 </v-card-subtitle>
               </v-card>
           
@@ -131,12 +138,14 @@
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-    width: 100% !important;
+    max-width: 280px; /* 병원 이미지의 너비에 맞춰서 제한 */
   }
   
   .hospital-rating {
     text-align: right; /* 병원 평점 부분을 오른쪽 정렬 */
     white-space: nowrap; /* 텍스트가 한 줄로 나오도록 */
+    font-weight: bold;
+    color: #00499E;
   }
   
 
