@@ -18,8 +18,8 @@
                                 <div style="border-left: 1px solid #ccc; height: 40px; margin: 12px 0;"></div>
                                 <v-col>
                                     <div>
-                                        <span class="inter-normal child">{{ r.childName }}</span> <span class="ssn">{{
-                                            r.childSsn }}</span>
+                                        <span class="inter-normal child">{{ r.childName }}</span> <span class="child">
+                                            {{r.reservationTime }}</span>
                                     </div>
 
                                     <div class="parent">
@@ -112,12 +112,12 @@
                     </v-row>
                 </v-col>
             </v-row>
-            <v-dialog v-model="toCompletedModal" max-width="600px">
+            <v-dialog v-model="toCompletedModal" max-width="500px">
                 <v-card>
                     <v-card-title class="submodal mt-6 inter-bold text-center">
                         접수 완료 처리하시겠습니까?
                     </v-card-title>
-                    <v-container style="text-align: center;">
+                    <v-container>
                         <v-row justify="center">
                             <v-col v-if="reservationDetail.reservationType == 'Immediate'"
                                 class="inter-bold subtitle-3">
@@ -173,10 +173,10 @@
                             <v-col cols="2" class="modal-cancelled" @click="checkCompletedModal = true">
                                 예약취소
                             </v-col>
-                            <v-col cols="1"></v-col>
+                            <!-- <v-col cols="1"></v-col>
                             <v-col cols="2" class="modal-close" @click="toCompletedModal = false">
                                 닫기
-                            </v-col>
+                            </v-col> -->
                         </v-row>
                         <br>
                     </v-container>
@@ -204,7 +204,7 @@
                         예약 내역 상세정보
                     </v-card-title>
                     <v-card-text>
-                        <v-container class="submodaltext">
+                        <v-container>
                             <v-row justify="center">
                                 <v-col v-if="reservationDetail.reservationType == 'Immediate'"
                                     class="inter-bold subtitle-3">
