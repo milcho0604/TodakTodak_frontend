@@ -15,40 +15,64 @@
                     <v-row>
                         <v-col>
                             <h4>
+                                <v-row>
+                                <v-col cols="2">
                                 <v-avatar size="50">
                                     <v-img :src="doctorDetails?.doctorImageUrl ? doctorDetails.doctorImageUrl : require('@/assets/doctor.png')" />
                                 </v-avatar>
-                                {{ doctorDetails?.doctorName }}
+                                </v-col>
+                                <v-col cols="5">
+                                    <div>
+                                    {{ doctorDetails?.doctorName }}     
+                                    <br>
+                                    <div style="font-size: 12px;">
+                                        <v-icon >mdi-account-heart-outline</v-icon> {{ doctorDetails?.reviewCount }}
+                                        <v-icon style="color: gold;">mdi-star</v-icon> {{ doctorDetails?.reviewPoint }}                
+                                    </div>
+                                    </div>
+                                </v-col>
+                                </v-row>
                             </h4>
                         </v-col>
-                        <v-col class="d-flex justify-end">
+                        <v-col cols="5" class="d-flex justify-end">
                             <span @click="goToEdit" class="d-flex align-center action-link mr-2">
                                 <v-icon small>mdi-pencil</v-icon> 수정
                             </span>
                         </v-col>
                     </v-row>
                     <v-row>
-                        <v-col>이메일 : {{ doctorDetails?.doctorEmail }}</v-col>
-                    </v-row>
-                    <v-row>
                         <v-col>약력 : {{ doctorDetails?.bio }}</v-col>
                     </v-row>
-                    <v-row>
-                        <v-col>리뷰 수 : {{ doctorDetails?.reviewCount }}</v-col>
-                    </v-row>
-                    <v-row>
-                        <v-col><v-icon style="color: gold; font-size: 18px;">mdi-star</v-icon> {{ doctorDetails?.reviewPoint }}</v-col>
-                    </v-row>
                     <v-row><v-col>근무시간</v-col></v-row>
-                    <v-row v-for="hour in operatingHours" :key="hour.id" class="my-2">
-                        <v-col class="operatingHour">
-                            {{ getKoreanDay(hour.dayOfWeek) }} &nbsp;
-                            <v-chip :color="hour.untact ? 'blue' : 'orange'" dark small class="custom-chip">
-                                {{ hour.untact ? '비대면 가능' : '대면진료' }}
-                            </v-chip> &nbsp;
-                            {{ formatTime(hour.openTime) }} - {{ formatTime(hour.closeTime) }}
-                        </v-col>
-                    </v-row>
+
+        <v-card class="notice-card mt-3" variant="flat">
+            <v-row align="center">
+              <!-- 왼쪽: '점심시간' -->
+              <v-col class="text-center" cols="6">
+                <v-card-title class="text-subtitle-1 font-weight-bold">점심시간</v-card-title>
+              </v-col>
+          
+              <!-- 오른쪽: hospital.breakTime -->
+              <v-col class="text-center" cols="6">
+                <v-card-title style="font-size:17px; font-weight:bold">12:00-13:00</v-card-title>
+              </v-col>
+            </v-row>
+        </v-card>
+        <v-spacer :style="{ height: '10px' }"></v-spacer>
+        <v-card class="notice-card mt-3" variant="flat">
+            <v-row v-for="hour in operatingHours" :key="hour.id" class="my-2" align="center">
+                
+              <v-col class="text-center" cols="4">
+                <v-card-title class="text-subtitle-1 font-weight-bold">{{ getKoreanDay(hour.dayOfWeek) }}</v-card-title>
+              </v-col>
+              <v-col class="text-center" cols="4">
+                <v-card-title style="font-size:17px; font-weight:bold">{{ formatTime(hour.openTime) }} - {{ formatTime(hour.closeTime) }}</v-card-title>
+              </v-col>
+              <v-col class="text-center" cols="4">
+                <v-card-title class="text-subtitle-1 font-weight-bold">{{ hour.untact ? '비대면 진료' : '대면 진료' }}</v-card-title>
+              </v-col>
+            </v-row>
+            </v-card>
                 </v-card>
             </v-col>
         </v-row>
@@ -119,5 +143,10 @@ export default {
     width: auto; /* 원하는 너비로 설정 */
     justify-content: center; /* 가로 방향 가운데 정렬 */
     align-items: center; /* 세로 방향 가운데 정렬 */
+}
+.notice-card{
+    width: 630px;
+    background-color: #F3F3F3;
+    border-radius: 10px; /* 모서리 둥글기 */
 }
 </style>
