@@ -9,7 +9,7 @@
                 <v-col class="list-box">
                     <div class="subtitle inter-bold">당일 예약내역</div>
                     <!-- 날짜별 당일 예약 내역 가져오기 -->
-                    <div v-for="r in immediateList" :key="r.id">
+                    <div v-for="r in paginatedList" :key="r.id">
                         <div class="reservation" @click="setDetail(r)">
                             <v-row>
                                 <v-col cols="4" class="doctor inter-normal">
@@ -29,6 +29,15 @@
                             </v-row>
                         </div>
                     </div>
+                    <v-row>
+                        <v-col>
+                            <div style="text-align: right;" class="mr-2">
+                                <button @click="prevPage" :disabled="currentPage === 1">이전 </button>
+                                <span>{{ currentPage }} / {{ totalPages }}</span>
+                                <button @click="nextPage" :disabled="currentPage === totalPages"> 다음</button>
+                            </div>
+                        </v-col>
+                    </v-row>
                 </v-col>
                 <v-col class="list-box">
                     <div class="subtitle inter-bold">스케쥴 예약내역</div>
@@ -84,9 +93,10 @@
                     <v-card-title class="submodal mt-6 inter-bold text-center">
                         접수 완료 처리하시겠습니까?
                     </v-card-title>
-                    <v-container style="text-align: center;" class="mt-3">
+                    <v-container style="text-align: center;">
                         <v-row justify="center">
-                            <v-col v-if="reservationDetail.reservationType == 'Immediate'" class="inter-bold subtitle-3">
+                            <v-col v-if="reservationDetail.reservationType == 'Immediate'"
+                                class="inter-bold subtitle-3">
                                 당일 예약
                             </v-col>
                             <v-col v-else class="inter-bold subtitle-3">
@@ -126,7 +136,7 @@
                                 {{ reservationDetail.medicalItem }}
                             </v-col>
                         </v-row>
-                        <br>
+                        <br><br>
                         <v-row justify="center" align="center">
                             <v-col cols="2" class="modal-completed" @click="toCompleted('Completed')">
                                 접수완료
@@ -172,6 +182,15 @@
                     <v-card-text>
                         <v-container class="submodaltext">
                             <v-row justify="center">
+                                <v-col v-if="reservationDetail.reservationType == 'Immediate'"
+                                    class="inter-bold subtitle-3">
+                                    당일 예약
+                                </v-col>
+                                <v-col v-else class="inter-bold subtitle-3">
+                                    스케줄 예약
+                                </v-col>
+                            </v-row>
+                            <v-row justify="center">
                                 <v-col class="inter-bold subtitle-3">
                                     원장선생님 정보
                                 </v-col>
@@ -200,6 +219,17 @@
                                 <v-col style="margin-top: -20px">
                                     {{ reservationDetail.childName }} <br>
                                     {{ reservationDetail.childSsn }}
+                                </v-col>
+                            </v-row>
+                            <v-row justify="center">
+                                <v-col class="inter-bold subtitle-3">
+                                    예약 시간
+                                </v-col>
+                            </v-row>
+                            <v-row>
+                                <v-col style="margin-top: -20px">
+                                    {{ reservationDetail.reservationDate }} /
+                                    {{ reservationDetail.reservationTime }}
                                 </v-col>
                             </v-row>
                             <v-row justify="center">
@@ -241,6 +271,8 @@ export default {
             toCompletedModal: false,
             checkCompletedModal: false,
             reserveDetailModal: false,
+            currentPage: 1, // 현재 페이지
+            itemsPerPage: 10, // 한 페이지에 표시할 항목 수
         }
     },
     watch: {
@@ -338,7 +370,27 @@ export default {
             } catch (e) {
                 console.log(e)
             }
-        }
+        },
+        nextPage() {
+            if (this.currentPage < this.totalPages) {
+                this.currentPage++;
+            }
+        },
+        prevPage() {
+            if (this.currentPage > 1) {
+                this.currentPage--;
+            }
+        },
+    },
+    computed: {
+        totalPages() {
+            return Math.ceil(this.immediateList.length / this.itemsPerPage);
+        },
+        paginatedList() {
+            const start = (this.currentPage - 1) * this.itemsPerPage;
+            const end = start + this.itemsPerPage;
+            return this.immediateList.slice(start, end);
+        },
     }
 }
 </script>
@@ -486,10 +538,10 @@ export default {
 
 .modal-cancelled {
     margin-top: 5px;
-    background-color: #C2D7FF;
+    background-color: #FFA1A1;
     border-radius: 5px;
     padding: 5px;
-    color: #00499E;
+    color: #A20000;
     cursor: pointer;
     font-weight: bold;
 }
