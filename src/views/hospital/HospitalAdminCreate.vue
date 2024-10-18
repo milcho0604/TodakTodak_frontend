@@ -18,28 +18,39 @@
             <h5 class="text-left">기본 정보</h5>
             <!-- 관리자 이름 -->
             <h6 class="text-left">대표자(원장님)</h6>
-            <v-text-field v-model="form.adminName" label="대표자(원장님) 이름을 입력해주세요." :rules="[rules.required]"></v-text-field>
+            <v-text-field v-model="form.adminName" 
+            variant="underlined"
+            label="대표자(원장님) 이름을 입력해주세요." :rules="[rules.required]"></v-text-field>
             <!-- 관리자 전화번호 -->
             <h6 class="text-left">전화번호</h6>
-            <v-text-field v-model="form.adminPhoneNumber" label="대표자(원장님) 전화번호를 입력해주세요." :rules="[rules.required]"></v-text-field>
+            <v-text-field v-model="form.adminPhoneNumber"
+            variant="underlined"
+            label="대표자(원장님) 전화번호를 입력해주세요." :rules="[rules.required]"></v-text-field>
 
             <!-- 관리자 이메일 -->
             <h6 class="text-left">이메일</h6>
-            <v-text-field v-model="form.adminEmail" label="대표자(원장님) 이메일을 입력해주세요." :rules="[rules.required, rules.email]"></v-text-field>
+            <v-text-field v-model="form.adminEmail"
+            variant="underlined"
+            label="대표자(원장님) 이메일을 입력해주세요." :rules="[rules.required, rules.email]"></v-text-field>
     
             <!-- 관리자 비밀번호 -->
             <h6 class="text-left">비밀번호</h6>
-            <v-text-field v-model="form.adminPassword" label="비밀번호를 입력해주세요." :type="'password'" :rules="[rules.required]"></v-text-field>
+            <v-text-field v-model="form.adminPassword"
+            variant="underlined"
+            label="비밀번호를 입력해주세요." :type="'password'" :rules="[rules.required]"></v-text-field>
 
             <h5 class="text-left">병원 정보</h5>
 
             <!-- 병원명 -->
             <h6 class="text-left">병원 이름(ex.연세소아과)</h6>
-            <v-text-field v-model="form.hospitalName" label="병원명을 입력해주세요." :rules="[rules.required]"></v-text-field>
+            <v-text-field v-model="form.hospitalName" 
+            variant="underlined"
+            label="병원명을 입력해주세요." :rules="[rules.required]"></v-text-field>
   
             <h6 class="text-left">주소</h6>
             <v-text-field
             v-model="combinedAddress"
+            variant="underlined"
             label="주소를 검색하여 입력해주세요."
             readonly
             :rules="[rules.required]"
@@ -48,16 +59,20 @@
               <v-btn @click="openPostcode" small>주소 검색</v-btn>
             </template>
             </v-text-field>
-            <v-text-field v-model="form.latitude" label="위도" readonly></v-text-field>
-            <v-text-field v-model="form.longitude" label="경도" readonly></v-text-field>
+            <v-text-field v-model="form.latitude" variant="underlined" label="위도" readonly></v-text-field>
+            <v-text-field v-model="form.longitude" variant="underlined" label="경도" readonly></v-text-field>
   
             <!-- 병원 전화번호 -->
             <h6 class="text-left">병원 번호</h6>
-            <v-text-field v-model="form.hospitalPhoneNumber" label="병원 전화번호를 입력해주세요." :rules="[rules.required]"></v-text-field>
+            <v-text-field v-model="form.hospitalPhoneNumber" 
+            variant="underlined"
+            label="병원 전화번호를 입력해주세요." :rules="[rules.required]"></v-text-field>
   
             <!-- 사업자 등록번호 -->
             <h6 class="text-left">사업자 번호</h6>
-            <v-text-field v-model="form.businessRegistrationInfo" label="사업자 등록번호를 입력해주세요." :rules="[rules.required]"></v-text-field>
+            <v-text-field v-model="form.businessRegistrationInfo" 
+            variant="underlined"
+            label="사업자 등록번호를 입력해주세요." :rules="[rules.required]"></v-text-field>
   
             <v-btn @click="submitForm">가입 요청 및 결제</v-btn>
           </v-form>
