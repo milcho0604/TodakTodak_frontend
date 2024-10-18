@@ -13,13 +13,14 @@
                         <div class="reservation" @click="setDetail(r)">
                             <v-row>
                                 <v-col cols="4" class="doctor inter-normal">
-                                    {{ r.doctorName }} 의사
+                                    {{ r.doctorName }} 의사 <br>
+                                    {{ formatTime(r.reservationTime) }}
                                 </v-col>
                                 <div style="border-left: 1px solid #ccc; height: 40px; margin: 12px 0;"></div>
                                 <v-col>
                                     <div>
-                                        <span class="inter-normal child">{{ r.childName }}</span> <span class="child">
-                                            {{r.reservationTime }}</span>
+                                        <span class="inter-normal child">{{ r.childName }}</span> <span class="ssn">{{
+                                            r.childSsn }}</span>
                                     </div>
 
                                     <div class="parent">
@@ -47,8 +48,9 @@
                     <div v-for="r in paginatedScheduledList" :key="r.id">
                         <div class="screservation" @click="setDetail(r)">
                             <v-row>
-                                <v-col cols="4" class="doctor inter-normal">
-                                    {{ r.doctorName }} 의사
+                                <v-col cols="5" class="doctor inter-normal">
+                                    {{ r.doctorName }} 의사 <br>
+                                    {{ formatTime(r.reservationTime) }}
                                 </v-col>
                                 <div style="border-left: 1px solid #ccc; height: 40px; margin: 12px 0;"></div>
                                 <v-col>
@@ -83,7 +85,8 @@
                         <div class="completed" @click="showDetail(r)">
                             <v-row>
                                 <v-col cols="4" class="doctor inter-normal">
-                                    {{ r.doctorName }} 의사
+                                    {{ r.doctorName }} 의사<br>
+                                    {{ formatTime(r.reservationTime) }}
                                 </v-col>
                                 <div style="border-left: 1px solid #ccc; height: 40px; margin: 12px 0;"></div>
                                 <v-col>
@@ -415,6 +418,9 @@ export default {
                 this.completedCurrentPage--;
             }
         },
+        formatTime(time){
+            return time.slice(0,5);
+        }
     },
     computed: {
         immediateTotalPages() {
@@ -502,7 +508,6 @@ export default {
 
 .doctor {
     text-align: center;
-    margin-top: 10px;
     color: #00499E;
 }
 
