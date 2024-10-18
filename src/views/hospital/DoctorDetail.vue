@@ -16,7 +16,7 @@
                         <v-col>
                             <h4>
                                 <v-avatar size="50">
-                                    <v-img :src="doctorDetails?.doctorImageUrl || '@/assets/doctor.png'" />
+                                    <v-img :src="doctorDetails?.doctorImageUrl ? doctorDetails.doctorImageUrl : require('@/assets/doctor.png')" />
                                 </v-avatar>
                                 {{ doctorDetails?.doctorName }}
                             </h4>
