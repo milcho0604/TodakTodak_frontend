@@ -24,12 +24,12 @@
             </v-col>
             <v-col cols="7">
                 <v-text-field v-model="search" label="병원검색" prepend-inner-icon="mdi-magnify" variant="underlined"
-                    type="text" clearable class="mt-n1"></v-text-field>
+                    type="text" clearable class="mt-n1" @input="onSearchInput"></v-text-field>
             </v-col>
             <v-col cols="3">
                 <v-chip-group v-model="isOperating">
                     <!-- 진료중 여부 태그 -->
-                    <v-chip variant="tonal" rounded="lg" size="large" color="#0066FF" value="operating" filter>
+                    <v-chip variant="tonal" rounded="lg" size="large" color="#0066FF" value="operating" filter @click="loadDoctorList">
                         <strong>진료 중</strong> </v-chip>
                 </v-chip-group>
             </v-col>
@@ -42,9 +42,9 @@
 
             <v-col cols="8">
                 <!-- 정렬조건 태그 그룹 -->
-                <v-chip-group v-model="sort" selected-class="text-primary" mandatory>
-                    <v-chip value="별점 순" size="large" filter>별점 순</v-chip>
-                    <v-chip value="리뷰 순" size="large" filter>리뷰 순</v-chip>
+                <v-chip-group v-model="sort" selected-class="text-primary" mandatory @click="loadDoctorList">
+                    <v-chip value="reviewRate" size="large" filter>별점 순</v-chip>
+                    <v-chip value="reviewCount" size="large" filter>리뷰 순</v-chip>
 
                 </v-chip-group>
             </v-col>
@@ -61,7 +61,8 @@
                         @click="goToDetail(doctor.memberEmail)" clickable>
                         <div class="d-flex flex-no-wrap">
                             <v-avatar size="80" class="ma-5">
-                                <v-img :src="doctor.profileImg? doctor.profileImg : 'https://todak-file.s3.ap-northeast-2.amazonaws.com/default-images/doctor-3d-image.png'"  />
+                                <v-img
+                                    :src="doctor.profileImg ? doctor.profileImg : 'https://todak-file.s3.ap-northeast-2.amazonaws.com/default-images/doctor-3d-image.png'" />
                             </v-avatar>
 
                             <div style="flex: 1;">
@@ -131,13 +132,8 @@ import axios from 'axios';
 export default {
     data() {
         return {
-            search: "",
+            search: null,
             sort: "거리 순", // 사용자가 선택한 정렬조건
-            sortOptions: [
-                { text: "거리 순", value: "distance" }, // 서버로 넘길 값: distance
-                { text: "별점 순", value: "rating" },    // 서버로 넘길 값: rating
-                { text: "리뷰 순", value: "review" }     // 서버로 넘길 값: review
-            ], // 정렬 옵션
             selectedTag: "전체",
             doctorList: [], // 병원리스트
             keywordList: [], // 키워드 리스트 (, 기준으로 split)
@@ -150,10 +146,30 @@ export default {
     methods: {
         async loadDoctorList() {
             try {
+                const params = {
+                        search: this.search,
+                        sortBy: this.sort
+                    };
+                console.log(this.search)
                 // 의사 정보를 가져옴
                 const today = this.getToday();
-                const reservationResponse = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/member-service/member/untact/list/${today}`);
-                const reservationData = reservationResponse.data.result;
+                const reservationResponse = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/member-service/member/untact/list/${today}`, { params });
+                let reservationData = reservationResponse.data.result;
+                
+                console.log("this.isOperating: ",this.isOperating);
+                // 필터링: 진료 중 여부에 따른 필터링 적용
+                if (this.isOperating) {
+                    const now = new Date();
+                    
+                    reservationData = reservationData.filter(doctor => {
+                        const operatingHours = doctor.operatingHours; // doctor의 운영 시간
+                        const openTime = new Date(`${now.toDateString()} ${operatingHours.openTime}`);
+                        const closeTime = new Date(`${now.toDateString()} ${operatingHours.closeTime}`);
+                        // 현재 시간이 openTime과 closeTime 사이에 있는지 확인
+                        return now >= openTime && now <= closeTime;
+                    });
+                }
+
                 this.doctorList = reservationData;
                 console.log("Reservation Data:", reservationData);
             } catch (error) {
@@ -168,7 +184,11 @@ export default {
         goToDetail(doctorEmail) {
             // 병원 상세 페이지로 이동
             this.$router.push({ path: `/untact/${doctorEmail}/form` });
-        }
+        },
+        // 검색어 입력 시 호출되는 메서드
+        onSearchInput() {
+            this.loadDoctorList(); // 검색어에 맞는 목록 가져오기
+        },
 
     }
 }
