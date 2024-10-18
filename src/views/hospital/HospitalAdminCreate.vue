@@ -114,31 +114,25 @@
       },
       // 주소 검색 팝업 열기
       openPostcode() {
-        const element_wrap = document.createElement('div');
-        element_wrap.style =
-          'position: fixed; left: 50%; top: 50%; transform: translate(-50%, -50%); border: 1px solid; width: 500px; height: 400px; background-color: white; z-index: 1000;';
-        document.body.appendChild(element_wrap);
-  
-        new daum.Postcode({
-          oncomplete: (data) => {
-            this.form.address = data.roadAddress;
-            this.form.dong = data.bname;
-            if (this.geocoder) {
-              this.geocoder.addressSearch(data.roadAddress, (results, status) => {
-                if (status === kakao.maps.services.Status.OK) {
-                  this.form.latitude = results[0].y;
-                  this.form.longitude = results[0].x;
-                } else {
-                  console.error('주소 검색 실패: ', status);
-                }
-              });
-            }
-            document.body.removeChild(element_wrap);
-          },
-          width: '100%',
-          height: '100%',
-        }).embed(element_wrap);
-      },
+  new daum.Postcode({
+    oncomplete: (data) => {
+      this.form.address = data.roadAddress;
+      this.form.dong = data.bname;
+      if (this.geocoder) {
+        this.geocoder.addressSearch(data.roadAddress, (results, status) => {
+          if (status === kakao.maps.services.Status.OK) {
+            this.form.latitude = results[0].y;
+            this.form.longitude = results[0].x;
+          } else {
+            console.error('주소 검색 실패: ', status);
+          }
+        });
+      }
+    }
+  }).open(); // 기본 팝업 창을 사용
+},
+
+
       // 폼 제출
       submitForm() {
         if (this.$refs.form.validate()) {
