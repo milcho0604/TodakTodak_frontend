@@ -1,13 +1,26 @@
 <template>
     <v-container class="pa-5">
       <v-card class="mx-auto" max-width="600">
-        <v-card-title class="headline">결제 진행</v-card-title>
+        <v-card-title class="headline">토닥 서비스 결제 진행</v-card-title>
   
         <v-card-text>
           <v-form ref="form" v-model="valid">
+
+            <v-text-field
+              v-model="paymentData.hospitalName"
+              label="병원명"
+              required
+            ></v-text-field>
+
+            <v-text-field
+            v-model="paymentData.businessRegistrationInfo"
+            label="사업자 번호"
+            required
+          ></v-text-field>
+
             <v-text-field
               v-model="paymentData.buyerName"
-              label="구매자 이름"
+              label="대표원장님"
               required
             ></v-text-field>
   
@@ -53,6 +66,8 @@
           buyerEmail: "",
           buyerTel: "",
           amount: 1000000, // 기본 값 백만원 설정
+          hospitalName: "",
+          businessRegistrationInfo: "",
         },
       };
     },
@@ -60,10 +75,12 @@
       // 진료 없이도 기본 값으로 member 정보 가져오기
       async fetchPaymentData() {
         try {
-          const response = await axios.get("http://localhost:8080/reservation-service/payment/get/member");
-          this.paymentData.buyerName = response.data.name;
+          const response = await axios.get("http://localhost:8080/reservation-service/payment/get/hospital");
+          this.paymentData.buyerName = response.data.representativeName;
           this.paymentData.buyerEmail = response.data.memberEmail;
-          this.paymentData.buyerTel = response.data.phoneNumber;
+          this.paymentData.buyerTel = response.data.representativePhoneNumber;
+          this.paymentData.hospitalName = response.data.hospitalName;
+          this.paymentData.businessRegistrationInfo = response.data.businessRegistrationInfo;
   
           // 금액이 없거나 0이면 기본 금액(백만원) 설정
           if (!response.data.fee || response.data.fee === 0) {
@@ -108,7 +125,7 @@
             pg: "kakaopay",
             pay_method: "card",
             merchant_uid: `order_${new Date().getTime()}`,
-            name: "결제 테스트",
+            name: "토닥 정기 구독_" + this.paymentData.hospitalName +"_" + this.paymentData.businessRegistrationInfo,
             amount: this.paymentData.amount,
             buyer_email: this.paymentData.buyerEmail,
             buyer_name: this.paymentData.buyerName,
