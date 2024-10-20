@@ -32,7 +32,7 @@
                             <td style="text-align: center;">{{ doctor.id }}</td>
                             <td style="text-align: center;">
                                 <v-avatar size="40" class="mr-4">
-                                    <v-img :src="doctor.profileImgUrl" />
+                                    <v-img :src="doctor.profileImgUrl ? doctor.profileImgUrl : require('@/assets/doctor.png')" />
                                 </v-avatar>
                             </td>
                             <td style="text-align: center; white-space: nowrap;" @click="goToDoctorDetail(doctor.doctorEmail)" class="clickable">{{ doctor.name }}</td>

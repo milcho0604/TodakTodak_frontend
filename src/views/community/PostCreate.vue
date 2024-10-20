@@ -29,7 +29,7 @@
             style="flex: 1; text-align: center; height: 300px; min-width: 300px; width: 100%; padding-bottom: 40px;"
           ></textarea>
           <label class="upload-btn" style="position: absolute; left: 10px; bottom: 10px;">
-            <input type="file" @change="onFileChange" accept="image/png, image/jpeg" />
+            <input type="file" @change="onFileChange" accept="image/png, image/jpeg, image/jpg" />
             <v-icon small>mdi-paperclip</v-icon>
           </label>
         </div>
