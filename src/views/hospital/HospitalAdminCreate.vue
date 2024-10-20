@@ -59,8 +59,8 @@
               <v-btn @click="openPostcode" small>주소 검색</v-btn>
             </template>
             </v-text-field>
-            <v-text-field v-model="form.latitude" variant="underlined" label="위도" readonly></v-text-field>
-            <v-text-field v-model="form.longitude" variant="underlined" label="경도" readonly></v-text-field>
+            <!-- <v-text-field v-model="form.latitude" variant="underlined" label="위도" readonly></v-text-field>
+            <v-text-field v-model="form.longitude" variant="underlined" label="경도" readonly></v-text-field> -->
   
             <!-- 병원 전화번호 -->
             <h6 class="text-left">병원 번호</h6>
@@ -73,8 +73,11 @@
             <v-text-field v-model="form.businessRegistrationInfo" 
             variant="underlined"
             label="사업자 등록번호를 입력해주세요." :rules="[rules.required]"></v-text-field>
-  
-            <v-btn @click="submitForm">가입 요청 및 결제</v-btn>
+            
+            <v-row justify="center" class="button-row">
+                <v-btn class="res-btn" @click="submitForm">가입 요청</v-btn>
+            </v-row>
+
           </v-form>
         </v-col>
       </v-row>
@@ -219,6 +222,23 @@
   }
   .bold-text {
     font-weight: bold;
+  }
+  .res-btn {
+    background-color: #C2D7FF !important;
+    color: #00499e;
+    border-radius: 20px;
+    width: 130px;
+    height: 44px;
+    margin-bottom: 40px;
+    margin-top: 10px;
+    font-family: 'Inter';
+    font-style: normal;
+    font-weight: 700;
+    font-size: 15px;
+    line-height: 24px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
   }
   </style>
   
