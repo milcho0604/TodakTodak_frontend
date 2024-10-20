@@ -8,7 +8,7 @@
       <v-carousel
         class="custom-carousel"
         show-arrows="hover"
-        
+        cycle
         hide-delimiter-background
       >
         <v-carousel-item
@@ -167,7 +167,8 @@ export default {
       banner3: '',
       slides: [
         'https://todak-file.s3.ap-northeast-2.amazonaws.com/default-images/%E1%84%87%E1%85%A2%E1%84%82%E1%85%A51+Group+989000.png',
-        'https://todak-file.s3.ap-northeast-2.amazonaws.com/default-images/padak-banner.png',
+        'https://todak-file.s3.ap-northeast-2.amazonaws.com/default-images/%E1%84%87%E1%85%A2%E1%84%82%E1%85%A52+%E1%84%8F%E1%85%A2%E1%86%AF%E1%84%85%E1%85%B5%E1%86%AB%E1%84%83%E1%85%A5Group+989004.png',
+        'https://todak-file.s3.ap-northeast-2.amazonaws.com/default-images/%E1%84%87%E1%85%A2%E1%84%82%E1%85%A53+%E1%84%87%E1%85%B5%E1%84%83%E1%85%A2%E1%84%86%E1%85%A7%E1%86%ABGroup+989004.png'
       ],
       dong:'성수동 2가',
       // 인기소아과 데이터 
@@ -214,7 +215,7 @@ html, body {
   background-color: #f5f5f5;
 }
 .custom-carousel{
-  width: 1100px;
+  width: 1200px;
   height: 450px;
 }
 .post-card{
