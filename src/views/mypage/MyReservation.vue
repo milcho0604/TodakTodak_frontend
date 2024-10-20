@@ -161,7 +161,7 @@
                             <v-col cols="2"></v-col>
                             <v-col class="detail ml-6" cols="5">
                                 <div @click="toggleDetails(index)" style="cursor: pointer;">자세히 보기
-                                    <img v-if="showDetails" src="@/assets/right_arrow.png" style="color: #FFFFFF;">
+                                    <img v-if="item.showDetails" src="@/assets/right_arrow.png" style="color: #FFFFFF;">
                                     <img v-else src="@/assets/left_arrow.png" style="color: #FFFFFF;">
                                 </div>
                             </v-col>
@@ -273,7 +273,6 @@ export default {
             dialog: false,
             contents: null,
             rating: 0,
-            showDetails: true,
             untact: null,
             mediChart: null,
             waiting: null,
@@ -388,8 +387,8 @@ export default {
             }
         },
         toggleDetails(index) {
-            this.reserveList[index].showDetails = !this.reserveList[index].showDetails;
-            this.showDetails = !this.showDetails;
+            this.filteredReserveList[index].showDetails = !this.filteredReserveList[index].showDetails;
+            console.log(this.filteredReserveList[index].showDetails);
         },
         async isReview(id, index) {
             const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/reservation-service/review/reserve/${id}`);
