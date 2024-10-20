@@ -5,8 +5,6 @@ import {createRouter, createWebHistory} from 'vue-router';
 // import 하는 요소가 여러개 있을 때에도 {}를 붙인다.
 // import TestComponent from '@/components/TestComponent.vue';
 import HomePage from '@/views/MainPage.vue';
-
-import { createRouter, createWebHistory } from 'vue-router';
 import {jwtDecode} from 'jwt-decode';  // jwt-decode 라이브러리 import
 import HomePage from '@/views/HomePage.vue';
 import { memberRouter } from './memberRouter';
