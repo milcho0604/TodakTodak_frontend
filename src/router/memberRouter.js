@@ -6,7 +6,7 @@ import FindPasswordPage from "@/views/member/FindPasswordPage.vue";
 import ResetPasswordPage from "@/views/member/ResetPasswordPage.vue";
 import MyNotification from "@/views/member/MyNotification.vue";
 import AdminLoginPage from "@/views/member/AdminLoginPage.vue";
-
+import HospitalAdminLogin from "@/views/member/HospitalAdminLogin.vue";
 
 import { jwtDecode } from "jwt-decode";
 export const memberRouter = [
@@ -50,6 +50,11 @@ export const memberRouter = [
         path: '/notification/list',
         name: 'MyNotification',
         component: MyNotification
+    },
+    {
+        path: '/hospital/login',
+        name: 'HospitalAdminLogin',
+        component: HospitalAdminLogin
     },
     {
         path: '/loginSuccess',

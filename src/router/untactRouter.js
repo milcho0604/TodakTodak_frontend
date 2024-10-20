@@ -3,6 +3,7 @@ import UntactChatRoom from '@/views/untact/UntactChatRoom.vue';
 import UntactTreatList from '@/views/untact/UntactTreatList.vue';
 import UntactTreatList2 from '@/views/untact/UntactTreatList2.vue';
 import UntactForm from '@/views/untact/UntactForm.vue';
+import UntactDetail from '@/views/untact/UntactDetail.vue';
 
 
 export const untactRouter = [
@@ -15,6 +16,11 @@ export const untactRouter = [
         path: '/untact/list',
         name: 'UntactTreatList2',
         component: UntactTreatList2
+    },
+    {
+        path: '/untact/detail/:doctorEmail',
+        name: 'UntactDetail',
+        component: UntactDetail
     },
     {
         path: '/untact/:doctorEmail/form',

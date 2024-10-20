@@ -74,40 +74,29 @@
                         <!-- 스케줄 예약일 떄  -->
                         <v-row v-if="item.reservationType == 'Scheduled'">
                             <v-col cols="4">
-                                <div class="ml-1 waiting" v-if="item.reservationType == 'Scheduled'">
+                                <div class="ml-1 waiting">
                                     {{ formatTime(item.reservationTime) }} 진료 예약</div>
                             </v-col>
                             <v-col cols="4"></v-col>
                             <v-col cols="4" style="text-align: end;">
                                 <v-chip v-if="reserveType == '지난예약' &&
-                                    item.status == 'Completed' && item.medichart != '진료중'"
+                                    item.status == 'Completed'"
                                     :class="item.review ? 'review' : 'no-review'"
                                     @click="item.review ? this.$router.push('/') : reviewData(item)"><img
                                         src="@/assets/pencil_img.png" /><strong>리뷰쓰기</strong>
                                 </v-chip>
-                                <v-chip v-else-if="item.untact && item.medichart == '진료중'" class="no-untact"
-                                    @click="this.$router.push(`/room/${item.id}`)"><img
-                                        src="@/assets/untact_image.png" />
-                                    <strong>비대면진료 접속</strong>
-                                </v-chip>
                             </v-col>
                         </v-row>
+                        <!-- 당일 예약일 때  -->
                         <v-row v-else-if="item.reservationType == 'Immediate' && item.status == 'Confirmed'">
                             <v-col cols="4">
-                                <div class="ml-1 waiting"
-                                    v-if="item.reservationType == 'Immediate' && item.status == 'Confirmed'">{{
-                                        item.waiting }}명 대기중
+                                <div class="ml-1 waiting">
+                                    {{  item.waiting }}명 대기중
                                 </div>
                             </v-col>
                             <v-col cols="4"></v-col>
                             <v-col cols="4" style="text-align: end;">
-                                <v-chip v-if="reserveType == '지난예약' &&
-                                    item.status == 'Completed' && item.medichart != '진료중'"
-                                    :class="item.review ? 'review' : 'no-review'"
-                                    @click="item.review ? this.$router.push('/') : reviewData(item)"><img
-                                        src="@/assets/pencil_img.png" /><strong>리뷰쓰기</strong>
-                                </v-chip>
-                                <v-chip v-else-if="item.untact && item.medichart == '진료중'" class="no-untact"
+                                <v-chip v-if="item.untact && item.medichart == '진료중'" class="no-untact"
                                     @click="this.$router.push(`/room/${item.id}`)"><img
                                         src="@/assets/untact_image.png" />
                                     <strong>비대면진료 접속</strong>
@@ -115,19 +104,15 @@
                             </v-col>
                         </v-row>
                         <v-row>
-                            <p class="ml-4">{{ item.hospitalName }}</p>
-                            <v-col cols="3"></v-col>
-                            <v-col cols="4" style="text-align: end; margin-left : 19px;">
-                                <v-chip v-if="reserveType == '지난예약' &&
+                            <v-col style="margin-top: -15px">
+                                <p class="ml-1">{{ item.hospitalName }}</p>
+                            </v-col>
+                            <v-col cols="4" style="text-align: end; ">
+                                <v-chip v-if="reserveType == '지난예약' && item.reservationType == 'Immediate' &&
                                     item.status == 'Completed' && item.medichart != '진료중'"
                                     :class="item.review ? 'review' : 'no-review'"
                                     @click="item.review ? this.$router.push('/') : reviewData(item)"><img
                                         src="@/assets/pencil_img.png" /><strong>리뷰쓰기</strong>
-                                </v-chip>
-                                <v-chip v-else-if="item.untact && item.medichart == '진료중'" class="no-untact"
-                                    @click="this.$router.push(`/room/${item.id}`)"><img
-                                        src="@/assets/untact_image.png" />
-                                    <strong>비대면진료 접속</strong>
                                 </v-chip>
                             </v-col>
                         </v-row>
@@ -176,7 +161,7 @@
                             <v-col cols="2"></v-col>
                             <v-col class="detail ml-6" cols="5">
                                 <div @click="toggleDetails(index)" style="cursor: pointer;">자세히 보기
-                                    <img v-if="showDetails" src="@/assets/right_arrow.png" style="color: #FFFFFF;">
+                                    <img v-if="item.showDetails" src="@/assets/right_arrow.png" style="color: #FFFFFF;">
                                     <img v-else src="@/assets/left_arrow.png" style="color: #FFFFFF;">
                                 </div>
                             </v-col>
@@ -288,7 +273,6 @@ export default {
             dialog: false,
             contents: null,
             rating: 0,
-            showDetails: true,
             untact: null,
             mediChart: null,
             waiting: null,
@@ -403,8 +387,8 @@ export default {
             }
         },
         toggleDetails(index) {
-            this.reserveList[index].showDetails = !this.reserveList[index].showDetails;
-            this.showDetails = !this.showDetails;
+            this.filteredReserveList[index].showDetails = !this.filteredReserveList[index].showDetails;
+            console.log(this.filteredReserveList[index].showDetails);
         },
         async isReview(id, index) {
             const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/reservation-service/review/reserve/${id}`);
