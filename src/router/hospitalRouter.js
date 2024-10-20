@@ -55,6 +55,7 @@ export const hospitalRouter = [
         name: 'HospitalAdminCreate',
         component: HospitalAdminCreate
     },
+    {
         path: '/doctor/edit',
         name: 'DoctorEdit',
         component: DoctorEdit
