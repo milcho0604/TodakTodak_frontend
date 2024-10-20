@@ -1,10 +1,10 @@
 <template>
     <v-card
-      style="background-color: #F5F5F5; border-radius: 15px; padding: 20px; max-width: 1200px; width: 100%;"
+      style="border-radius: 15px; padding: 20px; max-width: 1200px; width: 100%;"
       rounded="0"
       flat
     >
-      <v-window v-model="onboarding" style="width: 1080px;">
+      <v-window v-model="onboarding" style="width: 100%;">
         <v-window-item v-for="n in windowCount" :key="`window-${n}`" :value="n">
           <v-row class="d-flex justify-center">
             <v-col
@@ -14,11 +14,15 @@
               md="3"
               class="d-flex justify-center"
             >
+            <!-- 각각 의사 프로필 v-card -->
               <v-card
               class="rounded-xl fixed-card d-flex flex-column align-center justify-center"
+              style="background-color: #F5F5F5;"
+              variant="flat"
               @click="() => moveToSiderCard(doctor.id)"
               >
-                <v-card-item>
+              <!-- 의사 프로필 사진 -->
+                <v-card-item class="mt-3">
                   <v-avatar class="mx-auto" size="120">
                     <v-img
                     class="circle-img"
@@ -26,15 +30,16 @@
                     />
                   </v-avatar>
                 </v-card-item>
-                
+                <!-- 의사 이름 -->
                 <v-card-item>
                   <v-card-title class="d-flex justify-center align-center" style="font-weight: bold;">
                     <span>{{ doctor.doctorName }}</span>
                   </v-card-title>
-                  <v-card-text>
-                    <v-icon>mdi-star</v-icon> {{ hospital.averageRating }} ({{ hospital.reviewCount }})
+                  <!-- 의사 평균평점  + 리뷰개수 -->
+                  <v-card-text style="color:#0075FF; font-weight: bold;">
+                    <v-icon>mdi-star</v-icon> {{ doctor.reviewPoint }} ({{ doctor.reviewCount }})
                   </v-card-text>
-                  <v-card-subtitle class="d-flex justify-center align-center" style="font-size: 15px;">
+                  <v-card-subtitle class="d-flex justify-center align-center mt-n2 mb-3" style="font-size: 15px;">
                     <div>{{ doctor.hospitalName }}</div>
                   </v-card-subtitle>
                 </v-card-item>
@@ -55,7 +60,7 @@
             :value="n"
           >
           <v-btn
-              :color="isSelected ? 'primary' : 'secondary'"
+              :color="isSelected ? '#0075FF' : '#ABABAB'"
                 icon="mdi-circle-small"
               @click="toggle"
             ></v-btn>
@@ -117,10 +122,9 @@
   
   <style scoped>
   .fixed-card {
-    width: 250px;
+    width: 280px;
     /* 고정 너비 */
-    height: 250px;
-    /* 고정 높이 */
+
   }
   .circle-img {
     /* width: 150px;*/

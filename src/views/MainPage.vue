@@ -31,7 +31,7 @@
         </h5>
       </v-row>
 
-      <v-spacer :style="{ height: '50px' }"></v-spacer>
+      <v-spacer :style="{ height: '30px' }"></v-spacer>
 
       <v-container style="background-color: #F5F5F5; border-radius:15px; max-width: 1200px;">
         <!-- 위치 gps -->
@@ -43,14 +43,14 @@
             </h5>
           </v-btn>
         </v-row>
-        <!-- 인기소아과 window -->
+        <!-- 인기소아과 carousel 컴포넌트-->
         <v-row justify="center" class="mt-n2">
           <HospitalCarousel 
           :windowCount="2" 
           :hospitalList="hospitalList"
           />
         </v-row>
-
+        <!-- 주변 소아과 더보기 버튼 -->
         <v-row justify="center" style="margin-top: -20px;">
           <v-btn
               class="custom-button"
@@ -65,18 +65,21 @@
 
       <v-spacer :style="{height: '50px'}"></v-spacer>
 
+      <!-- 비대면진료 title -->
       <v-row justify="center" align="center">
         <h2 style="font-weight: bold;">🏠 비대면 진료</h2>
       </v-row>
-
+      <!-- 비대면진료 sub-title -->
       <v-row justify="center" align="center">
         <h5 style="text-align: center; color: #828282;">
             집에서도 편하게 비대면진료 받으세요!
         </h5>
       </v-row>
 
-      <!-- <v-container>
-        
+      <v-spacer :style="{ height: '30px' }"></v-spacer>
+
+      <!-- 비대면 의사 인기리스트 carousel -->
+      <v-container>
          <v-row>
           <DoctorCarousel
           :windowCount="2"
@@ -85,19 +88,19 @@
          </v-row>
 
       </v-container>
-       -->
+      
     </v-container>
   </v-app> 
 </template>
 
 <script>
 import HospitalCarousel from '@/components/carousel/HospitalCarousel.vue';
-// import DoctorCarousel from '@/components/carousel/DoctorCarousel.vue';
+import DoctorCarousel from '@/components/carousel/DoctorCarousel.vue';
 
 export default {
   components: { 
     HospitalCarousel,
-    // DoctorCarousel,
+    DoctorCarousel,
    },
   name: "App",
   data(){
