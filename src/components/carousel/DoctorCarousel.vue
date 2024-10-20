@@ -8,7 +8,7 @@
         <v-window-item v-for="n in windowCount" :key="`window-${n}`" :value="n">
           <v-row class="d-flex justify-center">
             <v-col
-              v-for="(doctor, index) in paginatedSidecards(n)"
+              v-for="(doctor, index) in paginatedDoctor(n)"
               :key="index"
               cols="12"
               md="3"

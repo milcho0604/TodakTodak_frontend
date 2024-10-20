@@ -27,15 +27,24 @@
 
       <v-row justify="center" align="center" class="mt-3">
         <h5 style="text-align: center; color: #828282;">
-            믿고 찾는 우리 아이 병원
+          평점으로 검증된 우리동네 소아과
         </h5>
       </v-row>
 
       <v-spacer :style="{ height: '50px' }"></v-spacer>
 
       <v-container style="background-color: #F5F5F5; border-radius:15px; max-width: 1200px;">
+        <!-- 위치 gps -->
+        <v-row class="mt-2 ml-2">
+          <v-btn variant="flat" size="large" style="background-color: #F5F5F5;">
+            <h5 style="font-weight:bold;"> 
+              📍 {{dong}}
+              <v-icon class="custom-width ml-n1"> mdi-chevron-down</v-icon>
+            </h5>
+          </v-btn>
+        </v-row>
         <!-- 인기소아과 window -->
-        <v-row justify="center">
+        <v-row justify="center" class="mt-n2">
           <HospitalCarousel 
           :windowCount="2" 
           :hospitalList="hospitalList"
@@ -100,6 +109,7 @@ export default {
         'https://todak-file.s3.ap-northeast-2.amazonaws.com/default-images/%E1%84%87%E1%85%A2%E1%84%82%E1%85%A51+Group+989000.png',
         'https://todak-file.s3.ap-northeast-2.amazonaws.com/default-images/padak-banner.png',
       ],
+      dong:'성수동 2가',
       // 인기소아과 데이터 
       keywordList: ['주차장', '전문의', '예방접종'],
       hospitalList:[

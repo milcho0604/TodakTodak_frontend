@@ -59,7 +59,7 @@
                   <v-chip
                   v-for="(keyword, index) in hospital.keywordList"
                   :key="index"
-                  color="#00499E"
+                  color="#0075FF"
                   size="default"
                   class="mr-2"
                   >
@@ -159,7 +159,7 @@
     text-align: right; /* 병원 평점 부분을 오른쪽 정렬 */
     white-space: nowrap; /* 텍스트가 한 줄로 나오도록 */
     font-weight: bold;
-    color: #00499E;
+    color: #0075FF;
   }
   
 
