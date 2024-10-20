@@ -6,7 +6,6 @@ import {createRouter, createWebHistory} from 'vue-router';
 // import TestComponent from '@/components/TestComponent.vue';
 import HomePage from '@/views/MainPage.vue';
 import {jwtDecode} from 'jwt-decode';  // jwt-decode 라이브러리 import
-import HomePage from '@/views/HomePage.vue';
 import { memberRouter } from './memberRouter';
 import { paymentRouter } from './paymentRouter';
 import { untactRouter } from './untactRouter';
