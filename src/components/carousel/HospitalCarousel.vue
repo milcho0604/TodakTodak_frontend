@@ -50,7 +50,7 @@
                 <v-card-subtitle class="hospital-address d-flex align-center mt-n7" style="color:#6A6A6A;">
                     <v-icon>mdi-map-marker-outline</v-icon>
                     <v-card-text class="hospital-address-text ml-n3">
-                      {{ hospital.address ? hospital.address.slice(0, 25) + '..' : '' }}
+                      {{ hospital.address ? hospital.address.slice(0, 25) : '' }}
                     </v-card-text>
                 </v-card-subtitle>
 

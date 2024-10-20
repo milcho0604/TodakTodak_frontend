@@ -86,7 +86,64 @@
           :doctorList="doctorList"
           />
          </v-row>
+      </v-container>
 
+      <v-spacer :style="{ height: '30px' }"></v-spacer>
+
+      <!-- 의사Q&A title -->
+      <v-row justify="center" align="center">
+        <h2 style="font-weight: bold;">💬 의사 Q&A </h2>
+      </v-row>
+      <!-- 의사Q&A sub-title -->
+      <v-row justify="center" align="center">
+        <h5 style="text-align: center; color: #828282;">
+            우리 아이 건강, 전문가와 직접 소통하세요
+        </h5>
+      </v-row>
+
+      <v-spacer :style="{ height: '30px' }"></v-spacer>
+
+      <!-- 의사 Q&A 인기리스트  -->
+      <v-container>
+        <v-row>
+          <v-col cols="12" v-for="post in communityList" :key="post.id">
+            <v-card
+            variant="outlined"
+            class="post-card justify-center"
+            >
+              <div class="d-flex flex-no-wrap justify-space-between">
+                <div class="ml-3 mt-3">
+                  <!-- 게시글 제목 -->
+                  <v-card-title style="font-weight:bold; font-size:25px;">
+                    {{ post.title }}
+                  </v-card-title>
+
+                  <!-- 게시글 내용 -->
+                  <v-card-text class="post-content mb-n2" style="font-size: 20px;">
+                    {{ post.content ? post.content.slice(0,53) : '' }}
+                  </v-card-text>
+
+                  <!-- 좋아요, 댓글수, 조회수, 작성일시 -->
+                  <v-card-text style="font-size: 18px; color:#6A6A6A">
+                    <v-icon style="color:#0075FF; font-size: 20px;" class="mt-n1">mdi-heart</v-icon> 
+                    {{ post.likeCount }} · 댓글 {{ post.comments }} · 조회수 {{ post.viewCount }} · {{ post.createdTimeAt.slice(0, 10) }}
+                  </v-card-text>
+                </div>
+
+                <v-avatar
+                class="ma-5"
+                style="height:130px; width:150px; border-radius: 10px; object-fit:cover;"
+                >
+                <!-- 게시글 사진 -->
+                  <v-img :src="post.postImgUrl" />
+                </v-avatar>
+
+              </div>
+
+            </v-card>
+
+          </v-col>
+        </v-row>
       </v-container>
       
     </v-container>
@@ -134,9 +191,9 @@ export default {
         {id:'8', profileImg:'https://todak-file.s3.ap-northeast-2.amazonaws.com/default-images/male-doctor.png', doctorName:'우하하', hospitalName:'아이조은청소년과', reviewPoint:'4.5', reviewCount:'32' },
       ],
       communityList: [
-        {id:'1', title: '예방접종 후 목욕', content:'A형간염이랑 Dtap 4차를 접종했는데 당일 저녁에 목욕해도되나요?', postImgUrl:'https://todak-file.s3.ap-northeast-2.amazonaws.com/default-images/moruncar.jpg', likeCount:'21', comments:'13', viewCount:'212', createdTimeAt:"2024-10-11T14:21:14" },
-        {id:'1', title: '예방접종 후 목욕', content:'A형간염이랑 Dtap 4차를 접종했는데 당일 저녁에 목욕해도되나요?', postImgUrl:'https://todak-file.s3.ap-northeast-2.amazonaws.com/default-images/moruncar.jpg', likeCount:'21', comments:'13', viewCount:'212', createdTimeAt:"2024-10-11T14:21:14" },
-        {id:'1', title: '예방접종 후 목욕', content:'A형간염이랑 Dtap 4차를 접종했는데 당일 저녁에 목욕해도되나요?', postImgUrl:'https://todak-file.s3.ap-northeast-2.amazonaws.com/default-images/moruncar.jpg', likeCount:'21', comments:'13', viewCount:'212', createdTimeAt:"2024-10-11T14:21:14" },
+        {id:'1', title: '예방접종 후 목욕', content:'A형간염이랑 Dtap 4차를 접종했는데 당일 저녁에 목욕해도되나요? A형간염이랑 Dtap 4차를 접종했는데 당일 저녁에 목욕해도되나요?', postImgUrl:'https://todak-file.s3.ap-northeast-2.amazonaws.com/default-images/moruncar.jpg', likeCount:'21', comments:'13', viewCount:'212', createdTimeAt:"2024-10-11T14:21:14" },
+        {id:'2', title: '예방접종 후 목욕', content:'A형간염이랑 Dtap 4차를 접종했는데 당일 저녁에 목욕해도되나요?', postImgUrl:'https://todak-file.s3.ap-northeast-2.amazonaws.com/default-images/moruncar.jpg', likeCount:'21', comments:'13', viewCount:'212', createdTimeAt:"2024-10-11T14:21:14" },
+        {id:'3', title: '예방접종 후 목욕', content:'A형간염이랑 Dtap 4차를 접종했는데 당일 저녁에 목욕해도되나요?', postImgUrl:'https://todak-file.s3.ap-northeast-2.amazonaws.com/default-images/moruncar.jpg', likeCount:'21', comments:'13', viewCount:'212', createdTimeAt:"2024-10-11T14:21:14" },
       ],
     };
   },
@@ -159,5 +216,18 @@ html, body {
 .custom-carousel{
   width: 1100px;
   height: 450px;
+}
+.post-card{
+  border: 1px solid #D2D2D2 !important; /* 테두리 색상만 변경 */
+  border-radius: 20px !important; /* 모서리 둥글기 */
+  background-color: #FCFCFC !important; /* 카드 내부 배경색 고정 */
+  margin: 0 auto;
+  max-width: 1000px;
+}
+.post-content{
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: #6A6A6A;
 }
 </style>
