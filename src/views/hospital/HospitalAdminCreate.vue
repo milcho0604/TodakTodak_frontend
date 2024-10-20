@@ -185,7 +185,7 @@
       submitForm() {
         if (this.$refs.form.validate()) {
           axios
-            .post('/api/hospital/register', this.form)
+            .post(`${process.env.VUE_APP_API_BASE_URL}/member-service/member/hospital-admin/register`, this.form)
             .then((response) => {
               alert('가입이 완료되었습니다.');
               console.log(response)
