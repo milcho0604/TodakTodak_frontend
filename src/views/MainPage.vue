@@ -47,7 +47,7 @@
       <v-container style="background-color: #F5F5F5; border-radius:15px; max-width: 1200px;">
         <!-- 위치 gps -->
         <v-row class="mt-2 ml-2">
-          <v-btn variant="flat" size="large" style="background-color: #F5F5F5;">
+          <v-btn variant="flat" size="large" style="background-color: #F5F5F5;" @click="openAddressSearch">
             <h5 style="font-weight:bold;"> 
               📍 {{dong}}
               <v-icon class="custom-width ml-n1"> mdi-chevron-down</v-icon>
@@ -61,8 +61,6 @@
           :hospitalList="hospitalList"
           />
         </v-row>
-
-         <v-spacer :style="{height: '30px'}"></v-spacer>
       </v-container>
 
       <v-spacer :style="{height: '50px'}"></v-spacer>
@@ -222,30 +220,10 @@ export default {
       locationModal: false, // 데이터 로딩 모달 활성화 변수
       loading : false, // 로딩상태변수 추가
       // 인기소아과 데이터 
-      keywordList: ['주차장', '전문의', '예방접종'],
-      hospitalList:[
-        {id:'1', hospitalImageUrl:'https://todak-file.s3.ap-northeast-2.amazonaws.com/default-images/hospital-example-image.png', name: '삼성화곡소아청소년과', averageRating:'4.5', reviewCount:'32', address: '서울 강남구 삼성로14 (개포자이 프레지던스) 자이스퀘어 상가 216호', keywordList: ['예방접종', '주차장', '전문의']},
-        {id:'2', hospitalImageUrl:'https://todak-file.s3.ap-northeast-2.amazonaws.com/default-images/hospital1.jpeg', name: '연세드림소아청소년과', averageRating:'4.5', reviewCount:'32', address: '서울 강남구 삼성로14 (개포자이 프레지던스) 자이스퀘어 상가 216호', keywordList: ['예방접종', '주차장', '전문의']},
-        {id:'3', hospitalImageUrl:'https://todak-file.s3.ap-northeast-2.amazonaws.com/default-images/hospital2.png', name: '아이조은청소년과', averageRating:'4.5', reviewCount:'32', address: '서울 강남구 삼성로14 (개포자이 프레지던스) 자이스퀘어 상가 216호', keywordList: ['예방접종', '주차장', '전문의']},
-        {id:'4', hospitalImageUrl:'https://todak-file.s3.ap-northeast-2.amazonaws.com/default-images/hospital1.jpeg', name: '방은지소아청소년과', averageRating:'4.5', reviewCount:'32', address: '서울 강남구 삼성로14 (개포자이 프레지던스) 자이스퀘어 상가 216호', keywordList: ['예방접종', '주차장', '전문의']},
-        {id:'5', hospitalImageUrl:'https://todak-file.s3.ap-northeast-2.amazonaws.com/default-images/hospital1.jpeg', name: '김창현소아청소년과', averageRating:'4.5', reviewCount:'32', address: '서울 강남구 삼성로14 (개포자이 프레지던스) 자이스퀘어 상가 216호', keywordList: ['예방접종', '주차장', '전문의']},
-        {id:'6', hospitalImageUrl:'https://todak-file.s3.ap-northeast-2.amazonaws.com/default-images/hospital1.jpeg', name: '무무소아청소년과', averageRating:'4.5', reviewCount:'32', address: '서울 강남구 삼성로14 (개포자이 프레지던스) 자이스퀘어 상가 216호', keywordList: ['예방접종', '주차장', '전문의']},
-      ],
-      doctorList:[
-        {id:'1', profileImg:'https://todak-file.s3.ap-northeast-2.amazonaws.com/default-images/male-doctor.png', doctorName:'신현도', hospitalName:'아이조은청소년과', reviewPoint:'4.5', reviewCount:'32' },
-        {id:'2', profileImg:'https://todak-file.s3.ap-northeast-2.amazonaws.com/default-images/female-doctor.png', doctorName:'김현지', hospitalName:'삼성화곡청소년과', reviewPoint:'4.5', reviewCount:'32' },
-        {id:'3', profileImg:'https://todak-file.s3.ap-northeast-2.amazonaws.com/default-images/male_doctor.png', doctorName:'박연세', hospitalName:'연세아이청소년과', reviewPoint:'4.5', reviewCount:'32' },
-        {id:'4', profileImg:'https://todak-file.s3.ap-northeast-2.amazonaws.com/default-images/female_doctor.png', doctorName:'방박사', hospitalName:'아이조은청소년과', reviewPoint:'4.5', reviewCount:'32' },
-        {id:'5', profileImg:'https://todak-file.s3.ap-northeast-2.amazonaws.com/default-images/male_doctor.png', doctorName:'최무무', hospitalName:'연세드림청소년과', reviewPoint:'4.5', reviewCount:'32' },
-        {id:'6', profileImg:'https://todak-file.s3.ap-northeast-2.amazonaws.com/default-images/female_doctor.png', doctorName:'창창핑', hospitalName:'티니핑청소년과', reviewPoint:'4.5', reviewCount:'32' },
-        {id:'7', profileImg:'https://todak-file.s3.ap-northeast-2.amazonaws.com/default-images/female-doctor.png', doctorName:'껄무새', hospitalName:'할껄말껄청소년과', reviewPoint:'4.5', reviewCount:'32' },
-        {id:'8', profileImg:'https://todak-file.s3.ap-northeast-2.amazonaws.com/default-images/male-doctor.png', doctorName:'우하하', hospitalName:'아이조은청소년과', reviewPoint:'4.5', reviewCount:'32' },
-      ],
-      communityList: [
-        {id:'1', title: '예방접종 후 목욕', content:'A형간염이랑 Dtap 4차를 접종했는데 당일 저녁에 목욕해도되나요? A형간염이랑 Dtap 4차를 접종했는데 당일 저녁에 목욕해도되나요?', postImgUrl:'https://todak-file.s3.ap-northeast-2.amazonaws.com/default-images/moruncar.jpg', likeCount:'21', comments:'13', viewCount:'212', createdTimeAt:"2024-10-11T14:21:14" },
-        {id:'2', title: '예방접종 후 목욕', content:'A형간염이랑 Dtap 4차를 접종했는데 당일 저녁에 목욕해도되나요?', postImgUrl:'https://todak-file.s3.ap-northeast-2.amazonaws.com/default-images/moruncar.jpg', likeCount:'21', comments:'13', viewCount:'212', createdTimeAt:"2024-10-11T14:21:14" },
-        {id:'3', title: '예방접종 후 목욕', content:'A형간염이랑 Dtap 4차를 접종했는데 당일 저녁에 목욕해도되나요?', postImgUrl:'https://todak-file.s3.ap-northeast-2.amazonaws.com/default-images/moruncar.jpg', likeCount:'21', comments:'13', viewCount:'212', createdTimeAt:"2024-10-11T14:21:14" },
-      ],
+      keywordList: [],
+      hospitalList:[],
+      doctorList:[],
+      communityList: [],
       today: '',
     };
   },
@@ -254,7 +232,24 @@ export default {
     this.loadCommunityList(); // 커뮤니티 인기 게시글 리스트 조회
     this.loadDoctorList(); // 인기 비대면 의사 리스트 조회
   },
+  watch:{
+      // dong 값이 변경될 때마다 병원 리스트를 새로 로드
+      dong(newDong) {
+      if (newDong) {
+          this.loadHospitalList();
+      }
+    },
+  },
   methods:{
+    openAddressSearch() {
+            this.locationModal = false; // 위치 모달 먼저 닫음
+            new window.daum.Postcode({
+                oncomplete: (data) => {
+                    // bname에서 동 이름을 추출하여 dong에 할당
+                    this.dong = data.bname || "주소 선택 안됨";
+                }
+            }).open();
+        },
     // 현재위치 조회
     async getCurrentLocation() {
       this.loading = true; // 로딩 시작

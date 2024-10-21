@@ -225,8 +225,6 @@
                 </v-card-text>
             </v-card>
           </v-dialog>
-          
-          
     </v-container>
 </template>
 

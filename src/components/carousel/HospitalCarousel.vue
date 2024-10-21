@@ -14,7 +14,7 @@
               :key="index"
               cols="12"
               md="4"
-              class="d-flex justify-center"
+              class="d-flex justify-center mx-auto"
             >
             <!-- 병원 정보 담는 v-card -->
               <v-card 
