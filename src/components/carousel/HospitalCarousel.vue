@@ -14,11 +14,11 @@
               :key="index"
               cols="12"
               md="4"
-              class="d-flex justify-center"
+              class="d-flex justify-center mx-auto"
             >
             <!-- 병원 정보 담는 v-card -->
               <v-card 
-                style="width:340px; height:390px; border-radius: 10px;"
+                style="min-width:340px; min-height:390px !important; border-radius: 10px;"
                 @click="() => moveToHospital(hospital.id)"
                 variant="flat"
               >

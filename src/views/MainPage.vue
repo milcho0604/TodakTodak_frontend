@@ -3,7 +3,6 @@
     <v-container class="custom-container">
       <v-spacer :style="{ height: '50px' }"></v-spacer>
       
-      <!-- TODO: cycle 옵션 붙여야됨 -->
        <!-- 배너 carousel -->
       <v-carousel
         class="custom-carousel"
@@ -21,11 +20,23 @@
       <v-spacer></v-spacer>
 
       <!-- 우리동네 인기 소아과 타이틀 -->
-      <v-row justify="center" align="center">
+      <v-row 
+        justify="center" 
+        align="center" 
+        @click="navigateToHospitalList"
+        style="cursor: pointer;" 
+      >
         <h2 style="font-weight: bold;">🏥 우리동네 인기 소아과</h2>
       </v-row>
 
-      <v-row justify="center" align="center" class="mt-3">
+      <!-- 우리동네 인기 소아과 서브타이틀 -->
+      <v-row 
+        justify="center" 
+        align="center" 
+        class="mt-3" 
+        @click="navigateToHospitalList"
+        style="cursor: pointer;"
+      >
         <h5 style="text-align: center; color: #828282;">
           평점으로 검증된 우리동네 소아과
         </h5>
@@ -36,7 +47,7 @@
       <v-container style="background-color: #F5F5F5; border-radius:15px; max-width: 1200px;">
         <!-- 위치 gps -->
         <v-row class="mt-2 ml-2">
-          <v-btn variant="flat" size="large" style="background-color: #F5F5F5;">
+          <v-btn variant="flat" size="large" style="background-color: #F5F5F5;" @click="openAddressSearch">
             <h5 style="font-weight:bold;"> 
               📍 {{dong}}
               <v-icon class="custom-width ml-n1"> mdi-chevron-down</v-icon>
@@ -50,29 +61,29 @@
           :hospitalList="hospitalList"
           />
         </v-row>
-        <!-- 주변 소아과 더보기 버튼 -->
-        <v-row justify="center" style="margin-top: -20px;">
-          <v-btn
-              class="custom-button"
-              style="background-color: #E6E6E6;"
-              text :to="{path:'/hospital/list'}"
-              variant="flat"
-          >주변소아과 더보기</v-btn>
-        </v-row> 
-
-         <v-spacer :style="{height: '30px'}"></v-spacer>
       </v-container>
 
       <v-spacer :style="{height: '50px'}"></v-spacer>
 
       <!-- 비대면진료 title -->
-      <v-row justify="center" align="center">
+      <v-row 
+        justify="center" 
+        align="center" 
+        @click="navigateToUntactList"
+        style="cursor: pointer;"
+      >
         <h2 style="font-weight: bold;">🏠 비대면 진료</h2>
       </v-row>
+  
       <!-- 비대면진료 sub-title -->
-      <v-row justify="center" align="center">
+      <v-row 
+        justify="center" 
+        align="center" 
+        @click="navigateToUntactList"
+        style="cursor: pointer;" 
+      >
         <h5 style="text-align: center; color: #828282;">
-            집에서도 편하게 비대면진료 받으세요!
+          집에서도 편하게 비대면진료 받으세요!
         </h5>
       </v-row>
 
@@ -91,13 +102,24 @@
       <v-spacer :style="{ height: '30px' }"></v-spacer>
 
       <!-- 의사Q&A title -->
-      <v-row justify="center" align="center">
+      <v-row 
+        justify="center" 
+        align="center" 
+        @click="navigateToCommunityList"
+        style="cursor: pointer;" 
+      >
         <h2 style="font-weight: bold;">💬 의사 Q&A </h2>
       </v-row>
-      <!-- 의사Q&A sub-title -->
-      <v-row justify="center" align="center">
+      
+      <!-- 의사 Q&A sub-title -->
+      <v-row 
+        justify="center" 
+        align="center" 
+        @click="navigateToCommunityList"
+        style="cursor: pointer;" 
+      >
         <h5 style="text-align: center; color: #828282;">
-            우리 아이 건강, 전문가와 직접 소통하세요
+          우리 아이 건강, 전문가와 직접 소통하세요
         </h5>
       </v-row>
 
@@ -110,6 +132,8 @@
             <v-card
             variant="outlined"
             class="post-card justify-center"
+            @click="navigateToPostDetail(post.id)"
+            style="cursor: pointer;" 
             >
               <div class="d-flex flex-no-wrap justify-space-between">
                 <div class="ml-3 mt-3">
@@ -137,15 +161,29 @@
                 <!-- 게시글 사진 -->
                   <v-img :src="post.postImgUrl" />
                 </v-avatar>
-
               </div>
-
             </v-card>
-
           </v-col>
         </v-row>
       </v-container>
-      
+      <!-- 데이터 로딩 중일때 띄워줄 모달 -->
+      <v-dialog v-model="loading" max-width="500px">
+        <v-card class="loading-modal">
+            <!-- 로딩 진행 표시 (v-progress-linear) -->
+            <v-progress-linear
+            color="#0075FF"
+            height="4"
+            indeterminate
+            ></v-progress-linear>
+
+            <v-card-title class="loading-title">
+                데이터 로딩중
+            </v-card-title>
+            <v-card-text class="loading-text">
+                회원님의 현재 위치 정보를 기반으로 <br>병원 리스트를 불러오고 있습니다.
+            </v-card-text>
+        </v-card>
+      </v-dialog>      
     </v-container>
   </v-app> 
 </template>
@@ -153,6 +191,15 @@
 <script>
 import HospitalCarousel from '@/components/carousel/HospitalCarousel.vue';
 import DoctorCarousel from '@/components/carousel/DoctorCarousel.vue';
+import axios from 'axios';
+
+// 카카오맵 rest api 호출 axios 커스텀
+const apiClient = axios.create({
+    baseURL: 'https://dapi.kakao.com/v2/local',
+    headers: {
+        Authorization: `KakaoAK ${process.env.VUE_APP_KAKAO_API_KEY}`
+    }
+});
 
 export default {
   components: { 
@@ -162,45 +209,207 @@ export default {
   name: "App",
   data(){
     return{
-      banner1: 'https://todak-file.s3.ap-northeast-2.amazonaws.com/default-images/%E1%84%87%E1%85%A2%E1%84%82%E1%85%A51+Group+989000.png',
-      banner2: 'https://todak-file.s3.ap-northeast-2.amazonaws.com/default-images/padak-banner.png',
-      banner3: '',
       slides: [
         'https://todak-file.s3.ap-northeast-2.amazonaws.com/default-images/%E1%84%87%E1%85%A2%E1%84%82%E1%85%A51+Group+989000.png',
         'https://todak-file.s3.ap-northeast-2.amazonaws.com/default-images/%E1%84%87%E1%85%A2%E1%84%82%E1%85%A52+%E1%84%8F%E1%85%A2%E1%86%AF%E1%84%85%E1%85%B5%E1%86%AB%E1%84%83%E1%85%A5Group+989004.png',
         'https://todak-file.s3.ap-northeast-2.amazonaws.com/default-images/%E1%84%87%E1%85%A2%E1%84%82%E1%85%A53+%E1%84%87%E1%85%B5%E1%84%83%E1%85%A2%E1%84%86%E1%85%A7%E1%86%ABGroup+989004.png'
       ],
-      dong:'성수동 2가',
+      dong:'신대방동',
+      latitude: '37.497203', // 사용자 현재 위도
+      longitude: '126.927625', // 사용자 현재 경도
+      locationModal: false, // 데이터 로딩 모달 활성화 변수
+      loading : false, // 로딩상태변수 추가
       // 인기소아과 데이터 
-      keywordList: ['주차장', '전문의', '예방접종'],
-      hospitalList:[
-        {id:'1', hospitalImageUrl:'https://todak-file.s3.ap-northeast-2.amazonaws.com/default-images/hospital-example-image.png', name: '삼성화곡소아청소년과', averageRating:'4.5', reviewCount:'32', address: '서울 강남구 삼성로14 (개포자이 프레지던스) 자이스퀘어 상가 216호', keywordList: ['예방접종', '주차장', '전문의']},
-        {id:'2', hospitalImageUrl:'https://todak-file.s3.ap-northeast-2.amazonaws.com/default-images/hospital1.jpeg', name: '연세드림소아청소년과', averageRating:'4.5', reviewCount:'32', address: '서울 강남구 삼성로14 (개포자이 프레지던스) 자이스퀘어 상가 216호', keywordList: ['예방접종', '주차장', '전문의']},
-        {id:'3', hospitalImageUrl:'https://todak-file.s3.ap-northeast-2.amazonaws.com/default-images/hospital2.png', name: '아이조은청소년과', averageRating:'4.5', reviewCount:'32', address: '서울 강남구 삼성로14 (개포자이 프레지던스) 자이스퀘어 상가 216호', keywordList: ['예방접종', '주차장', '전문의']},
-        {id:'4', hospitalImageUrl:'https://todak-file.s3.ap-northeast-2.amazonaws.com/default-images/hospital1.jpeg', name: '방은지소아청소년과', averageRating:'4.5', reviewCount:'32', address: '서울 강남구 삼성로14 (개포자이 프레지던스) 자이스퀘어 상가 216호', keywordList: ['예방접종', '주차장', '전문의']},
-        {id:'5', hospitalImageUrl:'https://todak-file.s3.ap-northeast-2.amazonaws.com/default-images/hospital1.jpeg', name: '김창현소아청소년과', averageRating:'4.5', reviewCount:'32', address: '서울 강남구 삼성로14 (개포자이 프레지던스) 자이스퀘어 상가 216호', keywordList: ['예방접종', '주차장', '전문의']},
-        {id:'6', hospitalImageUrl:'https://todak-file.s3.ap-northeast-2.amazonaws.com/default-images/hospital1.jpeg', name: '무무소아청소년과', averageRating:'4.5', reviewCount:'32', address: '서울 강남구 삼성로14 (개포자이 프레지던스) 자이스퀘어 상가 216호', keywordList: ['예방접종', '주차장', '전문의']},
-      ],
-      doctorList:[
-        {id:'1', profileImg:'https://todak-file.s3.ap-northeast-2.amazonaws.com/default-images/male-doctor.png', doctorName:'신현도', hospitalName:'아이조은청소년과', reviewPoint:'4.5', reviewCount:'32' },
-        {id:'2', profileImg:'https://todak-file.s3.ap-northeast-2.amazonaws.com/default-images/female-doctor.png', doctorName:'김현지', hospitalName:'삼성화곡청소년과', reviewPoint:'4.5', reviewCount:'32' },
-        {id:'3', profileImg:'https://todak-file.s3.ap-northeast-2.amazonaws.com/default-images/male_doctor.png', doctorName:'박연세', hospitalName:'연세아이청소년과', reviewPoint:'4.5', reviewCount:'32' },
-        {id:'4', profileImg:'https://todak-file.s3.ap-northeast-2.amazonaws.com/default-images/female_doctor.png', doctorName:'방박사', hospitalName:'아이조은청소년과', reviewPoint:'4.5', reviewCount:'32' },
-        {id:'5', profileImg:'https://todak-file.s3.ap-northeast-2.amazonaws.com/default-images/male_doctor.png', doctorName:'최무무', hospitalName:'연세드림청소년과', reviewPoint:'4.5', reviewCount:'32' },
-        {id:'6', profileImg:'https://todak-file.s3.ap-northeast-2.amazonaws.com/default-images/female_doctor.png', doctorName:'창창핑', hospitalName:'티니핑청소년과', reviewPoint:'4.5', reviewCount:'32' },
-        {id:'7', profileImg:'https://todak-file.s3.ap-northeast-2.amazonaws.com/default-images/female-doctor.png', doctorName:'껄무새', hospitalName:'할껄말껄청소년과', reviewPoint:'4.5', reviewCount:'32' },
-        {id:'8', profileImg:'https://todak-file.s3.ap-northeast-2.amazonaws.com/default-images/male-doctor.png', doctorName:'우하하', hospitalName:'아이조은청소년과', reviewPoint:'4.5', reviewCount:'32' },
-      ],
-      communityList: [
-        {id:'1', title: '예방접종 후 목욕', content:'A형간염이랑 Dtap 4차를 접종했는데 당일 저녁에 목욕해도되나요? A형간염이랑 Dtap 4차를 접종했는데 당일 저녁에 목욕해도되나요?', postImgUrl:'https://todak-file.s3.ap-northeast-2.amazonaws.com/default-images/moruncar.jpg', likeCount:'21', comments:'13', viewCount:'212', createdTimeAt:"2024-10-11T14:21:14" },
-        {id:'2', title: '예방접종 후 목욕', content:'A형간염이랑 Dtap 4차를 접종했는데 당일 저녁에 목욕해도되나요?', postImgUrl:'https://todak-file.s3.ap-northeast-2.amazonaws.com/default-images/moruncar.jpg', likeCount:'21', comments:'13', viewCount:'212', createdTimeAt:"2024-10-11T14:21:14" },
-        {id:'3', title: '예방접종 후 목욕', content:'A형간염이랑 Dtap 4차를 접종했는데 당일 저녁에 목욕해도되나요?', postImgUrl:'https://todak-file.s3.ap-northeast-2.amazonaws.com/default-images/moruncar.jpg', likeCount:'21', comments:'13', viewCount:'212', createdTimeAt:"2024-10-11T14:21:14" },
-      ],
+      keywordList: [],
+      hospitalList:[],
+      doctorList:[],
+      communityList: [],
+      today: '',
     };
   },
-  mounted() {
-    // mounted 후에 slides 배열에 배너를 추가
-    // this.slides = [this.banner1, this.banner2];
+  async mounted() {
+    await this.getCurrentLocation(); // 위치 정보를 가져온 후 병원리스트 axios 요청
+    this.loadCommunityList(); // 커뮤니티 인기 게시글 리스트 조회
+    this.loadDoctorList(); // 인기 비대면 의사 리스트 조회
+  },
+  watch:{
+      // dong 값이 변경될 때마다 병원 리스트를 새로 로드
+      dong(newDong) {
+      if (newDong) {
+          this.loadHospitalList();
+      }
+    },
+  },
+  methods:{
+    openAddressSearch() {
+            this.locationModal = false; // 위치 모달 먼저 닫음
+            new window.daum.Postcode({
+                oncomplete: (data) => {
+                    // bname에서 동 이름을 추출하여 dong에 할당
+                    this.dong = data.bname || "주소 선택 안됨";
+                }
+            }).open();
+        },
+    // 현재위치 조회
+    async getCurrentLocation() {
+      this.loading = true; // 로딩 시작
+
+      // 로컬스토리지에서 위도와 경도 값을 확인
+      const storedLatitude = localStorage.getItem('latitude');
+      const storedLongitude = localStorage.getItem('longitude');
+
+      // 로컬스토리지에 위도, 경도 값이 이미 있으면 해당 값을 사용
+      if (storedLatitude && storedLongitude) {
+          this.latitude = storedLatitude;
+          this.longitude = storedLongitude;
+          console.log("로컬스토리지에서 가져온 위도", this.latitude);
+          console.log("로컬스토리지에서 가져온 경도", this.longitude);
+
+          // 위도, 경도가 로컬스토리지에 있는 경우 병원 리스트를 바로 로드
+          await this.loadHospitalList();
+          this.loading = false; // 로딩 종료
+          return; // 메소드 종료
+      }
+
+          // 로컬스토리지에 값이 없으면, 새로 위치 정보를 가져옴
+          return new Promise((resolve, reject) => {
+              if (navigator.geolocation) {
+                  navigator.geolocation.getCurrentPosition(
+                      async position => {
+                          this.latitude = position.coords.latitude;
+                          this.longitude = position.coords.longitude;
+                          console.log("사용자 위도", this.latitude);
+                          console.log("사용자 경도", this.longitude);
+
+                          // 로컬스토리지에 사용자 현재위치 위도,경도 저장
+                          localStorage.setItem('latitude', this.latitude);
+                          localStorage.setItem('longitude', this.longitude);
+
+                          // 위치 정보를 가져온 후, 동 정보를 업데이트
+                          await this.getDongFromCoordinates(this.latitude, this.longitude);
+                          
+                          this.loading = false; // 로딩 종료
+                          resolve(); // 성공 시 resolve 호출
+                      },
+                      error => {
+                          console.log("위치 정보를 가져오지 못했습니다.", error);
+                          this.loading = false; // 로딩 종료
+
+                          this.loadHospitalList(); // 초기값으로 병원 리스트 로드
+                          reject(error); // 실패 시 reject 호출
+                      }
+                  );
+              } else {
+                  console.log("Geolocation을 지원하지 않는 브라우저입니다.");
+                  this.loading = false; // 로딩 종료
+                  reject(new Error("Geolocation을 지원하지 않는 브라우저입니다."));
+              }
+          });
+        },
+    // 위도와 경도를 이용해 '동' 정보를 가져오는 메소드
+    async getDongFromCoordinates(latitude, longitude) {
+        try {
+            
+            const response = await apiClient.get(`https://dapi.kakao.com/v2/local/geo/coord2regioncode.json`, {
+                params: {
+                    x: longitude, // 경도
+                    y: latitude,  // 위도
+                }
+            });
+            
+            // '동' 단위 행정구역 이름 찾기
+            const regionInfo = response.data.documents;
+            if (regionInfo.length > 0) {
+                const dongInfo = regionInfo.find(region => region.region_type === "B");
+                if (dongInfo) {
+                    this.dong = dongInfo.region_3depth_name; // '동' 이름 저장
+                    console.log("사용자의 동:", this.dong);
+                    // 동 정보 업데이트 후 병원 리스트 로드
+                    await this.loadHospitalList(); // 동 정보로 병원 리스트 로드
+                } else {
+                    console.log("동 정보를 찾을 수 없습니다.");
+                }
+            }
+        } catch (error) {
+            if (error.response) {
+                console.log("Error Status:", error.response.status);
+                console.log("Error Data:", error.response.data);
+            } else {
+                console.log("주소 정보를 가져오는 데 실패했습니다.", error);
+            }
+        }
+    },
+    async loadHospitalList(){
+        try {
+            // this.dong에서 띄어쓰기 제거
+            const formattedDong = this.dong.replace(/\s+/g, '');
+
+            let params = {
+                dong: formattedDong, // 띄어쓰기 제거된 동 이름
+                latitude: this.latitude,
+                longitude: this.longitude
+                };
+
+            console.log("요청 파라미터:", params); // 요청 파라미터 로그
+
+            //http://localhost:8080/reservation-service/hospital/good/list?dong=성수동2가&latitude=37.536368&longitude=127.050759
+            const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/reservation-service/hospital/good/list`,{ params }
+        );
+            this.hospitalList = response.data.result.map(hospital => {
+        return {
+                ...hospital,
+                keywordList: hospital.keywords ? hospital.keywords.split(",") : []
+            };
+        });
+        }catch(error){
+            console.log(error);
+        }
+    },
+
+    // 커뮤니티 인기 게시글 조회
+    async loadCommunityList(){
+      try{
+          // http://localhost:8080/community-service/post/good/list
+          const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/community-service/post/good/list`);
+          console.log(response.data);
+          
+          this.communityList = response.data.result;
+      }catch(error){
+          console.log(error);
+      }
+    },
+    // 비대면 의사 리스트 조회
+    async loadDoctorList(){
+      try{
+        // 현재 날짜의 요일을 가져오기
+        const today = new Date();
+        const options = { weekday: 'long' }; // 요일을 긴 형식으로 가져오기 (예: Monday)
+        const dayOfWeek = today.toLocaleDateString('en-US', options); // 영어로 요일 가져오기 
+
+        //http://localhost:8080/member-service/member/untact/good/list/Monday
+        const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/member-service/member/untact/good/list/${dayOfWeek}`);
+        this.doctorList = response.data.result;
+
+      }catch(error){
+        console.log(error);
+      }
+    },
+    navigateToUntactList() {
+      this.$router.push({ path: '/untact/list' });
+      window.scrollTo(0, 0);
+    },
+    navigateToCommunityList() {
+      this.$router.push({ path: '/community/list' });
+      window.scrollTo(0, 0);
+    },
+    navigateToHospitalList() {
+      this.$router.push({ path: '/hospital/list' });
+      window.scrollTo(0, 0);
+    },
+    navigateToPostDetail(postId) {
+      this.$router.push({ path: `/post/${postId}` });
+      window.scrollTo(0, 0);
+    }
   }
 };
 </script>
