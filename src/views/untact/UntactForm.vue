@@ -275,7 +275,6 @@ export default {
         fetchWaitingData(doctor) {
             console.log("fetchWaitingData", doctor);
             const waitingRef = ref(this.firebaseDatabase, `todakpadak/${doctor.hospitalName}/${doctor.doctorId}`);
-            console.log("waitingRef", waitingRef);
             onValue(waitingRef, (snapshot) => {
                 const data = snapshot.val();
                 if (data) {
