@@ -185,10 +185,11 @@
       submitForm() {
         if (this.$refs.form.validate()) {
           axios
-            .post(`${process.env.VUE_APP_API_BASE_URL}/member-service/member/hospital-admin/register`, this.form)
+            .post(`${process.env.VUE_APP_API_BASE_URL}/reservation-service/hospital/hospital-admin/register`, this.form)
             .then((response) => {
               alert('가입이 완료되었습니다.');
               console.log(response)
+              this.$router.push('/');
             })
             .catch((error) => {
               console.error('가입 오류:', error);
