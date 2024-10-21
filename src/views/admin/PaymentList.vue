@@ -1,5 +1,5 @@
 <template>
-    <v-container>
+    <v-container style="width: 100%;">
         <v-row>
             <div class="payment-title inter-bold mt-10">결제 내역</div>
         </v-row>
@@ -40,11 +40,12 @@
         <!-- 결제 내역 리스트 -->
         <v-row>
             <v-col>
-                <v-table>
+                <v-table style="width: 100%;">
                     <thead>
                         <tr>
                             <th>ID</th>
-                            <th>구독 이름</th>
+                            <th>impUid</th>
+                            <!-- <th>구독 이름</th> -->
                             <th>이메일</th>
                             <th>구매자명</th>
                             <th>전화번호</th>
@@ -58,14 +59,15 @@
                     <tbody>
                         <tr v-for="payment in filteredPayments" :key="payment.id">
                             <td>{{ payment.id }}</td>
-                            <td>{{ payment.name }}</td>
+                            <td>{{ payment.impUid }}</td>
+                            <!-- <td>{{ payment.name }}</td> -->
                             <td>{{ payment.memberEmail }}</td>
                             <td>{{ payment.buyerName }}</td>
                             <td>{{ payment.buyerTel }}</td>
                             <td>{{ payment.amount.toLocaleString() }} 원</td>
                             <td>{{ formatDate(payment.approvalTimeStamp) }}</td>
-                            <td>{{ payment.paymentMethod }}</td>
-                            <td>{{ payment.paymentStatus }}</td>
+                            <td>{{ translatePaymentMethod(payment.paymentMethod) }}</td>
+                            <td>{{ translatePaymentStatus(payment.paymentStatus) }}</td>
                             <td>
                                 <v-row justify="center" class="button-row">
                                     <v-btn class="cancel-btn" @click="openCancelModal(payment.impUid, payment.paymentMethod)">취소</v-btn>
@@ -87,16 +89,22 @@
             ></v-pagination>
         </v-row>
 
-        <!-- 결제 취소 모달 -->
         <v-dialog v-model="cancelModal" max-width="500px">
-            <v-card>
-                <v-card-title class="headline">결제를 취소하시겠습니까?</v-card-title>
-                <v-card-actions>
-                    <v-btn color="red" @click="cancelPayment">확인</v-btn>
-                    <v-btn color="gray" @click="cancelModal = false">취소</v-btn>
-                </v-card-actions>
+            <v-card class="custom-modal">
+              <v-card-title class="text-h5 text-center">결제를 취소하시겠습니까?</v-card-title>
+              <v-card-text>
+                <v-row justify="center" class="mt-4">
+                  <v-btn class="custom-modal-btn" @click="cancelPayment">
+                    확인
+                  </v-btn>
+            <v-divider vertical class="vertical-divider"></v-divider>
+                  <v-btn class="custom-modal-btn" @click="cancelModal = false">
+                    취소
+                  </v-btn>
+                </v-row>
+              </v-card-text>
             </v-card>
-        </v-dialog>
+          </v-dialog>
     </v-container>
 </template>
 
@@ -136,7 +144,6 @@ export default {
                 };
 
                 const url = `${process.env.VUE_APP_API_BASE_URL}/reservation-service/payment/detail/list`;
-
                 const response = await axios.get(url, { params });
                 
                 if (response.data && response.data.content) {
@@ -149,11 +156,27 @@ export default {
                     this.filteredPayments = [];
                     this.totalPages = 1;
                 }
+
             } catch (error) {
                 console.error('Error fetching payments:', error);
             }
         },
-
+        translatePaymentMethod(method) {
+            const paymentMethodMap = {
+                SUBSCRIPTION: '정기',
+                SINGLE: '단건'
+            };
+            return paymentMethodMap[method] || method;
+        },
+        translatePaymentStatus(status) {
+            const paymentStatusMap = {
+                SUBSCRIBING: '구독',
+                OK: '단건 완료',
+                CANCEL: '단건 취소',
+                UNSUBSCRIBE: '구독 취소'
+            };
+            return paymentStatusMap[status] || status;
+        },
         openCancelModal(impUid, paymentMethod) {
             this.impUidToCancel = impUid;
             this.cancelPaymentMethod = paymentMethod;
@@ -233,4 +256,24 @@ export default {
     justify-content: center;
     align-items: center;
 }
+.vertical-divider {
+    width: 1px;
+    height: 30px;
+    background-color: #a7a7a7;
+    margin: 0 10px;
+    
+  }
+  .custom-modal {
+    position: absolute;
+    width: 500px;
+    height: auto;
+    background: #FFFFFF;
+    border-radius: 20px;
+  }
+  
+  .custom-modal-btn {
+    background-color: #C2D7FF;
+    color: #00499E;
+    border-radius: 20px;
+  }
 </style>
