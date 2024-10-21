@@ -247,8 +247,8 @@ export default{
         search:"", 
         sort:"distance", // 사용자가 선택한 정렬조건
         selectedTag: "전체",
-        latitude: '', // 사용자 현재 위도
-        longitude: '', // 사용자 현재 경도
+        latitude: '37.497203', // 사용자 현재 위도
+        longitude: '126.927625', // 사용자 현재 경도
         hospitalList:[], // 병원리스트
         keywordList:[], // 키워드 리스트 (, 기준으로 split)
         isOperating: false,

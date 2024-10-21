@@ -18,7 +18,7 @@
             >
             <!-- 병원 정보 담는 v-card -->
               <v-card 
-                style="width:340px; height:390px; border-radius: 10px;"
+                style="min-width:340px; min-height:390px !important; border-radius: 10px;"
                 @click="() => moveToHospital(hospital.id)"
                 variant="flat"
               >

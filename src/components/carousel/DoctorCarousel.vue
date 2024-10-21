@@ -36,7 +36,7 @@
                     <span>{{ doctor.doctorName }}</span>
                   </v-card-title>
                   <!-- 의사 평균평점  + 리뷰개수 -->
-                  <v-card-text style="color:#0075FF; font-weight: bold;">
+                  <v-card-text style="color:#0075FF; font-weight: bold;" class="d-flex justify-center align-center">
                     <v-icon>mdi-star</v-icon> {{ doctor.reviewPoint }} ({{ doctor.reviewCount }})
                   </v-card-text>
                   <v-card-subtitle class="d-flex justify-center align-center mt-n2 mb-3" style="font-size: 15px;">
