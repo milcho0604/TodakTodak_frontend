@@ -14,8 +14,9 @@
                             <v-row>
                                 <v-col cols="4" class="doctor inter-normal">
                                     {{ r.doctorName }} 의사
+                                    {{ formatTime(r.reservationTime) }}
                                 </v-col>
-                                <div style="border-left: 1px solid #ccc; height: 40px; margin: 12px 0;"></div>
+                                <div style="border-left: 1px solid #ccc; height: 45px; margin: 12px 0;"></div>
                                 <v-col>
                                     <div>
                                         <span class="inter-normal child">{{ r.childName }}</span> <span class="ssn">{{
@@ -89,13 +90,14 @@
                 <v-col class="list-box">
                     <div class="subtitle inter-bold">진료 내역</div>
                     <!-- 날짜별 예약 내역 가져오기 -->
-                    <div v-for="r in completedList" :key="r.id" @click="setDetail(r)">
+                    <div v-for="r in paginatedCompletedList" :key="r.id" @click="setDetail(r)">
                         <div :class="['completed', { active: r.id === reservationDetail?.id }]">
                             <v-row>
                                 <v-col cols="4" class="doctor inter-normal">
                                     {{ r.doctorName }} 의사
+                                    {{ formatTime(r.reservationTime) }}
                                 </v-col>
-                                <div style="border-left: 1px solid #ccc; height: 40px; margin: 12px 0;"></div>
+                                <div style="border-left: 1px solid #ccc; height: 45px; margin: 12px 0;"></div>
                                 <v-col>
                                     <div>
                                         <span class="inter-normal child">{{ r.childName }}</span> <span class="ssn">{{
@@ -232,6 +234,9 @@ export default {
 
             return year + '-' + month + '-' + day;
         },
+        formatTime(time) {
+            return time.slice(0, 5);
+        }
     }
 }
 </script>
@@ -245,7 +250,7 @@ export default {
 .list-box {
     background-color: #F7F7F7;
     margin: 10px 10px;
-    min-height: 560px;
+    min-height: 580px;
     border-radius: 10px;
     position: relative;
     padding-bottom: 90px; /* 페이지 버튼을 위한 공간 확보 */
@@ -280,7 +285,6 @@ export default {
 
 .doctor {
     text-align: center;
-    margin-top: 10px;
     color: #00499E;
 }
 
