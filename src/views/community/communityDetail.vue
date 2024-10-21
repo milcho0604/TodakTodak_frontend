@@ -286,78 +286,9 @@ export default {
         this.postDetail = response.data.result;
         console.log("여기!!!", this.postDetail);
 
-        this.postDetail.comments = [
-          {
-            id: 1,
-            name: '홍길동',
-            content: '이 게시글 정말 유익하네요!',
-            createdTimeAt: new Date().toISOString(),
-            doctorEmail: 'example1@test.com',
-            profileImgUrl: require('@/assets/padak.jpg'), // 프로필 이미지 URL
-            parentId: null,
-            isEditing: false,
-            showTextarea: false,
-            newComment: '',
-            replies: [
-              {
-                id: 1,
-                name: '이순신',
-                content: '저도 동의합니다!',
-                createdTimeAt: new Date(Date.now() - 1000 * 60 * 2).toISOString(), // 2분 전
-                doctorEmail: 'example4@test.com',
-                profileImgUrl: require('@/assets/padak.jpg'), // 대댓글 프로필 이미지 URL
-                parentId: 1
-              },
-              {
-                id: 3,
-                name: '김장군',
-                content: '저는 동의하지 않습니다!',
-                createdTimeAt: new Date(Date.now() - 1000 * 60 * 2).toISOString(), // 2분 전
-                doctorEmail: 'example4@test.com',
-                profileImgUrl: require('@/assets/padak.jpg'), // 대댓글 프로필 이미지 URL
-                parentId: 1
-              }
-            ]
-          },
-          {
-            id: 2,
-            name: '김철수',
-            content: '더 많은 정보를 알고 싶어요.',
-            createdTimeAt: new Date(Date.now() - 1000 * 60 * 5).toISOString(), // 5분 전
-            doctorEmail: 'example2@test.com',
-            profileImgUrl: require('@/assets/padak.jpg'), // 프로필 이미지 URL
-            parentId: null,
-            isEditing: false,
-            showTextarea: false,
-            newComment: '',
-            replies: [
-              {
-                id: 2,
-                name: '박영희',
-                content: '제가 아는 내용입니다.',
-                createdTimeAt: new Date(Date.now() - 1000 * 60 * 3).toISOString(), // 3분 전
-                doctorEmail: 'example5@test.com',
-                profileImgUrl: require('@/assets/padak.jpg'), // 대댓글 프로필 이미지 URL
-                parentId: 2
-              }
-            ]
-          },
-          {
-            id: 3,
-            name: '무무무2',
-            email: 'momomo2@naver.com',
-            content: '정말 좋은 게시글입니다! 감사합니다.',
-            createdTimeAt: new Date(Date.now() - 1000 * 60 * 10).toISOString(), // 10분 전
-            doctorEmail: 'example3@test.com',
-            profileImgUrl: require('@/assets/padak.jpg'), // 프로필 이미지 URL
-            parentId: null,
-            isEditing: false,
-            showTextarea: false,
-            newComment: '',
-            replies: [] // 대댓글이 없는 경우
-          }
-        ];
-
+        const commentResponse = await axios.get((`${process.env.VUE_APP_API_BASE_URL}/community-service/comment/list/${postId}`));
+        this.postDetail.comments = commentResponse.data.result;
+        console.log(this.postDetail);
         // 댓글 및 대댓글 초기화
         this.postDetail.comments.forEach(comment => {
           comment.replies = comment.replies || []; // 대댓글 배열 초기화
@@ -390,7 +321,6 @@ export default {
         await axios.post(`${process.env.VUE_APP_API_BASE_URL}/community-service/comment/create`, {
           content: formattedComment,
           postId: postId,
-          parentId: null,
         });
         this.newPostComment = '';
         this.showCommentTextarea = false;
@@ -404,9 +334,9 @@ export default {
     async submitComment(comment) {
       const postId = this.$route.params.id;
       try {
-        await axios.post(`${process.env.VUE_APP_API_BASE_URL}/community-service/comment/create`, {
-          content: comment.newComment,
+        await axios.post(`${process.env.VUE_APP_API_BASE_URL}/community-service/comment/reply/create`, {
           postId: postId,
+          content: comment.newComment,
           parentId: comment.id,
         });
         comment.newComment = '';
@@ -475,6 +405,7 @@ export default {
       return new Date(date).toLocaleDateString('ko-KR', options);
     },
     formatContent(content) {
+      console.log(content)
       return content.replace(/\n/g, '<br>');
     },
   },
