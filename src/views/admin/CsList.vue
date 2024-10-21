@@ -49,6 +49,7 @@
                             <th>상담 내용</th>
                             <th>상담 상태</th>
                             <th>채팅방 ID</th>
+                            <th></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -57,8 +58,16 @@
                             <td>{{ cs.memberName }}</td>
                             <td>{{ cs.memberEmail }}</td>
                             <td>{{ cs.csContents }}</td>
-                            <td>{{ translateCsStatus(cs.csStatus) }}</td>
+                            <td>
+                                <!-- {{ translateCsStatus(cs.csStatus) }} -->
+                                <v-chip :color="getCsStatusColor(cs.csStatus)" dark>
+                                    {{ translateCsStatus(cs.csStatus) }}
+                                </v-chip>
+                            </td>
                             <td>{{ cs.chatRoomId }}</td>
+                            <td>
+                                <v-icon @click="nextLevel(cs.id)">mdi-chevron-right</v-icon> <!-- Vuetify 아이콘, 필요에 따라 다른 화살표 아이콘 사용 가능 -->
+                            </td>
                         </tr>
                     </tbody>
                 </v-table>
@@ -127,6 +136,13 @@ export default {
                 console.error('Error fetching cs list:', error);
             }
         },
+        getCsStatusColor(status) {
+            const csStatusColorMap = {
+                '처리중': 'green',
+                '처리완료': 'blue'
+            };
+            return csStatusColorMap[status] || 'gray'; // 기본 색상은 gray로 설정
+        },
         translateCsStatus(status) {
             const csStatusMap = {
                 COMPLETED: '완료',
@@ -138,6 +154,9 @@ export default {
         onSearchInput() {
             this.page = 1; // 검색어 입력 시 페이지를 1로 초기화
             this.fetchCsList(); // 검색어에 맞는 목록 가져오기
+        },
+        nextLevel(csId) {
+            this.$router.push(`/admin/cd/detail/${csId}`); // 병원의 id를 사용하여 상세 페이지로 이동
         },
     },
     watch: {
