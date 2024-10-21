@@ -85,8 +85,8 @@
                                 </div>
                                 <!-- 병원 평균평점, 리뷰개수 -->
                                 <div>
-                                    <v-icon color="#00499E">mdi-star</v-icon>
-                                    {{ doctor.reviewPoint }} ({{ doctor.reviewCount }})
+                                    <v-icon color="#0075FF">mdi-star</v-icon>
+                                    <v-text style="color:#0075FF; font-weight:bold;">{{ doctor.reviewPoint }} ({{ doctor.reviewCount }})</v-text>
                                 </div>
                             </div>
                         </div>
@@ -183,7 +183,7 @@ export default {
         },
         goToDetail(doctorEmail) {
             // 병원 상세 페이지로 이동
-            this.$router.push({ path: `/untact/${doctorEmail}/form` });
+            this.$router.push({ path: `/untact/detail/${doctorEmail}` });
         },
         // 검색어 입력 시 호출되는 메서드
         onSearchInput() {

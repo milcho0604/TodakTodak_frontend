@@ -68,7 +68,7 @@
                 >
                     <v-chip value="distance" size="large" filter>거리 순</v-chip>
                     <v-chip value="rating" size="large" filter>별점 순</v-chip>
-                    <v-chip value="reviewCount" size="large" filter>리뷰 순</v-chip>
+                    <v-chip value="review" size="large" filter>리뷰 순</v-chip>
 
                 </v-chip-group>
             </v-col>
@@ -140,7 +140,7 @@
                                     <v-chip
                                         v-for="(keyword, index) in hospital.keywordList"
                                         :key="index"
-                                        color="#00499E"
+                                        color="#0066FF"
                                         size="default"
                                         class="mr-2 mt-2"
                                     >
@@ -244,7 +244,7 @@ export default{
         longitude: '127.063087', // 사용자 현재 경도
         hospitalList:[], // 병원리스트
         keywordList:[], // 키워드 리스트 (, 기준으로 split)
-        isOperating: "operating",
+        isOperating: '',
         locationModal: false,
         loading : false, // 로딩상태변수 추가
         isLoading: true, // 모달 테스트 
@@ -263,9 +263,23 @@ export default{
             if (newDong) {
                 this.loadHospitalList();
             }
+        },
+        // this.sort가 바뀔 때마다 loadHospitalList 메소드를 호출
+        sort(newSort) {
+            if(newSort){
+                this.loadHospitalList();
+            }
+        },
+        isOperating(operating){
+            if(operating){
+                this.loadHospitalList();
+            }
         }
-    },
 
+    },
+    computed: {
+       
+    },
     methods: {
         openAddressSearch() {
             this.locationModal = false; // 위치 모달 먼저 닫음
@@ -319,14 +333,14 @@ export default{
         // 위도와 경도를 이용해 '동' 정보를 가져오는 메소드
         async getDongFromCoordinates(latitude, longitude) {
             try {
-                console.log(process.env.VUE_APP_KAKAO_API_KEY)
+                
                 const response = await apiClient.get(`https://dapi.kakao.com/v2/local/geo/coord2regioncode.json`, {
                     params: {
                         x: longitude, // 경도
                         y: latitude,  // 위도
                     }
                 });
-                console.log(process.env.VUE_APP_KAKAO_API_KEY)
+                
                 // '동' 단위 행정구역 이름 찾기
                 const regionInfo = response.data.documents;
                 if (regionInfo.length > 0) {
@@ -357,11 +371,13 @@ export default{
                 let params = {
                     dong: formattedDong, // 띄어쓰기 제거된 동 이름
                     latitude: this.latitude,
-                    longitude: this.longitude
+                    longitude: this.longitude,
+                    sort: this.sort,
+                    isOperating: this.isOperating === 'operating'
                     };
 
                 console.log("요청 파라미터:", params); // 요청 파라미터 로그
-                const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/reservation-service/hospital/list`,{ params }
+                const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/reservation-service/hospital/sorted/list`,{ params }
             );
                 this.hospitalList = response.data.result.map(hospital => {
             return {
