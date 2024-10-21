@@ -52,6 +52,7 @@
                             <th>결제 시간</th>
                             <th>결제 방식</th>
                             <th>결제 상태</th>
+                            <th></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -65,6 +66,11 @@
                             <td>{{ formatDate(payment.approvalTimeStamp) }}</td>
                             <td>{{ payment.paymentMethod }}</td>
                             <td>{{ payment.paymentStatus }}</td>
+                            <td>
+                                <v-row justify="center" class="button-row">
+                                    <v-btn class="cancel-btn" @click="openCancelModal(payment.impUid, payment.paymentMethod)">취소</v-btn>
+                                </v-row>
+                            </td>
                         </tr>
                     </tbody>
                 </v-table>
@@ -80,6 +86,17 @@
                 :total-visible="5"
             ></v-pagination>
         </v-row>
+
+        <!-- 결제 취소 모달 -->
+        <v-dialog v-model="cancelModal" max-width="500px">
+            <v-card>
+                <v-card-title class="headline">결제를 취소하시겠습니까?</v-card-title>
+                <v-card-actions>
+                    <v-btn color="red" @click="cancelPayment">확인</v-btn>
+                    <v-btn color="gray" @click="cancelModal = false">취소</v-btn>
+                </v-card-actions>
+            </v-card>
+        </v-dialog>
     </v-container>
 </template>
 
@@ -90,7 +107,7 @@ export default {
     data() {
         return {
             payments: [], // 전체 결제 내역 목록
-            filteredPayments: [], // 필터된 결제 내역 목록
+            filteredPayments: [], // 필터된 결제 내역 목록 추가
             searchQuery: '', // 검색어
             page: 1, // 현재 페이지
             totalPages: 1, // 전체 페이지 수
@@ -100,6 +117,9 @@ export default {
                 SUBSCRIPTION: '정기결제',
                 SINGLE: '단건결제',
             },
+            cancelModal: false, // 결제 취소 모달 표시 여부
+            impUidToCancel: null, // 취소할 impUid 저장
+            cancelPaymentMethod: null, // 취소할 결제 방식 저장
         };
     },
     created() {
@@ -110,18 +130,17 @@ export default {
             try {
                 const params = {
                     page: this.page - 1, // 페이지는 0부터 시작
-                    size: 3, // 페이지당 5개씩
+                    size: 5, // 페이지당 5개씩
                     paymentMethod: this.filterPaymentMethod !== 'all' ? this.filterPaymentMethod : null,
                     query: this.searchQuery || null, // 검색어를 impUid와 memberEmail 모두에 적용
                 };
 
                 const url = `${process.env.VUE_APP_API_BASE_URL}/reservation-service/payment/detail/list`;
-
                 const response = await axios.get(url, { params });
                 
                 if (response.data && response.data.content) {
                     this.payments = response.data.content;
-                    this.filteredPayments = this.payments;
+                    this.filteredPayments = this.payments; // 필터링 결과를 따로 저장
                     this.totalPages = response.data.totalPages;
                 } else {
                     console.error('Invalid response structure:', response.data);
@@ -129,13 +148,42 @@ export default {
                     this.filteredPayments = [];
                     this.totalPages = 1;
                 }
+
             } catch (error) {
                 console.error('Error fetching payments:', error);
             }
         },
 
+        openCancelModal(impUid, paymentMethod) {
+            this.impUidToCancel = impUid;
+            this.cancelPaymentMethod = paymentMethod;
+            this.cancelModal = true;
+        },
 
-             // 날짜 포맷
+        async cancelPayment() {
+            try {
+                let url;
+                if (this.cancelPaymentMethod === 'SINGLE') {
+                    url = `${process.env.VUE_APP_API_BASE_URL}/reservation-service/payment/cancel`;
+                } else if (this.cancelPaymentMethod === 'SUBSCRIPTION') {
+                    url = `${process.env.VUE_APP_API_BASE_URL}/reservation-service/payment/subCancel`;
+                }
+
+                if (url) {
+                    await axios.post(url, { impUid: this.impUidToCancel });
+                    alert('결제가 취소되었습니다.');
+                    this.cancelModal = false;
+                    this.fetchPayments(); // 결제 목록 새로고침
+                } else {
+                    console.error('결제 방식이 유효하지 않습니다.');
+                }
+            } catch (error) {
+                console.error('Error cancelling payment:', error);
+                alert('결제 취소 중 오류가 발생했습니다.');
+            }
+        },
+
+        // 날짜 포맷
         formatDate(dateString) {
             const options = { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' };
             return new Date(dateString).toLocaleDateString('ko-KR', options);
@@ -166,5 +214,23 @@ export default {
 .selected-chip {
     background-color: #1976d2 !important;
     color: white !important;
+}
+
+.cancel-btn {
+    background-color: #C2D7FF !important;
+    color: #00499e;
+    border-radius: 20px;
+    width: 60px;
+    height: 40px;
+    margin-bottom: 10px;
+    margin-top: 10px;
+    font-family: 'Inter';
+    font-style: normal;
+    font-weight: 700;
+    font-size: 15px;
+    line-height: 24px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 </style>
