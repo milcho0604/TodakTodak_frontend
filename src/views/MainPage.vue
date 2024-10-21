@@ -134,6 +134,8 @@
             <v-card
             variant="outlined"
             class="post-card justify-center"
+            @click="navigateToPostDetail(post.id)"
+            style="cursor: pointer;" 
             >
               <div class="d-flex flex-no-wrap justify-space-between">
                 <div class="ml-3 mt-3">
@@ -407,6 +409,10 @@ export default {
     },
     navigateToHospitalList() {
       this.$router.push({ path: '/hospital/list' });
+      window.scrollTo(0, 0);
+    },
+    navigateToPostDetail(postId) {
+      this.$router.push({ path: `/post/${postId}` });
       window.scrollTo(0, 0);
     }
   }
