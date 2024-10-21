@@ -76,7 +76,7 @@ export default {
     // 사용자 정보 가져오기
     async fetchPaymentData() {
       try {
-        const response = await axios.get("http://localhost:8080/reservation-service/payment/get/hospital");
+        const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}reservation-service/payment/get/hospital`);
         this.paymentData.buyerName = response.data.representativeName;
         this.paymentData.buyerEmail = response.data.memberEmail;
         this.paymentData.buyerTel = response.data.representativePhoneNumber;
@@ -151,13 +151,14 @@ export default {
     async onPaymentSuccess(impUid) {
       try {
         // 결제 정보 서버에 전달
-        const response = await axios.post("http://localhost:8080/reservation-service/payment/sub", {
+        const response = await axios.post(`${process.env.VUE_APP_API_BASE_URL}/reservation-service/payment/sub`, {
           impUid,
         });
+
         console.log(response)
 
         // 결제 성공 후 역할 변경 및 토큰 갱신 API 호출
-        const tokenResponse = await axios.post("http://localhost:8080/member-service/member/success", {
+        const tokenResponse = await axios.post(`${process.env.VUE_APP_API_BASE_URL}/member-service/member/success`, {
           memberId: localStorage.getItem("memberId"),
         });
         console.log(tokenResponse);
