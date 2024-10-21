@@ -247,8 +247,8 @@ export default{
         search:"", 
         sort:"distance", // 사용자가 선택한 정렬조건
         selectedTag: "전체",
-        latitude: '37.544444', // 사용자 현재 위도
-        longitude: '127.063087', // 사용자 현재 경도
+        latitude: '', // 사용자 현재 위도
+        longitude: '', // 사용자 현재 경도
         hospitalList:[], // 병원리스트
         keywordList:[], // 키워드 리스트 (, 기준으로 split)
         isOperating: false,
@@ -316,6 +316,25 @@ export default{
         },
         async getCurrentLocation() {
             this.loading = true; // 로딩 시작
+
+            // 로컬스토리지에서 위도와 경도 값을 확인
+            const storedLatitude = localStorage.getItem('latitude');
+            const storedLongitude = localStorage.getItem('longitude');
+
+            // 로컬스토리지에 위도, 경도 값이 이미 있으면 해당 값을 사용
+            if (storedLatitude && storedLongitude) {
+                this.latitude = storedLatitude;
+                this.longitude = storedLongitude;
+                console.log("로컬스토리지에서 가져온 위도", this.latitude);
+                console.log("로컬스토리지에서 가져온 경도", this.longitude);
+
+                // 위도, 경도가 로컬스토리지에 있는 경우 병원 리스트를 바로 로드
+                await this.loadHospitalList();
+                this.loading = false; // 로딩 종료
+                return; // 메소드 종료
+            }
+
+            // 로컬스토리지에 값이 없으면, 새로 위치 정보를 가져옴
             return new Promise((resolve, reject) => {
                 if (navigator.geolocation) {
                     navigator.geolocation.getCurrentPosition(
