@@ -3,22 +3,17 @@
         <v-spacer :style="{ height: '50px' }"></v-spacer>
         <!-- 주변소아과, gps -->
         <v-row>
-            <v-col cols="4"
-            class="ml-50 justify-end text-no-wrap"
-            >
+            <v-col cols="4" class="ml-50 justify-end text-no-wrap">
                 <v-btn variant="flat" size="large" @click="locationModal = true">
-                    <h4> 
+                    <h4>
                         <!-- <v-icon> mdi-crosshairs-gps</v-icon> -->
-                        📍 {{dong}}
+                        📍 {{ dong }}
                         <v-icon class="custom-width ml-n1"> mdi-chevron-down</v-icon>
                     </h4>
                 </v-btn>
             </v-col>
 
-            <v-col cols="4" 
-            class="d-flex flex-row justify-center text-no-wrap"
-            align="center"
-            >
+            <v-col cols="4" class="d-flex flex-row justify-center text-no-wrap" align="center">
                 <h2>👶🏻 주변 소아과</h2>
             </v-col>
 
@@ -31,19 +26,12 @@
 
         <!-- 검색창 -->
         <v-row>
-            <v-col cols="2"> 
-                
+            <v-col cols="2">
+
             </v-col>
             <v-col cols="7">
-                <v-text-field
-                v-model="search"
-                label="병원검색"
-                prepend-inner-icon="mdi-magnify"
-                variant="underlined"
-                type="text"
-                clearable
-                class="mt-n1"
-              ></v-text-field>
+                <v-text-field v-model="search" label="병원검색" prepend-inner-icon="mdi-magnify" variant="underlined"
+                    type="text" clearable class="mt-n1"></v-text-field>
             </v-col>
             <v-col cols="3" >
                 <!-- 진료중 여부 태그 -->
@@ -68,11 +56,7 @@
 
             <v-col cols="8">
                 <!-- 정렬조건 태그 그룹 -->
-                <v-chip-group
-                v-model="sort"
-                selected-class="text-primary"
-                mandatory
-                >
+                <v-chip-group v-model="sort" selected-class="text-primary" mandatory>
                     <v-chip value="distance" size="large" filter>거리 순</v-chip>
                     <v-chip value="rating" size="large" filter>별점 순</v-chip>
                     <v-chip value="review" size="large" filter>리뷰 순</v-chip>
@@ -97,34 +81,32 @@
                         clickable
                     >
                         <div class="d-flex flex-no-wrap">
-                            <v-avatar
-                                class="ma-5"
-                                style="height:140px; width:180px; border-radius: 10px; object-fit:cover;"
-                            >
+                            <v-avatar class="ma-5"
+                                style="height:140px; width:180px; border-radius: 10px; object-fit:cover;">
                                 <!-- 병원사진 -->
                                 <v-img :src="hospital.hospitalImageUrl" />
                             </v-avatar>
-            
+
                             <div style="flex: 1;">
                                 <div class="d-flex flex-row align-center justify-space-between">
                                     <!-- 병원 이름 -->
                                     <div class="d-flex flex-row align-center">
                                         <v-card-title class="mt-2 ml-n4 custom-card-title">
-                                        {{ hospital.name }}
+                                            {{ hospital.name }}
                                         </v-card-title>
                                         <!-- 병원 평균평점, 리뷰개수 -->
                                         <v-card-text class="rating-text mt-4 ml-n7">
-                                        <v-icon color="#00499E">mdi-star</v-icon>
-                                        {{ hospital.averageRating }} ({{ hospital.reviewCount }})
+                                            <v-icon color="#00499E">mdi-star</v-icon>
+                                            {{ hospital.averageRating }} ({{ hospital.reviewCount }})
                                         </v-card-text>
                                     </div>
-                        
+
                                     <!-- 대기 인원 (오른쪽 정렬) -->
                                     <v-chip color="#0066FF" size="large" class="ml-auto mr-10 mt-2">
-                                        <strong>대기 {{ hospital.standby ?? 0 }}명</strong>
+                                        <strong>대기 {{ hospital.waitingCount }}명</strong>
                                     </v-chip>
                                 </div>
-                    
+
                                 <div class="d-flex flex-row align-center">
                                     <!-- 오늘 영업시간-->
                                     <v-text class="ml-1" style="font-size:15px">
@@ -163,52 +145,35 @@
         <v-spacer :style="{ height: '50px' }"></v-spacer>
         <v-dialog v-model="locationModal" max-width="500">
             <v-card rounded="lg" class="location-modal">
-              <v-card-title class="modal-title d-flex align-center">
-                <v-spacer></v-spacer> <!-- 좌측 공간 확보 -->
-                <div class="ml-10" style="color: #00499E">
-                  주소설정
-                </div>
-                <v-spacer></v-spacer> <!-- 우측 공간 확보 -->
-                
-                <v-btn
-                  icon="mdi-close"
-                  variant="text"
-                  class="modal-close"
-                  @click="locationModal = false"
-                ></v-btn>
-              </v-card-title>
-              
-              <v-card 
-              class="modal-input-box d-flex align-center" 
-              style="margin-left: auto; margin-right: auto;" 
-              variant="flat"
-              @click="openAddressSearch"
-              >
-                <v-card-title style="color:#676767; font-size:17px;">
-                    <v-icon style="color: #676767">mdi-magnify</v-icon>
-                    지역, 도로명 또는 건물명으로 검색 
+                <v-card-title class="modal-title d-flex align-center">
+                    <v-spacer></v-spacer> <!-- 좌측 공간 확보 -->
+                    <div class="ml-10" style="color: #00499E">
+                        주소설정
+                    </div>
+                    <v-spacer></v-spacer> <!-- 우측 공간 확보 -->
+
+                    <v-btn icon="mdi-close" variant="text" class="modal-close" @click="locationModal = false"></v-btn>
                 </v-card-title>
-              </v-card>
-              <v-btn 
-              prepend-icon="mdi-crosshairs-gps"
-              class="location-button"
-              variant="text"
-              @click="handleCurrentLocationClick"
-              >
-              현위치 병원 보기
-            </v-btn>
-        
+
+                <v-card class="modal-input-box d-flex align-center" style="margin-left: auto; margin-right: auto;"
+                    variant="flat" @click="openAddressSearch">
+                    <v-card-title style="color:#676767; font-size:17px;">
+                        <v-icon style="color: #676767">mdi-magnify</v-icon>
+                        지역, 도로명 또는 건물명으로 검색
+                    </v-card-title>
+                </v-card>
+                <v-btn prepend-icon="mdi-crosshairs-gps" class="location-button" variant="text"
+                    @click="handleCurrentLocationClick">
+                    현위치 병원 보기
+                </v-btn>
+
             </v-card>
-          </v-dialog>
-          <!-- 데이터 로딩 중일때 띄워줄 모달 -->
-          <v-dialog v-model="loading" max-width="500px">
+        </v-dialog>
+        <!-- 데이터 로딩 중일때 띄워줄 모달 -->
+        <v-dialog v-model="loading" max-width="500px">
             <v-card class="loading-modal">
                 <!-- 로딩 진행 표시 (v-progress-linear) -->
-                <v-progress-linear
-                color="#0075FF"
-                height="4"
-                indeterminate
-                ></v-progress-linear>
+                <v-progress-linear color="#0075FF" height="4" indeterminate></v-progress-linear>
 
                 <v-card-title class="loading-title">
                     데이터 로딩중
@@ -230,7 +195,7 @@
 
 <script>
 import axios from 'axios';
-
+import { ref, onValue } from 'firebase/database';
 const apiClient = axios.create({
     baseURL: 'https://dapi.kakao.com/v2/local',
     headers: {
@@ -238,7 +203,8 @@ const apiClient = axios.create({
     }
 });
 
-export default{
+export default {
+    inject: ['firebaseDatabase'],
     data() {
       return {
         dong:"신대방동",
@@ -259,7 +225,7 @@ export default{
     created() {
 
     },
-    async mounted(){
+    async mounted() {
         await this.getCurrentLocation(); // 위치 정보를 가져온 후 병원리스트 axios 요청
     },
     watch: {
@@ -348,7 +314,7 @@ export default{
 
                             // 위치 정보를 가져온 후, 동 정보를 업데이트
                             await this.getDongFromCoordinates(this.latitude, this.longitude);
-                            
+
                             this.loading = false; // 로딩 종료
                             resolve(); // 성공 시 resolve 호출
                         },
@@ -400,7 +366,7 @@ export default{
                 }
             }
         },
-        async loadHospitalList(){
+        async loadHospitalList() {
             try {
                 // this.dong에서 띄어쓰기 제거
                 const formattedDong = this.dong.replace(/\s+/g, '');
@@ -414,15 +380,37 @@ export default{
                     };
 
                 console.log("요청 파라미터:", params); // 요청 파라미터 로그
-                const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/reservation-service/hospital/sorted/list`,{ params }
+                const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/reservation-service/hospital/list`,{ params }
             );
                 this.hospitalList = response.data.result.map(hospital => {
-            return {
-                    ...hospital,
-                    keywordList: hospital.keywords ? hospital.keywords.split(",") : []
-                };
-            });
-            }catch(error){
+                    return {
+                        ...hospital,
+                        keywordList: hospital.keywords ? hospital.keywords.split(",") : []
+                    };
+                });
+                this.hospitalList = await Promise.all(
+                    response.data.result.map(async (hospital) => {
+                        const waitingRef = ref(this.firebaseDatabase, `todakpadak/${hospital.name}`);
+                        return new Promise((resolve) => {
+                            onValue(waitingRef, (snapshot) => {
+                                const data = snapshot.val();
+                                console.log(data);
+                                let waiting = 0;
+                                if (data) {
+                                    Object.keys(data).forEach(key => {
+                                        waiting += Object.keys(data[key]).length;
+                                    });
+                                }
+                                console.log(waiting);
+                                resolve({
+                                    ...hospital,
+                                    waitingCount: waiting
+                                });
+                            });
+                        });
+                    })
+                );
+            } catch (error) {
                 console.log(error);
             }
         },
@@ -440,46 +428,60 @@ export default{
 </script>
 
 <style scoped>
-.hospital-list-container{
-    max-width:1000px !important;  /* 원하는 최대 폭 */
-    margin: 0 auto !important;     /* 중앙 정렬 */
-    width: 100% !important; /* 컨테이너의 폭을 100%로 설정 */
+.hospital-list-container {
+    max-width: 1000px !important;
+    /* 원하는 최대 폭 */
+    margin: 0 auto !important;
+    /* 중앙 정렬 */
+    width: 100% !important;
+    /* 컨테이너의 폭을 100%로 설정 */
 }
+
 .custom-card {
-    border: 2px solid #DBDBDB; /* 테두리 색상만 변경 */
-    border-radius: 10px; /* 모서리 둥글기 */
-    background-color: white !important; /* 카드 내부 배경색 고정 */
+    border: 2px solid #DBDBDB;
+    /* 테두리 색상만 변경 */
+    border-radius: 10px;
+    /* 모서리 둥글기 */
+    background-color: white !important;
+    /* 카드 내부 배경색 고정 */
     /* width: 1000px !important; */
     margin: 0 auto;
-  }
+}
+
 /* v-avatar border-radius */
 .custom-avatar {
-    border-radius: 10px; /* Avatar에 10px 둥글기 적용 */
+    border-radius: 10px;
+    /* Avatar에 10px 둥글기 적용 */
     width: 100%;
     height: 100%;
     object-fit: cover;
-  }
-  
+}
+
 /* v-card-title 폰트 스타일 */
 .custom-card-title {
-    font-weight: bold; /* 글씨 굵게 */
-    font-size: 22px; /* 원하는 폰트 크기 설정 */
+    font-weight: bold;
+    /* 글씨 굵게 */
+    font-size: 22px;
+    /* 원하는 폰트 크기 설정 */
 }
-.rating-text{
+
+.rating-text {
     font-weight: bold;
     color: #00499E;
 }
-.distance-text{
+
+.distance-text {
     font-weight: bold;
     color: #0066FF;
     font-size: 15px;
 }
+
 .location-modal {
     width: 500px;
     height: 240px;
     background-color: #FFFFFF;
-  }
-  
+}
+
 .modal-title {
     margin-top: 10px;
     font-size: 25px;
@@ -498,32 +500,40 @@ export default{
     background-color: #F3F3F3;
     border-radius: 10px;
 }
+
 .location-button {
     margin-top: 30px;
     font-size: 17px;
-    font-weight: bold; /* 폰트 굵게 설정 */
+    font-weight: bold;
+    /* 폰트 굵게 설정 */
     color: #00499E;
     background-color: #ECF2FD;
     border-radius: 20px;
     margin-left: auto;
-    margin-right: auto; /* 버튼을 수평 중앙에 정렬 */
-  }
-.loading-modal{
+    margin-right: auto;
+    /* 버튼을 수평 중앙에 정렬 */
+}
+
+.loading-modal {
     width: 500px;
     height: 240px;
     background-color: #FFFFFF;
-    border-radius: 20px; /* 모서리 둥글기 */
+    border-radius: 20px;
+    /* 모서리 둥글기 */
 }
-.loading-title{
-    font-weight: bold; /* 글씨 굵게 */
-    font-size: 30px; /* 원하는 폰트 크기 설정 */
+
+.loading-title {
+    font-weight: bold;
+    /* 글씨 굵게 */
+    font-size: 30px;
+    /* 원하는 폰트 크기 설정 */
     color: #00499E;
     text-align: center;
     margin-top: 20px;
-}  
-.loading-text{
+}
+
+.loading-text {
     font-size: 15px;
     text-align: center;
-}  
-
+}
 </style>
