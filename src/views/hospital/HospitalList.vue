@@ -88,7 +88,7 @@
         <v-container class="hospital-list-container d-flex justify-center align-center">
             <!-- 병원리스트 (데이터 로딩상태 아닐 때)-->
             <v-row v-if="!loading">
-                <v-col cols="12" v-for="hospital in hospitalList" :key="hospital.id">
+                <v-col cols="12" v-for="hospital in filteredHospitalList" :key="hospital.id">
                     <v-card
                         style="width:780px !important;"
                         variant="outlined"
@@ -280,6 +280,24 @@ export default{
 
     },
     computed: {
+        // 병원검색기능
+        filteredHospitalList() {
+        // search가 비어 있으면 전체 병원 목록을 반환하고, 그렇지 않으면 필터링합니다.
+        if (!this.search) {
+            return this.hospitalList;
+        }
+        
+        const searchKeyword = this.search.toLowerCase();
+
+        // 병원 목록에서 이름, 키워드, 주소에 search 키워드가 포함된 항목만 반환
+        return this.hospitalList.filter(hospital => {
+            const nameMatches = hospital.name.toLowerCase().includes(searchKeyword);
+            const addressMatches = hospital.address.toLowerCase().includes(searchKeyword);
+            const keywordMatches = hospital.keywordList.some(keyword => keyword.toLowerCase().includes(searchKeyword));
+
+            return nameMatches || addressMatches || keywordMatches;
+        });
+    }
        
     },
     methods: {
