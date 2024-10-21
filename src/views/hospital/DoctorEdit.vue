@@ -50,11 +50,24 @@
                         </v-col>
                     </v-row>
                     <v-row>
-                        <v-col>근무시간</v-col>
+                        <v-col>
+                            근무시간
+                        </v-col>
+                        <v-col class="d-flex justify-end">
+                            <v-icon small @click="addOperatingHour" :disabled="koreanDays.length >= 7">mdi-plus-circle-outline</v-icon>
+                        </v-col>
                     </v-row>
                     <v-row v-for="hour in koreanDays" :key="hour.id" class="my-2">
                         <v-col class="operatingHour">
-                            {{ hour.dayOfWeekKorean }} &nbsp;
+                            <select v-model="hour.dayOfWeek" @change="updateDayOfWeek(index, hour.dayOfWeek)" class="time-select">
+                                <option value="Monday">월요일</option>
+                                <option value="Tuesday">화요일</option>
+                                <option value="Wednesday">수요일</option>
+                                <option value="Thursday">목요일</option>
+                                <option value="Friday">금요일</option>
+                                <option value="Saturday">토요일</option>
+                                <option value="Sunday">일요일</option>
+                            </select> &nbsp;
                             <v-chip :color="hour.untact ? 'blue' : 'orange'" dark small class="custom-chip" @click="toggleUntact(hour)">
                                 {{ hour.untact ? '비대면진료' : '대면진료' }}
                             </v-chip> &nbsp;
@@ -75,6 +88,8 @@
                             <select v-model="selectedCloseMinute[hour.id]" class="time-select">
                                 <option v-for="m in minutes" :key="m" :value="m">{{ m < 10 ? '0' + m : m }}</option>
                             </select>
+                            &nbsp;&nbsp;&nbsp;&nbsp;<v-icon small @click="deleteOperatingHour">mdi-window-close</v-icon>
+                            &nbsp;&nbsp;&nbsp;&nbsp;<v-icon small @click="saveOperatingHour(hour)">mdi-check</v-icon>
                         </v-col>
                     </v-row>                    
                     <v-row align="center" justify="center">
@@ -183,6 +198,75 @@ export default {
             this.doctorDetails.operatingHours[index].untact = !this.doctorDetails.operatingHours[index].untact;
     }
         },
+        updateDayOfWeek(index, newDay) {
+        const days = {
+            '월요일': 'Monday',
+            '화요일': 'Tuesday',
+            '수요일': 'Wednesday',
+            '목요일': 'Thursday',
+            '금요일': 'Friday',
+            '토요일': 'Saturday',
+            '일요일': 'Sunday',
+        };
+        
+        // operatingHours가 존재하고 인덱스가 유효한지 확인
+        if (this.doctorDetails.operatingHours && this.doctorDetails.operatingHours[index]) {
+            const dayOfWeek = days[newDay] || newDay;
+            this.doctorDetails.operatingHours[index].dayOfWeek = dayOfWeek;
+        } else {
+            console.error("유효하지 않은 인덱스 또는 operatingHours가 정의되지 않았습니다.");
+        }
+        },
+
+        addOperatingHour() {
+            if (this.koreanDays.length >= 7) return
+            const newHour = {
+                id: Date.now(),  // 고유 ID 생성
+                dayOfWeek: 'Monday',  // 기본 요일 설정
+                untact: false,  // 기본 비대면 여부
+                openTime: '09:00',  // 기본 오픈 시간
+                closeTime: '18:00'  // 기본 클로즈 시간
+            };
+
+            this.doctorDetails.operatingHours.push(newHour);
+
+        },
+        saveOperatingHour(hour){
+            if (!hour || !hour.id) {
+               console.error("유효하지 않은 hour 객체:", hour);
+                return; // 유효하지 않을 경우 메소드 종료
+            }
+
+            const openTime = `${this.selectedOpenTime[hour.id].toString().padStart(2, '0')}:${this.selectedOpenMinute[hour.id].toString().padStart(2, '0')}`;
+            const closeTime = `${this.selectedCloseTime[hour.id].toString().padStart(2, '0')}:${this.selectedCloseMinute[hour.id].toString().padStart(2, '0')}`;
+
+            const operatingHourData = {
+            dayOfWeek: hour.dayOfWeek, // 영어로 된 요일
+            openTime: openTime,
+            closeTime: closeTime,
+            untact: hour.untact // 비대면 여부
+            };
+
+            console.log("전송할 operatingHourData:", operatingHourData);
+            const doctorId = this.doctorDetails.id; // 의사 ID 가져오기
+
+            // POST 요청 보내기
+            axios.post(`${process.env.VUE_APP_API_BASE_URL}/member-service/doctor-operating-hours/register/${doctorId}`, [operatingHourData])
+            .then(response => {
+                console.log("근무시간 저장 성공:", response.data);
+            })
+            .catch(error => {
+                console.error("근무시간 저장 실패:", error);
+            });
+        },
+        deleteOperatingHour(hour) {
+            const index = this.doctorDetails.operatingHours.findIndex(item => item.id === hour.id);
+            if (index !== -1) {
+                this.doctorDetails.operatingHours.splice(index, 1);
+                console.log("근무시간 삭제 성공:", hour);
+            }
+        },
+
         async save() {
             const formData = new FormData();
             if (this.selectedFile) {

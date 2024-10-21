@@ -54,7 +54,7 @@
           
               <!-- 오른쪽: hospital.breakTime -->
               <v-col class="text-center" cols="6">
-                <v-card-title style="font-size:17px; font-weight:bold">12:00-13:00</v-card-title>
+                <v-card-title style="font-size:17px; font-weight:bold">{{ operatingHour }} </v-card-title>
               </v-col>
             </v-row>
         </v-card>
@@ -99,8 +99,9 @@ export default {
     },
     methods: {
         async fetchDoctorDetail() {
-            if (!this.doctorDetails) {
+            if (this.doctorEmail) {
                 await this.$store.dispatch('fetchDoctorDetails', this.doctorEmail);
+                console.log('여기')
             }
         },
         goToEdit() {
