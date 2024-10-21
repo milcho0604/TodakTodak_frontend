@@ -46,10 +46,17 @@
               ></v-text-field>
             </v-col>
             <v-col cols="3" >
-                <v-chip-group v-model="isOperating">
-                    <!-- 진료중 여부 태그 -->
-                    <v-chip variant="tonal" rounded="lg" size="large" color="#0066FF" value="operating" filter> <strong>진료 중</strong> </v-chip>
-                </v-chip-group>
+                <!-- 진료중 여부 태그 -->
+                <v-chip 
+                variant="tonal" 
+                rounded="lg" 
+                size="large" 
+                @click="toggleOperating"
+                :color="isOperating ? '#0066FF' : '#767676'"
+                :class="{ active: isOperating }"
+                filter
+                > <strong>진료 중</strong> 
+            </v-chip>
             </v-col>
         </v-row>
 
@@ -244,7 +251,7 @@ export default{
         longitude: '127.063087', // 사용자 현재 경도
         hospitalList:[], // 병원리스트
         keywordList:[], // 키워드 리스트 (, 기준으로 split)
-        isOperating: '',
+        isOperating: false,
         locationModal: false,
         loading : false, // 로딩상태변수 추가
         isLoading: true, // 모달 테스트 
@@ -270,11 +277,6 @@ export default{
                 this.loadHospitalList();
             }
         },
-        isOperating(operating){
-            if(operating){
-                this.loadHospitalList();
-            }
-        }
 
     },
     computed: {
@@ -373,7 +375,7 @@ export default{
                     latitude: this.latitude,
                     longitude: this.longitude,
                     sort: this.sort,
-                    isOperating: this.isOperating === 'operating'
+                    isOperating: this.isOperating
                     };
 
                 console.log("요청 파라미터:", params); // 요청 파라미터 로그
@@ -392,7 +394,11 @@ export default{
         goToDetail(hospitalId) {
             // 병원 상세 페이지로 이동
             this.$router.push({ path: `/hospital/detail/${hospitalId}` });
-        }
+        },
+        toggleOperating() {
+            this.isOperating = !this.isOperating; // 선택 시 true, 선택 해제 시 false
+            this.loadHospitalList(); // 상태 변경 시마다 병원 리스트 다시 로드
+        },
 
     }
 }
