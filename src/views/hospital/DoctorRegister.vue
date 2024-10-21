@@ -9,9 +9,9 @@
         </v-row>
         
         <v-row justify="center" style="position: relative; transform: translateX(380px); margin-bottom: 10px;">
-                <div class="round inter-normal dark-blue" @click="createModal = true">
-                    <v-icon class="plus-icon">mdi-plus-circle-outline</v-icon>
-                </div>  
+            <div class="round inter-normal dark-blue" @click="createModal = true">
+                <v-icon class="plus-icon">mdi-plus-circle-outline</v-icon>
+            </div>  
         </v-row>
 
         <v-row justify="center">
@@ -35,7 +35,7 @@
                                     <v-img :src="doctor.profileImgUrl ? doctor.profileImgUrl : require('@/assets/doctor.png')" />
                                 </v-avatar>
                             </td>
-                            <td style="text-align: center; white-space: nowrap;" @click="goToDoctorDetail(doctor.doctorEmail)" class="clickable">{{ doctor.name }}</td>
+                            <td style="text-align: center; white-space: nowrap;" @click="goToDoctorDetail(doctor)" class="clickable">{{ doctor.name }}</td>
                             <td style="text-align: center;">{{ doctor.doctorEmail }}</td>
                             <td style="text-align: center;">
                                 <v-chip :color="doctor.verified ? 'green' : 'red'" dark>
@@ -52,15 +52,18 @@
         </v-row>
         
         <!-- 의사 추가 모달 -->
-        <DoctorCreateModal v-model="createModal" @update:dialog="createModal = $event; this.fetchDoctor()"
-            @doctor-exists="openChildExistsDialog"></DoctorCreateModal>
+        <DoctorCreateModal 
+            v-model="createModal" 
+            @update:dialog="createModal = $event; this.fetchDoctor()"
+            @doctor-exists="openChildExistsDialog">
+        </DoctorCreateModal>
 
         <DoctorDeleteModal 
             v-model="doctorDeleteModal"
             :doctor-id="selectedDoctorId"
             :doctor-email="selectedDoctorEmail"
             @update:dialog="doctorDeleteModal = $event"
-            @deleted="fetchDoctor" >
+            @deleted="fetchDoctor">
         </DoctorDeleteModal>
 
     </v-container>
@@ -82,10 +85,9 @@ export default {
     data() {
         return {
             createModal: false,
-            doctorDeleteModal: false, // 변수 이름 수정
+            doctorDeleteModal: false,
             doctors: [],
             selectedDoctorId: null,
-            doctorExistsMessage: [],
             selectedDoctorEmail: '',
         }
     },
@@ -101,43 +103,41 @@ export default {
                         Authorization: `Bearer ${token}`
                     }
                 });
-                this.doctors = response.data.result.content; // 데이터가 비어있지 않은지 확인
+                this.doctors = response.data.result.content;
             } catch (error) {
                 console.error('Failed to fetch doctors:', error);
             }
         },
         openDeleteModal(doctorId) {
             const doctor = this.doctors.find(doc => doc.id === doctorId);
-            if(doctor){
+            if (doctor) {
                 this.selectedDoctorId = doctorId;
-                this.doctorDeleteModal = true; // 변수 이름 수정
+                this.doctorDeleteModal = true;
                 this.selectedDoctorEmail = doctor.doctorEmail;
             }
         },
-        goToDoctorDetail(email) {
-            this.$store.commit('setDoctorEmail', email);
-            // 디테일 페이지로 이동
-            this.$router.push({ path: '/doctor/detail' });
+        goToDoctorDetail(doctor) {
+            this.$store.commit('setDoctorEmail', doctor.doctorEmail); // doctorEmail
+            this.$store.commit('setDoctorId', doctor.id); // doctorId
+            this.$router.push({ path: '/doctor/detail' }); // 디테일 페이지로 이동
         }
     }
 }
 </script>
 
-
 <style scoped>
-
 .delete-icon {
-    box-shadow: none !important; /* 그림자 제거 */
-    border-radius: 16px; /* 둥근 테두리 */
-    background-color: #f44336; /* 배경색 (레드) */
-    color: white; /* 텍스트 색상 */
-    padding: 6px 12px; /* 내부 여백 */
-    border: none; /* 기본 테두리 제거 */
-    cursor: pointer; /* 포인터 커서 */
-    transition: background-color 0.3s; /* 배경색 전환 효과 *
+    box-shadow: none !important;
+    border-radius: 16px;
+    background-color: #f44336;
+    color: white;
+    padding: 6px 12px;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s;
 }
 
 .delete-icon:hover {
-    background-color: #d32f2f; /* 호버 시 색상 변경 */
+    background-color: #d32f2f;
 }
 </style>
