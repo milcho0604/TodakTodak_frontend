@@ -1,6 +1,6 @@
 <template>
     <v-container class="custom-container">
-        <div class="hospitalName inter-bold">{{hospitalName}}</div>
+        <div class="hospitalName inter-bold">{{ hospitalName }}</div>
         <div>
             <input type="date" v-model="date" class="datePick">
         </div>
@@ -9,8 +9,8 @@
                 <v-col class="list-box">
                     <div class="subtitle inter-bold">예약 내역</div>
                     <!-- 날짜별 예약 내역 가져오기 -->
-                    <div v-for="r in confirmList" :key="r.id">
-                        <div class="reservation" @click="setDetail(r)">
+                    <div v-for="r in paginatedConfirmList" :key="r.id">
+                        <div :class="['reservation', { active: r.id === reservationDetail?.id }]" @click="setDetail(r)">
                             <v-row>
                                 <v-col cols="4" class="doctor inter-normal">
                                     {{ r.doctorName }} 의사
@@ -29,6 +29,8 @@
                             </v-row>
                         </div>
                     </div>
+                    <v-pagination v-model="confirmPage" :length="confirmTotalPages" :total-visible="5" class="pagination"
+                        color="primary"></v-pagination>
                 </v-col>
                 <v-col class="list-box">
                     <div class="subtitle inter-bold">상세 내역</div>
@@ -47,6 +49,8 @@
                             <v-col>
                                 <span v-if="reservationDetail.status == 'Confirmed'">접수</span>
                                 <span v-else-if="reservationDetail.status == 'Completed'">진료 완료</span>
+                                <span v-else-if="reservationDetail.status == 'Cancelled'">취소</span>
+                                <span v-else-if="reservationDetail.status == 'Noshow'">노쇼</span>
                                 <span v-else>{{ reservationDetail.status }}</span>
                             </v-col>
                         </v-row>
@@ -67,7 +71,7 @@
                             <v-col>
                                 <span v-if="reservationDetail.medicalStatus != '결제완료'">미결제</span>
                                 <span v-else>{{ reservationDetail.medicalStatus }}</span>
-                                
+
                             </v-col>
                         </v-row>
                         <div class="untactButton">
@@ -86,7 +90,7 @@
                     <div class="subtitle inter-bold">진료 내역</div>
                     <!-- 날짜별 예약 내역 가져오기 -->
                     <div v-for="r in completedList" :key="r.id" @click="setDetail(r)">
-                        <div class="completed">
+                        <div :class="['completed', { active: r.id === reservationDetail?.id }]">
                             <v-row>
                                 <v-col cols="4" class="doctor inter-normal">
                                     {{ r.doctorName }} 의사
@@ -105,6 +109,9 @@
                             </v-row>
                         </div>
                     </div>
+                    <!-- Pagination -->
+                    <v-pagination v-model="completedPage" :length="completedTotalPages" :total-visible="5" class="pagination"
+                        color="primary"></v-pagination>
                 </v-col>
             </v-row>
 
@@ -122,20 +129,40 @@ export default {
             hospitalName: null,
             reservationDetail: null,
             date: this.getToday(),
-            page: 0,
-            size: 100
+            confirmPage: 1,
+            completedPage: 1,
+            pageSize: 5
         }
     },
     watch: {
         date(newDate) {
-            this.fetchConfirm(newDate);
-            this.fetchCompleted(newDate);
+            // this.fetchConfirm(newDate);
+            this.fetchReservation(newDate);
+        }
+    },
+    computed: {
+        paginatedConfirmList() {
+            const start = (this.confirmPage - 1) * this.pageSize;
+            const end = start + this.pageSize;
+            console.log("paginatedConfirmList", start, end);
+            return this.confirmList.slice(start, end);
+        },
+        confirmTotalPages() {
+            return Math.ceil(this.confirmList.length / this.pageSize);
+        },
+        paginatedCompletedList() {
+            const start = (this.completedPage - 1) * this.pageSize;
+            const end = start + this.pageSize;
+            return this.completedList.slice(start, end);
+        },
+        completedTotalPages() {
+            return Math.ceil(this.completedList.length / this.pageSize);
         }
     },
     created() {
         this.fetchHospitalName();
-        this.fetchConfirm(this.getToday());
-        this.fetchCompleted(this.getToday());
+        // this.fetchConfirm(this.getToday());
+        this.fetchReservation(this.getToday());
     },
     methods: {
         // 병원 이름 불러오기
@@ -144,35 +171,42 @@ export default {
             console.log('response: ', response.data);
             this.hospitalName = response.data.result.name;
         },
-        async fetchConfirm(date) {
-            const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/reservation-service/reservation/hospital/list`,
+        async fetchReservation(date) {
+            const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/reservation-service/reservation/hospital/doctor/list`,
                 {
                     // 요청 파라미터 (pageable)
                     params: {
                         doctorEmail: this.doctorEmail,
-                        status: "Confirmed",
+                        untact: true,
                         date: date,
-                        page: this.page,
-                        size: this.size,
                     }
                 });
             console.log('response: ', response.data);
-            this.confirmList = response.data;
-        },
-        async fetchCompleted(date) {
-            const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/reservation-service/reservation/hospital/list`,
-                {
-                    // 요청 파라미터 (pageable)
-                    params: {
-                        doctorEmail: this.doctorEmail,
-                        status: "Completed",
-                        date: date,
-                        page: this.page,
-                        size: this.size,
-                    }
-                });
-            console.log('response: ', response.data);
-            this.completedList = response.data;
+
+            this.completedList = [];
+            this.confirmList = [];
+            // 가져온 데이터를 상태별로 나누기
+            response.data.forEach(reservation => {
+                switch (reservation.status) {
+                    case 'Completed':
+                        console.log('Completed: ', reservation);
+                        this.completedList.push(reservation);
+                        break;
+                    case 'Confirmed':
+
+                        this.confirmList.push(reservation);
+                        break;
+                    case 'Cancelled':
+                        this.completedList.push(reservation);
+                        break;
+                    case 'Noshow':
+                        this.completedList.push(reservation);
+                        break;
+                    default:
+                        console.warn(`Unknown status: ${reservation.status}`);
+                }
+            });
+            // this.completedList = response.data;
         },
         async setDetail(reservation) {
             const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/reservation-service/reservation/get/${reservation.id}`);
@@ -197,7 +231,7 @@ export default {
             let day = today.getDate() < 10 ? '0' + today.getDate() : today.getDate();
 
             return year + '-' + month + '-' + day;
-        }
+        },
     }
 }
 </script>
@@ -211,8 +245,10 @@ export default {
 .list-box {
     background-color: #F7F7F7;
     margin: 10px 10px;
-    height: 500px;
+    min-height: 560px;
     border-radius: 10px;
+    position: relative;
+    padding-bottom: 90px; /* 페이지 버튼을 위한 공간 확보 */
 }
 
 .subtitle {
@@ -279,15 +315,33 @@ export default {
     background-color: #00B2FF;
     color: #FFFFFF !important;
 }
+
 .datePick {
     border: 2px solid #DBDBDB;
     border-radius: 5px;
     padding: 5px 5px;
     width: 150px;
 }
+
 .pick-coment {
     margin-top: 30px;
     text-align: center;
     color: #6C6C6C;
+}
+
+.pagination {
+    margin-top: 20px;
+    display: flex;
+    margin-right: 40px;
+    position: absolute;
+    bottom: 20px;
+    left: 0;
+    right: 0;
+}
+.reservation.active {
+    border: 2px solid #0B99FF;
+}
+.completed.active {
+    border: 2px solid #0B99FF;
 }
 </style>
