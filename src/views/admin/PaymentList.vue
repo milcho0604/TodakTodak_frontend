@@ -1,0 +1,170 @@
+<template>
+    <v-container>
+        <v-row>
+            <div class="payment-title inter-bold mt-10">결제 내역</div>
+        </v-row>
+
+        <!-- 검색어 입력 -->
+        <v-row>
+            <v-col cols="12" md="6">
+                <v-text-field
+                    v-model="searchQuery"
+                    label="검색어 입력 (impUid 또는 이메일)"
+                    clearable
+                    variant="underlined"
+                    @input="onSearchInput"
+                    style="max-width: 300px; margin-left: 30px;"
+                />
+            </v-col>
+        </v-row>
+
+        <!-- 필터 버튼 -->
+        <v-row>
+            <v-chip-group active-class="selected-chip" class="ml-3">
+                <v-chip
+                    v-for="(label, value) in paymentMethodOptions"
+                    :key="value"
+                    @click="() => { 
+                        filterPaymentMethod = value; 
+                        fetchPayments(); 
+                    }"
+                    :input-value="filterPaymentMethod === value"
+                    class="mr-2"
+                    filter
+                >
+                    {{ label }}
+                </v-chip>
+            </v-chip-group>
+        </v-row>
+
+        <!-- 결제 내역 리스트 -->
+        <v-row>
+            <v-col>
+                <v-table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>구독 이름</th>
+                            <th>이메일</th>
+                            <th>구매자명</th>
+                            <th>전화번호</th>
+                            <th>금액</th>
+                            <th>결제 시간</th>
+                            <th>결제 방식</th>
+                            <th>결제 상태</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="payment in filteredPayments" :key="payment.id">
+                            <td>{{ payment.id }}</td>
+                            <td>{{ payment.name }}</td>
+                            <td>{{ payment.memberEmail }}</td>
+                            <td>{{ payment.buyerName }}</td>
+                            <td>{{ payment.buyerTel }}</td>
+                            <td>{{ payment.amount.toLocaleString() }} 원</td>
+                            <td>{{ formatDate(payment.approvalTimeStamp) }}</td>
+                            <td>{{ payment.paymentMethod }}</td>
+                            <td>{{ payment.paymentStatus }}</td>
+                        </tr>
+                    </tbody>
+                </v-table>
+            </v-col>
+        </v-row>
+
+        <!-- 페이지 네이션 -->
+        <v-row justify="center" class="mt-4">
+            <v-pagination
+                v-model="page"
+                :length="totalPages"
+                @input="fetchPayments"
+                :total-visible="5"
+            ></v-pagination>
+        </v-row>
+    </v-container>
+</template>
+
+<script>
+import axios from 'axios';
+
+export default {
+    data() {
+        return {
+            payments: [], // 전체 결제 내역 목록
+            filteredPayments: [], // 필터된 결제 내역 목록
+            searchQuery: '', // 검색어
+            page: 1, // 현재 페이지
+            totalPages: 1, // 전체 페이지 수
+            filterPaymentMethod: 'all', // 결제 방식 필터 상태 (초기값 'all')
+            paymentMethodOptions: {
+                all: '전체',
+                SUBSCRIPTION: '정기결제',
+                SINGLE: '단건결제',
+            },
+        };
+    },
+    created() {
+        this.fetchPayments();
+    },
+    methods: {
+        async fetchPayments() {
+            try {
+                const params = {
+                    page: this.page - 1, // 페이지는 0부터 시작
+                    size: 3, // 페이지당 5개씩
+                    paymentMethod: this.filterPaymentMethod !== 'all' ? this.filterPaymentMethod : null,
+                    query: this.searchQuery || null, // 검색어를 impUid와 memberEmail 모두에 적용
+                };
+
+                const url = `${process.env.VUE_APP_API_BASE_URL}/reservation-service/payment/detail/list`;
+
+                const response = await axios.get(url, { params });
+                
+                if (response.data && response.data.content) {
+                    this.payments = response.data.content;
+                    this.filteredPayments = this.payments;
+                    this.totalPages = response.data.totalPages;
+                } else {
+                    console.error('Invalid response structure:', response.data);
+                    this.payments = [];
+                    this.filteredPayments = [];
+                    this.totalPages = 1;
+                }
+            } catch (error) {
+                console.error('Error fetching payments:', error);
+            }
+        },
+
+
+             // 날짜 포맷
+        formatDate(dateString) {
+            const options = { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' };
+            return new Date(dateString).toLocaleDateString('ko-KR', options);
+        },
+        // 검색어 입력 시 호출되는 메서드
+        onSearchInput() {
+            this.page = 1; // 검색어 입력 시 페이지를 1로 초기화
+            this.fetchPayments(); // 검색어에 맞는 목록 가져오기
+        },
+    },
+    watch: {
+        page(newPage) {
+            console.log(newPage)
+            this.fetchPayments(); // 페이지 변경 시 목록 다시 로드
+        },
+    },
+};
+</script>
+
+<style scoped>
+.payment-title {
+    text-align: center;
+    margin: auto;
+    font-size: 25px;
+    color: #00499E;
+}
+
+.selected-chip {
+    background-color: #1976d2 !important;
+    color: white !important;
+}
+</style>
