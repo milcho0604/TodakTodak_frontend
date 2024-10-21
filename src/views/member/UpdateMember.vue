@@ -70,6 +70,8 @@
             <v-btn v-if="isSuccess" class="custom-modal-btn" @click="goToChildRegistration">
               자녀정보 등록하기
             </v-btn>
+            <v-divider vertical class="vertical-divider"></v-divider>
+
             <v-btn class="custom-modal-btn" @click="isSuccess ? skipToMain() : closeModal()">
               {{ isSuccess ? '건너뛰기' : '확인' }}
             </v-btn>
@@ -296,5 +298,11 @@ export default {
   display: flex;
   justify-content: flex-end;
   align-items: center;
+}
+.vertical-divider {
+  width: 1px;
+  height: 30px;
+  background-color: #a7a7a7;
+  margin: 0 10px;
 }
 </style>

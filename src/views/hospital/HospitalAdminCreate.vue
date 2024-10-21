@@ -77,8 +77,26 @@
             <v-row justify="center" class="button-row">
                 <v-btn class="res-btn" @click="submitForm">가입 요청</v-btn>
             </v-row>
-
           </v-form>
+
+          <v-dialog v-model="dialog" max-width="500px">
+            <v-card class="custom-modal">
+              <v-card-title class="text-h5 text-center">회원가입이 완료되었습니다.</v-card-title>
+              <v-card-text>
+                <v-row justify="center" class="mt-4">
+                  <v-btn class="custom-modal-btn" @click="closeModal">
+                    홈
+                  </v-btn>
+            <v-divider vertical class="vertical-divider"></v-divider>
+                  <v-btn class="custom-modal-btn" @click="loginModal">
+                    로그인
+                  </v-btn>
+                </v-row>
+              </v-card-text>
+            </v-card>
+          </v-dialog>
+
+
         </v-col>
       </v-row>
     </v-container>
@@ -110,6 +128,7 @@
           email: (value) => /.+@.+\..+/.test(value) || '유효한 이메일을 입력하세요.',
         },
         geocoder: null, // Geocoder 객체
+        dialog: false, // 모달 창 상태를 관리
       };
     },
     computed: {
@@ -187,9 +206,8 @@
           axios
             .post(`${process.env.VUE_APP_API_BASE_URL}/reservation-service/hospital/hospital-admin/register`, this.form)
             .then((response) => {
-              alert('가입이 완료되었습니다.');
+              this.dialog = true; // 가입 완료 후 모달 열기
               console.log(response)
-              this.$router.push('/');
             })
             .catch((error) => {
               console.error('가입 오류:', error);
@@ -199,6 +217,14 @@
           alert('입력된 정보를 확인하세요.');
         }
       },
+      closeModal() {
+      this.dialog = false;
+      this.$router.push('/'); // 확인 버튼 클릭 시 홈페이지로 리다이렉트
+    },
+    loginModal(){
+      this.dialog = false;
+      this.$router.push('/login'); // 확인 버튼 클릭 시 홈페이지로 리다이렉트
+    },
     },
   };
   </script>
@@ -240,6 +266,26 @@
     display: flex;
     justify-content: center;
     align-items: center;
+  }
+  .vertical-divider {
+    width: 1px;
+    height: 30px;
+    background-color: #a7a7a7;
+    margin: 0 10px;
+    
+  }
+  .custom-modal {
+    position: absolute;
+    width: 500px;
+    height: auto;
+    background: #FFFFFF;
+    border-radius: 20px;
+  }
+  
+  .custom-modal-btn {
+    background-color: #C2D7FF;
+    color: #00499E;
+    border-radius: 20px;
   }
   </style>
   
