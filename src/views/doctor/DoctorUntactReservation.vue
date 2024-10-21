@@ -10,7 +10,7 @@
                     <div class="subtitle inter-bold">예약 내역</div>
                     <!-- 날짜별 예약 내역 가져오기 -->
                     <div v-for="r in paginatedConfirmList" :key="r.id">
-                        <div class="reservation" @click="setDetail(r)">
+                        <div :class="['reservation', { active: r.id === reservationDetail?.id }]" @click="setDetail(r)">
                             <v-row>
                                 <v-col cols="4" class="doctor inter-normal">
                                     {{ r.doctorName }} 의사
@@ -90,7 +90,7 @@
                     <div class="subtitle inter-bold">진료 내역</div>
                     <!-- 날짜별 예약 내역 가져오기 -->
                     <div v-for="r in completedList" :key="r.id" @click="setDetail(r)">
-                        <div class="completed">
+                        <div :class="['completed', { active: r.id === reservationDetail?.id }]">
                             <v-row>
                                 <v-col cols="4" class="doctor inter-normal">
                                     {{ r.doctorName }} 의사
@@ -171,21 +171,6 @@ export default {
             console.log('response: ', response.data);
             this.hospitalName = response.data.result.name;
         },
-        // async fetchConfirm(date) {
-        //     const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/reservation-service/reservation/hospital/list`,
-        //         {
-        //             // 요청 파라미터 (pageable)
-        //             params: {
-        //                 doctorEmail: this.doctorEmail,
-        //                 status: "Confirmed",
-        //                 date: date,
-        //                 page: this.page,
-        //                 size: this.size,
-        //             }
-        //         });
-        //     console.log('response: ', response.data);
-        //     this.confirmList = response.data;
-        // },
         async fetchReservation(date) {
             const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/reservation-service/reservation/hospital/doctor/list`,
                 {
@@ -352,5 +337,11 @@ export default {
     bottom: 20px;
     left: 0;
     right: 0;
+}
+.reservation.active {
+    border: 2px solid #0B99FF;
+}
+.completed.active {
+    border: 2px solid #0B99FF;
 }
 </style>
