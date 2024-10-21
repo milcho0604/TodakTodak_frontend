@@ -89,16 +89,22 @@
             ></v-pagination>
         </v-row>
 
-        <!-- 결제 취소 모달 -->
         <v-dialog v-model="cancelModal" max-width="500px">
-            <v-card>
-                <v-card-title class="headline">결제를 취소하시겠습니까?</v-card-title>
-                <v-card-actions>
-                    <v-btn color="red" @click="cancelPayment">확인</v-btn>
-                    <v-btn color="gray" @click="cancelModal = false">취소</v-btn>
-                </v-card-actions>
+            <v-card class="custom-modal">
+              <v-card-title class="text-h5 text-center">결제를 취소하시겠습니까?</v-card-title>
+              <v-card-text>
+                <v-row justify="center" class="mt-4">
+                  <v-btn class="custom-modal-btn" @click="cancelPayment">
+                    확인
+                  </v-btn>
+            <v-divider vertical class="vertical-divider"></v-divider>
+                  <v-btn class="custom-modal-btn" @click="cancelModal = false">
+                    취소
+                  </v-btn>
+                </v-row>
+              </v-card-text>
             </v-card>
-        </v-dialog>
+          </v-dialog>
     </v-container>
 </template>
 
@@ -250,4 +256,24 @@ export default {
     justify-content: center;
     align-items: center;
 }
+.vertical-divider {
+    width: 1px;
+    height: 30px;
+    background-color: #a7a7a7;
+    margin: 0 10px;
+    
+  }
+  .custom-modal {
+    position: absolute;
+    width: 500px;
+    height: auto;
+    background: #FFFFFF;
+    border-radius: 20px;
+  }
+  
+  .custom-modal-btn {
+    background-color: #C2D7FF;
+    color: #00499E;
+    border-radius: 20px;
+  }
 </style>
