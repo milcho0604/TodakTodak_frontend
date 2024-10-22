@@ -176,7 +176,7 @@
   </template>
   
   <script>
-  import axios from 'axios';
+import axios from 'axios';
   /* global kakao, daum */
   export default {
     data() {
@@ -197,6 +197,7 @@
           longitude: '',
           hospitalImage: '', // 이미지 추가
         },
+        geocoder: null, // Geocoder 객체
         availableKeywords: ['예방접종', '영유아검진', '주차장', '전문의', '로타백신접종'], // 제공할 키워드 목록
         selectedKeywords: [], // 사용자가 선택한 키워드를 저장할 배열
         formValid: false,
@@ -213,6 +214,7 @@
     },
     mounted() {
       this.fetchHospitalDetails();
+      this.loadKakaoMapScript();
     },
     methods: {
         triggerFileInput() {
@@ -279,8 +281,6 @@
           formData.append('latitude', this.hospital.latitude);
           formData.append('longitude', this.hospital.longitude);
           formData.append('untactFee', this.hospital.untactFee);
-          console.log('위도경도: ' + this.hospital.latitude)
-          console.log('위도경도: ' + this.hospital.longitude)
               // 이미지가 선택된 경우에만 추가, 선택되지 않았으면 기존 이미지를 전송
             if (this.hospital.hospitalImage) {
             formData.append('hospitalImage', this.hospital.hospitalImage);
@@ -294,6 +294,9 @@
                 'Content-Type': 'multipart/form-data',
               },
             });
+            console.log('위도:', this.hospital.latitude);
+            console.log('경도:', this.hospital.longitude);
+
             alert('수정 완료');
             this.isEditing = false; // 수정 모드 종료
           } catch (error) {
@@ -310,27 +313,70 @@
         }
         this.isEditing = !this.isEditing; // 수정 모드 토글
       },
-      openPostcode() {
-        const { geocoder } = this;
-  
-        new daum.Postcode({
-          oncomplete: (data) => {
-            this.hospital.address = data.roadAddress;
-            this.hospital.dong = data.bname || '';
-            if (geocoder) {
-              geocoder.addressSearch(data.roadAddress, (results, status) => {
-                if (status === kakao.maps.services.Status.OK) {
-                    console.log('위도/경도 결과:', results); // 결과 출력
-                  this.hospital.latitude = results[0].y; // 위도 저장
-                  this.hospital.longitude = results[0].x; // 경도 저장
-                } else {
-                  console.error('주소 검색 실패: ', status);
-                }
-              });
-            }
-          },
-        }).open();
-      },
+    // 카카오맵 스크립트를 로드하는 함수
+    loadKakaoMapScript() {
+      const kakaoScriptUrl = `//dapi.kakao.com/v2/maps/sdk.js?appkey=${process.env.VUE_APP_KAKAO_MAP_JS_APP_KEY}&libraries=services&autoload=false`;
+      this.loadScript(kakaoScriptUrl, this.initializeKakaoMaps);
+    },
+    // 외부 스크립트 로드 함수
+    loadScript(src, callback) {
+      const existingScript = document.querySelector(`script[src="${src}"]`);
+      if (!existingScript) {
+        const script = document.createElement('script');
+        script.src = src;
+        script.onload = callback.bind(this); // 스크립트가 로드된 후 콜백 실행
+        script.onerror = (e) => {
+          console.error('스크립트 로드 오류: ', e);
+        };
+        document.head.appendChild(script);
+      } else {
+        callback();
+      }
+    },
+    // 카카오 맵 초기화 함수
+    initializeKakaoMaps() {
+      if (typeof kakao !== 'undefined') {
+        kakao.maps.load(() => {
+          this.geocoder = new kakao.maps.services.Geocoder(); // Geocoder 객체 초기화
+          console.log('Geocoder 초기화 완료:', this.geocoder); // Geocoder가 정상적으로 초기화되었는지 확인
+          this.loadDaumPostcodeScript(); // 우편번호 스크립트 로드
+        });
+      } else {
+        console.error('카카오 맵 스크립트가 로드되지 않았습니다.');
+      }
+    },
+    // 다음 우편번호 스크립트 로드 함수
+    loadDaumPostcodeScript() {
+      const daumScriptUrl = '//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js';
+      this.loadScript(daumScriptUrl, () => {
+        console.log('다음 우편번호 스크립트 로드 완료.');
+      });
+    },
+    // 주소 검색 팝업 열기
+    openPostcode() {
+      new daum.Postcode({
+        oncomplete: (data) => {
+          this.hospital.address = data.roadAddress;
+          this.hospital.dong = data.bname || '';
+          console.log('주소 선택됨:', this.hospital.address); // 선택된 주소 로그
+          if (this.geocoder) {
+            console.log('Geocoder 존재:', this.geocoder);
+            this.geocoder.addressSearch(data.roadAddress, (results, status) => {
+              if (status === kakao.maps.services.Status.OK) {
+                console.log('주소 검색 결과:', results, '상태:', status); // 결과 및 상태 로그
+
+                this.hospital.latitude = results[0].y; // 위도 저장
+                this.hospital.longitude = results[0].x; // 경도 저장
+              } else {
+                console.error('주소 검색 실패: ', status);
+              }
+            });
+          }else{
+            console.error('Geocoder가 정의되지 않았습니다.');
+          }
+        },
+      }).open(); // 기본 팝업 창을 사용
+    },
       
     },
     watch: {
