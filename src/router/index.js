@@ -17,6 +17,7 @@ import { mypageRouter } from './mypageRouter';
 import { todakRouter } from './todakRouter';
 import { doctorRouter } from './doctorRouter';
 import { adminRouter } from './adminRouter';
+import { hospitalAdmin } from './hospitalAdmin';
 
 const routes = [
   {
@@ -35,6 +36,7 @@ const routes = [
   ...todakRouter,
   ...doctorRouter,
   ...adminRouter,
+  ...hospitalAdmin,
 ];
 
 const router = createRouter({
