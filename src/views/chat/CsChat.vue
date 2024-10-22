@@ -1,6 +1,6 @@
 <template>
     <div class="chat-container">
-      <h2>1:1 CS 채팅</h2>
+      <h2>CS 채팅</h2>
       
       <div class="chat-box">
         <div v-for="(message, index) in messages" :key="index" class="message">
@@ -13,60 +13,64 @@
         <button @click="sendMessage">전송</button>
       </div>
     </div>
-    <MyPageSideBar/>  
   </template>
   
   <script>
     import { Stomp } from "@stomp/stompjs";
     import SockJS from "sockjs-client";
-    import MyPageSideBar from "@/components/sidebar/MyPageSideBar.vue";
+    import { useRoute } from 'vue-router';
+    // import axios from 'axios';
   
   export default {
     components:{
-      MyPageSideBar
+
     },
     data() {
       return {
         stompClient: null,
         messageToSend: '',
         messages: [], // 수신된 메시지 저장
-        chatRoomId: 2, // 테스트를 위한 chatRoomId 
+        chatRoomId: '',  // 채팅방 id
         memberEmail: '',
 
       };
+    },
+    created(){
+      const route = useRoute();
+      this.chatRoomId = route.params.chatRoomId;
     },
     mounted() {
       this.connect();
     },
     methods: {
-        connect() {
-        const socket = new SockJS('http://localhost:8080/member-service/ws/chat'); 
-        this.stompClient = Stomp.over(socket);
+      connect() {
+      const socket = new SockJS('http://localhost:8080/member-service/ws/chat'); 
+      this.stompClient = Stomp.over(socket);
 
-    // JWT 토큰을 localStorage에서 가져와 auth-token으로 설정
-    const token = localStorage.getItem('token');
-    this.stompClient.connect({
-      'token': `Bearer ${token}`  // 토큰을 헤더로 전송
-    }, frame => {
-      console.log('Connected: ' + frame);
+      // JWT 토큰을 localStorage에서 가져와 auth-token으로 설정
+      const token = localStorage.getItem('token');
+      this.stompClient.connect({
+        'token': `Bearer ${token}`  // 토큰을 헤더로 전송
+      }, frame => {
+        console.log('Connected: ' + frame);
 
-      this.stompClient.subscribe(`/sub/${this.chatRoomId}`, message => {
-        console.log("구독시작");
-        const receivedMessage = JSON.parse(message.body);
-        this.messages.push({
-          senderName: receivedMessage.senderName,
-          content: receivedMessage.contents
+        this.stompClient.subscribe(`/sub/${this.chatRoomId}`, message => {
+          console.log("구독시작");
+          const receivedMessage = JSON.parse(message.body);
+          this.messages.push({
+            senderName: receivedMessage.senderName,
+            content: receivedMessage.contents
+          });
+          console.log(this.messages);
+          console.log("receivedMessage")
+          console.log(receivedMessage)
         });
-        console.log(this.messages);
-        console.log("receivedMessage")
-        console.log(receivedMessage)
+      }, error => {
+        console.error('Connection error:', error);
+        setTimeout(() => {
+          this.connect(); // 연결 실패 시 재시도
+        }, 5000);
       });
-    }, error => {
-      console.error('Connection error:', error);
-      setTimeout(() => {
-        this.connect(); // 연결 실패 시 재시도
-      }, 5000);
-    });
   },
   sendMessage() {
     if (this.messageToSend.trim() !== '') {

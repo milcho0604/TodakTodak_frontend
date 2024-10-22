@@ -3,7 +3,7 @@ import ComponentExample from "@/views/chat/ComponentExample.vue"
 import MyChatRoom from "@/views/chat/MyChatRoom.vue"
 export const chatRouter = [
     {
-        path: '/chat',
+        path: '/chat/:chatRoomId',
         name: 'Chat',
         component: CsChat
     },
