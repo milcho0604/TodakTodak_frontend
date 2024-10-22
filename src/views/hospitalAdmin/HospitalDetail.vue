@@ -1,6 +1,19 @@
 <template>
     <v-container class="d-flex justify-center align-center hospital-container">
       <v-card width="800px" elevation="0">
+        <v-row justify="center">
+            <v-col cols="12" sm="9" md="8" lg="7">
+                <!-- 프로필 섹션 -->
+                <v-row class="profile-section" no-gutters>
+                    <v-col cols="3">
+                    </v-col>
+                    <v-col cols="9">
+                        <div class="reservation-text"><img src="@/assets/myreserve.png" alt="TodakTodak Logo"
+                                class="logo-image" />병원 정보 관리</div>
+                    </v-col>
+                </v-row>
+            </v-col>
+        </v-row>
         <v-spacer :style="{ height: '50px' }"></v-spacer>
   
       <v-img hospitalImagePreview
@@ -25,30 +38,22 @@
           <h5 class="text-left">기본 정보</h5>
   
           <h6 class="text-left">대표자(원장님)</h6>
-          <v-text-field
-            v-model="hospital.representativeName"
-            variant="underlined"
-            label="대표자(원장님) 이름을 입력해주세요."
-            :rules="[rules.required]"
-            :readonly="!isEditing"
-          />
+          <span>{{ hospital.representativeName || '정보 없음' }}</span>
+          <v-spacer :style="{ height: '10px' }"></v-spacer>
+
   
           <h6 class="text-left">전화번호</h6>
-          <v-text-field
-            v-model="hospital.representativePhoneNumber"
-            variant="underlined"
-            label="대표자(원장님) 전화번호를 입력해주세요."
-            :rules="[rules.required]"
-            :readonly="!isEditing"
-          />
+          <span>{{ hospital.representativePhoneNumber || '정보 없음' }}</span>
+          <v-spacer :style="{ height: '10px' }"></v-spacer>
+
   
           <h5 class="text-left">병원 정보</h5>
   
-          <h6 class="text-left">병원 이름(ex.연세소아과)</h6>
+          <h6 class="text-left">병원 이름</h6>
           <v-text-field
             v-model="hospital.name"
             variant="underlined"
-            label="병원명을 입력해주세요."
+            label="병원명을 입력해주세요.(ex.연세소아과)"
             :rules="[rules.required]"
             :readonly="!isEditing"
           />
@@ -84,39 +89,86 @@
             :readonly="!isEditing"
           />
   
-          <h6 class="text-left">키워드</h6>
-          <v-text-field
-            v-model="hospital.keywords"
-            variant="underlined"
-            label="키워드 (콤마로 구분)"
-            :rules="[rules.required]"
+          <!-- <h6 class="text-left">키워드</h6>
+          <v-chip-group
+          v-model="selectedKeywords"
+          multiple
+          :readonly="!isEditing"
+          column
+        >
+          <v-chip
+            v-for="keyword in availableKeywords"
+            :key="keyword"
+            :value="keyword"
+            :selected="selectedKeywords.includes(keyword)"
+            class="ma-2"
+            color="primary"
+            outlined
+          >
+            {{ keyword }}
+          </v-chip>
+        </v-chip-group> -->
+        <h6 class="text-left">키워드</h6>
+        <template v-if="isEditing">
+          <v-chip-group
+            v-model="selectedKeywords"
+            multiple
             :readonly="!isEditing"
-          />
+            column
+          >
+            <v-chip
+              v-for="keyword in availableKeywords"
+              :key="keyword"
+              :value="keyword"
+              :selected="selectedKeywords.includes(keyword)"
+              class="ma-2"
+              color="primary"
+              outlined
+            >
+              {{ keyword }}
+            </v-chip>
+          </v-chip-group>
+        </template>
+        <template v-else>
+          <v-chip-group>
+            <v-chip
+              v-for="keyword in selectedKeywords"
+              :key="keyword"
+              class="ma-2 custom-chip"
+            >
+              {{ keyword }}
+            </v-chip>
+            <span v-if="selectedKeywords.length === 0" class="text-grey">정보 없음</span>
+          </v-chip-group>
+        </template>
+
   
-          <v-card class="hospital-card">
-            <v-card-title class="hospital-title">
-              <strong class="hospital-strong">병원소개 </strong>
-            </v-card-title>
-            <v-card-text class="hospital-name">
-              <span>{{ hospital.description || '정보 없음' }}</span>
-            </v-card-text>
-          </v-card>
+          <h6 class="text-left">병원소개</h6>
+          <v-textarea
+          v-model="hospital.description"
+          label="병원 소개를 입력해주세요."
+          class="hospital-card"
+          :readonly="!isEditing"
+          :rules="[rules.required]"
+        ></v-textarea>
   
           <br>
-  
-          <v-card class="hospital-card">
-            <v-card-title class="hospital-title">
-              <strong class="hospital-strong">병원공지 </strong>
-            </v-card-title>
-            <v-card-text class="hospital-name">
-              <span>{{ hospital.notice || '정보 없음' }}</span>
-            </v-card-text>
-          </v-card>
-  
+
+          <h6 class="text-left">병원공지</h6>
+
+          <v-textarea
+          v-model="hospital.notice"
+          label="병원 소개를 입력해주세요."
+          class="hospital-card"
+          :readonly="!isEditing"
+          :rules="[rules.required]"
+        ></v-textarea>
+        <span v-if="!hospital.notice" class="text-grey">정보 없음</span>
+
           <v-spacer :style="{ height: '50px' }"></v-spacer>
   
           <v-row justify="center" class="button-row">
-            <v-btn class="res-btn" @click="toggleEdit">{{ isEditing ? '수정 완료' : '수정' }}</v-btn>
+            <v-btn class="res-btn" @click="toggleKeyEdit">{{ isEditing ? '수정 완료' : '수정' }}</v-btn>
           </v-row>
         </v-form>
       </v-card>
@@ -145,6 +197,8 @@
           longitude: '',
           hospitalImage: '', // 이미지 추가
         },
+        availableKeywords: ['예방접종', '영유아검진', '주차장', '전문의', '로타백신접종'], // 제공할 키워드 목록
+        selectedKeywords: [], // 사용자가 선택한 키워드를 저장할 배열
         formValid: false,
         rules: {
           required: (value) => !!value || '필수 입력 항목입니다.',
@@ -200,10 +254,18 @@
             latitude: data.latitude, // 기존 데이터에서 위도 저장
             longitude: data.longitude, // 기존 데이터에서 경도 저장
           };
+          this.selectedKeywords = data.keywords ? data.keywords.split(',') : [];
         } catch (error) {
           console.error('병원 정보를 가져오는 중 오류 발생:', error);
         }
       },
+      toggleKeyEdit() {
+        if (this.isEditing) {
+        this.hospital.keywords = this.selectedKeywords.join(',');  // 키워드를 콤마로 구분된 문자열로 변환
+        this.submitForm(); // 수정 완료 시 API 요청
+        }
+        this.isEditing = !this.isEditing; // 수정 모드 토글
+    },
       async submitForm() {
         if (this.$refs.form.validate()) {
           const formData = new FormData();
@@ -269,18 +331,19 @@
           },
         }).open();
       },
+      
     },
     watch: {
-  'hospital.hospitalImage'(newImage) {
-    if (newImage) {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        console.log('미리보기 이미지를 갱신합니다:', e.target.result);  // 미리보기 이미지 확인
-        this.hospital.hospitalImagePreview = e.target.result; // 미리보기 업데이트
-      };
-      reader.readAsDataURL(newImage); // 이미지 파일을 Base64로 읽음
+    'hospital.hospitalImage'(newImage) {
+        if (newImage) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            console.log('미리보기 이미지를 갱신합니다:', e.target.result);  // 미리보기 이미지 확인
+            this.hospital.hospitalImagePreview = e.target.result; // 미리보기 업데이트
+        };
+        reader.readAsDataURL(newImage); // 이미지 파일을 Base64로 읽음
     }
-  }
+  },
 },
 
   };
@@ -322,7 +385,6 @@
     justify-content: center;
   }
   .hospital-card {
-    background: #F3F3F3;
     border-radius: 20px;
   }
   .button-row {
@@ -345,5 +407,20 @@
     justify-content: center;
     align-items: center;
   }
+  .custom-chip {
+    background-color: #C2D7FF !important; /* 초록색 배경 */
+    color: blue; /* 텍스트 색상을 흰색으로 */
+  }
+
+.reservation-text {
+    font-weight: 700;
+    font-size: 30px;
+    margin-left: -35px;
+    color: #00499E;
+}
+.profile-section {
+    display: flex;
+    margin-bottom: 20px;
+}
   </style>
   
