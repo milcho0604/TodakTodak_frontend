@@ -49,7 +49,7 @@
               <v-list-item :to="{ path: '/chat'}">
                 <v-list-item-title>내 채팅</v-list-item-title>
               </v-list-item>
-              <v-list-item :to="{ path: '/member/fullcal'}">
+              <v-list-item :to="{ path: '/member/mychild-cal'}">
                 <v-list-item-title>우리아이 캘린더</v-list-item-title>
               </v-list-item>
               <v-list-item @click="logout">

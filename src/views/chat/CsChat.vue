@@ -10,7 +10,6 @@
       
       <div class="input-box">
         <input v-model="messageToSend" @keyup.enter="sendMessage" placeholder="메시지를 입력하세요..." />
-        <!-- <input v-model="memberEmail" placeholder="송신자 이메일"/> -->
         <button @click="sendMessage">전송</button>
       </div>
     </div>
@@ -31,7 +30,7 @@
         stompClient: null,
         messageToSend: '',
         messages: [], // 수신된 메시지 저장
-        chatRoomId: 1, // 테스트를 위한 chatRoomId 
+        chatRoomId: 2, // 테스트를 위한 chatRoomId 
         memberEmail: '',
 
       };

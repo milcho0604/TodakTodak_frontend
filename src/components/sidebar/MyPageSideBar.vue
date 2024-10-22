@@ -109,7 +109,7 @@ export default{
             this.$router.push('/member/child');
         },
         toCalendar() {
-            this.$router.push('/member/fullcal');
+            this.$router.push('/member/mychild-cal');
         },
         toMyQnA() {
             // 아직 페이지 없어서 마이페이지로 라우팅

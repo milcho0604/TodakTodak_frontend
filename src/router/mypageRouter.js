@@ -40,7 +40,7 @@ export const mypageRouter = [
         component: FullCal  
     },
     {
-        path: '/member/fullcal2',
+        path: '/member/mychild-cal',
         name: 'FullCal2',
         component: FullCal2  
     },
