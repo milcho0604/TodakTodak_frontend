@@ -8,6 +8,7 @@ import DoctorRegister from "@/views/hospital/DoctorRegister.vue"
 import DoctorDetail from "@/views/hospital/DoctorDetail.vue"
 import HospitalAdminCreate from "@/views/hospital/HospitalAdminCreate.vue"
 import DoctorEdit from "@/views/hospital/DoctorEdit.vue"
+import HospitalSignIn from "@/views/hospital/HospitalSignIn.vue"
 
 export const hospitalRouter = [
     {
@@ -59,5 +60,10 @@ export const hospitalRouter = [
         path: '/doctor/edit',
         name: 'DoctorEdit',
         component: DoctorEdit
+    },
+    {
+        path: '/hospital/signin',
+        name: 'HospitalSignIn',
+        component: HospitalSignIn
     },
 ]
