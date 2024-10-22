@@ -1,4 +1,5 @@
 <template>
+  <v-container class="entire-container">
   <div>
     <!-- 자녀 리스트 -->
     <div>
@@ -20,145 +21,150 @@
       </v-row>
     </div>
 
-    <div class="center-container" >
+    <!-- <div class="center-container" > -->
+    <v-container class="center-container">
       <!-- 캘린더 영역 -->
-      <div class="milcho-calendar-container">
+      <v-container class="milcho-calendar-container">
         <FullCalendar :options="calendarOptions" class="milcho-custom-calendar" />
-      </div>
+      </v-container>
 
       <!-- 이벤트 및 예약 상세 정보 표시 영역 -->
-       <!-- 일정 추가 버튼 -->
-        <!-- <v-btn variant="flat" @click="startNewEvent" class="milcho-btn-add">✏️</v-btn> -->
-        <v-chip @click="startNewEvent" class="mb-3">✏️</v-chip>
-        <div class="milcho-details">
-        <!-- 예약 상세 정보 -->
-        <div v-if="selectedReservation && isReservationEvent">
-          <v-avatar class="ma-5" style="height:200px; width:350px; border-radius: 10px; object-fit:cover;">
-            <img :src="selectedReservation.hospitalImgUrl" class="milcho-customHosImage" style="width: 100%; height: 100%; object-fit: cover;" />
-          </v-avatar>
-          <div class="milcho-reservation-row">
-            <strong>병원명</strong>
-            <span>{{ selectedReservation.hospitalName }}</span>
-          </div>
-          <div class="milcho-reservation-row">
-            <strong>의사명</strong>
-            <span>{{ selectedReservation.doctorName }}</span>
-          </div>
-          <div class="milcho-reservation-row">
-            <strong>환자명</strong>
-            <span>{{ selectedChildName }}</span>
-          </div>
-          <div class="milcho-reservation-row">
-            <strong>예약자</strong>
-            <span>{{ selectedReservation.memberName }}</span>
-          </div>
-          <div class="milcho-reservation-row">
-            <strong>진료타입</strong>
-            <span>{{ selectedReservation.medicalItem }}</span>
-          </div>
-          <div class="milcho-reservation-row">
-            <strong>예약 날짜</strong>
-            <span>{{ selectedReservation.reservationDate }} {{ selectedReservation.reservationTime }}</span>
-          </div>
+      <!-- 일정 추가 버튼 -->
+      <!-- <v-btn variant="flat" @click="startNewEvent" class="milcho-btn-add">✏️</v-btn> -->
+      <v-chip @click="startNewEvent" class="mb-3">✏️</v-chip>
+      <div class="milcho-details ml-5">
+      <!-- 예약 상세 정보 -->
+      <div v-if="selectedReservation && isReservationEvent">
+        <v-avatar class="ma-2" style="min-height:200px; min-width:300px; border-radius: 10px; object-fit:cover;">
+          <img :src="selectedReservation.hospitalImgUrl" style="width: 100%; height: 100%; object-fit: cover;" />
+        </v-avatar>
+        <div class="milcho-reservation-row">
+          <strong>병원명</strong>
+          <span>{{ selectedReservation.hospitalName }}</span>
         </div>
-
-        <!-- 사용자 이벤트 상세 정보 또는 생성 양식 -->
-        <div v-else-if="selectedEvent && !isReservationEvent || isEditing ">
-          <!-- 이벤트 디테일 보기 -->
-          <div v-if="!isEditing">
-            <div class="milcho-reservation-row">
-              <strong>제목</strong>
-              <span>{{ formData.title }}</span>
-            </div>
-            <div class="milcho-reservation-row">
-              <strong>내용</strong>
-              <span class="milcho-custom-span">{{ formData.content }}</span>
-            </div>
-            <div class="milcho-reservation-row">
-              <strong>타입</strong>
-              <span>{{ formData.type }}</span>
-            </div>
-            <div class="milcho-reservation-row">
-              <strong>시작일</strong>
-              <span>{{ formData.startDateText }}</span>
-            </div>
-            
-            <div class="milcho-reservation-row">
-              <strong>종료일</strong>
-              <span>{{ formData.endDateText }}</span>
-            </div>
-            <v-btn class="milcho-btn-edit" @click="isEditing = true">수정하기</v-btn>
-          </div>
-
-          <!-- 이벤트 수정 및 생성 폼 -->
-          <v-form ref="form" v-if="isEditing">
-            <v-text-field v-model="formData.title" variant="underlined" label="제목" required />
-            <v-textarea
-              v-model="formData.content"
-              label="내용"
-              rows="5"
-              outlined  
-              class="milcho-custom-textarea"
-            />
-            <v-select
-              v-model="formData.type"
-              :items="eventTypes"
-              item-title="name"
-              item-value="type"
-              label="타입"
-              required
-            />
-            <v-menu
-              v-model="menuStart"
-              :close-on-content-click="false"
-              transition="scale-transition"
-              offset-x="true"
-              min-width="auto"
-            >
-              <template v-slot:activator="{ attrs }">
-                <v-text-field v-model="formData.startDateText" label="시작일" readonly v-bind="attrs" @click.stop="menuStart = true" />
-              </template>
-              <v-date-picker v-model="formData.startDate" @input="updateStartDate" show-current="true" scrollable class="milcho-custom-picker">
-                <template v-slot:actions>
-                  <div class="milcho-center-align">
-                  <v-btn text color="primary" @click="confirmStartDate">확인</v-btn>
-                  </div>
-                </template>
-              </v-date-picker>
-            </v-menu>
-
-            <v-menu
-              v-model="menuEnd"
-              :close-on-content-click="false"
-              transition="scale-transition"
-              offset-x="true"
-              min-width="auto"
-            >
-              <template v-slot:activator="{ attrs }">
-                <v-text-field v-model="formData.endDateText" label="종료일" readonly v-bind="attrs" @click.stop="menuEnd = true" />
-              </template>
-              <v-date-picker v-model="formData.endDate" @input="updateEndDate" show-current="true" scrollable 
-              class="milcho-custom-picker">
-                <template v-slot:actions>
-                  <v-btn text color="primary" @click="confirmEndDate">확인</v-btn>
-                </template>
-              </v-date-picker>
-            </v-menu>
-
-            <v-btn v-if="isEditing" class="milcho-btn-delete" elevation="0" @click="deleteEvent">삭제</v-btn>
-            <v-divider vertical class="milcho-vertical-divider"></v-divider>
-            <v-btn class="milcho-btn-save" elevation="0" @click="handleSaveEvent">저장</v-btn>
-
-          </v-form>
+        <div class="milcho-reservation-row">
+          <strong>의사명</strong>
+          <span>{{ selectedReservation.doctorName }}</span>
         </div>
-
-        <!-- 아무것도 선택되지 않은 경우 -->
-        <div v-else>
-          <p>선택된 예약 또는 이벤트가 없습니다.</p>
+        <div class="milcho-reservation-row">
+          <strong>환자명</strong>
+          <span>{{ selectedChildName }}</span>
+        </div>
+        <div class="milcho-reservation-row">
+          <strong>예약자</strong>
+          <span>{{ selectedReservation.memberName }}</span>
+        </div>
+        <div class="milcho-reservation-row">
+          <strong>진료타입</strong>
+          <span>{{ selectedReservation.medicalItem }}</span>
+        </div>
+        <div class="milcho-reservation-row">
+          <strong>예약 날짜</strong>
+          <span>{{ selectedReservation.reservationDate }} {{ selectedReservation.reservationTime }}</span>
         </div>
       </div>
+
+      <!-- 사용자 이벤트 상세 정보 또는 생성 양식 -->
+      <div v-else-if="selectedEvent && !isReservationEvent || isEditing ">
+        <!-- 이벤트 디테일 보기 -->
+        <div v-if="!isEditing">
+          <div class="milcho-reservation-row">
+            <strong>제목</strong>
+            <span>{{ formData.title }}</span>
+          </div>
+          <div class="milcho-reservation-row">
+            <strong>내용</strong>
+            <span class="milcho-custom-span">{{ formData.content }}</span>
+          </div>
+          <div class="milcho-reservation-row">
+            <strong>타입</strong>
+            <span>{{ formData.type }}</span>
+          </div>
+          <div class="milcho-reservation-row">
+            <strong>시작일</strong>
+            <span>{{ formData.startDateText }}</span>
+          </div>
+          
+          <div class="milcho-reservation-row">
+            <strong>종료일</strong>
+            <span>{{ formData.endDateText }}</span>
+          </div>
+          <v-btn class="milcho-btn-edit" @click="isEditing = true">수정하기</v-btn>
+        </div>
+
+        <!-- 이벤트 수정 및 생성 폼 -->
+        <v-form ref="form" v-if="isEditing">
+          <v-text-field v-model="formData.title" variant="underlined" label="제목" required />
+          <v-textarea
+            v-model="formData.content"
+            label="내용"
+            rows="5"
+            outlined  
+            class="milcho-custom-textarea"
+          />
+          <v-select
+            v-model="formData.type"
+            :items="eventTypes"
+            item-title="name"
+            item-value="type"
+            label="타입"
+            required
+          />
+          <v-menu
+            v-model="menuStart"
+            :close-on-content-click="false"
+            transition="scale-transition"
+            offset-x="true"
+            min-width="auto"
+          >
+            <template v-slot:activator="{ attrs }">
+              <v-text-field v-model="formData.startDateText" label="시작일" readonly v-bind="attrs" @click.stop="menuStart = true" />
+            </template>
+            <v-date-picker v-model="formData.startDate" @input="updateStartDate" show-current="true" scrollable class="milcho-custom-picker">
+              <template v-slot:actions>
+                <div class="milcho-center-align">
+                <v-btn text color="primary" @click="confirmStartDate">확인</v-btn>
+                </div>
+              </template>
+            </v-date-picker>
+          </v-menu>
+
+          <v-menu
+            v-model="menuEnd"
+            :close-on-content-click="false"
+            transition="scale-transition"
+            offset-x="true"
+            min-width="auto"
+          >
+            <template v-slot:activator="{ attrs }">
+              <v-text-field v-model="formData.endDateText" label="종료일" readonly v-bind="attrs" @click.stop="menuEnd = true" />
+            </template>
+            <v-date-picker v-model="formData.endDate" @input="updateEndDate" show-current="true" scrollable 
+            class="milcho-custom-picker">
+              <template v-slot:actions>
+                <v-btn text color="primary" @click="confirmEndDate">확인</v-btn>
+              </template>
+            </v-date-picker>
+          </v-menu>
+
+          <v-btn v-if="isEditing" class="milcho-btn-delete" elevation="0" @click="deleteEvent">삭제</v-btn>
+          <v-divider vertical class="milcho-vertical-divider"></v-divider>
+          <v-btn class="milcho-btn-save" elevation="0" @click="handleSaveEvent">저장</v-btn>
+
+        </v-form>
+      </div>
+
+      <!-- 아무것도 선택되지 않은 경우 -->
+      <div v-else>
+        <p>선택된 예약 또는 이벤트가 없습니다.</p>
+      </div>
     </div>
+    <!-- </div> -->
+  </v-container>
   </div>
+      
+</v-container>
+  <MyPageSideBar/>
 </template>
 
 <script>
@@ -166,10 +172,12 @@ import FullCalendar from '@fullcalendar/vue3';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import interactionPlugin from '@fullcalendar/interaction';
 import axios from 'axios';
+import MyPageSideBar from "@/components/sidebar/MyPageSideBar.vue";
 
 export default {
   components: {
     FullCalendar,
+    MyPageSideBar
   },
   data() {
     return {
@@ -541,21 +549,29 @@ methods: {
 </script>
 
 <style>
+.entire-container{
+  max-width: 1500px !important;
+  margin: 0 auto !important;
+  width: 100% !important;
+  display: flex;
+  justify-content: center; /* 수평 중앙 정렬 */
+
+}
 .center-container {
   display: flex;
   justify-content: center; /* 수평 중앙 정렬 */
 }
 
 .milcho-calendar-container {
-  max-width: 900px;
-  max-height: 900px;
+  min-width: 800px;
+  min-height: 800px;
   margin-top: 30px;
   display: flex;
   justify-content: center;
 }
 .milcho-custom-calendar {
-  max-width: 700px;
-  max-height: 800px;
+  min-width: 800px;
+  min-height: 800px;
 }
 .milcho-custom-calendar .fc-h-event {
   border: none !important; /* 테두리 완전히 제거 */
@@ -563,7 +579,7 @@ methods: {
 
 .milcho-details {
   max-width: 350px;
-  max-height: 700px;
+  max-height: 800px;
   border: 1px solid #ddd;
   background-color: #f9f9f9;
   border-radius: 10px;
