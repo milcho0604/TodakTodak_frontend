@@ -32,7 +32,7 @@
       <!-- 이벤트 및 예약 상세 정보 표시 영역 -->
       <!-- 일정 추가 버튼 -->
       <!-- <v-btn variant="flat" @click="startNewEvent" class="milcho-btn-add">✏️</v-btn> -->
-      <v-chip @click="startNewEvent" class="mb-3">✏️</v-chip>
+      <v-chip @click="startNewEvent" class="mb-3 ml-10">✏️</v-chip>
       <div class="milcho-details ml-5">
       <!-- 예약 상세 정보 -->
       <div v-if="selectedReservation && isReservationEvent">
