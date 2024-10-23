@@ -332,7 +332,6 @@ export default {
                 console.log("요청 파라미터:", params); // 요청 파라미터 로그
                 const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/reservation-service/hospital/list`,{ params });
 
-            );
 
                 this.hospitalList = response.data.result.map(hospital => {
                     return {
