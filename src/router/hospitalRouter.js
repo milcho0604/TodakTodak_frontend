@@ -11,36 +11,43 @@ import DoctorEdit from "@/views/hospital/DoctorEdit.vue"
 
 export const hospitalRouter = [
     {
+        // 병원리스트
         path: '/hospital/list',
         name: 'HospitalList',
         component: HospitalList
     },
     {
+        // 병원리스트 후보2(지금은 안씀)
         path: '/hospital/list2',
         name: 'HospitalList22',
         component: HospitalList22
     },
     {
+        // 병원디테일 페이지
         path: '/hospital/detail/:hospitalId',
         name: 'HospitalDetail',
         component: HospitalDetail
     },
     { 
+        // 병원디테일 페이지 - 병원소개 탭
         path: '/hospital/hospital-intro/:hospitalId',
         name: 'HospitalIntro',
         component: HospitalIntro 
     },
     { 
+        // 병원디테일 페이지 - 진료정보 탭
         path: '/hospital/medical-info/:hospitalId', 
         name: 'HospitalMedicalInfo',
         component: HospitalMedicalInfo 
     },
     { 
+        // 병원디테일 페이지 - 리뷰 탭
         path: '/hospital/reviews/:hospitalId', 
         name: 'HospitalReviews',
         component: HospitalReviews 
     },
     {
+        // 병원 내 의사목록
         path: '/hospital/doctor/register',
         name: 'DoctorRegister',
         component: DoctorRegister

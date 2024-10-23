@@ -56,7 +56,7 @@
             :rules="[rules.required]"
             >
             <template #append>
-              <v-btn @click="openPostcode" small>주소 검색</v-btn>
+              <v-btn @click="openPostcode" class="address-btn" small variant="flat">주소 검색</v-btn>
             </template>
             </v-text-field>
             <!-- <v-text-field v-model="form.latitude" variant="underlined" label="위도" readonly></v-text-field>
@@ -75,7 +75,7 @@
             label="사업자 등록번호를 입력해주세요." :rules="[rules.required]"></v-text-field>
             
             <v-row justify="center" class="button-row">
-                <v-btn class="res-btn" @click="submitForm">가입 요청</v-btn>
+                <v-btn class="res-btn" @click="submitForm" variant="flat">가입 요청</v-btn>
             </v-row>
           </v-form>
 
@@ -286,6 +286,12 @@
     background-color: #C2D7FF;
     color: #00499E;
     border-radius: 20px;
+  }
+  .address-btn{
+    font-weight: bold; /* 폰트 굵게 설정 */
+    color: #00499E;
+    background-color: #ECF2FD;
+    border-radius: 10px; /* 모서리 둥글기 */
   }
   </style>
   
