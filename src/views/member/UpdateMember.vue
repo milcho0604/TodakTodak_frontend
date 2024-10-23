@@ -8,7 +8,7 @@
 
     <v-row justify="center">
       <v-col cols="12" sm="10" md="8">
-        <v-card class="simple-card">
+        <v-card class="simple-card" variant="flat">
           <div class="signup-title text-center">회원가입</div>
           <v-card-text>
             <v-text-field
