@@ -29,7 +29,8 @@
             <v-col cols="3">
                 <v-chip-group v-model="isOperating">
                     <!-- 진료중 여부 태그 -->
-                    <v-chip variant="tonal" rounded="lg" size="large" color="#0066FF" value="operating" filter @click="loadDoctorList">
+                    <v-chip variant="tonal" rounded="lg" size="large" color="#0066FF" value="operating" filter
+                        @click="loadDoctorList">
                         <strong>진료 중</strong> </v-chip>
                 </v-chip-group>
             </v-col>
@@ -75,7 +76,7 @@
                                     </div>
                                     <!-- 대기 인원 (오른쪽 정렬) -->
                                     <v-chip color="#0066FF" size="large" class="ml-auto mr-10 mt-2">
-                                        <strong>대기 0명</strong>
+                                        <strong>대기 {{ doctor.waitingCount }}명</strong>
                                     </v-chip>
                                 </div>
                                 <div>
@@ -128,8 +129,9 @@
 
 <script>
 import axios from 'axios';
-
+import { ref, onValue } from 'firebase/database';
 export default {
+    inject: ['firebaseDatabase'],
     data() {
         return {
             search: null,
@@ -147,20 +149,18 @@ export default {
         async loadDoctorList() {
             try {
                 const params = {
-                        search: this.search,
-                        sortBy: this.sort
-                    };
-                console.log(this.search)
+                    search: this.search,
+                    sortBy: this.sort
+                };
                 // 의사 정보를 가져옴
                 const today = this.getToday();
                 const reservationResponse = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/member-service/member/untact/list/${today}`, { params });
                 let reservationData = reservationResponse.data.result;
-                
-                console.log("this.isOperating: ",this.isOperating);
+
                 // 필터링: 진료 중 여부에 따른 필터링 적용
                 if (this.isOperating) {
                     const now = new Date();
-                    
+
                     reservationData = reservationData.filter(doctor => {
                         const operatingHours = doctor.operatingHours; // doctor의 운영 시간
                         const openTime = new Date(`${now.toDateString()} ${operatingHours.openTime}`);
@@ -169,9 +169,29 @@ export default {
                         return now >= openTime && now <= closeTime;
                     });
                 }
+                console.log("reservationData ", reservationData);
 
-                this.doctorList = reservationData;
-                console.log("Reservation Data:", reservationData);
+                // 실시간 대기인원 삽입 - 비동기 작업을 모두 완료한 후 결과 처리
+                this.doctorList = await Promise.all(
+                    reservationData.map(async (doctor) => {
+                        const waitingRef = ref(this.firebaseDatabase, `todakpadak/${doctor.hospitalName}/${doctor.doctorId}`);
+                        return new Promise((resolve) => {
+                            onValue(waitingRef, (snapshot) => {
+                                const data = snapshot.val();
+                                let waiting = 0;
+                                if (data) {
+                                    waiting = Object.keys(data).length;
+                                }
+                                resolve({
+                                    ...doctor,
+                                    waitingCount: waiting
+                                });
+                            });
+                        });
+                    })
+                );
+
+                console.log("Updated Doctor List:", this.doctorList);
             } catch (error) {
                 console.error("Error fetching data:", error);
             }

@@ -663,7 +663,7 @@ export default {
 }
 
 .submodal {
-    font-size: 30px;
+    font-size: 25px;
     font-weight: bold;
 }
 
@@ -697,7 +697,7 @@ export default {
 
 .waiting {
     color: #0029FF;
-    font-size: 35px;
+    font-size: 28px;;
     text-align: center;
     font-weight: bold;
     margin-top: -25px;
