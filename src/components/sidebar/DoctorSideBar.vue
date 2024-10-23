@@ -25,45 +25,18 @@
     <v-list density="compact" nav>
         <v-list-item
         :prepend-avatar="myPage"
-        title="회원리스트"
+        title="마이페이지"
         value="myPage"
-        @click="toMemberList"
-        ></v-list-item>
-
-        <v-list-item
-        :prepend-avatar="child"
-        title="상담리스트"
-        value="childConfig"
-        @click="toCsList"
-        ></v-list-item>
-
-        <v-list-item
-        :prepend-avatar="child"
-        title="신고리스트"
-        value="childConfig"
-        @click="toReportList"
-        ></v-list-item>
-
-        <v-list-item
-        :prepend-avatar="hospital"
-        title="결제리스트"
-        value="reservation"
-        @click="toPaymentList"
+        @click="toMyPage"
         ></v-list-item>
 
         <v-list-item
         :prepend-avatar="review"
-        title="병원리스트"
+        title="비대면 예약내역"
         value="review"
-        @click="toHospitalList"
+        @click="toMyUntactReservation"
         ></v-list-item>
 
-        <v-list-item
-        :prepend-avatar="calendar"
-        title="대시보드"
-        value="calendar"
-        @click="toDashBoard"
-        ></v-list-item>
     </v-list>
     </v-navigation-drawer>
     <v-main style="height: 250px"></v-main>
@@ -85,31 +58,23 @@ export default{
             reservation: 'https://todak-file.s3.ap-northeast-2.amazonaws.com/default-images/reservation-icon.png',
             review: 'https://todak-file.s3.ap-northeast-2.amazonaws.com/default-images/review-icon.png',
             hospital: 'https://todak-file.s3.ap-northeast-2.amazonaws.com/default-images/hospital-icon.png',
+            doctors: 'https://todak-file.s3.ap-northeast-2.amazonaws.com/214ff1d2-bd49-4766-9925-d6dea16d1139_doctor.png'
         }
     },
     created(){
         this.name = localStorage.getItem("name");
         this.profileImgUrl = localStorage.getItem("profileImgUrl");
+        const role = localStorage.getItem("role");
+        this.isDoctorAdmin = role === 'HospitalAdmin' || role === 'TodakAdmin';
     },
     methods:{
-        toMemberList() {
-            this.$router.push('/admin/member/list');
+        toMyPage() {
+            this.$router.push('/member/mypage');
         },
-        toCsList(){
-            this.$router.push('/admin/cs/list')
+        toMyUntactReservation() {
+            this.$router.push('/doctor/untact/reservation');
         },
-        toReportList() {
-            this.$router.push('/todak/report');
-        },
-        toPaymentList() {
-            this.$router.push('/admin/payment/list');
-        },
-        toHospitalList() {
-            this.$router.push('/admin/hospital/list');
-        },
-        toDashBoard() {
-            this.$router.push('/todak/statistics');
-        },
+
     }
 }
 </script>

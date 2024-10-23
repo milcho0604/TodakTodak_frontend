@@ -120,19 +120,32 @@
     </v-dialog>
     
   </v-container>
-  <MyPageSideBar/>
+  <MyPageSideBar v-if="role == 'Member'" />
+  <DoctorSideBar v-else-if="role == 'Doctor'"/>
+  <HospitalAdminSideBar v-else-if="role == 'HospitalAdmin'"/>
+  <PadakAdminSideBar v-else-if="role == 'TodakAdmin'"/>
 </template>
 
 <script>
 import axios from "axios";
 import MyPageSideBar from "@/components/sidebar/MyPageSideBar.vue";
+import { jwtDecode } from "jwt-decode";
+import DoctorSideBar from "@/components/sidebar/DoctorSideBar.vue";
+import HospitalAdminSideBar from "@/components/sidebar/HospitalAdminSideBar.vue";
+import PadakAdminSideBar from "@/components/sidebar/PadakAdminSideBar.vue";
 
 export default {
-  components: { MyPageSideBar },
+  components: { 
+    MyPageSideBar ,
+    DoctorSideBar,
+    HospitalAdminSideBar,
+    PadakAdminSideBar,
+  },
   name: "MyPage",
   data() {
     return {
       isEditMode: false,
+      role: "",
       memberInfo: {
         name: "",
         memberEmail: "",
@@ -159,6 +172,8 @@ export default {
     };
   },
   created() {
+    const token = localStorage.getItem('token');
+    this.role = jwtDecode(token).role;
     this.fetchMemberInfo();
     this.fetchPenaltyCount();
   },

@@ -67,20 +67,20 @@
         </DoctorDeleteModal>
 
     </v-container>
-    <MyPageSideBar/>
+    <HospitalAdminSideBar/>
 </template>
 
 <script>
 import axios from 'axios';
-import MyPageSideBar from "@/components/sidebar/MyPageSideBar.vue";
 import DoctorCreateModal from './DoctorCreateModal.vue';
 import DoctorDeleteModal from './DoctorDeleteModal.vue';
+import HospitalAdminSideBar from '@/components/sidebar/HospitalAdminSideBar.vue';
 
 export default {
     components: {
         DoctorCreateModal,
         DoctorDeleteModal,
-        MyPageSideBar,
+        HospitalAdminSideBar,
     },
     data() {
         return {
