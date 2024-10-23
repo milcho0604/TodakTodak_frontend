@@ -27,15 +27,33 @@
                 <td>{{ formatTime(hour.closeTime) }}</td>
                 <td>{{ formatTime(hour.breakStart) }}</td>
                 <td>{{ formatTime(hour.breakEnd) }}</td>
-                <td>삭제코드</td>
                 <td>
-                  <v-btn class="custom-time-line" variant="text" @click="openModal('edit', hour)">수정</v-btn>
+                    <v-btn class="custom-time-line" variant="text" @click="openModal('edit', hour)">수정</v-btn>
+                  </td>
+                <td>
+                    <v-btn class="custom-time-line" variant="text" @click="deleteOperatingHour(hour.id)">삭제</v-btn>
                 </td>
               </tr>
             </tbody>
           </v-table>
         </v-col>
       </v-row>
+        <!-- 확인 모달 추가 -->
+        <v-dialog v-model="confirmDialog" max-width="400px">
+        <v-card>
+            <v-card-title class="d-flex justify-center">
+            <span class="cs-title">삭제 확인</span>
+            </v-card-title>
+            <v-card-text class="text-center">
+            삭제하시겠습니까?
+            </v-card-text>
+            <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn color="grey darken-1" text @click="confirmDialog = false">취소</v-btn>
+            <v-btn color="red" text @click="confirmDelete">확인</v-btn>
+            </v-card-actions>
+        </v-card>
+  </v-dialog>
     </v-container>
   
     <v-dialog v-model="dialog" max-width="600px" class="d-fle,x justify-center">
@@ -193,6 +211,8 @@
         dialog: false,
         isEdit: false, // 수정 여부
         loading: false, // 로딩 상태
+        confirmDialog: false, // 확인 다이얼로그 상태
+        hourIdToDelete: null, // 삭제할 ID
         selectedOperatingHour: {
           dayOfWeek: '',
           openTime: '09:00', // 기본 시간 설정
@@ -299,11 +319,32 @@
           }; // 기본값 설정
         }
       },
+      deleteOperatingHour(hourId) {
+      this.hourIdToDelete = hourId; // 삭제할 ID 저장
+      this.confirmDialog = true; // 확인 다이얼로그 열기
+        },
+        confirmDelete() {
+      const url = `${process.env.VUE_APP_API_BASE_URL}/reservation-service/hospital-operating-hours/delete/${this.hourIdToDelete}`;
+      axios.delete(url)
+        .then(() => {
+          this.fetchOperatingHours(); // 삭제 후 데이터 다시 가져오기
+        })
+        .catch(error => {
+          console.error('Error deleting operating hour:', error);
+          if (error.response && error.response.status === 500) {
+            alert('삭제 중 오류가 발생했습니다.'); // 에러 메시지 출력
+          }
+        })
+        .finally(() => {
+          this.confirmDialog = false; // 다이얼로그 닫기
+          this.hourIdToDelete = null; // 삭제할 ID 초기화
+        });
+    },
       saveOperatingHours() {
-    this.loading = true; // 로딩 시작
-    const url = this.isEdit 
-      ? `http://localhost:8080/reservation-service/hospital-operating-hours/update/${this.selectedOperatingHour.id}`
-      : 'http://localhost:8080/reservation-service/hospital-operating-hours/register';
+        this.loading = true; // 로딩 시작
+        const url = this.isEdit 
+        ? `${process.env.VUE_APP_API_BASE_URL}/reservation-service/hospital-operating-hours/update/${this.selectedOperatingHour.id}`
+        : `${process.env.VUE_APP_API_BASE_URL}/reservation-service/hospital-operating-hours/register`;
 
         const dayOfWeekMapping = {
             '월요일': 'Monday',
