@@ -11,8 +11,12 @@
             <v-col v-for="doctor in doctors" :key="doctor.id" md="2" lg="1">
                 <v-avatar size="70">
                     <v-img @click="handleDoctorClick(doctor)"
-                        :src="doctor.profileImgUrl ? doctor.profileImgUrl : defaultImageUrl" class="doctor-img" />
+                        :src="doctor.profileImgUrl ? doctor.profileImgUrl : defaultImageUrl" class="doctor-img"
+                        :style="{
+                            filter: selectedDoctor && selectedDoctor.id === doctor.id ? 'brightness(1)' : 'brightness(0.5)'
+                        }" />
                 </v-avatar>
+                <span v-if="selectedDoctor && selectedDoctor.id === doctor.id" class="inter-light" style="margin-left:3px; font-size: 14px;"> {{ doctor.name }} 의사</span>
             </v-col>
         </v-row>
         <v-spacer :style="{ height: '70px' }"></v-spacer>
@@ -27,7 +31,7 @@
                         class="doctor-img" />
                 </v-avatar>
             </v-col>
-            <v-col cols="7">
+            <v-col cols="9">
                 <div class="ml-1">
                     <v-card-title style="font-weight:bold;">
                         이름
