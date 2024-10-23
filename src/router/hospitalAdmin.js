@@ -1,9 +1,9 @@
-import HospitalDetail from "@/views/hospitalAdmin/HospitalDetail.vue"
+import HospitaAdminHospitallDetail from "@/views/hospitalAdmin/HospitaAdminHospitallDetail.vue"
 
 export const hospitalAdmin = [
     {
         path: '/hospital/admin/detail',
-        name: 'HospitalDetail',
-        component: HospitalDetail
+        name: 'HospitaAdminHospitallDetail',
+        component: HospitaAdminHospitallDetail
     },
 ]
