@@ -40,7 +40,7 @@
                         <div class="dashboard-chart-card">
                             <span class="dashboard-chart-text">
                                 총 매출(정기구독)
-                                <p class="card-number">{{ money }}원</p>
+                                <p class="card-number">{{ totalAmount }}원</p>
                             </span>
                         </div>
                         <v-spacer :style="{ height: '15px' }"></v-spacer>
@@ -54,7 +54,7 @@
                         <div class="dashboard-chart-card">
                             <span class="dashboard-chart-text">
                                 총 회원수
-                                <p class="card-number">{{ total }}명</p>
+                                <p class="card-number">{{ totalMember }}명</p>
                             </span>
 
                         </div>
@@ -93,10 +93,11 @@ export default {
     },
     data() {
         return {
-            total: 0,
+            totalMember: 0,
             roles: ['Doctor', 'HospitalAdmin', 'Member'],
             totalReservation: 0,
             waitingMember: 0,
+            totalAmount: 0,
             // 멤버 데이터
             memberData: {
                 labels: [],
@@ -166,7 +167,7 @@ export default {
                         },
                         formatter: (value, ctx) => {
                             let label = ctx.chart.data.labels[ctx.dataIndex];
-                            return label + '\n' + value / this.total * 100 + '%'; // 라벨 + 값
+                            return label + '\n' + value / this.totalMember * 100 + '%'; // 라벨 + 값
                         }
                     },
                     legend: {
@@ -190,11 +191,12 @@ export default {
         this.getMonthlyGrowthMember();
         this.totalReservationCount();
         this.waitingMemberCount();
+        this.totalAmountCount();
     },
     methods: {
         createChart() {
             new Chart(this.$refs.MemberChart, {
-                type: 'pie',
+                type: 'doughnut',
                 data: this.memberData,
                 options: this.pieOptions
             })
@@ -216,13 +218,12 @@ export default {
                     }
                 });
                 const members = response.data.result.content;
-                console.log(members);
                 // role별로 멤버 수 카운트
                 const roleCounts = {};
                 members.forEach(member => {
                     const role = member.role;
                     if (role !== 'TodakAdmin') {
-                        this.total += 1;
+                        this.totalMember += 1;
                         if (roleCounts[role]) {
                             roleCounts[role]++;
                         } else {
@@ -237,7 +238,6 @@ export default {
 
                 // 차트 생성
                 this.createChart();
-                this.createChart1();
             } catch (e) {
                 console.error(e);
             }
@@ -254,8 +254,6 @@ export default {
             try {
                 const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/member-service/member/growup`);
                 const monthlyData = response.data;
-
-                console.log(monthlyData)
                 // 월별 회원 수를 업데이트
                 monthlyData.forEach(item => {
                     const monthIndex = item.month - 1; // month는 1부터 시작하므로 0으로 조정
@@ -284,12 +282,19 @@ export default {
         async waitingMemberCount() {
             try {
                 const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/member-service/member/waiting/list`);
-
                 this.waitingMember = response.data;
             } catch (e) {
                 console.error(e);
             }
-        }
+        },
+        async totalAmountCount(){
+            try{
+                const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/reservation-service/payment/get/total`);
+                this.totalAmount = response.data;
+            }catch(e){
+                console.error(e);
+            }
+        },
     }
 
 }
