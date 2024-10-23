@@ -3,7 +3,7 @@
       <v-row justify="center">
         <v-col cols="12" md="6">
         <router-link to="/" class="logo">
-            <img src="@/assets/logo.png" alt="TodakTodak Logo" class="logo-image" />
+            <img src="@/assets/todak-new-logo-removebg.png" alt="TodakTodak Logo" class="logo-image" />
         </router-link>
 
               

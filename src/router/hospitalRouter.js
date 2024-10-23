@@ -51,6 +51,7 @@ export const hospitalRouter = [
         component: DoctorDetail
     },
     {
+        // 병원 + 병원admin 가입페이지
         path: '/hospital/admin/create',
         name: 'HospitalAdminCreate',
         component: HospitalAdminCreate

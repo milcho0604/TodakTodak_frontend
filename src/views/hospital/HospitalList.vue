@@ -94,8 +94,9 @@
                                 class="ma-5"
                                 style="height:140px; width:180px; border-radius: 10px; object-fit:cover;"
                             >
-                                <!-- 병원사진 -->
-                                <v-img :src="hospital.hospitalImageUrl" />
+                                <!-- 병원사진(없으면 no image 사진) -->
+                                <v-img :src="hospital.hospitalImageUrl ? hospital.hospitalImageUrl : 'https://todak-file.s3.ap-northeast-2.amazonaws.com/default-images/no-image.png'" 
+                                />
                             </v-avatar>
             
                             <div style="flex: 1;">
