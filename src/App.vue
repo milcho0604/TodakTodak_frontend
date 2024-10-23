@@ -1,6 +1,6 @@
 <template>
   <v-app class="app global_bg">
-    <HeaderComponent/>
+     <MemberHeaderComponent/>
     <AppSidebar ref="sidebar" />
     
     <v-main class="main-content">
@@ -12,8 +12,8 @@
 
 <script>
 import axios from 'axios';
-import HeaderComponent from './components/header/HeaderComponent.vue';
 import FooterComponent from './components/footer/FooterComponent.vue';
+import MemberHeaderComponent from './components/header/MemberHeaderComponent.vue';
 
 // FCM 관련 Firebase SDK
 import { getMessaging, getToken, onMessage } from 'firebase/messaging';
@@ -22,8 +22,9 @@ export default {
   inject: ['firebase'],
   name: 'App',
   components: {
-    HeaderComponent,
+    // HeaderComponent,
     FooterComponent,
+    MemberHeaderComponent,
   },
   async mounted() {
     await this.initializeFCM();

@@ -1,14 +1,21 @@
 <template>
     <v-container>
         <v-row>
-            <div class="report-title inter-bold mt-10">신고 목록</div>
-            
+            <!-- <div class="report-title inter-bold mt-10">신고 목록</div> -->
+            <div class="report-title inter-bold">신고 목록</div>            
         </v-row>
         <v-row></v-row>
-        <v-row>
+        <!-- <v-row>
             <v-col>처리 상태</v-col>
             <v-col>작업</v-col>
             <v-btn @click="updateStatus">상태를 Completed로 변경</v-btn>
+        </v-row> -->
+        <v-row>
+            <v-col class="report-text">처리 상태</v-col>
+            <v-col class="report-text">작업</v-col>
+            <v-col>
+                <v-btn @click="updateStatus">상태를 Completed로 변경</v-btn>
+            </v-col>
         </v-row>
         <v-row>
             <v-col>
@@ -104,12 +111,25 @@ export default {
     },
 };
 </script>
-
-<style scoped>
-.report-title {
+<!-- .report-title {
     text-align: center;
     margin: auto;
     font-size: 25px;
     color: #00499E;
+} -->
+<style scoped>
+.report-title {
+    padding-top: 20px;
+    padding-left: 20px;
+    font-size: 20px;
+    font-weight: bold;
+    color: #676767;
+}
+.report-text{
+    margin-left: 20px;
+    margin-top: 10px;
+    font-size: 15px;
+    font-weight: bold;
+    color: #8F8F8F;
 }
 </style>

@@ -3,7 +3,7 @@
         <v-container style="width: 700px;">
             <v-spacer :style="{ height: '50px' }"></v-spacer>
             <v-row class="header-row">
-                <h2>{{this.hospitalName}}</h2>
+                <h2>{{ this.hospitalName }}</h2>
                 <v-chip class="schedule-chip ml-3" variant="flat" size="x-large" label>스케쥴 예약</v-chip>
             </v-row>
             <v-row class="header-row">
@@ -26,7 +26,8 @@
                         :class="{ 'selected-child': this.child == child }">
                         <v-row justify="center">
                             <v-col class="text-center" cols="3">
-                                <img :src="child.imageUrl" alt="child image" style="width: 50px; height: 50px; border-radius:30px;">
+                                <img :src="child.imageUrl" alt="child image"
+                                    style="width: 50px; height: 50px; border-radius:30px;">
                             </v-col>
                             <v-col class="text-center" cols="5" style="margin-top: 11px;">
                                 <v-row class="inter-bold child-name">{{ child.name }}</v-row>
@@ -51,7 +52,8 @@
                     <v-row>
                         <v-col cols="2">
                             <v-row class="ml-4">
-                                <img :src=doctor.profileImgUrl alt="doctor image" style="width: 65px; height: 65px; border-radius: 30px;">
+                                <img :src=doctor.profileImgUrl alt="doctor image"
+                                    style="width: 65px; height: 65px; border-radius: 30px;">
                             </v-row>
                         </v-col>
                         <v-col cols="2">
@@ -72,8 +74,7 @@
             </v-row>
             <v-row v-if="doctor" justify="start" class="ml-2">
                 <v-date-picker v-model="date" :allowed-dates="allowedDates" @input="updateDate" :width="650"
-                style="border-radius: 10px;"    
-                color="#C2D7FF">
+                    style="border-radius: 10px;" color="#C2D7FF">
                 </v-date-picker>
             </v-row>
             <v-row v-if="date" class="header-row">
@@ -110,13 +111,8 @@
             <v-row>
                 <div class="mt-n5 ml-5">
                     <v-chip-group v-if="symptoms.length > 0">
-                        <v-chip 
-                        v-for="(symptom, index) in symptoms" :key="index" 
-                        class="mr-2" 
-                        size="large" 
-                        variant="flat"
-                        style="color:#00499E; background-color:#ECF2FD; font-weight:bold;"
-                        >
+                        <v-chip v-for="(symptom, index) in symptoms" :key="index" class="mr-2" size="large"
+                            variant="flat" style="color:#00499E; background-color:#ECF2FD; font-weight:bold;">
                             {{ symptom }}
                         </v-chip>
                     </v-chip-group>
@@ -130,7 +126,7 @@
             </v-row>
             <v-row><textarea class="text ml-4" v-model="comment"></textarea></v-row>
             <v-row class="mt-6 ml-1">
-                <div class="button  inter-bold" @click="reservedModal = true">스케줄예약 신청</div>
+                <div class="button  inter-bold" @click="reserved">스케줄예약 신청</div>
             </v-row>
 
             <v-dialog v-model="symptomsModal" max-width="700px">
@@ -330,7 +326,7 @@ export default {
             comment: null,
             date: null,
             reservationType: null,
-            doctorTimeSlots:[],
+            doctorTimeSlots: [],
             reservedTimes: [], // 이미 예약된 시간
             selectedTime: null, // 선택된 시간
             reservedModal: false,
@@ -442,10 +438,10 @@ export default {
             try {
                 const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/member-service/member/doctorList/${this.hospitalId}`);
                 this.doctorList = response.data.result.content;
-                
-                this.doctorList.forEach(doctor =>{
+
+                this.doctorList.forEach(doctor => {
                     doctor.profileImgUrl = doctor.profileImgUrl ? doctor.profileImgUrl :
-                    "https://todak-file.s3.ap-northeast-2.amazonaws.com/default-images/doctor-3d-image.png";
+                        "https://todak-file.s3.ap-northeast-2.amazonaws.com/default-images/doctor-3d-image.png";
                 })
 
                 console.log(this.doctorList);
@@ -501,34 +497,56 @@ export default {
 
             const start = this.timeToMinutes(openTime);
             const end = this.timeToMinutes(closeTime);
-            
-            for(let i = start; i< end ; i += 30){
+
+            for (let i = start; i < end; i += 30) {
                 this.doctorTimeSlots.push(this.minutesToTime(i))
             }
 
             console.log(this.doctorTimeSlots);
         },
-        timeToMinutes(time){
+        timeToMinutes(time) {
             const [hours, minutes] = time.split(':').map(Number);
-            return hours*60 + minutes;
+            return hours * 60 + minutes;
         },
-        minutesToTime(time){
+        minutesToTime(time) {
             const hours = Math.floor(time / 60);
             const mins = time % 60;
             return `${hours.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}`;
+        },
+        reserved() {
+            try {
+                if (!this.child) {
+                    throw new Error("자녀를 선택해주세요.")
+                }
+                else if (!this.doctor) {
+                    throw new Error("의사를 선택해주세요.")
+                }
+                else if (!this.date) {
+                    throw new Error("진료 날짜를 선택해주세요.")
+                }
+                else if(!this.selectedTime){
+                    throw new Error("진료 시간을 선택해주세요.")
+                }
+                else if (!this.mediItem) {
+                    throw new Error("진료항목을 선택해주세요.")
+                }
+                this.reservedModal = true;
+            } catch (e) {
+                alert(e.message)
+            }
         }
     },
     async created() {
         this.fetchDoctorList();
         this.fetchChildList();
         const route = useRoute();
-        this.hospitalId = route.params.hospitalId; 
+        this.hospitalId = route.params.hospitalId;
         this.hospitalName = this.$route.query.hospitalName;
     },
     watch: {
         date(newDate) {
             console.log(newDate);
-            const options = { weekday: 'long'}
+            const options = { weekday: 'long' }
             const dayOfWeek = newDate.toLocaleDateString('en-US', options);
 
             const selectDay = this.doctor.operatingHours.filter(item => item.dayOfWeek === dayOfWeek);
@@ -543,8 +561,9 @@ export default {
 </script>
 
 <style scoped>
-*{
+* {
     font-weight: bold;
+    user-select: none;
 }
 
 .title {
@@ -606,6 +625,7 @@ export default {
     margin-right: 10px;
     font-size: 14px;
     text-align: center;
+    cursor: pointer;
 }
 
 .no-wrap {
@@ -812,7 +832,7 @@ export default {
     cursor: pointer;
 }
 
-.modal-success-home{
+.modal-success-home {
     margin-top: 5px;
     background-color: #E0E0E0;
     color: #5F5F5F;
@@ -822,7 +842,8 @@ export default {
     cursor: pointer;
     font-weight: bold;
 }
-.modal-success-detail{
+
+.modal-success-detail {
     margin-top: 5px;
     background-color: #C2D7FF;
     border-radius: 5px;
@@ -833,13 +854,14 @@ export default {
     font-weight: bold;
 }
 
-.hospital{
+.hospital {
     font-weight: bold !important;
 }
-.schedule-chip{
+
+.schedule-chip {
     font-weight: bold;
-    font-size:25px;
-    color:#00499E;
+    font-size: 25px;
+    color: #00499E;
     background-color: #ECF2FD;
     border-radius: 10px;
 }

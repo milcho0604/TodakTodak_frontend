@@ -5,7 +5,9 @@
         <v-spacer :style="{ height: '50px' }"></v-spacer>
 
         <div class="image-wrapper">
-            <v-img :src="hospital.hospitalImageUrl" class="hospital-image" />
+            <!-- 병원사진(없으면 no image 사진) -->
+            <v-img :src="hospital.hospitalImageUrl ? hospital.hospitalImageUrl : 'https://todak-file.s3.ap-northeast-2.amazonaws.com/default-images/no-image.png'" 
+            class="hospital-image" />
         </div>
 
         <v-spacer :style="{ height: '30px' }"></v-spacer>
