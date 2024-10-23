@@ -28,7 +28,7 @@
                 <td>{{ formatTime(hour.breakStart) }}</td>
                 <td>{{ formatTime(hour.breakEnd) }}</td>
                 <td>
-                    <v-btn class="custom-time-line" variant="text" @click="openModal('edit', hour)">수정</v-btn>
+                    <v-btn class="custom-time-line-2" variant="text" @click="openModal('edit', hour)">수정</v-btn>
                   </td>
                 <td>
                     <v-btn class="custom-time-line" variant="text" @click="deleteOperatingHour(hour.id)">삭제</v-btn>
@@ -376,8 +376,8 @@
             })
             .catch(error => {
                 console.error("Error saving operating hours:", error);
-                if (error.response && error.response.status === 500) {
-                alert('이미 등록한 요일입니다.'); // 에러 메시지 출력
+                if (error.response && error.response.status === 400) {
+                alert('이미 등록된 요일입니다.'); // 에러 메시지 출력
             }
             })
             .finally(() => {
@@ -438,9 +438,24 @@
     color: black;
     border-radius: 20px;
   }
-  .custom-time-line{
+  .custom-time-line-2{
     background-color: #C2D7FF !important;
     color: #00499e;
+    border-radius: 20px;
+    width: 70px;
+    height: 44px;
+    font-family: 'Inter';
+    font-style: normal;
+    font-weight: 700;
+    font-size: 15px;
+    line-height: 24px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  .custom-time-line{
+    background-color: #CECECE !important;
+    color: black;
     border-radius: 20px;
     width: 70px;
     height: 44px;
