@@ -89,25 +89,6 @@
             :readonly="!isEditing"
           />
   
-          <!-- <h6 class="text-left">키워드</h6>
-          <v-chip-group
-          v-model="selectedKeywords"
-          multiple
-          :readonly="!isEditing"
-          column
-        >
-          <v-chip
-            v-for="keyword in availableKeywords"
-            :key="keyword"
-            :value="keyword"
-            :selected="selectedKeywords.includes(keyword)"
-            class="ma-2"
-            color="primary"
-            outlined
-          >
-            {{ keyword }}
-          </v-chip>
-        </v-chip-group> -->
         <h6 class="text-left">키워드</h6>
         <template v-if="isEditing">
           <v-chip-group
@@ -229,7 +210,7 @@ import axios from 'axios';
             this.hospital.hospitalImage = file; // hospitalImage에 파일 저장
 
             // Base64 데이터 출력
-            console.log('hospital.hospitalImagePreview (Base64):', this.hospital.hospitalImagePreview);
+            // console.log('hospital.hospitalImagePreview (Base64):', this.hospital.hospitalImagePreview);
         };
         reader.readAsDataURL(file);  // 이미지 파일을 Base64로 읽음
     }
@@ -237,9 +218,9 @@ import axios from 'axios';
 
       async fetchHospitalDetails() {
         try {
-          const response = await axios.get('http://localhost:8080/reservation-service/hospital/admin/detail');
+          const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/reservation-service/hospital/admin/detail`);
           const data = response.data.result;
-          console.log('응답 데이터:', data); // 여기에서 데이터를 출력해서 확인
+          // console.log('응답 데이터:', data); // 여기에서 데이터를 출력해서 확인
           this.hospital = {
             ...this.hospital,
             id: data.id,
@@ -289,7 +270,7 @@ import axios from 'axios';
             }
   
           try {
-            await axios.post('http://localhost:8080/reservation-service/hospital/update', formData, {
+            await axios.post(`${process.env.VUE_APP_API_BASE_URL}/reservation-service/hospital/update`, formData, {
               headers: {
                 'Content-Type': 'multipart/form-data',
               },

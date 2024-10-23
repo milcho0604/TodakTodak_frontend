@@ -1,89 +1,97 @@
 <template>
-    <v-container style="width: 100%;">
-        <v-row>
-            <div class="cs-title inter-bold mt-10">상담 내역</div>
-        </v-row>
+    <div class="cs-title inter-bold mt-10">병원 영업시간</div>
 
-        <!-- 검색어 입력 -->
-        <v-row>
-            <v-col cols="12" md="6">
-                <v-text-field
-                    v-model="searchQuery"
-                    label="검색어 입력 (이메일 또는 이름)"
-                    clearable
-                    variant="underlined"
-                    @input="onSearchInput"
-                    style="max-width: 300px; margin-left: 30px;"
-                />
-            </v-col>
-        </v-row>
+    <!-- 모달을 띄우는 생성 버튼 -->
+    <v-btn color="primary" class="mb-4" @click="openModal('create')">영업시간 생성</v-btn>
 
-        <!-- 상담 상태 필터 버튼 -->
-        <v-row>
-            <v-chip-group active-class="selected-chip" class="ml-3">
-                <v-chip
-                    v-for="(label, value) in csStatusOptions"
-                    :key="value"
-                    @click="() => { 
-                        filterCsStatus = value; 
-                        fetchCsList(); 
-                    }"
-                    :input-value="filterCsStatus === value"
-                    class="mr-2"
-                    filter
-                >
-                    {{ label }}
-                </v-chip>
-            </v-chip-group>
-        </v-row>
-
-        <!-- 상담 내역 리스트 -->
-        <v-row>
-            <v-col>
+    <v-container style="width: 100%;" class="d-flex justify-center">
+        <v-row justify="center" class="mt-4">
+            <v-col cols="12" md="8" class="d-flex justify-center">
                 <v-table style="width: 100%;">
                     <thead>
                         <tr>
-                            <th>ID</th>
-                            <th>이름</th>
-                            <th>이메일</th>
-                            <th>상담 내용</th>
-                            <th>상담 상태</th>
-                            <th>채팅방 ID</th>
-                            <th></th>
+                            <th>요일</th>
+                            <th>오픈 시간</th>
+                            <th>클로즈 시간</th>
+                            <th>브레이크 시작</th>
+                            <th>브레이크 종료</th>
+                            <th>수정</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr v-for="cs in filteredCsList" :key="cs.id">
-                            <td>{{ cs.id }}</td>
-                            <td>{{ cs.memberName }}</td>
-                            <td>{{ cs.memberEmail }}</td>
-                            <td>{{ cs.csContents }}</td>
+                        <tr v-for="hour in operatingHours" :key="hour.id">
+                            <td>{{ formatDayOfWeek(hour.dayOfWeek) }}</td>
+                            <td>{{ formatTime(hour.openTime) }}</td>
+                            <td>{{ formatTime(hour.closeTime) }}</td>
+                            <td>{{ formatTime(hour.breakStart) }}</td>
+                            <td>{{ formatTime(hour.breakEnd) }}</td>
                             <td>
-                                <!-- {{ translateCsStatus(cs.csStatus) }} -->
-                                <v-chip :color="getCsStatusColor(cs.csStatus)" dark>
-                                    {{ translateCsStatus(cs.csStatus) }}
-                                </v-chip>
-                            </td>
-                            <td>{{ cs.chatRoomId }}</td>
-                            <td>
-                                <v-icon @click="nextLevel(cs.id)">mdi-chevron-right</v-icon> <!-- Vuetify 아이콘, 필요에 따라 다른 화살표 아이콘 사용 가능 -->
+                                <v-btn color="warning" @click="openModal('edit', hour)">수정</v-btn>
                             </td>
                         </tr>
                     </tbody>
                 </v-table>
             </v-col>
         </v-row>
-
-        <!-- 페이지 네이션 -->
-        <v-row justify="center" class="mt-4">
-            <v-pagination
-                v-model="page"
-                :length="totalPages"
-                @input="fetchCsList"
-                :total-visible="5"
-            ></v-pagination>
-        </v-row>
     </v-container>
+
+    <!-- 영업시간 생성/수정 모달 -->
+    <v-dialog v-model="dialog" max-width="500px">
+        <v-card>
+            <v-card-title>
+                <span v-if="isEdit">영업시간 수정</span>
+                <span v-else>영업시간 생성</span>
+            </v-card-title>
+
+            <v-card-text>
+                <!-- 요일 선택 -->
+                <v-select
+                    v-model="selectedOperatingHour.dayOfWeek"
+                    :items="daysOfWeek"
+                    label="요일 선택"
+                    item-text="label"
+                    item-value="value"
+                ></v-select>
+
+                <!-- 오픈 시간 선택 -->
+                <v-time-picker
+                    v-model="selectedOperatingHour.openTime"
+                    label="오픈 시간 선택"
+                    format="24hr"
+                    full-width
+                ></v-time-picker>
+
+                <!-- 클로즈 시간 선택 -->
+                <v-time-picker
+                    v-model="selectedOperatingHour.closeTime"
+                    label="클로즈 시간 선택"
+                    format="24hr"
+                    full-width
+                ></v-time-picker>
+
+                <!-- 브레이크 시간 선택 -->
+                <v-time-picker
+                    v-model="selectedOperatingHour.breakStart"
+                    label="브레이크 시작 시간 선택"
+                    format="24hr"
+                    full-width
+                ></v-time-picker>
+
+                <v-time-picker
+                    v-model="selectedOperatingHour.breakEnd"
+                    label="브레이크 종료 시간 선택"
+                    format="24hr"
+                    full-width
+                ></v-time-picker>
+            </v-card-text>
+
+            <v-card-actions>
+                <v-spacer></v-spacer>
+                <v-btn color="blue darken-1" text @click="dialog = false">취소</v-btn>
+                <v-btn color="green darken-1" text @click="saveOperatingHours" :loading="loading">{{ isEdit ? '수정' : '생성' }}</v-btn>
+            </v-card-actions>
+        </v-card>
+    </v-dialog>
 </template>
 
 <script>
@@ -92,79 +100,112 @@ import axios from 'axios';
 export default {
     data() {
         return {
-            csList: [], // 전체 상담 내역 목록
-            filteredCsList: [], // 필터된 상담 내역 목록 추가
-            searchQuery: '', // 검색어
-            page: 1, // 현재 페이지
-            totalPages: 1, // 전체 페이지 수
-            filterCsStatus: 'all', // 상담 상태 필터 상태 (초기값 'all')
-            csStatusOptions: {
-                all: '전체',
-                COMPLETED: '완료',
-                INPROCESS: '진행 중'
+            operatingHours: [], // 영업시간 데이터
+            dialog: false,
+            isEdit: false, // 수정 여부
+            loading: false, // 로딩 상태
+            selectedOperatingHour: {
+                dayOfWeek: '',
+                openTime: '',
+                closeTime: '',
+                breakStart: '',
+                breakEnd: ''
             },
+            daysOfWeek: [
+                { label: '월요일', value: 'Monday' },
+                { label: '화요일', value: 'Tuesday' },
+                { label: '수요일', value: 'Wednesday' },
+                { label: '목요일', value: 'Thursday' },
+                { label: '금요일', value: 'Friday' },
+                { label: '토요일', value: 'Saturday' },
+                { label: '일요일', value: 'Sunday' }
+            ]
         };
     },
     created() {
-        this.fetchCsList();
+        this.fetchOperatingHours();
+        this.selectedOperatingHour.dayOfWeek = this.daysOfWeek[0].value;
     },
     methods: {
-        async fetchCsList() {
+        async fetchOperatingHours() {
+            this.loading = true; // 로딩 시작
             try {
-                const params = {
-                    page: this.page - 1, // 페이지는 0부터 시작
-                    size: 3, // 페이지당 5개씩
-                    csStatus: this.filterCsStatus !== 'all' ? this.filterCsStatus : null,
-                    query: this.searchQuery || null, // 검색어를 이메일 또는 이름에 적용
-                };
-
-                const url = `${process.env.VUE_APP_API_BASE_URL}/member-service/cs/list`;
-                const response = await axios.get(url, { params });
-                
-                if (response.data && response.data.content) {
-                    this.csList = response.data.content;
-                    this.filteredCsList = this.csList; // 필터링 결과를 따로 저장
-                    this.totalPages = response.data.totalPages;
+                const url = `${process.env.VUE_APP_API_BASE_URL}/reservation-service/hospital-operating-hours/admin/detail`;
+                const response = await axios.get(url);
+                console.log('Fetched operating hours:', response.data);
+                if (response.data && response.data.result) {
+                    this.operatingHours = response.data.result || [];
                 } else {
                     console.error('Invalid response structure:', response.data);
-                    this.csList = [];
-                    this.filteredCsList = [];
-                    this.totalPages = 1;
+                    this.operatingHours = [];
                 }
-
             } catch (error) {
-                console.error('Error fetching cs list:', error);
+                console.error('Error fetching operating hours:', error);
+            } finally {
+                this.loading = false; // 로딩 종료
             }
         },
-        getCsStatusColor(status) {
-            const csStatusColorMap = {
-                '처리중': 'green',
-                '처리완료': 'blue'
+        formatTime(time) {
+            return time.slice(0, 5); // HH:mm 형식으로 변환
+        },
+        formatDayOfWeek(day) {
+            const dayMap = {
+                Monday: '월요일',
+                Tuesday: '화요일',
+                Wednesday: '수요일',
+                Thursday: '목요일',
+                Friday: '금요일',
+                Saturday: '토요일',
+                Sunday: '일요일',
             };
-            return csStatusColorMap[status] || 'gray'; // 기본 색상은 gray로 설정
+            return dayMap[day] || day;
         },
-        translateCsStatus(status) {
-            const csStatusMap = {
-                COMPLETED: '완료',
-                INPROCESS: '진행 중'
-            };
-            return csStatusMap[status] || status;
+        openModal(action, hour = null) {
+            this.dialog = true;
+            if (action === 'edit') {
+                this.isEdit = true;
+                this.selectedOperatingHour = { ...hour };
+                console.log('Editing Operating Hour:', this.selectedOperatingHour);
+            } else {
+                this.isEdit = false;
+                this.selectedOperatingHour = {
+                    dayOfWeek: '',
+                    openTime: '',
+                    closeTime: '',
+                    breakStart: '',
+                    breakEnd: ''
+                };
+            }
         },
-        // 검색어 입력 시 호출되는 메서드
-        onSearchInput() {
-            this.page = 1; // 검색어 입력 시 페이지를 1로 초기화
-            this.fetchCsList(); // 검색어에 맞는 목록 가져오기
-        },
-        nextLevel(csId) {
-            this.$router.push(`/admin/cd/detail/${csId}`); // 병원의 id를 사용하여 상세 페이지로 이동
+        async saveOperatingHours() {
+            this.loading = true; // 로딩 시작
+            const url = this.isEdit 
+                ? `${process.env.VUE_APP_API_BASE_URL}/reservation-service/hospital-operating-hours/admin/update` 
+                : `${process.env.VUE_APP_API_BASE_URL}/reservation-service/hospital-operating-hours/admin/register`;
+            
+            const method = 'post';
+            const payload = this.isEdit
+                ? { ...this.selectedOperatingHour, id: this.selectedOperatingHour.id }
+                : this.selectedOperatingHour; // 수정: 배열이 아닌 객체로 보냄
+
+            console.log('Saving Operating Hours:', payload);
+
+            try {
+                await axios[method](url, payload);
+                this.dialog = false;
+                await this.fetchOperatingHours(); // 업데이트 후 다시 영업시간 목록 가져오기
+            } catch (error) {
+                console.error('Error saving operating hours:', error);
+            } finally {
+                this.loading = false; // 로딩 종료
+            }
         },
     },
     watch: {
-        page(newPage) {
-            console.log(newPage)
-            this.fetchCsList(); // 페이지 변경 시 목록 다시 로드
-        },
-    },
+    'selectedOperatingHour.dayOfWeek': function(newVal) {
+        console.log('Selected Day:', newVal);
+    }
+}
 };
 </script>
 
@@ -176,8 +217,12 @@ export default {
     color: #00499E;
 }
 
-.selected-chip {
-    background-color: #1976d2 !important;
-    color: white !important;
+.v-table {
+    margin: auto;
+}
+
+.v-col {
+    display: flex;
+    justify-content: center;
 }
 </style>
