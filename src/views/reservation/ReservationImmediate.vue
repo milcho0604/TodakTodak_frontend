@@ -102,7 +102,7 @@
             </v-row>
             <v-row><textarea class="text ml-4" v-model="comment"></textarea></v-row>
             <v-row class="mt-6 ml-1">
-                <div class="button inter-bold" @click="reservedModal = true">오늘예약 신청</div>
+                <div class="button inter-bold" @click="reserved()">오늘예약 신청</div>
             </v-row>
 
             <v-dialog v-model="symptomsModal" max-width="700px">
@@ -298,7 +298,7 @@ export default {
             hospitalName: "",
             hospitalId: '',
             child: null,
-            doctor: [],
+            doctor: null,
             childOptions: [],
             doctorList: [],
             symptoms: [],
@@ -322,15 +322,12 @@ export default {
     methods: {
         addChild(child) {
             this.child = child;
-            console.log(child);
         },
         addDoctor(doctor) {
             this.doctor = doctor;
-            console.log(doctor);
         },
         addmediItem(mediItem) {
             this.mediItem = mediItem;
-            console.log(mediItem);
         },
         addSymptom(symptom) {
             const index = this.symptoms.indexOf(symptom);
@@ -361,7 +358,6 @@ export default {
                     }
                 });
 
-                console.log(this.doctorList);
             } catch (e) {
                 console.log(e);
             }
@@ -370,7 +366,6 @@ export default {
             try {
                 const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/member-service/child/`);
                 this.childOptions = response.data.result;
-                console.log(this.childOptions)
             } catch (e) {
                 console.log(e);
             }
@@ -389,15 +384,12 @@ export default {
                     field: this.symptoms.toString(),
                     message: this.comment
                 }
-                console.log(req)
 
                 const response = await axios.post(`${process.env.VUE_APP_API_BASE_URL}/reservation-service/reservation/immediate`,
                     req);
 
-                const reservationId = response.data.result.id;
                 const doctorId = this.doctorList.find(item => item.doctorEmail === response.data.result.doctorEmail).id;
-                
-                console.log(reservationId + " " + doctorId);
+
 
                 const waitingEntry = this.waitingData ? this.waitingData[doctorId] : null;
                 const entryValues = waitingEntry ? Object.values(waitingEntry) : [];
@@ -405,7 +397,7 @@ export default {
                 this.reservedModal = false;
                 this.successReserveModal = true;
                 this.totalWaiting = entryValues.length;
-                this.myWaiting = this.totalWaiting+1;
+                this.myWaiting = this.totalWaiting + 1;
                 this.successReserveModal = true;
             } catch (e) {
                 alert(e.message)
@@ -425,6 +417,22 @@ export default {
                 }
             });
         },
+        reserved() {
+            try {
+                if(!this.child){
+                    throw new Error("자녀를 선택해주세요.")
+                }
+                else if(!this.doctor){
+                    throw new Error("의사를 선택해주세요.")
+                }
+                else if(!this.mediItem){
+                    throw new Error("진료항목을 선택해주세요.")
+                }
+                this.reservedModal = true;
+            }catch(e){
+                alert(e.message)
+            }
+        }
     },
     async created() {
         this.fetchChildList();
@@ -442,6 +450,7 @@ export default {
 <style scoped>
 * {
     font-weight: bold;
+    user-select: none;
 }
 
 .title {
@@ -697,7 +706,8 @@ export default {
 
 .waiting {
     color: #0029FF;
-    font-size: 28px;;
+    font-size: 28px;
+    ;
     text-align: center;
     font-weight: bold;
     margin-top: -25px;
