@@ -4,22 +4,22 @@
             <v-container style="width: 1000px;">
                 <p class="dashboard-title">파닥즈 Admin Dashboard</p>
                 <div class="dashboard-cards">
-                    <div class="dashboard-user-card">
+                    <div class="dashboard-user-card" @click="$router.push('/admin/member/list')">
                         <span class="dashboard-text">회원리스트</span>
                         <img src="https://todak-file.s3.ap-northeast-2.amazonaws.com/default-images/default_user_image.png"
                             alt="회원" class="card-icon" />
                     </div>
-                    <div class="dashboard-hospital-card">
+                    <div class="dashboard-hospital-card" @click="$router.push('/admin/hospital/list')">
                         <span class="dashboard-text">병원리스트</span>
                         <img src="https://todak-file.s3.ap-northeast-2.amazonaws.com/default-images/hospital-icon.png"
                             alt="병원" class="card-icon" />
                     </div>
                     <div class="dashboard-cs-card">
-                        <span class="dashboard-text">고객상담 채팅</span>
+                        <span class="dashboard-text" @click="$router.push('/')">고객상담 채팅</span>
                         <img src="https://todak-file.s3.ap-northeast-2.amazonaws.com/default-images/cs_center_image.png"
                             alt="채팅" class="card-icon" />
                     </div>
-                    <div class="dashboard-card1">
+                    <div class="dashboard-card1" @click="$router.push('/admin/hospital/list')">
                         <span class="dashboard-text2">
                             가입 승인대기
                             <p class="card-number"> {{ waitingMember }}건</p>
@@ -63,10 +63,13 @@
                 <v-spacer :style="{ height: '20px' }"></v-spacer>
                 <div class="dashboard-cards">
                     <div class="dashboard-cslist-card">
-                        <span class="cs-text">고객상담</span>
+                        <AdminCsList/>
                     </div>
+                </div>
+                <v-spacer :style="{ height: '20px' }"></v-spacer>
+                <div class="dashboard-cards">
                     <div class="dashboard-reportlist-card">
-                        <span class="report-text">신고리스트</span>
+                        <ReportList/>
                     </div>
                 </div>
             </v-container>
@@ -78,10 +81,16 @@
 import axios from 'axios';
 import { Chart, registerables } from 'chart.js'
 import ChartDataLabels from 'chartjs-plugin-datalabels';
+import AdminCsList from './AdminCsList.vue';
+import ReportList from './ReportList.vue';
 
 Chart.register(...registerables, ChartDataLabels)
 
 export default {
+    components:{
+        AdminCsList,
+        ReportList
+    },
     data() {
         return {
             total: 0,
@@ -268,16 +277,16 @@ export default {
                 const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/reservation-service/reservation/hospital/total/list`);
                 
                 this.totalReservation = response.data;
-            }catch(e){
+            } catch (e) {
                 console.error(e);
             }
         },
-        async waitingMemberCount(){
-            try{
+        async waitingMemberCount() {
+            try {
                 const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/member-service/member/waiting/list`);
 
                 this.waitingMember = response.data;
-            }catch(e){
+            } catch (e) {
                 console.error(e);
             }
         }
@@ -384,16 +393,16 @@ export default {
     background-color: white;
     border-radius: 10px;
     display: flex;
-    width: 380px;
-    height: 200px;
+    width: 1000px;
+    min-height: 250px;
 }
 
 .dashboard-reportlist-card {
     background-color: white;
     border-radius: 10px;
     display: flex;
-    width: 600px;
-    height: 200px;
+    width: 1000px;
+    min-height: 250px;
 }
 
 .dashboard-text {
