@@ -77,7 +77,7 @@
           </div>
           <div class="milcho-reservation-row">
             <strong>타입</strong>
-            <span>{{ formData.type }}</span>
+            <span>{{ translateType(formData.type) }}</span>
           </div>
           <div class="milcho-reservation-row">
             <strong>시작일</strong>
@@ -247,6 +247,14 @@ export default {
     };
   },
 methods: {
+  translateType(englishItem) {
+    const itemMap = {
+      'IN_PROGRESS': '진행 중',
+      'COMPLETED': '완료',
+      // 추가적인 타입들을 여기에 넣어주세요
+    };
+    return itemMap[englishItem] || englishItem;  // 매핑되지 않은 값은 그대로 출력
+  },
   handleDatesSet(info) {
   const startDate = info.start.toISOString(); // 시작일 ISO 포맷
   const endDate = info.end.toISOString();     // 종료일 ISO 포맷
@@ -637,7 +645,7 @@ methods: {
 .milcho-reservation-row {
   display: flex;
   margin-bottom: 10px;
-  margin-left: 20px;
+  margin: auto;
 }
 
 .milcho-reservation-row strong {

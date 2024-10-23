@@ -182,10 +182,10 @@ export default {
       }).open();
     },
     goToChildRegistration() {
-      this.$router.push('/child-registration');
+      window.location.href = '/child-registration';
     },
     skipToMain() {
-      this.$router.push('/');
+      window.location.href = '/';
     },
     closeModal() {
       this.completeModal = false;
