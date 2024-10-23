@@ -71,15 +71,6 @@
         value="cs"
         @click="toChat"
         ></v-list-item>
-
-        <v-list-item
-        v-if="isDoctorAdmin"
-        :prepend-avatar="doctors"
-        title="의사관리"
-        value="toDoctors"
-        @click="toDoctors"
-        ></v-list-item>
-
     </v-list>
     </v-navigation-drawer>
     <v-main style="height: 250px"></v-main>
@@ -101,14 +92,11 @@ export default{
             reservation: 'https://todak-file.s3.ap-northeast-2.amazonaws.com/default-images/reservation-icon.png',
             review: 'https://todak-file.s3.ap-northeast-2.amazonaws.com/default-images/review-icon.png',
             hospital: 'https://todak-file.s3.ap-northeast-2.amazonaws.com/default-images/hospital-icon.png',
-            doctors: 'https://todak-file.s3.ap-northeast-2.amazonaws.com/214ff1d2-bd49-4766-9925-d6dea16d1139_doctor.png'
         }
     },
     created(){
         this.name = localStorage.getItem("name");
         this.profileImgUrl = localStorage.getItem("profileImgUrl");
-        const role = localStorage.getItem("role");
-        this.isDoctorAdmin = role === 'HospitalAdmin' || role === 'TodakAdmin';
     },
     methods:{
         toMyPage() {
@@ -132,9 +120,6 @@ export default{
         },
         toChat() {
             this.$router.push('/chat');
-        },
-        toDoctors() {
-            this.$router.push('/hospital/doctor/register');
         },
 
     }

@@ -1,11 +1,11 @@
 <template>
-  <v-app-bar app  style="background-color: #ECF2FE;">
+  <v-app-bar app scroll-behavior="elevate">
     <v-container fluid class="custom-container">
       <v-row align="center">
         <v-col cols="2" class="justify-start text-no-wrap">
           <v-toolbar-title>
             <router-link to="/" class="logo">
-              <img src="@/assets/logo.png" alt="TodakTodak Logo" class="logo-image" />
+              <img src="@/assets/todak-new-logo-removebg.png" alt="TodakTodak Logo" class="logo-image" />
             </router-link>
           </v-toolbar-title>
         </v-col>
@@ -13,15 +13,15 @@
         <v-col class="d-flex flex-row justify-start text-no-wrap" cols="6">
           <!-- 왼쪽 정렬 -->
           <v-btn class="custom-button" @click="$router.push('/hospital/list')"> 
-              🏥 주변소아과
+              주변소아과
           </v-btn>
 
           <v-btn class="custom-button" @click="$router.push('/untact/list')">
-            🏠 비대면진료
+            비대면진료
           </v-btn>
 
           <v-btn to="/community/list" class="custom-button">
-            💬 의사 Q&A
+            의사 Q&A
           </v-btn>
         </v-col>
 
@@ -79,6 +79,7 @@ export default {
       memberId:'',
       role:'',
       email:'',
+      verified:'',
     };
   },
   created(){
@@ -103,13 +104,14 @@ export default {
         console.log(response.data);
         this.name = response.data.result.name;
         this.role = response.data.result.role;
+        this.verified = response.data.result.verified;
         // 프로필 이미지가 null이면 기본 이미지 경로로 설정
         this.profileImgUrl = response.data.result.profileImgUrl 
             ? response.data.result.profileImgUrl
             : "https://todak-file.s3.ap-northeast-2.amazonaws.com/default-images/default_user_image.png";
         localStorage.setItem('name', this.name);
         localStorage.setItem('profileImgUrl', this.profileImgUrl);
-
+        localStorage.setItem('verified', this.verified);
 
       }catch(error){
         console.error("사용자 프로필 loading error : ",error);
@@ -121,6 +123,7 @@ export default {
     logout() {
       localStorage.removeItem('token'); // 토큰 제거
       localStorage.removeItem('fcmToken') // fcm 토큰 제거
+      localStorage.removeItem('verified'); // verified 상태도 제거
       this.isLogin = false; // 로그아웃 후 로그인 상태 업데이트
       this.$router.push('/'); // 로그아웃 후 메인 페이지로 이동
     },
@@ -147,7 +150,6 @@ export default {
 
 /* 버튼 커스텀 */
 .custom-button {
-  font-weight: bold !important; /* 글씨를 bold로 */
   font-size: 18px !important; /* 글씨 크기 */
   text-transform: none !important; /* 대문자 변환 방지 */
   background-color: transparent !important;  /* 배경을 투명하게 만듦 */

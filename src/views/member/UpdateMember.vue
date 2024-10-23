@@ -1,14 +1,15 @@
 <template>
   <v-container class="main-content">
     <div class="text-center">
-      <img src="@/assets/logo.png" alt="TodakTodak Logo" class="logo-image" />
+      <img src="@/assets/todak-new-logo-removebg.png" alt="TodakTodak Logo" class="logo-image" />
     </div>
 
-    <div class="signup-title text-center">회원가입</div>
+    <!-- <div class="signup-title text-center">회원가입</div> -->
 
     <v-row justify="center">
       <v-col cols="12" sm="10" md="8">
-        <v-card class="simple-card">
+        <v-card class="simple-card" variant="flat">
+          <div class="signup-title text-center">회원가입</div>
           <v-card-text>
             <v-text-field
               label="이름"
@@ -51,7 +52,7 @@
 
             <!-- 회원가입 완료 버튼을 프로필 이미지 아래 중앙에 배치 -->
             <div class="signup-btn-container">
-              <v-btn class="custom-btn signup-complete-btn" @click.prevent="submitForm">
+              <v-btn class="custom-btn signup-complete-btn" @click.prevent="submitForm" variant="flat">
                 회원가입 완료
               </v-btn>
             </div>

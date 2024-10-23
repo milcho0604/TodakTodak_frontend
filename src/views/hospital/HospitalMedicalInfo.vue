@@ -176,47 +176,6 @@ export default{
                 Sunday: '일요일',
             },
             selectedDoctor: null, // 선택된 의사 정보
-            // 예시데이터
-            // doctorImage:'https://todak-file.s3.ap-northeast-2.amazonaws.com/default-images/doctor-3d-image.png',
-            // selectedDoctor:[{
-            //     id:'5',
-            //     name: "김창현",
-            //     bio: '서울대학교 의과대학졸업\n 서울대학교 부속병원 인턴 \n 삼성서울병원 소아청소년과 레지던트 및 소아청소년과 전문의 취득 \n 삼성서울병원 우수의모기록상 수상',
-            //     operatingHours: [
-            //         {
-            //             id: "1",
-            //             doctorName: "김창현",
-            //             dayOfWeek: "Monday",
-            //             openTime:"09:00:00",
-            //             closeTime:"17:00:00",
-            //             untact: false
-            //         },
-            //         {
-            //             id: "2",
-            //             doctorName: "김창현",
-            //             dayOfWeek: "Tuesday",
-            //             openTime:"09:00:00",
-            //             closeTime:"17:00:00",
-            //             untact: false
-            //         },
-            //         {
-            //             id: "3",
-            //             doctorName: "김창현",
-            //             dayOfWeek: "Wednesday",
-            //             openTime:"09:00:00",
-            //             closeTime:"17:00:00",
-            //             untact: false
-            //         },
-            //         {
-            //             id: "3",
-            //             doctorName: "김창현",
-            //             dayOfWeek: "Thursday",
-            //             openTime:"09:00:00",
-            //             closeTime:"17:00:00",
-            //             untact: true
-            //         },
-            //     ],
-            // }],
         }
     },
     created(){

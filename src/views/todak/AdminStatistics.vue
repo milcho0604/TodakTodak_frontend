@@ -4,22 +4,22 @@
             <v-container style="width: 1000px;">
                 <p class="dashboard-title">파닥즈 Admin Dashboard</p>
                 <div class="dashboard-cards">
-                    <div class="dashboard-user-card">
+                    <div class="dashboard-user-card" @click="$router.push('/admin/member/list')">
                         <span class="dashboard-text">회원리스트</span>
                         <img src="https://todak-file.s3.ap-northeast-2.amazonaws.com/default-images/default_user_image.png"
                             alt="회원" class="card-icon" />
                     </div>
-                    <div class="dashboard-hospital-card">
+                    <div class="dashboard-hospital-card" @click="$router.push('/admin/hospital/list')">
                         <span class="dashboard-text">병원리스트</span>
                         <img src="https://todak-file.s3.ap-northeast-2.amazonaws.com/default-images/hospital-icon.png"
                             alt="병원" class="card-icon" />
                     </div>
                     <div class="dashboard-cs-card">
-                        <span class="dashboard-text">고객상담 채팅</span>
+                        <span class="dashboard-text" @click="$router.push('/')">고객상담 채팅</span>
                         <img src="https://todak-file.s3.ap-northeast-2.amazonaws.com/default-images/cs_center_image.png"
                             alt="채팅" class="card-icon" />
                     </div>
-                    <div class="dashboard-card1">
+                    <div class="dashboard-card1" @click="$router.push('/admin/hospital/list')">
                         <span class="dashboard-text2">
                             가입 승인대기
                             <p class="card-number"> {{ waitingMember }}건</p>
@@ -40,7 +40,7 @@
                         <div class="dashboard-chart-card">
                             <span class="dashboard-chart-text">
                                 총 매출(정기구독)
-                                <p class="card-number">{{ money }}원</p>
+                                <p class="card-number">{{ totalAmount }}원</p>
                             </span>
                         </div>
                         <v-spacer :style="{ height: '15px' }"></v-spacer>
@@ -54,7 +54,7 @@
                         <div class="dashboard-chart-card">
                             <span class="dashboard-chart-text">
                                 총 회원수
-                                <p class="card-number">{{ total }}명</p>
+                                <p class="card-number">{{ totalMember }}명</p>
                             </span>
 
                         </div>
@@ -63,10 +63,13 @@
                 <v-spacer :style="{ height: '20px' }"></v-spacer>
                 <div class="dashboard-cards">
                     <div class="dashboard-cslist-card">
-                        <span class="cs-text">고객상담</span>
+                        <AdminCsList/>
                     </div>
+                </div>
+                <v-spacer :style="{ height: '20px' }"></v-spacer>
+                <div class="dashboard-cards">
                     <div class="dashboard-reportlist-card">
-                        <span class="report-text">신고리스트</span>
+                        <ReportList/>
                     </div>
                 </div>
             </v-container>
@@ -78,16 +81,23 @@
 import axios from 'axios';
 import { Chart, registerables } from 'chart.js'
 import ChartDataLabels from 'chartjs-plugin-datalabels';
+import AdminCsList from './AdminCsList.vue';
+import ReportList from './ReportList.vue';
 
 Chart.register(...registerables, ChartDataLabels)
 
 export default {
+    components:{
+        AdminCsList,
+        ReportList
+    },
     data() {
         return {
-            total: 0,
+            totalMember: 0,
             roles: ['Doctor', 'HospitalAdmin', 'Member'],
             totalReservation: 0,
             waitingMember: 0,
+            totalAmount: 0,
             // 멤버 데이터
             memberData: {
                 labels: [],
@@ -157,7 +167,7 @@ export default {
                         },
                         formatter: (value, ctx) => {
                             let label = ctx.chart.data.labels[ctx.dataIndex];
-                            return label + '\n' + value / this.total * 100 + '%'; // 라벨 + 값
+                            return label + '\n' + value / this.totalMember * 100 + '%'; // 라벨 + 값
                         }
                     },
                     legend: {
@@ -181,11 +191,12 @@ export default {
         this.getMonthlyGrowthMember();
         this.totalReservationCount();
         this.waitingMemberCount();
+        this.totalAmountCount();
     },
     methods: {
         createChart() {
             new Chart(this.$refs.MemberChart, {
-                type: 'pie',
+                type: 'doughnut',
                 data: this.memberData,
                 options: this.pieOptions
             })
@@ -207,13 +218,12 @@ export default {
                     }
                 });
                 const members = response.data.result.content;
-                console.log(members);
                 // role별로 멤버 수 카운트
                 const roleCounts = {};
                 members.forEach(member => {
                     const role = member.role;
                     if (role !== 'TodakAdmin') {
-                        this.total += 1;
+                        this.totalMember += 1;
                         if (roleCounts[role]) {
                             roleCounts[role]++;
                         } else {
@@ -228,7 +238,6 @@ export default {
 
                 // 차트 생성
                 this.createChart();
-                this.createChart1();
             } catch (e) {
                 console.error(e);
             }
@@ -245,8 +254,6 @@ export default {
             try {
                 const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/member-service/member/growup`);
                 const monthlyData = response.data;
-
-                console.log(monthlyData)
                 // 월별 회원 수를 업데이트
                 monthlyData.forEach(item => {
                     const monthIndex = item.month - 1; // month는 1부터 시작하므로 0으로 조정
@@ -268,19 +275,26 @@ export default {
                 const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/reservation-service/reservation/hospital/total/list`);
                 
                 this.totalReservation = response.data;
+            } catch (e) {
+                console.error(e);
+            }
+        },
+        async waitingMemberCount() {
+            try {
+                const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/member-service/member/waiting/list`);
+                this.waitingMember = response.data;
+            } catch (e) {
+                console.error(e);
+            }
+        },
+        async totalAmountCount(){
+            try{
+                const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/reservation-service/payment/get/total`);
+                this.totalAmount = response.data;
             }catch(e){
                 console.error(e);
             }
         },
-        async waitingMemberCount(){
-            try{
-                const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/member-service/member/waiting/list`);
-
-                this.waitingMember = response.data;
-            }catch(e){
-                console.error(e);
-            }
-        }
     }
 
 }
@@ -384,16 +398,16 @@ export default {
     background-color: white;
     border-radius: 10px;
     display: flex;
-    width: 380px;
-    height: 200px;
+    width: 1000px;
+    min-height: 250px;
 }
 
 .dashboard-reportlist-card {
     background-color: white;
     border-radius: 10px;
     display: flex;
-    width: 600px;
-    height: 200px;
+    width: 1000px;
+    min-height: 250px;
 }
 
 .dashboard-text {
