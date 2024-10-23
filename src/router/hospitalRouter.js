@@ -5,7 +5,6 @@ import HospitalIntro from "@/views/hospital/HospitalIntro.vue"
 import HospitalMedicalInfo from "@/views/hospital/HospitalMedicalInfo.vue"
 import HospitalReviews from "@/views/hospital/HospitalReviews.vue"
 import DoctorRegister from "@/views/hospital/DoctorRegister.vue"
-import DoctorDetail from "@/views/hospital/DoctorDetail.vue"
 import HospitalAdminCreate from "@/views/hospital/HospitalAdminCreate.vue"
 import DoctorEdit from "@/views/hospital/DoctorEdit.vue"
 import HospitalSignIn from "@/views/hospital/HospitalSignIn.vue"
@@ -42,14 +41,9 @@ export const hospitalRouter = [
         component: HospitalReviews 
     },
     {
-        path: '/hospital/doctor/register',
+        path: '/hospital/doctor',
         name: 'DoctorRegister',
         component: DoctorRegister
-    },
-    {
-        path: '/hospital/doctor/detail',
-        name: 'DoctorDetail',
-        component: DoctorDetail
     },
     {
         path: '/hospital/admin/create',
