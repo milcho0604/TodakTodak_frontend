@@ -37,24 +37,23 @@
             </tbody>
           </v-table>
         </v-col>
+
       </v-row>
-        <!-- 확인 모달 추가 -->
-        <v-dialog v-model="confirmDialog" max-width="400px">
-        <v-card>
-            <v-card-title class="d-flex justify-center">
-            <span class="cs-title">삭제 확인</span>
-            </v-card-title>
-            <v-card-text class="text-center">
-            삭제하시겠습니까?
-            </v-card-text>
-            <v-card-actions>
-            <v-spacer></v-spacer>
-            <v-btn color="grey darken-1" text @click="confirmDialog = false">취소</v-btn>
-            <v-btn color="red" text @click="confirmDelete">확인</v-btn>
-            </v-card-actions>
-        </v-card>
-  </v-dialog>
     </v-container>
+            <!-- 확인 모달 추가 -->
+            <v-dialog v-model="confirmDialog" persistent max-width="400px">
+                <v-card class="approve-modal">
+                  <v-card-text>
+                    <div class="hospital-modal inter-bold mt-10">삭제하시겠습니까?</div>
+                  </v-card-text>
+                  <v-card-actions class="center-actions justify-center align-center">
+                <v-btn class="modal-cancel-btn" text @click="confirmDialog = false">취소</v-btn>
+                    <v-divider vertical class="vertical-divider-2"></v-divider>
+                    <v-btn class="modal-submit-btn"  text @click="confirmDelete">확인</v-btn>
+                  </v-card-actions>
+                </v-card>
+              </v-dialog>
+      
   
     <v-dialog v-model="dialog" max-width="600px" class="d-fle,x justify-center">
       <v-card max-width="600px">
@@ -460,12 +459,70 @@
     background-color: #a7a7a7;
     margin: 0 10px;
   }
+  .vertical-divider-2 {
+    width: 1px;
+    height: 30px;
+    background-color: #a7a7a7;
+    margin-left: 11px;
+  }
   .custom-width {
     width: 500px;  /* 클래스에 대한 CSS 규칙 */
     justify-content: center;
   }
   .custom-card-1{
     justify-content: center;
+  }
+  .modal-cancel-btn {
+    background-color: #CECECE !important;
+    color: #717171;
+    border-radius: 20px;
+    width: 70px;
+    height: 34px;
+    font-family: 'Inter';
+    font-style: normal;
+    font-weight: 700;
+    line-height: 24px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .modal-submit-btn {
+    background-color: #C2D7FF !important;
+    color: #00499e;
+    border-radius: 20px;
+    width: 70px;
+    height: 34px;
+    font-family: 'Inter';
+    font-style: normal;
+    font-weight: 700;
+    line-height: 24px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  .approve-modal {
+    position: absolute;
+    width: 360px;
+    height: 260px !important;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    background: #FFFFFF;
+    padding: 20px;
+  }
+  
+  .hospital-modal {
+    text-align: center;
+    margin: auto;
+    font-size: 18px;
+    color: #00499E;
+  }
+  .center-actions {
+    display: flex;
+    justify-content: center; /* 버튼들을 가운데 정렬 */
+    align-items: center; /* 세로 정렬 */
+    margin-bottom: 30px;
   }
   </style>
   
