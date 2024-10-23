@@ -71,16 +71,68 @@
             <div class="button inter-bold" @click="confirmModal = true">비대면 진료 신청</div>
         </v-row>
 
-        <v-dialog v-model="symptomsModal" style="width: 70%">
+        <v-dialog v-model="symptomsModal" max-width="700px">
             <v-card>
-                <v-card-title class="subtitle dark-blue inter-bold" style="margin:auto;">증상선택</v-card-title>
+                <v-card-title class="subtitle dark-blue inter-bold text-center">
+                    증상 선택
+                </v-card-title>
                 <v-card-text>
                     <v-container>
-                        <v-row>
-                            <v-col cols="3" v-for="(symptom, index) in symptomsOptions" :key="index">
-                                <div class="inter-bold" block
+                        <!-- 호흡기 -->
+                        <v-row justify="center" class="mb-2"> <!-- 위 아래 여백 줄임 -->
+                            <v-col cols="11">
+                                <div class="inter-bold subtitle-2 dark-blue">호흡기</div>
+                            </v-col>
+                            <v-col cols="auto" v-for="(symptom, index) in symptomsOptions.respiratory"
+                                :key="'respiratory-' + index">
+                                <div class="inter-bold symptom-box"
                                     :class="symptoms.includes(symptom) ? 'selected-symptom' : 'symptom'"
-                                    @click="addSymptom(symptom)" style="cursor: pointer; margin-bottom: 10px;">
+                                    @click="addSymptom(symptom)">
+                                    {{ symptom }}
+                                </div>
+                            </v-col>
+                        </v-row>
+
+                        <!-- 소화기 -->
+                        <v-row justify="center" class="mb-2"> <!-- 위 아래 여백 줄임 -->
+                            <v-col cols="11">
+                                <div class="inter-bold subtitle-2 dark-blue">소화기</div>
+                            </v-col>
+                            <v-col cols="auto" v-for="(symptom, index) in symptomsOptions.digestive"
+                                :key="'digestive-' + index">
+                                <div class="inter-bold symptom-box"
+                                    :class="symptoms.includes(symptom) ? 'selected-symptom' : 'symptom'"
+                                    @click="addSymptom(symptom)">
+                                    {{ symptom }}
+                                </div>
+                            </v-col>
+                        </v-row>
+
+                        <!-- 피부 및 알레르기 -->
+                        <v-row justify="center" class="mb-2"> <!-- 위 아래 여백 줄임 -->
+                            <v-col cols="11">
+                                <div class="inter-bold subtitle-2 dark-blue">피부 및 알레르기</div>
+                            </v-col>
+                            <v-col cols="auto" v-for="(symptom, index) in symptomsOptions.skinAllergy"
+                                :key="'skinAllergy-' + index">
+                                <div class="inter-bold symptom-box"
+                                    :class="symptoms.includes(symptom) ? 'selected-symptom' : 'symptom'"
+                                    @click="addSymptom(symptom)">
+                                    {{ symptom }}
+                                </div>
+                            </v-col>
+                        </v-row>
+
+                        <!-- 전신 / 기타 -->
+                        <v-row justify="center" class="mb-2"> <!-- 위 아래 여백 줄임 -->
+                            <v-col cols="11">
+                                <div class="inter-bold subtitle-2 dark-blue">전신 / 기타</div>
+                            </v-col>
+                            <v-col cols="auto" v-for="(symptom, index) in symptomsOptions.general"
+                                :key="'general-' + index">
+                                <div class="inter-bold symptom-box"
+                                    :class="symptoms.includes(symptom) ? 'selected-symptom' : 'symptom'"
+                                    @click="addSymptom(symptom)">
                                     {{ symptom }}
                                 </div>
                             </v-col>
@@ -88,7 +140,7 @@
                     </v-container>
                 </v-card-text>
                 <v-card-actions>
-                    <div class="mini-button" @click="symptomsModal = false" style="margin: auto;">증상선택완료</div>
+                    <div class="mini-button inter-bold" @click="symptomsModal = false" style="margin: auto;">증상 선택 완료</div>
                 </v-card-actions>
             </v-card>
         </v-dialog>
@@ -213,14 +265,20 @@ export default {
 
             ],
             symptoms: [],
-            symptomsOptions: ["콧물", "기침", "인후통", "호흡곤란", "가래",
-                "복통", "구토", "설사", "식욕부진", "변비", "발진", "충혈/눈곱",
-                "피부창백", "두드러기", "잇몸부음", "무기력", "두통", "오한", "기절", "수면문제"
-            ],
+            // symptomsOptions: ["콧물", "기침", "인후통", "호흡곤란", "가래",
+            //     "복통", "구토", "설사", "식욕부진", "변비", "발진", "충혈/눈곱",
+            //     "피부창백", "두드러기", "잇몸부음", "무기력", "두통", "오한", "기절", "수면문제"
+            // ],
+            symptomsOptions: {
+                respiratory: ['콧물', '기침', '인후통', '호흡곤란', '가래'],
+                digestive: ['복통', '구토', '설사', '식욕부진', '변비'],
+                skinAllergy: ['발진', '충혈/눈곱', '피부창백', '두드러기', '잇몸 부음'],
+                general: ['무기력', '두통', '오한', '기절', '수면문제']
+            },
             comment: null,
             symptomsModal: false,
             confirmModal: false,
-            successReserveModal: true,
+            successReserveModal: false,
             totalWaiting: 0,
             waitingData: null,
         };
@@ -317,14 +375,21 @@ export default {
     font-size: 21px;
 }
 
+.subtitle-2 {
+    font-size: 1.2em;
+    margin-bottom: -15px;
+    margin-top: -20px;
+}
+
 .mini-button {
     background-color: #0066FF;
     color: white;
     border-radius: 10px;
-    padding: 5px 10px;
+    padding: 10px 10px;
     margin-right: 10px;
     font-size: 14px;
     text-align: center;
+    cursor: pointer;
 }
 
 .button {
@@ -356,8 +421,7 @@ export default {
 .selected-symptom {
     background-color: #C2D7FF;
     border-radius: 40px;
-    padding: 5px 5px;
-    margin-right: 10px;
+    padding: 10px;
     font-size: 17px;
     color: #00499E;
     text-align: center;
@@ -366,8 +430,7 @@ export default {
 .symptom {
     background-color: #cccccc;
     border-radius: 40px;
-    padding: 5px 5px;
-    margin-right: 10px;
+    padding: 10px;
     font-size: 17px;
     color: #676767;
     text-align: center;
@@ -448,5 +511,11 @@ export default {
     color: #00499E;
     cursor: pointer;
     font-weight: bold;
+}
+.symptom-box {
+    cursor: pointer;
+    margin-bottom: 10px;
+    width: 100px;
+    text-align: center;
 }
 </style>
