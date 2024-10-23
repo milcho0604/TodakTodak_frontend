@@ -17,6 +17,7 @@
                 <th>브레이크 시작</th>
                 <th>브레이크 종료</th>
                 <th>수정</th>
+                <th>삭제</th>
               </tr>
             </thead>
             <tbody>
@@ -26,6 +27,7 @@
                 <td>{{ formatTime(hour.closeTime) }}</td>
                 <td>{{ formatTime(hour.breakStart) }}</td>
                 <td>{{ formatTime(hour.breakEnd) }}</td>
+                <td>삭제코드</td>
                 <td>
                   <v-btn class="custom-time-line" variant="text" @click="openModal('edit', hour)">수정</v-btn>
                 </td>
@@ -36,7 +38,7 @@
       </v-row>
     </v-container>
   
-    <v-dialog v-model="dialog" max-width="600px" class="d-flex justify-center">
+    <v-dialog v-model="dialog" max-width="600px" class="d-fle,x justify-center">
       <v-card max-width="600px">
         <v-card-title class="d-flex justify-center">
           <span class="cs-title inter-bold mt-10">{{ isEdit ? '영업시간 관리' : '영업시간 관리' }}</span>
@@ -192,7 +194,7 @@
         isEdit: false, // 수정 여부
         loading: false, // 로딩 상태
         selectedOperatingHour: {
-          dayOfWeek: '요일을 선택해주세요',
+          dayOfWeek: '',
           openTime: '09:00', // 기본 시간 설정
           closeTime: '18:00', // 기본 시간 설정
           breakStart: '12:00', // 기본 시간 설정
@@ -220,7 +222,6 @@
     created() {
       this.fetchOperatingHours();
       this.selectedOperatingHour.dayOfWeek = this.daysOfWeek[0].label;
-    
     },
     computed: {
       sortedOperatingHours() {
@@ -266,24 +267,35 @@
         return `${hours}:${minutes}`;
       },
       openModal(action, hour = null) {
+        console.log('Selected hour:', hour); // 로그 추가
         this.dialog = true;
         if (action === 'edit') {
           this.isEdit = true;
+          const dayOfWeekMappingReverse = {
+            Monday: '월요일',
+            Tuesday: '화요일',
+            Wednesday: '수요일',
+            Thursday: '목요일',
+            Friday: '금요일',
+            Saturday: '토요일',
+            Sunday: '일요일'
+        };
           this.selectedOperatingHour = { 
             ...hour, 
             openTime: hour.openTime.slice(0, 5), // HH:MM만 추출
             closeTime: hour.closeTime.slice(0, 5),
             breakStart: hour.breakStart.slice(0, 5),
-            breakEnd: hour.breakEnd.slice(0, 5)
+            breakEnd: hour.breakEnd.slice(0, 5),
+            dayOfWeek: dayOfWeekMappingReverse[hour.dayOfWeek] // 한국어 요일로 설정
             }; // 수정할 영업시간 설정
         } else {
           this.isEdit = false;
           this.selectedOperatingHour = {
-            dayOfWeek: this.daysOfWeek[0].value,
+            dayOfWeek: this.daysOfWeek[0].label,
             openTime: '09:00',
             closeTime: '18:00',
             breakStart: '12:00',
-            breakEnd: '13:00'
+            breakEnd: '13:00',
           }; // 기본값 설정
         }
       },
@@ -304,12 +316,17 @@
         };
 
         const requestData = {
-            dayOfWeek: dayOfWeekMapping[this.selectedOperatingHour.dayOfWeek], // 영어로 변환
+            dayOfWeek: this.isEdit 
+            ? (this.selectedOperatingHour.dayOfWeek 
+                ? dayOfWeekMapping[this.selectedOperatingHour.dayOfWeek] 
+                : dayOfWeekMapping[this.selectedOperatingHour.previousDayOfWeek] || null) // 이전 요일 매핑
+            : dayOfWeekMapping[this.selectedOperatingHour.dayOfWeek],
             openTime: this.selectedOperatingHour.openTime,
             closeTime: this.selectedOperatingHour.closeTime,
             breakStart: this.selectedOperatingHour.breakStart,
             breakEnd: this.selectedOperatingHour.breakEnd
         };
+        console.log('이전' + requestData)
 
         axios.post(url, this.isEdit ? requestData : [requestData]) // 수정할 때는 객체, 생성할 때는 배열로 감싸기
             .then(response => {
@@ -354,6 +371,7 @@
   }
   .custom-time{
     margin-left: auto; /* 왼쪽 마진을 자동으로 설정하여 오른쪽 정렬 */
+    margin-right: 50px;
     background-color: #C2D7FF !important;
     color: #00499e;
     border-radius: 20px;
