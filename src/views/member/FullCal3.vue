@@ -14,7 +14,7 @@
       >
         <v-spacer :style="{ height: '30px' }"></v-spacer>
         <v-avatar size="70">
-          <v-img @click="handleChildClick(child)" :src="child.imageUrl" contain :style="selectedChildId === child.id ? '' : 'filter: brightness(0.9);'"/>
+          <v-img @click="handleChildClick(child)" :src="child.imageUrl" contain :style="selectedChildId === child.id ? '' : 'filter: brightness(0.4);'"/>
         </v-avatar>
         <v-text>{{ child.name }}</v-text>
       </v-col>
