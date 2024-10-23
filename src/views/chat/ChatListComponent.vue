@@ -2,29 +2,41 @@
     <v-container class="outer-box">
         <!-- 채팅방 리스트 -->
         <v-row>
-          <v-col cols="12" v-for="chatRoom in chatRoomList" :key="chatRoom.chatRoomId">
+          <v-col cols="12" >
             <!-- 채팅방 카드 -->
-            <v-card class="list-card " variant="flat">
-              <v-row>
-                <!-- 프로필 이미지 -->
-                <v-col cols="2" class="d-flex flex-row justify-start text-no-wrap">
-                  <v-avatar size="60" class="sender-avatar mx-3 my-3">
-                    <v-img :src="chatRoom.senderProfileImgUrl" alt="Profile Image" />
-                  </v-avatar>
-                </v-col>
-    
-                <!-- 채팅방 정보 -->
-                <v-col cols="10" class="d-flex flex-column justify-start text-no-wrap">
-                  <v-card-title class="d-flex justify-space-between mt-2">
-                    <span>{{ chatRoom.senderName }}</span>
-                    <span class="text-subtitle-2">{{ formatDate(chatRoom.recentChatTime) }}</span>
-                  </v-card-title>
-    
-                  <v-card-subtitle class="mt-n1">
-                    {{ chatRoom.lastMessage }}
-                  </v-card-subtitle>
-                </v-col>
-              </v-row>
+            <v-card 
+            class="list-card mb-3" 
+            variant="flat"
+            v-for="chatRoom in chatRoomList" 
+            :key="chatRoom.chatRoomId"
+            >
+                <v-row>
+                    <v-col cols=2>
+                        <!-- 송신자 프로필 이미지 -->
+                        <v-avatar size="60" class="sender-avatar mx-3 my-3">
+                            <v-img :src="chatRoom.senderProfileImgUrl" alt="Profile Image" />
+                        </v-avatar>
+                    </v-col>
+                    <v-col cols="10">
+                        <v-row class="d-flex justify-space-between">
+                            <!-- 송신자 이름 -->
+                            <v-card-title class="mt-3 ml-3">
+                                <span>{{ chatRoom.senderName }}</span>
+                            </v-card-title>
+                            
+                            <!-- 채팅 보낸 시각 -->
+                            <v-card-title class="mt-3 mr-3">
+                            <span class="text-subtitle-2">{{ formatDate(chatRoom.recentChatTime) }}</span>
+                            </v-card-title>
+                        </v-row>
+                        <v-row>
+                            <!-- 마지막 채팅 메시지 -->
+                            <v-card-subtitle class="ml-3">
+                                {{ chatRoom.lastMessage }}
+                                </v-card-subtitle>
+                        </v-row>
+                    </v-col>
+                </v-row>
             </v-card>
           </v-col>
         </v-row>
@@ -85,9 +97,5 @@ export default{
 }
 .list-card{
     background-color:#D2D2D2;
-    max-height: 25vh;
-    max-width: 100%;
-    margin-bottom: 1vh;
-  
 }
 </style>

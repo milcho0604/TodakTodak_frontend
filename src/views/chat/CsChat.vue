@@ -1,6 +1,6 @@
 <template>
     <div class="chat-container">
-      <h2>CS 채팅</h2>
+      <h2>{{this.chatRoomId}}번 채팅방</h2>
       
       <div class="chat-box">
         <div v-for="(message, index) in messages" :key="index" class="message">
