@@ -3,7 +3,7 @@
     <v-row justify="center">
       <v-col cols="12" md="6">
         <router-link to="/" class="logo">
-          <img src="@/assets/logo.png" alt="TodakTodak Logo" class="logo-image" />
+            <img src="@/assets/todak-new-logo-removebg.png" alt="TodakTodak Logo" class="logo-image" />
         </router-link>
 
         <h3 class="text-left mb-5 bold-text">가입 정보를 입력 후
@@ -49,7 +49,7 @@
             :rules="[rules.required]"
           >
             <template #append>
-              <v-btn @click="openPostcode" small>주소 검색</v-btn>
+              <v-btn @click="openPostcode" class="address-btn" small variant="flat">주소 검색</v-btn>
             </template>
           </v-text-field>
           <v-text-field v-model="form.latitude" variant="underlined" label="위도" readonly></v-text-field>
@@ -214,7 +214,7 @@ export default {
       this.dialog = false;
       this.$router.push('/login'); // 확인 버튼 클릭 시 로그인 페이지로 리다이렉트
     },
-  },
+ },
 };
 </script>
 
@@ -261,8 +261,8 @@ export default {
   height: 30px;
   background-color: #a7a7a7;
   margin: 0 10px;
-}
 
+}
 .custom-modal {
   position: absolute;
   width: 500px;
@@ -276,4 +276,11 @@ export default {
   color: #00499E;
   border-radius: 20px;
 }
+.address-btn{
+  font-weight: bold; /* 폰트 굵게 설정 */
+  color: #00499E;
+  background-color: #ECF2FD;
+  border-radius: 10px; /* 모서리 둥글기 */
+}
 </style>
+  

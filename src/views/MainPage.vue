@@ -258,6 +258,12 @@ export default {
       const storedLatitude = localStorage.getItem('latitude');
       const storedLongitude = localStorage.getItem('longitude');
 
+      // 로컬스토리지에서 '동' 값 확인
+      const storedDong = localStorage.getItem('dong');
+      if(storedDong){
+        this.dong = storedDong;
+      }
+
       // 로컬스토리지에 위도, 경도 값이 이미 있으면 해당 값을 사용
       if (storedLatitude && storedLongitude) {
           this.latitude = storedLatitude;
@@ -324,6 +330,9 @@ export default {
                 if (dongInfo) {
                     this.dong = dongInfo.region_3depth_name; // '동' 이름 저장
                     console.log("사용자의 동:", this.dong);
+
+                    // 로컬스토리지에 '~~동'저장
+                    localStorage.setItem('dong', this.dong);
                     // 동 정보 업데이트 후 병원 리스트 로드
                     await this.loadHospitalList(); // 동 정보로 병원 리스트 로드
                 } else {
@@ -440,4 +449,15 @@ html, body {
   white-space: nowrap;
   color: #6A6A6A;
 }
+.loading-title{
+  font-weight: bold; /* 글씨 굵게 */
+  font-size: 30px; /* 원하는 폰트 크기 설정 */
+  color: #00499E;
+  text-align: center;
+  margin-top: 20px;
+}  
+.loading-text{
+  font-size: 15px;
+  text-align: center;
+} 
 </style>

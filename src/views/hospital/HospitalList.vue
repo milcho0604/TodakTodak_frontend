@@ -34,17 +34,10 @@
                     type="text" clearable class="mt-n1"></v-text-field>
             </v-col>
             <v-col cols="3" >
-                <!-- 진료중 여부 태그 -->
-                <v-chip 
-                variant="tonal" 
-                rounded="lg" 
-                size="large" 
-                @click="toggleOperating"
-                :color="isOperating ? '#0066FF' : '#767676'"
-                :class="{ active: isOperating }"
-                filter
-                > <strong>진료 중</strong> 
-            </v-chip>
+                <v-chip-group v-model="isOperating">
+                    <!-- 진료중 여부 태그 -->
+                    <v-chip variant="tonal" rounded="lg" size="large" color="#0066FF" value="operating" filter> <strong>진료 중</strong> </v-chip>
+                </v-chip-group>
             </v-col>
         </v-row>
 
@@ -59,7 +52,7 @@
                 <v-chip-group v-model="sort" selected-class="text-primary" mandatory>
                     <v-chip value="distance" size="large" filter>거리 순</v-chip>
                     <v-chip value="rating" size="large" filter>별점 순</v-chip>
-                    <v-chip value="review" size="large" filter>리뷰 순</v-chip>
+                    <v-chip value="reviewCount" size="large" filter>리뷰 순</v-chip>
 
                 </v-chip-group>
             </v-col>
@@ -72,7 +65,7 @@
         <v-container class="hospital-list-container d-flex justify-center align-center">
             <!-- 병원리스트 (데이터 로딩상태 아닐 때)-->
             <v-row v-if="!loading">
-                <v-col cols="12" v-for="hospital in filteredHospitalList" :key="hospital.id">
+                <v-col cols="12" v-for="hospital in hospitalList" :key="hospital.id">
                     <v-card
                         style="width:780px !important;"
                         variant="outlined"
@@ -81,10 +74,13 @@
                         clickable
                     >
                         <div class="d-flex flex-no-wrap">
-                            <v-avatar class="ma-5"
-                                style="height:140px; width:180px; border-radius: 10px; object-fit:cover;">
-                                <!-- 병원사진 -->
-                                <v-img :src="hospital.hospitalImageUrl" />
+                            <v-avatar
+                                class="ma-5"
+                                style="height:140px; width:180px; border-radius: 10px; object-fit:cover;"
+                            >
+                                <!-- 병원사진(없으면 no image 사진) -->
+                                <v-img :src="hospital.hospitalImageUrl ? hospital.hospitalImageUrl : 'https://todak-file.s3.ap-northeast-2.amazonaws.com/default-images/no-image.png'" 
+                                />
                             </v-avatar>
 
                             <div style="flex: 1;">
@@ -129,7 +125,7 @@
                                     <v-chip
                                         v-for="(keyword, index) in hospital.keywordList"
                                         :key="index"
-                                        color="#0066FF"
+                                        color="#00499E"
                                         size="default"
                                         class="mr-2 mt-2"
                                     >
@@ -190,6 +186,8 @@
                 </v-card-text>
             </v-card>
           </v-dialog>
+          
+          
     </v-container>
 </template>
 
@@ -211,11 +209,11 @@ export default {
         search:"", 
         sort:"distance", // 사용자가 선택한 정렬조건
         selectedTag: "전체",
-        latitude: '37.497203', // 사용자 현재 위도
-        longitude: '126.927625', // 사용자 현재 경도
+        latitude: '37.544444', // 사용자 현재 위도
+        longitude: '127.063087', // 사용자 현재 경도
         hospitalList:[], // 병원리스트
         keywordList:[], // 키워드 리스트 (, 기준으로 split)
-        isOperating: false,
+        isOperating: "operating",
         locationModal: false,
         loading : false, // 로딩상태변수 추가
         isLoading: true, // 모달 테스트 
@@ -234,36 +232,9 @@ export default {
             if (newDong) {
                 this.loadHospitalList();
             }
-        },
-        // this.sort가 바뀔 때마다 loadHospitalList 메소드를 호출
-        sort(newSort) {
-            if(newSort){
-                this.loadHospitalList();
-            }
-        },
-
-    },
-    computed: {
-        // 병원검색기능
-        filteredHospitalList() {
-        // search가 비어 있으면 전체 병원 목록을 반환하고, 그렇지 않으면 필터링합니다.
-        if (!this.search) {
-            return this.hospitalList;
         }
-        
-        const searchKeyword = this.search.toLowerCase();
-
-        // 병원 목록에서 이름, 키워드, 주소에 search 키워드가 포함된 항목만 반환
-        return this.hospitalList.filter(hospital => {
-            const nameMatches = hospital.name.toLowerCase().includes(searchKeyword);
-            const addressMatches = hospital.address.toLowerCase().includes(searchKeyword);
-            const keywordMatches = hospital.keywordList.some(keyword => keyword.toLowerCase().includes(searchKeyword));
-
-            return nameMatches || addressMatches || keywordMatches;
-        });
-    }
-       
     },
+
     methods: {
         openAddressSearch() {
             this.locationModal = false; // 위치 모달 먼저 닫음
@@ -280,25 +251,6 @@ export default {
         },
         async getCurrentLocation() {
             this.loading = true; // 로딩 시작
-
-            // 로컬스토리지에서 위도와 경도 값을 확인
-            const storedLatitude = localStorage.getItem('latitude');
-            const storedLongitude = localStorage.getItem('longitude');
-
-            // 로컬스토리지에 위도, 경도 값이 이미 있으면 해당 값을 사용
-            if (storedLatitude && storedLongitude) {
-                this.latitude = storedLatitude;
-                this.longitude = storedLongitude;
-                console.log("로컬스토리지에서 가져온 위도", this.latitude);
-                console.log("로컬스토리지에서 가져온 경도", this.longitude);
-
-                // 위도, 경도가 로컬스토리지에 있는 경우 병원 리스트를 바로 로드
-                await this.loadHospitalList();
-                this.loading = false; // 로딩 종료
-                return; // 메소드 종료
-            }
-
-            // 로컬스토리지에 값이 없으면, 새로 위치 정보를 가져옴
             return new Promise((resolve, reject) => {
                 if (navigator.geolocation) {
                     navigator.geolocation.getCurrentPosition(
@@ -336,14 +288,14 @@ export default {
         // 위도와 경도를 이용해 '동' 정보를 가져오는 메소드
         async getDongFromCoordinates(latitude, longitude) {
             try {
-                
+                console.log(process.env.VUE_APP_KAKAO_API_KEY)
                 const response = await apiClient.get(`https://dapi.kakao.com/v2/local/geo/coord2regioncode.json`, {
                     params: {
                         x: longitude, // 경도
                         y: latitude,  // 위도
                     }
                 });
-                
+                console.log(process.env.VUE_APP_KAKAO_API_KEY)
                 // '동' 단위 행정구역 이름 찾기
                 const regionInfo = response.data.documents;
                 if (regionInfo.length > 0) {
@@ -374,14 +326,14 @@ export default {
                 let params = {
                     dong: formattedDong, // 띄어쓰기 제거된 동 이름
                     latitude: this.latitude,
-                    longitude: this.longitude,
-                    sort: this.sort,
-                    isOperating: this.isOperating
+                    longitude: this.longitude
                     };
 
                 console.log("요청 파라미터:", params); // 요청 파라미터 로그
-                const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/reservation-service/hospital/list`,{ params }
+                const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/reservation-service/hospital/list`,{ params });
+
             );
+
                 this.hospitalList = response.data.result.map(hospital => {
                     return {
                         ...hospital,
@@ -417,11 +369,7 @@ export default {
         goToDetail(hospitalId) {
             // 병원 상세 페이지로 이동
             this.$router.push({ path: `/hospital/detail/${hospitalId}` });
-        },
-        toggleOperating() {
-            this.isOperating = !this.isOperating; // 선택 시 true, 선택 해제 시 false
-            this.loadHospitalList(); // 상태 변경 시마다 병원 리스트 다시 로드
-        },
+        }
 
     }
 }
