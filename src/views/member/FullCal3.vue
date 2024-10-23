@@ -10,12 +10,11 @@
         cols="12"
         md="2"
         lg="1"
-        :class="{'milcho-selected-child': selectedChildId === child.id}"  
         class="d-flex flex-column align-items-center"
       >
         <v-spacer :style="{ height: '30px' }"></v-spacer>
         <v-avatar size="70">
-          <v-img @click="handleChildClick(child)" :src="child.imageUrl" contain />
+          <v-img @click="handleChildClick(child)" :src="child.imageUrl" contain :style="selectedChildId === child.id ? '' : 'filter: brightness(0.9);'"/>
         </v-avatar>
         <v-text>{{ child.name }}</v-text>
       </v-col>
@@ -31,7 +30,6 @@
 
       <!-- 이벤트 및 예약 상세 정보 표시 영역 -->
       <!-- 일정 추가 버튼 -->
-      <!-- <v-btn variant="flat" @click="startNewEvent" class="milcho-btn-add">✏️</v-btn> -->
       <v-chip @click="startNewEvent" class="mb-3 ml-10">✏️</v-chip>
       <div class="milcho-details ml-5">
       <!-- 예약 상세 정보 -->
@@ -719,16 +717,6 @@ methods: {
 
 .fc-sunday-header .fc-col-header-cell-cushion {
   color: red !important;
-}
-.milcho-selected-child {
-  border: 2px solid #4CAF50; /* 테두리 강조 */
-  border-radius: 50%; /* 동그랗게 */
-  padding: 5px;
-  background-color: #e0f7fa; /* 배경색 변경 */
-}
-
-.milcho-selected-child v-avatar {
-  box-shadow: 0 0 10px rgba(0, 128, 0, 0.5); /* 선택된 아바타에 그림자 효과 */
 }
 
 </style>
