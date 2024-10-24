@@ -57,10 +57,9 @@
         </v-btn>
       </template>
     </v-text-field>
-    
-      <div v-if="isVerified" class="text-center my-4">
-        <v-icon color="green" large>mdi-check-circle</v-icon>
-        <h3>이메일 인증이 완료되었습니다.</h3>
+      <div v-if="isVerified" class="d-flex align-center text-center mb-4">
+        <v-icon class="mr-2" color="green" size="small">mdi-check-circle</v-icon>
+        <h7 class="bold-text email-verified-text">이메일 인증이 완료되었습니다.</h7>
       </div>
 
           <h6 class="text-left">비밀번호</h6>
@@ -69,7 +68,7 @@
             label="비밀번호를 입력해주세요.(비밀번호는 최소 8자 이상입니다.)" :type="'password'" :rules="[rules.required]"></v-text-field>
                       <!-- 비밀번호 확인 필드 -->
           <v-text-field 
-          v-model="form.adminPasswordConfirm"
+          v-model="adminPasswordConfirm"
           variant="underlined"
           label="비밀번호를 다시 입력해주세요.(비밀번호는 최소 8자 이상입니다.)" 
           type="password"
@@ -116,7 +115,7 @@
             label="사업자 등록번호를 입력해주세요." :rules="[rules.required]"></v-text-field>
 
           <v-row justify="center" class="button-row">
-            <v-btn class="res-btn" @click="submitForm">가입 요청</v-btn>
+            <v-btn class="res-btn" @click="submitForm" :disabled="!formValid">가입 요청</v-btn>
           </v-row>
         </v-form>
 
@@ -161,9 +160,9 @@ export default {
         adminName: '',
         adminEmail: '',
         adminPassword: '',
-        adminPasswordConfirm: '',
         adminPhoneNumber: '',
       },
+      adminPasswordConfirm: '',
       verificationCode: '', // 사용자가 입력할 인증 코드
       verificationSent: false, // 인증 코드 발송 상태
       isVerified: false, // 인증 완료 상태
@@ -270,29 +269,24 @@ export default {
       this.$router.push('/all/hospital/login'); // 확인 버튼 클릭 시 로그인 페이지로 리다이렉트
     },
     // 이메일 인증 코드 발송
-    async sendVerificationEmail() {
-      if (!this.verificationSent) {
-        try {
-          const response = await axios.post(`${process.env.VUE_APP_API_BASE_URL}/member-service/member/send-verification-code`, {
-            memberEmail: this.form.adminEmail
-          });
-          if (response.status === 200) {
-            this.verificationSent = true;
-            alert('인증 코드가 이메일로 발송되었습니다.');
-          }
-        } catch (error) {
-          alert(error.response?.data?.message || '이메일 인증 코드 발송에 실패했습니다.');
-        }
-      } else {
-        // 인증 코드 확인
-        this.checkVerificationCode();
+  async sendVerificationEmail() {
+    try {
+      // 인증 코드 발송 로직
+      const response = await axios.post(`${process.env.VUE_APP_API_BASE_URL}/member-service/member/send-verification-code`, {
+        memberEmail: this.form.adminEmail
+      });
+      if (response.status === 200) {
+        this.verificationSent = true;
+        alert('인증 코드가 이메일로 발송되었습니다.');
       }
-    },
-
+    } catch (error) {
+      alert(error.response?.data?.message || '이메일 인증 코드 발송에 실패했습니다.');
+    }
+  },
     // 인증 코드 확인
     async checkVerificationCode() {
       try {
-        const response = await axios.post(`${process.env.VUE_APP_API_BASE_URL}/member-service/member/verify-email`, {
+        const response = await axios.post(`${process.env.VUE_APP_API_BASE_URL}/member-service/member/verify-code`, {
           memberEmail: this.form.adminEmail,
           code: this.verificationCode
         });
@@ -304,6 +298,7 @@ export default {
         alert(error.response?.data?.message || '인증 코드 확인에 실패했습니다.');
       }
     }
+
  },
 };
 </script>
@@ -371,6 +366,13 @@ export default {
   color: #00499E;
   background-color: #ECF2FD;
   border-radius: 10px; /* 모서리 둥글기 */
+}
+.bold-text {
+  font-weight: 800px; /* 글자 굵게 */
+}
+
+.email-verified-text {
+  color: #1f5223; /* 원하는 색상으로 변경 (#4caf50는 초록색 예시) */
 }
 </style>
   

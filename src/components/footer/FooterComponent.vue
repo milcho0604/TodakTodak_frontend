@@ -39,7 +39,8 @@ export default{
           name:'Home', url:'/'
         },
         {
-          name:'HOSPITAL', url:'/all/hospital/login'
+          // name:'HOSPITAL', url:'/all/hospital/login'
+          name:'HOSPITAL', url:'/all/login'
         },
         {
           name:'PADAK', url:'/all/admin/login'
