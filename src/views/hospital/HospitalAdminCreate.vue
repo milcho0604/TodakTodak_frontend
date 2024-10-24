@@ -270,25 +270,20 @@ export default {
       this.$router.push('/all/hospital/login'); // 확인 버튼 클릭 시 로그인 페이지로 리다이렉트
     },
     // 이메일 인증 코드 발송
-    async sendVerificationEmail() {
-      if (!this.verificationSent) {
-        try {
-          const response = await axios.post(`${process.env.VUE_APP_API_BASE_URL}/member-service/member/send-verification-code`, {
-            memberEmail: this.form.adminEmail
-          });
-          if (response.status === 200) {
-            this.verificationSent = true;
-            alert('인증 코드가 이메일로 발송되었습니다.');
-          }
-        } catch (error) {
-          alert(error.response?.data?.message || '이메일 인증 코드 발송에 실패했습니다.');
-        }
-      } else {
-        // 인증 코드 확인
-        this.checkVerificationCode();
+  async sendVerificationEmail() {
+    try {
+      // 인증 코드 발송 로직
+      const response = await axios.post(`${process.env.VUE_APP_API_BASE_URL}/member-service/member/send-verification-code`, {
+        memberEmail: this.form.adminEmail
+      });
+      if (response.status === 200) {
+        this.verificationSent = true;
+        alert('인증 코드가 이메일로 발송되었습니다.');
       }
-    },
-
+    } catch (error) {
+      alert(error.response?.data?.message || '이메일 인증 코드 발송에 실패했습니다.');
+    }
+  },
     // 인증 코드 확인
     async checkVerificationCode() {
       try {
@@ -304,6 +299,7 @@ export default {
         alert(error.response?.data?.message || '인증 코드 확인에 실패했습니다.');
       }
     }
+
  },
 };
 </script>
