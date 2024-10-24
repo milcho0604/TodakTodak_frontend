@@ -115,14 +115,14 @@ export default {
         scheduleReservation() {
             // 스케쥴예약 페이지로 이동
             this.$router.push({
-                path: `/reservation/scheduled/${this.hospitalId}`,
+                path: `/member/reservation/scheduled/${this.hospitalId}`,
                 query: { hospitalName: this.hospital.name }
             });
         },
         todayReservation() {
             // 스케쥴예약 페이지로 이동
             this.$router.push({
-                path: `/reservation/immediate/${this.hospitalId}`,
+                path: `/member/reservation/immediate/${this.hospitalId}`,
                 query: { hospitalName: this.hospital.name }
             });
         }

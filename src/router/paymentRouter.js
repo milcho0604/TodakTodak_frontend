@@ -4,12 +4,12 @@ import SubPayment from "@/views/payment/SubPayment.vue"
 
 export const paymentRouter = [
     {
-        path: '/payment/process',
+        path: '/all/payment/process',
         name: 'PayProcess',
         component: PayProcess
     },
     {
-        path: '/payment/sub',
+        path: '/all/payment/sub',
         name: 'SubPayment',
         component: SubPayment
     },

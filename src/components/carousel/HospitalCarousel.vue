@@ -127,7 +127,7 @@
         return this.hospitalList.slice(start, end);
       },
       moveToHospital(id){
-        this.$router.push('/hospital/detail/' + id).then(() => {
+        this.$router.push('/all/hospital/detail/' + id).then(() => {
           // 페이지 이동 후 스크롤을 최상단으로 이동
           window.scrollTo(0, 0);
         });

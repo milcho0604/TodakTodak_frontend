@@ -12,7 +12,7 @@
 
         <v-col class="d-flex flex-row justify-start text-no-wrap" cols="6">
           <!-- 왼쪽 정렬 -->
-          <v-btn class="custom-button" @click="$router.push('/hospital/list')"> 
+          <v-btn class="custom-button" @click="$router.push('/all/hospital/list')"> 
               🏥 주변소아과
           </v-btn>
 

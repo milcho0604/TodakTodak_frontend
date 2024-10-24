@@ -10,17 +10,17 @@ export const communityRouter = [
         component: CommunityList
     },
     {
-        path: '/post/create',
+        path: '/community/create',
         name: 'PostCreate',
         component: PostCreate
     },
     {
-        path: '/post/:id',
+        path: '/community/:id',
         name: 'communityDetail',
         component: communityDetail
     },
     {
-        path: '/update/:postId',
+        path: '/community/update/:postId',
         name: 'PostUpdate',
         component: PostUpdate
     }

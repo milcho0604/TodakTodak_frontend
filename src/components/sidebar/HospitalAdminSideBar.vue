@@ -89,7 +89,7 @@ export default{
             this.$router.push('/member/mypage');
         },
         toReservation() {
-            this.$router.push('/doctor/reservation');
+            this.$router.push('/member/doctor/reservation');
         },
         toRegisteDoctor(){
             this.$router.push('/hospital/doctor/register');

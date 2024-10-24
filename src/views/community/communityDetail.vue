@@ -244,7 +244,7 @@ export default {
   },
   methods: {
     edit() {
-      this.$router.push(`/update/${this.postDetail.id}`);
+      this.$router.push(`community/update/${this.postDetail.id}`);
     },
     async toggleLike() {
       const postId = this.postDetail.id;

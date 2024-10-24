@@ -212,7 +212,7 @@ export default {
     },
     loginModal() {
       this.dialog = false;
-      this.$router.push('/login'); // 확인 버튼 클릭 시 로그인 페이지로 리다이렉트
+      this.$router.push('/all/hospital/login'); // 확인 버튼 클릭 시 로그인 페이지로 리다이렉트
     },
  },
 };

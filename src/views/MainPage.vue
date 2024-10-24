@@ -412,7 +412,7 @@ export default {
       window.scrollTo(0, 0);
     },
     navigateToHospitalList() {
-      this.$router.push({ path: '/hospital/list' });
+      this.$router.push({ path: '/all/hospital/list' });
       window.scrollTo(0, 0);
     },
     navigateToPostDetail(postId) {

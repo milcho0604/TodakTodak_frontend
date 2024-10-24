@@ -39,16 +39,16 @@ export default{
           name:'Home', url:'/'
         },
         {
-          name:'HOSPITAL', url:'/login'
+          name:'HOSPITAL', url:'/all/hospital/login'
         },
         {
-          name:'PADAK', url:'/admin/login'
+          name:'PADAK', url:'/all/admin/login'
         },
         {
           name:'TEAM', url:'/'
         },
         {
-          name:'SERVICES', url:'/hospital/signin'
+          name:'SERVICES', url:'/all/hospital/signin'
         },
     ] };
     },

@@ -16,48 +16,48 @@ export const memberRouter = [
         component: UpdateMember
     },
     {
-        path: '/login',
+        path: '/all/login',
         name: 'LoginPage',
         component: LoginPage
     },
     {
-        path: '/admin/login',
+        path: '/all/admin/login',
         name: 'AdminLoginPage',
         component: AdminLoginPage
     },
     {
-        path: '/authentication',
+        path: '/all/authentication',
         name: 'Authentication',
         component: Authentication  
     },
     {
-        path: '/member/find/email',
+        path: '/all/member/find/email',
         name: 'FindEmailPage',
         component: FindEmailPage  
     },    
     {
-        path: '/member/find/password',
+        path: '/all/member/find/password',
         name: 'FindPasswordPage',
         component: FindPasswordPage  
     },
     {
-        path: '/member/reset/password',
+        path: '/all/member/reset/password',
         name: 'ResetPasswordPage',
         component: ResetPasswordPage  
     },
     
     {
-        path: '/notification/list',
+        path: '/member/notification/list',
         name: 'MyNotification',
         component: MyNotification
     },
     {
-        path: '/hospital/login',
+        path: '/all/hospital/login',
         name: 'HospitalAdminLogin',
         component: HospitalAdminLogin
     },
     {
-        path: '/loginSuccess',
+        path: '/all/loginSuccess',
         component: LoginPage,
         beforeEnter: (to, from, next) => {
             const accessToken = to.query.token; // 쿼리 파라미터에서 토큰을 가져옴
@@ -81,15 +81,15 @@ export const memberRouter = [
                     window.location.href = "/";
                 } catch (error) {
                     console.error("Invalid token", error);
-                    next('/login'); // 토큰이 유효하지 않은 경우 로그인 페이지로 리다이렉트
+                    next('/'); // 토큰이 유효하지 않은 경우 로그인 페이지로 리다이렉트
                 }
             } else {
-                next('/login'); // 토큰이 없다면 로그인 페이지로 리다이렉트
+                next('/'); // 토큰이 없다면 로그인 페이지로 리다이렉트
             }
         }
     },
     {
-        path: '/updateSuccess',
+        path: '/all/updateSuccess',
         component: LoginPage,
         beforeEnter: (to, from, next) => {
             const accessToken = to.query.token; // 쿼리 파라미터에서 토큰을 가져옴
@@ -114,10 +114,10 @@ export const memberRouter = [
                     window.location.href = "/member/update";
                 } catch (error) {
                     console.error("Invalid token", error);
-                    next('/login'); // 토큰이 유효하지 않은 경우 로그인 페이지로 리다이렉트
+                    next('/'); // 토큰이 유효하지 않은 경우 로그인 페이지로 리다이렉트
                 }
             } else {
-                next('/login'); // 토큰이 없다면 로그인 페이지로 리다이렉트
+                next('/'); // 토큰이 없다면 로그인 페이지로 리다이렉트
             }
         }
     }
