@@ -27,7 +27,7 @@
                 </v-row>
             </v-col>
             <v-col class="text-center" cols="3">
-                <div class="button inter-bold" @click="$router.push(`/untact/${doctorEmail}/form`)">비대면 진료 신청</div>
+                <div class="button inter-bold" @click="$router.push(`/member/untact/${doctorEmail}/form`)">비대면 진료 신청</div>
             </v-col>
         </v-row>
 

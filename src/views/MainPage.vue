@@ -404,7 +404,7 @@ export default {
       }
     },
     navigateToUntactList() {
-      this.$router.push({ path: '/untact/list' });
+      this.$router.push({ path: '/all/untact/list' });
       window.scrollTo(0, 0);
     },
     navigateToCommunityList() {

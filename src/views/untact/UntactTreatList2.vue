@@ -203,7 +203,7 @@ export default {
         },
         goToDetail(doctorEmail) {
             // 병원 상세 페이지로 이동
-            this.$router.push({ path: `/untact/detail/${doctorEmail}` });
+            this.$router.push({ path: `/all/untact/detail/${doctorEmail}` });
         },
         // 검색어 입력 시 호출되는 메서드
         onSearchInput() {

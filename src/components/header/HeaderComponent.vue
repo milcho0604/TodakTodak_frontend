@@ -16,7 +16,7 @@
               🏥 주변소아과
           </v-btn>
 
-          <v-btn class="custom-button" @click="$router.push('/untact/list')">
+          <v-btn class="custom-button" @click="$router.push('/all/untact/list')">
             🏠 비대면진료
           </v-btn>
 

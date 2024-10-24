@@ -336,7 +336,7 @@ export default {
         alert("진료가 종료되었습니다.");
         this.reviewModal = true;
       } else if (localStorage.getItem('role') === 'Doctor') {
-        window.location.href = '/rooms';
+        window.location.href = '/admin/rooms';
       }
     },
     handlePeerLeave(message) {

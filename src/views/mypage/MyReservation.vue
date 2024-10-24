@@ -97,7 +97,7 @@
                             <v-col cols="4"></v-col>
                             <v-col cols="4" style="text-align: end;">
                                 <v-chip v-if="item.untact && item.medichart == '진료중'" class="no-untact"
-                                    @click="this.$router.push(`/room/${item.id}`)"><img
+                                    @click="this.$router.push(`/member/room/${item.id}`)"><img
                                         src="@/assets/untact_image.png" />
                                     <strong>비대면진료 접속</strong>
                                 </v-chip>
