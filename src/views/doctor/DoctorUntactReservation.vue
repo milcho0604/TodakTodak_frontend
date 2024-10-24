@@ -119,10 +119,16 @@
 
         </div>
     </v-container>
+    <DoctorSideBar/>
 </template>
 <script>
 import axios from 'axios';
+import DoctorSideBar from '@/components/sidebar/DoctorSideBar.vue';
+
 export default {
+    components:{
+        DoctorSideBar,
+    },
     data() {
         return {
             confirmList: [],

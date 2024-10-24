@@ -25,51 +25,44 @@
     <v-list density="compact" nav>
         <v-list-item
         :prepend-avatar="myPage"
-        title="마이페이지"
+        title="회원리스트"
         value="myPage"
-        @click="toMyPage"
+        @click="toMemberList"
         ></v-list-item>
 
         <v-list-item
         :prepend-avatar="child"
-        title="자녀관리"
+        title="상담리스트"
         value="childConfig"
-        @click="toMyChild"
+        @click="toCsList"
+        ></v-list-item>
+
+        <v-list-item
+        :prepend-avatar="child"
+        title="신고리스트"
+        value="childConfig"
+        @click="toReportList"
         ></v-list-item>
 
         <v-list-item
         :prepend-avatar="hospital"
-        title="예약내역"
+        title="결제리스트"
         value="reservation"
-        @click="toMyReservation"
+        @click="toPaymentList"
         ></v-list-item>
 
         <v-list-item
         :prepend-avatar="review"
-        title="리뷰내역"
+        title="병원리스트"
         value="review"
-        @click="toMyReview"
+        @click="toHospitalList"
         ></v-list-item>
 
         <v-list-item
         :prepend-avatar="calendar"
-        title="우리아이 캘린더"
+        title="대시보드"
         value="calendar"
-        @click="toCalendar"
-        ></v-list-item>
-
-        <v-list-item
-        :prepend-avatar="doctorQnA"
-        title="의사 Q&A"
-        value="doctorQnA"
-        @click="toMyQnA"
-        ></v-list-item>
-
-        <v-list-item
-        :prepend-avatar="cs"
-        title="고객센터"
-        value="cs"
-        @click="toChat"
+        @click="toDashBoard"
         ></v-list-item>
     </v-list>
     </v-navigation-drawer>
@@ -99,29 +92,24 @@ export default{
         this.profileImgUrl = localStorage.getItem("profileImgUrl");
     },
     methods:{
-        toMyPage() {
-            this.$router.push('/member/mypage');
+        toMemberList() {
+            this.$router.push('/admin/member/list');
         },
-        toMyReservation() {
-            this.$router.push('/member/mypage/reservation');
+        toCsList(){
+            this.$router.push('/admin/cs/list')
         },
-        toMyChild() {
-            this.$router.push('/member/child');
+        toReportList() {
+            this.$router.push('/todak/report');
         },
-        toCalendar() {
-            this.$router.push('/member/mychild-cal');
+        toPaymentList() {
+            this.$router.push('/admin/payment/list');
         },
-        toMyQnA() {
-            // 아직 페이지 없어서 마이페이지로 라우팅
-            this.$router.push('/member/mypage');
+        toHospitalList() {
+            this.$router.push('/admin/hospital/list');
         },
-        toMyReview() {
-            this.$router.push('/member/myReviewList');
+        toDashBoard() {
+            this.$router.push('/todak/statistics');
         },
-        toChat() {
-            this.$router.push('/chat');
-        },
-
     }
 }
 </script>

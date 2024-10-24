@@ -7,6 +7,7 @@ import FullCal3 from "@/views/member/FullCal3.vue";
 
 
 
+
 export const mypageRouter = [
     {
         path: '/member/mypage',

@@ -31,55 +31,32 @@
         ></v-list-item>
 
         <v-list-item
-        :prepend-avatar="child"
-        title="자녀관리"
-        value="childConfig"
-        @click="toMyChild"
-        ></v-list-item>
-
-        <v-list-item
         :prepend-avatar="hospital"
-        title="예약내역"
+        title="예약리스트"
         value="reservation"
-        @click="toMyReservation"
-        ></v-list-item>
-
-        <v-list-item
-        :prepend-avatar="review"
-        title="리뷰내역"
-        value="review"
-        @click="toMyReview"
+        @click="toReservation"
         ></v-list-item>
 
         <v-list-item
         :prepend-avatar="calendar"
-        title="우리아이 캘린더"
+        title="의사등록"
         value="calendar"
-        @click="toCalendar"
+        @click="toRegisteDoctor"
         ></v-list-item>
 
         <v-list-item
         :prepend-avatar="doctorQnA"
-        title="의사 Q&A"
+        title="병원수정"
         value="doctorQnA"
-        @click="toMyQnA"
+        @click="toModifyHospital"
         ></v-list-item>
 
         <v-list-item
         :prepend-avatar="cs"
-        title="고객센터"
+        title="영업시간등록/수정"
         value="cs"
-        @click="toChat"
+        @click="toRegisterModify"
         ></v-list-item>
-
-        <v-list-item
-        v-if="isDoctorAdmin"
-        :prepend-avatar="doctors"
-        title="의사관리"
-        value="toDoctors"
-        @click="toDoctors"
-        ></v-list-item>
-
     </v-list>
     </v-navigation-drawer>
     <v-main style="height: 250px"></v-main>
@@ -101,42 +78,28 @@ export default{
             reservation: 'https://todak-file.s3.ap-northeast-2.amazonaws.com/default-images/reservation-icon.png',
             review: 'https://todak-file.s3.ap-northeast-2.amazonaws.com/default-images/review-icon.png',
             hospital: 'https://todak-file.s3.ap-northeast-2.amazonaws.com/default-images/hospital-icon.png',
-            doctors: 'https://todak-file.s3.ap-northeast-2.amazonaws.com/214ff1d2-bd49-4766-9925-d6dea16d1139_doctor.png'
         }
     },
     created(){
         this.name = localStorage.getItem("name");
         this.profileImgUrl = localStorage.getItem("profileImgUrl");
-        const role = localStorage.getItem("role");
-        this.isDoctorAdmin = role === 'HospitalAdmin' || role === 'TodakAdmin';
     },
     methods:{
         toMyPage() {
             this.$router.push('/member/mypage');
         },
-        toMyReservation() {
-            this.$router.push('/member/mypage/reservation');
+        toReservation() {
+            this.$router.push('/doctor/reservation');
         },
-        toMyChild() {
-            this.$router.push('/member/child');
+        toRegisteDoctor(){
+            this.$router.push('/hospital/doctor/register');
         },
-        toCalendar() {
-            this.$router.push('/member/mychild-cal');
+        toModifyHospital(){
+            this.$router.push('/hospital/admin/detail');
         },
-        toMyQnA() {
-            // 아직 페이지 없어서 마이페이지로 라우팅
-            this.$router.push('/member/mypage');
-        },
-        toMyReview() {
-            this.$router.push('/member/myReviewList');
-        },
-        toChat() {
-            this.$router.push('/chat');
-        },
-        toDoctors() {
-            this.$router.push('/hospital/doctor');
-        },
-
+        toRegisterModify(){
+            this.$router.push('');
+        }
     }
 }
 </script>

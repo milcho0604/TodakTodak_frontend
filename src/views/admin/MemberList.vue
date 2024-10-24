@@ -122,12 +122,17 @@
             ></v-pagination>
         </v-row>
     </v-container>
+    <PadakAdminSideBar/>
 </template>
 
 <script>
 import axios from 'axios';
+import PadakAdminSideBar from '@/components/sidebar/PadakAdminSideBar.vue';
 
 export default {
+    components:{
+        PadakAdminSideBar,
+    },
     data() {
         return {
             members: [], // 전체 회원 목록

@@ -106,12 +106,17 @@
             </v-card>
           </v-dialog>
     </v-container>
+    <PadakAdminSideBar/>
 </template>
 
 <script>
 import axios from 'axios';
+import PadakAdminSideBar from '@/components/sidebar/PadakAdminSideBar.vue';
 
 export default {
+    components:{
+        PadakAdminSideBar,
+    },
     data() {
         return {
             payments: [], // 전체 결제 내역 목록
