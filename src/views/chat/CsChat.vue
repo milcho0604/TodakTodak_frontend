@@ -1,5 +1,6 @@
 <template>
-    <v-container class="chat-container">
+    <v-container>
+      <!-- 채팅방 헤더 -->
       <v-app-bar app scroll-behavior="elevate">
         <!-- 로고 이미지 -->
         <img src="@/assets/todak-new-logo-removebg.png" alt="TodakTodak Logo" class="logo-image ml-3" />
@@ -16,13 +17,22 @@
         <v-btn icon @click="goForward">
             <v-icon>mdi-arrow-right</v-icon>
         </v-btn>
+
+          <!-- reload 버튼 -->
+        <v-btn icon @click="reloadChatRooms">
+            <v-icon :class="{ 'rotate': isReloading }">mdi-refresh</v-icon>
+        </v-btn>
       </v-app-bar>
 
       <h2>{{this.chatRoomId}}번 채팅방</h2>
       
       <div class="chat-box">
         <div v-for="(message, index) in messages" :key="index" class="message">
-          <strong>{{ message.senderName }}:</strong> {{ message.content }}
+          <v-avatar>
+            <v-img :src="message.senderProfileImgUrl"></v-img>
+          </v-avatar>
+          <strong>{{ message.senderName }}:</strong> {{ message.contents }}
+          <br>{{ message.createdAt }}
         </div>
       </div>
       
@@ -37,7 +47,7 @@
     import { Stomp } from "@stomp/stompjs";
     import SockJS from "sockjs-client";
     // import { useRoute } from 'vue-router';
-    // import axios from 'axios';
+    import axios from 'axios';
   
   export default {
     props: {
@@ -53,15 +63,20 @@
         messages: [], // 수신된 메시지 저장
         chatRoomId: null,  // 채팅방 id
         memberEmail: '',
-
+        isReloading: false, // 로딩 상태
+        memberInfo:[], // 채팅참여자(상대방) 정보
+        myId: '', // 현재 접속자 id
       };
     },
     created(){
       // this.$route.params를 사용하여 채팅방 ID를 가져옴
       this.chatRoomId = this.$route.params.chatRoomId;
+      this.myId = localStorage.getItem('memberId'); 
     },
-    mounted() {
-      this.connect();
+    async mounted() {
+      this.connect(); // 웹소켓 connect
+      await this.loadChatRoomMemberInfo(); // 채팅방 참여자 정보 조회
+      await this.loadChatMessages(); // 채팅메시지 리스트 조회
     },
     watch: {
       '$route.params.chatRoomId': {
@@ -73,7 +88,7 @@
     },
     methods: {
       connect() {
-      const socket = new SockJS('http://localhost:8080/member-service/ws/chat'); 
+      const socket = new SockJS(`${process.env.VUE_APP_API_BASE_URL}/member-service/ws/chat`); 
       this.stompClient = Stomp.over(socket);
 
       // JWT 토큰을 localStorage에서 가져와 auth-token으로 설정
@@ -88,9 +103,11 @@
           const receivedMessage = JSON.parse(message.body);
           this.messages.push({
             senderName: receivedMessage.senderName,
-            content: receivedMessage.contents
+            contents: receivedMessage.contents,
+            senderProfileImgUrl: receivedMessage.senderProfileImgUrl,
+            createdAt: receivedMessage.createdAt
           });
-          console.log(this.messages);
+          console.log("this.message",this.messages);
           console.log("receivedMessage")
           console.log(receivedMessage)
         });
@@ -107,7 +124,7 @@
         const message = {
           chatRoomId: this.chatRoomId,
           contents: this.messageToSend,
-          token: localStorage.getItem('token')
+          token: localStorage.getItem('token')             
         };
         
         this.stompClient.send(`/pub/${this.chatRoomId}`, {}, JSON.stringify(message));
@@ -145,6 +162,44 @@
   goForward() {
       this.$router.go(1); // 앞으로가기 (히스토리에서 다음 페이지로 이동)
   },
+   // 새로고침 아이콘 클릭 시 호출되는 함수
+  reloadChatRooms() {
+      this.rotateAnimation(); // 애니메이션 시작
+      this.loadChatMessages(); // 채팅방 메시지 다시 불러오기
+  },
+  rotateAnimation(){
+      this.isReloading = true;
+
+      // 1초 후에 애니메이션 종료
+      setTimeout(() => {
+          this.isReloading = false;
+      }, 1000);
+  },
+  async loadChatMessages(){
+    try{
+      const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/member-service/chat/chatroom/${this.chatRoomId}/messages`);
+      this.messages = response.data.result;
+      console.log(response.data);
+    }catch(error){
+      console.log(error);
+    }
+  },
+  async loadChatRoomMemberInfo(){
+    try{
+      const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/member-service/chat/member/info/chatroom/${this.chatRoomId}`);
+      // 채팅참여자 정보
+      this.memberInfo = response.data.result;
+      console.log(response.data);
+    }catch(error){
+      console.log(error);
+    }
+
+  },
+  // 날짜 포맷팅 함수
+  formatDate(date) {
+    return new Date(date).toLocaleString();
+  },
+
 }
 };
 </script>
@@ -159,7 +214,7 @@ margin: 0 auto;
 
 .chat-box {
 border: 1px solid #ccc;
-height: 300px;
+min-height: 600px;
 overflow-y: auto;
 padding: 10px;
 margin-bottom: 10px;
@@ -187,5 +242,17 @@ padding: 5px 10px;
   max-width: 100%; /* 부모 요소 너비를 넘지 않도록 설정 */
   height: auto; /* 높이는 비율에 맞춰 자동 조절 */
   object-fit: contain; /* 이미지가 고정된 크기 안에서 비율을 유지 */
+}
+.rotate {
+  animation: rotate360 1s linear infinite;
+}
+
+@keyframes rotate360 {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
 </style>

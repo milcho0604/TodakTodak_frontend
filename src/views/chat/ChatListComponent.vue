@@ -1,5 +1,6 @@
 <template>
 <v-container class="outer-box">
+    <!-- 채팅 리스트 헤더 -->
     <v-app-bar app scroll-behavior="elevate">
         <!-- 로고 이미지 -->
         <img src="@/assets/todak-new-logo-removebg.png" alt="TodakTodak Logo" class="logo-image ml-3" />
@@ -24,7 +25,7 @@
     </v-app-bar>
 
     <!-- 채팅방 리스트 -->
-    <v-row>
+    <v-row class="chat-list">
         <v-col cols="12" >
             <!-- 채팅방 카드 -->
             <v-card 
@@ -64,6 +65,18 @@
             </v-card>
         </v-col>
     </v-row>
+    <!-- 새로운 채팅방 만들기 버튼 -->
+    <v-btn 
+      class="create-chat-btn" 
+      @click="createNewChatRoom"
+      fab
+      dark
+      variant="flat"
+      elevation="2"
+    >
+        <img src="@/assets/cs_center_image.png" alt="TodakTodak Logo" class="cs-image" />
+    </v-btn>
+
 </v-container>
 </template>
 <script>
@@ -104,6 +117,12 @@ export default{
         },
         toChatRoom(chatRoomId){
             this.$router.push(`/chat/${chatRoomId}`); // 선택한 채팅방으로 경로 이동
+        },
+        createNewChatRoom() {
+            // 새로운 채팅방 생성 로직을 여기에 작성
+            console.log("새로운 채팅방 생성");
+            // 예를 들어, 라우팅을 통해 채팅방 생성 페이지로 이동할 수 있습니다.
+            this.$router.push('/create-chat-room'); // 해당 경로를 적절히 변경하세요.
         },
         goBack() {
             this.$router.go(-1); // 뒤로가기 (히스토리에서 이전 페이지로 이동)
@@ -168,5 +187,28 @@ export default{
     to {
       transform: rotate(360deg);
     }
+}
+.chat-list {
+    position: relative; /* 부모 요소를 relative로 설정 */
   }
+  
+.create-chat-btn {
+    width: 80px; /* 버튼의 폭 */
+    min-height: 80px; /* 버튼의 높이 */
+    position: fixed; /* 화면에 고정 */
+    bottom: 50px; /* 아래에서의 거리 */
+    right: 30px; /* 오른쪽에서의 거리 */
+    z-index: 1000; /* 다른 요소들 위에 나타나도록 설정 */
+    border-radius: 100px; /* 동그라미 모양 */
+    overflow: hidden; /* 자식 요소가 버튼을 넘치지 않도록 설정 */
+    display: flex; /* 버튼의 자식 요소를 중앙 정렬 */
+    align-items: center; /* 수직 중앙 정렬 */
+    justify-content: center; /* 수평 중앙 정렬 */
+}
+.cs-image{
+    width: 80px; 
+    height: 100%; 
+    object-fit: contain; /* 이미지 비율 유지 */
+    box-sizing: border-box; /* padding과 border를 포함한 크기 계산 */
+}
 </style>

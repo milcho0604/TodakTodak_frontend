@@ -28,9 +28,9 @@
                     class="hospital-avatar"
                   >
                     <v-img
-                      :src="hospital.hospitalImageUrl"
-                      alt="병원사진"
-                      cover
+                    :src="hospital.hospitalImageUrl ? hospital.hospitalImageUrl : 'https://todak-file.s3.ap-northeast-2.amazonaws.com/default-images/no-image.png'" 
+                    alt="병원사진"
+                    cover
                     />
                   </v-avatar>
                 </v-row>
