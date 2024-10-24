@@ -18,7 +18,7 @@
             <v-icon>mdi-arrow-right</v-icon>
         </v-btn>
 
-          <!-- reload 버튼 -->
+        <!-- reload 버튼 -->
         <v-btn icon @click="reloadChatRooms">
             <v-icon :class="{ 'rotate': isReloading }">mdi-refresh</v-icon>
         </v-btn>
@@ -27,12 +27,25 @@
       <h2>{{this.chatRoomId}}번 채팅방</h2>
       
       <div class="chat-box">
-        <div v-for="(message, index) in messages" :key="index" class="message">
-          <v-avatar>
-            <v-img :src="message.senderProfileImgUrl"></v-img>
-          </v-avatar>
-          <strong>{{ message.senderName }}:</strong> {{ message.contents }}
-          <br>{{ message.createdAt }}
+        <div 
+          v-for="(message, index) in messages" 
+          :key="index" 
+          :class="['message', { 'my-message': message.senderName === currentUserName, 'other-message': message.senderName !== currentUserName }]"
+        >
+          <!-- 메시지 콘텐츠와 아바타 -->
+          <div class="message-wrapper">
+            <!-- 아바타 -->
+            <v-avatar size="60">
+              <v-img :src="message.senderProfileImgUrl"></v-img>
+            </v-avatar>
+
+            <!-- 메시지 콘텐츠 -->
+            <div class="message-content">
+              <strong>{{ message.senderName }}:</strong> {{ message.contents }}
+              <br />
+              {{ formatDate(message.createdAt) }}
+            </div>
+          </div>
         </div>
       </div>
       
@@ -66,16 +79,17 @@
         isReloading: false, // 로딩 상태
         memberInfo:[], // 채팅참여자(상대방) 정보
         myId: '', // 현재 접속자 id
+        currentUserName: null,
       };
     },
     created(){
       // this.$route.params를 사용하여 채팅방 ID를 가져옴
       this.chatRoomId = this.$route.params.chatRoomId;
-      this.myId = localStorage.getItem('memberId'); 
+      this.currentUserName = localStorage.getItem('name'); 
     },
     async mounted() {
       this.connect(); // 웹소켓 connect
-      await this.loadChatRoomMemberInfo(); // 채팅방 참여자 정보 조회
+      // await this.loadChatRoomMemberInfo(); // 채팅방 참여자 정보 조회
       await this.loadChatMessages(); // 채팅메시지 리스트 조회
     },
     watch: {
@@ -102,6 +116,7 @@
           console.log("구독시작");
           const receivedMessage = JSON.parse(message.body);
           this.messages.push({
+            senderId: receivedMessage.senderId,
             senderName: receivedMessage.senderName,
             contents: receivedMessage.contents,
             senderProfileImgUrl: receivedMessage.senderProfileImgUrl,
@@ -184,21 +199,25 @@
       console.log(error);
     }
   },
-  async loadChatRoomMemberInfo(){
-    try{
-      const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/member-service/chat/member/info/chatroom/${this.chatRoomId}`);
-      // 채팅참여자 정보
-      this.memberInfo = response.data.result;
-      console.log(response.data);
-    }catch(error){
-      console.log(error);
-    }
-
-  },
+  // async loadChatRoomMemberInfo(){
+  //   try{
+  //     const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/member-service/chat/member/info/chatroom/${this.chatRoomId}`);
+  //     // 채팅참여자 정보
+  //     this.memberInfo = response.data.result;
+  //     console.log(response.data);
+  //   }catch(error){
+  //     console.log(error);
+  //   }
+  // },
   // 날짜 포맷팅 함수
   formatDate(date) {
     return new Date(date).toLocaleString();
   },
+  isMyMessage(message) {
+        // 보낸 사람이 나인지 확인 (senderId 또는 senderEmail 사용 가능)
+        return message.senderId === this.myId;
+  },
+
 
 }
 };
@@ -206,43 +225,70 @@
 
 <style scoped>
 .chat-container {
-display: flex;
-flex-direction: column;
-width: 400px;
-margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  width: 400px;
+  margin: 0 auto;
 }
 
 .chat-box {
-border: 1px solid #ccc;
-min-height: 600px;
-overflow-y: auto;
-padding: 10px;
-margin-bottom: 10px;
+  border: 1px solid #ccc;
+  min-height: 600px;
+  overflow-y: auto;
+  padding: 10px;
+  margin-bottom: 10px;
 }
 
-.message {
-margin-bottom: 10px;
+/* 아바타와 메시지를 감싸는 래퍼 */
+.message-wrapper {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.my-message .message-wrapper {
+  flex-direction: row-reverse; /* 내가 보낸 메시지일 때 콘텐츠와 아바타 순서 변경 */
+}
+
+.message-content {
+  max-width: 60%;
+  padding: 10px;
+  border-radius: 10px;
+  background-color: #f1f1f1;
+}
+
+.my-message .message-content {
+  background-color: #007AFF; /* 내가 보낸 메시지 색상 */
+  color: #FFFFFF;
+  text-align: right;
+}
+
+.other-message .message-content {
+  background-color: #EFEFEF; /* 상대방 메시지 색상 */
+  text-align: left;
 }
 
 .input-box {
-display: flex;
-gap: 10px;
+  display: flex;
+  gap: 10px;
 }
 
 input {
-flex: 1;
-padding: 5px;
+  flex: 1;
+  padding: 5px;
 }
 
 button {
-padding: 5px 10px;
+  padding: 5px 10px;
 }
+
 .logo-image {
   width: 150px; /* 원하는 고정 너비 */
   max-width: 100%; /* 부모 요소 너비를 넘지 않도록 설정 */
   height: auto; /* 높이는 비율에 맞춰 자동 조절 */
   object-fit: contain; /* 이미지가 고정된 크기 안에서 비율을 유지 */
 }
+
 .rotate {
   animation: rotate360 1s linear infinite;
 }
@@ -255,4 +301,5 @@ padding: 5px 10px;
     transform: rotate(360deg);
   }
 }
+
 </style>
