@@ -176,6 +176,7 @@
 <script>
 import FullCalendar from '@fullcalendar/vue3';
 import dayGridPlugin from '@fullcalendar/daygrid';
+import timeGridPlugin from '@fullcalendar/timegrid'; // 시간 그리드 플러그인 추가
 import interactionPlugin from '@fullcalendar/interaction';
 import axios from 'axios';
 import MyPageSideBar from "@/components/sidebar/MyPageSideBar.vue";
@@ -188,8 +189,24 @@ export default {
   data() {
     return {
       calendarOptions: {
-        plugins: [dayGridPlugin, interactionPlugin],
+        plugins: [dayGridPlugin, interactionPlugin, timeGridPlugin],
         initialView: 'dayGridMonth',
+        headerToolbar: {
+        left: 'prev,next today',
+        center: 'title',
+        right: 'dayGridMonth,timeGridWeek,timeGridDay' // 월별, 주별, 일별 보기 버튼 추가
+      },
+      views: {
+        dayGridMonth: { // 월별 뷰 설정
+          buttonText: '월별'
+        },
+        timeGridWeek: { // 주별 뷰 설정
+          buttonText: '주별'
+        },
+        timeGridDay: { // 일별 뷰 설정
+          buttonText: '일별'
+        }
+      },
         events: [],
         editable: true,
         dateClick: this.handleDateClick,
