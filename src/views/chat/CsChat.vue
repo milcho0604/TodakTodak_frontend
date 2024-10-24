@@ -1,5 +1,23 @@
 <template>
-    <div class="chat-container">
+    <v-container class="chat-container">
+      <v-app-bar app scroll-behavior="elevate">
+        <!-- 로고 이미지 -->
+        <img src="@/assets/todak-new-logo-removebg.png" alt="TodakTodak Logo" class="logo-image ml-3" />
+        
+        <!-- 버튼 그룹 -->
+        <v-spacer></v-spacer> <!-- 좌우 정렬을 위한 공간 -->
+        
+        <!-- 뒤로가기 버튼 -->
+        <v-btn icon @click="goBack">
+            <v-icon>mdi-arrow-left</v-icon>
+        </v-btn>
+
+        <!-- 앞으로가기 버튼 -->
+        <v-btn icon @click="goForward">
+            <v-icon>mdi-arrow-right</v-icon>
+        </v-btn>
+      </v-app-bar>
+
       <h2>{{this.chatRoomId}}번 채팅방</h2>
       
       <div class="chat-box">
@@ -12,13 +30,13 @@
         <input v-model="messageToSend" @keyup.enter="sendMessage" placeholder="메시지를 입력하세요..." />
         <button @click="sendMessage">전송</button>
       </div>
-    </div>
+    </v-container>
   </template>
   
   <script>
     import { Stomp } from "@stomp/stompjs";
     import SockJS from "sockjs-client";
-    import { useRoute } from 'vue-router';
+    // import { useRoute } from 'vue-router';
     // import axios from 'axios';
   
   export default {
@@ -33,17 +51,25 @@
         stompClient: null,
         messageToSend: '',
         messages: [], // 수신된 메시지 저장
-        chatRoomId: '',  // 채팅방 id
+        chatRoomId: null,  // 채팅방 id
         memberEmail: '',
 
       };
     },
     created(){
-      const route = useRoute();
-      this.chatRoomId = route.params.chatRoomId;
+      // this.$route.params를 사용하여 채팅방 ID를 가져옴
+      this.chatRoomId = this.$route.params.chatRoomId;
     },
     mounted() {
       this.connect();
+    },
+    watch: {
+      '$route.params.chatRoomId': {
+        immediate: true,
+        handler(newValue) {
+          this.chatRoomId = newValue;
+        }
+      }
     },
     methods: {
       connect() {
@@ -112,7 +138,13 @@
   // },
   // setChatPageActive(isActive){
   //   this.isChatPageActive = isActive;
-  }
+  },
+  goBack() {
+      this.$router.go(-1); // 뒤로가기 (히스토리에서 이전 페이지로 이동)
+  },
+  goForward() {
+      this.$router.go(1); // 앞으로가기 (히스토리에서 다음 페이지로 이동)
+  },
 }
 };
 </script>
@@ -149,5 +181,11 @@ padding: 5px;
 
 button {
 padding: 5px 10px;
+}
+.logo-image {
+  width: 150px; /* 원하는 고정 너비 */
+  max-width: 100%; /* 부모 요소 너비를 넘지 않도록 설정 */
+  height: auto; /* 높이는 비율에 맞춰 자동 조절 */
+  object-fit: contain; /* 이미지가 고정된 크기 안에서 비율을 유지 */
 }
 </style>

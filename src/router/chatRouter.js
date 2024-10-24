@@ -4,6 +4,7 @@ import ChatListComponent from "@/views/chat/ChatListComponent.vue"
 
 export const chatRouter = [
     {
+        // 채팅방
         path: '/chat/:chatRoomId',
         name: 'Chat',
         component: CsChat
@@ -14,6 +15,7 @@ export const chatRouter = [
         component: MyChatRoom
     },
     {
+        // 회원입장에서 보이는 내 채팅리스트
         path: '/chat/my-chat/list',
         name: 'ChatListComponent',
         component: ChatListComponent

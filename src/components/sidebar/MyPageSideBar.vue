@@ -136,7 +136,7 @@ export default{
             const chatWindow = window.open(
             '/chat/my-chat/list',  // ChatListComponent가 렌더링될 URL
             '_blank',  // 새로운 창을 열기 위한 옵션
-            'width=600,height=800'  // 창의 크기를 지정
+            'width=500,height=800'  // 창의 크기를 지정
             );
 
             if (!chatWindow) {
