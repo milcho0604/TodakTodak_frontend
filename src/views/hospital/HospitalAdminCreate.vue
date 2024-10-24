@@ -68,7 +68,7 @@
             label="비밀번호를 입력해주세요.(비밀번호는 최소 8자 이상입니다.)" :type="'password'" :rules="[rules.required]"></v-text-field>
                       <!-- 비밀번호 확인 필드 -->
           <v-text-field 
-          v-model="form.adminPasswordConfirm"
+          v-model="adminPasswordConfirm"
           variant="underlined"
           label="비밀번호를 다시 입력해주세요.(비밀번호는 최소 8자 이상입니다.)" 
           type="password"
@@ -160,9 +160,9 @@ export default {
         adminName: '',
         adminEmail: '',
         adminPassword: '',
-        adminPasswordConfirm: '',
         adminPhoneNumber: '',
       },
+      adminPasswordConfirm: '',
       verificationCode: '', // 사용자가 입력할 인증 코드
       verificationSent: false, // 인증 코드 발송 상태
       isVerified: false, // 인증 완료 상태
