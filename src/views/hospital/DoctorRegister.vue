@@ -13,7 +13,7 @@
                         }" />
                 </v-avatar>
                 <v-spacer :style="{ height: '5px' }"></v-spacer>
-                <span v-if="selectedDoctor && selectedDoctor.id === doctor.id" class="inter-light" style="margin-left:3px; font-size: 14px;"> {{ doctor.name }} 의사</span>
+                <span v-if="selectedDoctor && selectedDoctor.id === doctor.id" class="inter-light" style="margin-left:3px; font-size: 14px;"> {{ doctor.name }} </span>
             </v-col>
             <v-col md="2" lg="1" class="d-flex flex-column align-items-center mt-4">
                 <v-icon class="plus-icon" @click="createModal = true">mdi-plus-circle-outline</v-icon>
@@ -26,7 +26,7 @@
             <v-col cols="3">
                 <!-- 의사약력 -->
                 <v-avatar style="height:auto; width:180px; border-radius: 5px; object-fit:cover;" class="ml-10">
-                    <v-img @click="handleDoctorClick(doctor)"
+                    <v-img
                         :src="selectedDoctor.profileImgUrl ? selectedDoctor.profileImgUrl : defaultImageUrl"
                          />
                 </v-avatar>
@@ -163,7 +163,7 @@
                 </v-card>
             </v-col>
         </v-row>
-        <v-row @click="doctorDeleteModal=true">
+        <v-row @click="doctorDeleteModal=true" justify="center">
             <div class="delete-button inter-bold">
                 삭제
             </div>
@@ -228,7 +228,9 @@ export default {
         }
     },
     created() {
+        console.log('되냐???????');
         this.fetchDoctors();
+        console.log('되냐?');
     },
     computed: {
         dayOfWeekList() {
@@ -456,8 +458,8 @@ export default {
     cursor: pointer;
 }
 .delete-button {
-    background-color: #d32f2f;
-    color: white;
+    background-color: #D8D8D8;
+    color: #676767;
     padding: 10px 15px;
     border-radius: 40px;
 }

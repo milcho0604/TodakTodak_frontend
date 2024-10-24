@@ -15,7 +15,7 @@
                             alt="병원" class="card-icon" />
                     </div>
                     <div class="dashboard-cs-card">
-                        <span class="dashboard-text" @click="$router.push('/')">고객상담 채팅</span>
+                        <span class="dashboard-text" @click="$router.push('/admin/cschat/')">고객상담 채팅</span>
                         <img src="https://todak-file.s3.ap-northeast-2.amazonaws.com/default-images/cs_center_image.png"
                             alt="채팅" class="card-icon" />
                     </div>
@@ -284,7 +284,8 @@ export default {
         },
         async waitingMemberCount() {
             try {
-                const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/member-service/member/waiting/list`);
+                const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/reservation-service/hospital/list/accept`);
+                console.log(response)
                 this.waitingMember = response.data;
             } catch (e) {
                 console.error(e);
