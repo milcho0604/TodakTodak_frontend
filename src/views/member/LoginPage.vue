@@ -103,7 +103,7 @@ export default {
 
         const response = await axios.post(`${process.env.VUE_APP_API_BASE_URL}/member-service/member/login`, loginData);
         console.log(response)
-
+        
         const token = response.data.result;
         const decodedToken = jwtDecode(token);
         const role = decodedToken.role;

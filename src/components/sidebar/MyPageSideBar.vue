@@ -134,7 +134,7 @@ export default{
             this.$router.push('/chat');
         },
         toDoctors() {
-            this.$router.push('/hospital/doctor');
+            this.$router.push('/hospital/doctor/register');
         },
 
     }

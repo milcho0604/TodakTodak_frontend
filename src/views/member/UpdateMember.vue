@@ -4,38 +4,44 @@
       <img src="@/assets/todak-new-logo-removebg.png" alt="TodakTodak Logo" class="logo-image" />
     </div>
 
-    <!-- <div class="signup-title text-center">회원가입</div> -->
-
     <v-row justify="center">
       <v-col cols="12" sm="10" md="8">
         <v-card class="simple-card" variant="flat">
-          <div class="signup-title text-center">회원가입</div>
+          <div class="signup-title text-center">회원 정보를 입력해주세요.</div>
           <v-card-text>
+            <!-- 이름 필드 (빈 값 유지) -->
             <v-text-field
-              label="이름"
-              v-model="memberEditInfo.name"
+              label="이름을 입력해주세요."
+              v-model="memberEditReq.name"
               required
+              placeholder="이름을 입력해주세요."
               class="custom-input-field"
-            ></v-text-field>
+            />
 
+            <!-- 이메일 필드 (자동으로 입력됨, 수정 불가) -->
             <v-text-field
               label="이메일"
               v-model="memberEditInfo.memberEmail"
               disabled
               class="custom-input-field"
-            ></v-text-field>
+            />
 
+            <!-- 핸드폰 번호 필드 (빈 값 유지) -->
             <v-text-field
-              label="핸드폰 번호"
-              v-model="memberEditInfo.phoneNumber"
-              required
-              class="custom-input-field"
-            ></v-text-field>
-
+            label="핸드폰 번호를 입력해주세요."
+            v-model="memberEditReq.phoneNumber"
+            required
+            placeholder="핸드폰 번호를 입력해주세요."
+            class="custom-input-field"
+            @input="filterPhoneNumber"
+          />
+          
+            <!-- 주소 필드 (빈 값 유지) -->
             <v-text-field
-              label="주소"
+              label="주소를 입력해주세요."
               v-model="fullAddress"
               readonly
+              placeholder="주소를 입력해주세요."
               class="custom-input-field"
             >
               <template #append-inner>
@@ -43,6 +49,7 @@
               </template>
             </v-text-field>
 
+            <!-- 프로필 이미지 변경 필드 -->
             <v-file-input
               label="프로필 이미지 변경"
               v-model="memberEditReq.profileImage"
@@ -50,7 +57,7 @@
               class="custom-input-field"
             ></v-file-input>
 
-            <!-- 회원가입 완료 버튼을 프로필 이미지 아래 중앙에 배치 -->
+            <!-- 회원가입 완료 버튼 -->
             <div class="signup-btn-container">
               <v-btn class="custom-btn signup-complete-btn" @click.prevent="submitForm" variant="flat">
                 회원가입 완료
@@ -61,7 +68,7 @@
       </v-col>
     </v-row>
 
-    <!-- 회원가입/에러 모달 -->
+    <!-- 완료 모달 -->
     <v-dialog v-model="completeModal" max-width="500px">
       <v-card class="custom-modal">
         <v-card-title class="text-h5 text-center">{{ isSuccess ? '회원가입 완료' : '회원 정보 수정 실패' }}</v-card-title>
@@ -69,7 +76,7 @@
           <p class="text-center">{{ isSuccess ? '회원가입이 완료되었습니다! 자녀정보를 바로 등록하시겠습니까?' : '회원 정보 수정에 실패했습니다. 정보를 변경해주세요.' }}</p>
           <v-row justify="center" class="mt-4">
             <v-btn v-if="isSuccess" class="custom-modal-btn" @click="goToChildRegistration">
-              자녀정보 등록하기
+              자녀등록
             </v-btn>
             <v-divider vertical class="vertical-divider"></v-divider>
 
@@ -92,6 +99,21 @@ export default {
     return {
       completeModal: false,
       isSuccess: false,
+      // 사용자의 입력 필드 (빈 값으로 초기화)
+      memberEditReq: {
+        name: '',
+        memberEmail: '',
+        phoneNumber: '',
+        address: {
+          city: '',
+          street: '',
+          zipcode: ''
+        },
+        profileImage: null,
+        password: '',
+        confirmPassword: ''
+      },
+      // 실제 서버에서 받아온 회원 정보를 저장 (자동으로 폼에 반영되지 않음)
       memberEditInfo: {
         name: '',
         memberEmail: '',
@@ -103,24 +125,24 @@ export default {
         },
         profileImgUrl: ''
       },
-      memberEditReq: {
-        password: '',
-        confirmPassword: '',
-        profileImage: null
-      },
-      fullAddress: ''
+      fullAddress: ''  // 주소 초기화
     };
   },
   created() {
-    this.fetchMemberInfo();
+    this.fetchMemberInfo();   // 회원 정보를 가져오지만 필드에는 반영되지 않음
+    // 폼 필드 값들은 빈칸으로 유지
+    this.memberEditReq.name = '';
+    this.memberEditReq.phoneNumber = '';
+    this.fullAddress = '';  // 주소도 초기화
   },
   methods: {
+    // 서버에서 회원 정보를 가져옴
     async fetchMemberInfo() {
       try {
         const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/member-service/member/edit-info`);
         if (response.status === 200 && response.data.result) {
-          this.memberEditInfo = response.data.result;
-          this.updateFullAddress();
+          this.memberEditInfo = response.data.result;  // 받아온 회원 정보를 저장
+          this.updateFullAddress();  // 주소 갱신
         } else {
           alert('회원 정보 조회에 실패했습니다.');
         }
@@ -128,10 +150,15 @@ export default {
         alert(e.response?.data?.status_message || '회원 정보 조회 중 오류가 발생했습니다.');
       }
     },
+    filterPhoneNumber() {
+    this.memberEditReq.phoneNumber = this.memberEditReq.phoneNumber.replace(/[^0-9]/g, '');
+    },
+    // 주소 필드를 업데이트
     updateFullAddress() {
       const { city, street, zipcode } = this.memberEditInfo.address;
       this.fullAddress = `${city} ${street} (${zipcode})`;
     },
+    // 폼 제출 시 서버로 데이터를 전송
     async submitForm() {
       if (this.memberEditReq.password !== this.memberEditReq.confirmPassword) {
         alert('비밀번호가 일치하지 않습니다.');
@@ -140,9 +167,9 @@ export default {
 
       try {
         const formData = new FormData();
-        formData.append('name', this.memberEditInfo.name);
-        formData.append('phoneNumber', this.memberEditInfo.phoneNumber);
-        formData.append('address', JSON.stringify(this.memberEditInfo.address));
+        formData.append('name', this.memberEditReq.name);  // 사용자 입력값을 보냄
+        formData.append('phoneNumber', this.memberEditReq.phoneNumber);
+        formData.append('address', JSON.stringify(this.memberEditReq.address));
 
         if (this.memberEditReq.profileImage) {
           formData.append('profileImage', this.memberEditReq.profileImage);
@@ -163,30 +190,43 @@ export default {
       } catch (e) {
         this.isSuccess = false;
       } finally {
-        this.completeModal = true;
+        this.completeModal = true;  // 모달 열기
       }
     },
+    // 주소 검색 기능
     openAddressSearch() {
       new window.daum.Postcode({
         oncomplete: (data) => {
-          const city = data.roadAddress.split(' ')[0] + ' ' + data.roadAddress.split(' ')[1];
-          const street = data.roadAddress.split(' ').slice(2).join(' ');
+          const fullAddress = data.roadAddress || data.jibunAddress; // 도로명 주소 또는 지번 주소 가져오기
+          const city = fullAddress.split(' ')[0] + ' ' + fullAddress.split(' ')[1];
+          const street = fullAddress.split(' ').slice(2).join(' ');
           const zipcode = data.zonecode;
 
-          this.memberEditInfo.address.city = city;
-          this.memberEditInfo.address.street = street;
-          this.memberEditInfo.address.zipcode = zipcode;
-
-          this.updateFullAddress();
+          // 주소 데이터가 유효한지 확인 후 할당
+          if (fullAddress) {
+            this.fullAddress = fullAddress;
+            this.memberEditReq.address.city = city;
+            this.memberEditReq.address.street = street;
+            this.memberEditReq.address.zipcode = zipcode;
+          } else {
+            this.fullAddress = ''; // 주소가 없을 때 빈 값 할당
+          }
+        },
+        onerror: (error) => {
+          alert('주소 검색 중 오류가 발생했습니다.');
+          console.error(error);
         }
       }).open();
     },
+    // 자녀 등록 페이지로 이동
     goToChildRegistration() {
-      window.location.href = '/child-registration';
+      window.location.href = '/member/child';
     },
+    // 메인 페이지로 이동
     skipToMain() {
       window.location.href = '/';
     },
+    // 모달 닫기
     closeModal() {
       this.completeModal = false;
     }
@@ -196,7 +236,7 @@ export default {
 
 <style scoped>
 .v-container {
-  max-width: 850px; /* 가로를 더 넓힘 */
+  max-width: 850px;
   margin: auto;
   padding: 40px;
 }
@@ -300,6 +340,7 @@ export default {
   justify-content: flex-end;
   align-items: center;
 }
+
 .vertical-divider {
   width: 1px;
   height: 30px;
