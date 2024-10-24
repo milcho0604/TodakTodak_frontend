@@ -416,7 +416,7 @@ export default {
       window.scrollTo(0, 0);
     },
     navigateToPostDetail(postId) {
-      this.$router.push({ path: `/post/${postId}` });
+      this.$router.push({ path: `/community/${postId}` });
       window.scrollTo(0, 0);
     }
   }

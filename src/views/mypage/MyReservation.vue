@@ -57,8 +57,10 @@
                     <v-col class="ml-7">
                         <v-row>
                             <v-col cols="4">
+                                <v-avatar>
                                 <v-img :src="item.profileImgUrl" alt="자녀 이미지" width="30px" height="30px"
-                                    style="border-radius: 30px; display: inline-block; vertical-align: middle;"></v-img>
+                                    style=" display: inline-block; vertical-align: middle; object-fit: cover;"></v-img>
+                                </v-avatar>
                                 <div class="ml-3 childName" style="display: inline-block; vertical-align: middle;">
                                     {{ item.childName }}</div>
                             </v-col>

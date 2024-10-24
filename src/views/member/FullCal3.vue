@@ -1,5 +1,5 @@
 <template>
-  <v-container class="entire-container">
+  <v-container class="milcho-entire-container">
   <div>
     <!-- 자녀 리스트 -->
     <div>
@@ -27,7 +27,7 @@
     </v-chip>
 
 
-    <v-container class="center-container">
+    <v-container class="milcho-center-container">
       <!-- 캘린더 영역 -->
       <v-container class="milcho-calendar-container">
         <FullCalendar :options="calendarOptions" class="milcho-custom-calendar" />
@@ -381,7 +381,7 @@ methods: {
             title: event.title,
             start: new Date(event.startTime),
             end: new Date(event.endTime),
-            backgroundColor: event.type === 'COMPLETED' ? '#D3D3D3' : '#C2D7FF',
+            backgroundColor: event.type === 'COMPLETED' ? '#D3D3D3' : '#0075FF',
             border: 'none',
             extendedProps: {
               content: event.content,
@@ -582,7 +582,7 @@ methods: {
 </script>
 
 <style>
-.entire-container {
+.milcho-entire-container {
   max-width: 1500px !important;
   margin: 0 auto !important;
   width: 100% !important;
@@ -592,7 +592,7 @@ methods: {
   align-items: center; /* 중앙 정렬 */
 }
 
-.center-container {
+.milcho-center-container {
   display: flex;
   justify-content: space-between; /* 캘린더와 디테일 사이 공간 유지 */
   align-items: flex-start;
@@ -603,7 +603,7 @@ methods: {
   position: relative; /* 자식 요소가 absolute로 배치될 수 있도록 설정 */
 }
 
-.v-row {
+.milcho-v-row {
   width: 100%;
   max-width: 1200px;
   margin-bottom: 20px;
@@ -751,7 +751,6 @@ methods: {
   word-wrap: break-word; /* 긴 단어가 있을 경우 자동 줄바꿈 */
   white-space: normal; /* 텍스트가 자동으로 줄바꿈되도록 설정 */
   overflow: hidden; /* 박스를 넘는 텍스트를 숨깁니다 */
-  text-overflow: ellipsis; /* 넘치는 텍스트에 '...'을 표시 */
   margin-left: 25px; /* 기본 여백으로 설정 */
   padding: 10px; /* 텍스트와 박스 간의 여백을 추가 */
   max-height: 150px; /* content 영역에 최대 높이를 설정하여 너무 길지 않게 제한 */
@@ -791,22 +790,22 @@ methods: {
 
 /* 작은 화면에 맞춰 조정 */
 @media (max-width: 768px) {
-  .center-container {
+  .milcho-center-container {
     flex-direction: column;
     align-items: center;
   }
-
+  
   .milcho-calendar-container {
     max-width: 100%;
     min-width: 100%;
   }
-
+  
   .milcho-details {
     max-width: 100%;
     margin-top: 20px;
     min-height: auto;
   }
-
+  
   .milcho-btn-add {
     right: 20px; /* 오른쪽 고정 */
     top: 10px; /* 상단 고정 */

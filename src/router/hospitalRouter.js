@@ -17,7 +17,7 @@ export const hospitalRouter = [
     },
     {
         // 병원디테일 페이지
-        path: 'all/hospital/detail/:hospitalId',
+        path: '/all/hospital/detail/:hospitalId',
         name: 'HospitalDetail',
         component: HospitalDetail
     },
