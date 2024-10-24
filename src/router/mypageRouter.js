@@ -7,6 +7,7 @@ import MyReviewList from "@/views/member/MyReviewList.vue";
 import FullCal2 from "@/views/member/FullCal2.vue";
 
 
+
 export const mypageRouter = [
     {
         path: '/member/mypage',
