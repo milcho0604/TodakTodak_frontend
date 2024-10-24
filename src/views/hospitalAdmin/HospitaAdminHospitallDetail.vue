@@ -73,12 +73,13 @@
   
           <h6 class="text-left">병원 번호</h6>
           <v-text-field
-            v-model="hospital.phoneNumber"
-            variant="underlined"
-            label="병원 전화번호를 입력해주세요."
-            :rules="[rules.required]"
-            :readonly="!isEditing"
-          />
+          v-model="hospital.phoneNumber"
+          variant="underlined"
+          label="병원 전화번호를 입력해주세요."
+          :rules="[rules.required]"
+          :readonly="!isEditing"
+          @input="hospital.phoneNumber = hospital.phoneNumber.replace(/[^0-9]/g, '')"
+        />
   
           <h6 class="text-left">비대면 진료비</h6>
           <v-text-field
