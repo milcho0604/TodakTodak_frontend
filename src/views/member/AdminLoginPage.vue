@@ -112,7 +112,7 @@ export default {
         } else {
           localStorage.removeItem('savedEmail');
         }
-        this.$router.push('/admin/todak/statistics');
+        window.location.href = "/admin/todak/statistics";
       } catch (e) {
         if (e.response?.status === 403) {
           alert('이메일 인증이 필요합니다.');
