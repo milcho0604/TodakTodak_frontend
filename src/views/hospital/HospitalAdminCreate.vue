@@ -287,7 +287,7 @@ export default {
     // 인증 코드 확인
     async checkVerificationCode() {
       try {
-        const response = await axios.post(`${process.env.VUE_APP_API_BASE_URL}/member-service/member/verify-email`, {
+        const response = await axios.post(`${process.env.VUE_APP_API_BASE_URL}/member-service/member/verify-code`, {
           memberEmail: this.form.adminEmail,
           code: this.verificationCode
         });
