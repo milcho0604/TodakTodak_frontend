@@ -1,14 +1,16 @@
 <template>
-    <v-container class="outer-box">
-        <!-- 채팅방 리스트 -->
-        <v-row>
-          <v-col cols="12" >
+<v-container class="outer-box">
+    <!-- 채팅방 리스트 -->
+    <v-row>
+        <v-col cols="12" >
             <!-- 채팅방 카드 -->
             <v-card 
             class="list-card mb-3" 
+            
             variant="flat"
             v-for="chatRoom in chatRoomList" 
             :key="chatRoom.chatRoomId"
+            
             >
                 <v-row>
                     <v-col cols=2>
@@ -33,22 +35,24 @@
                             <!-- 마지막 채팅 메시지 -->
                             <v-card-subtitle class="ml-3">
                                 {{ chatRoom.lastMessage }}
-                                </v-card-subtitle>
+                            </v-card-subtitle>
                         </v-row>
                     </v-col>
                 </v-row>
             </v-card>
-          </v-col>
-        </v-row>
-      </v-container>
+        </v-col>
+    </v-row>
+</v-container>
 </template>
 <script>
 import axios from 'axios'
+// import { useRouter } from 'vue-router'
 
 export default{
     data(){
         return{
             chatRoomList:[],
+            selectedChatRoomId: '',
         }
 
     },
@@ -75,6 +79,7 @@ export default{
         formatDate(date) {
         return new Date(date).toLocaleString();
         },
+
     }
 }
 </script>
@@ -97,5 +102,9 @@ export default{
 }
 .list-card{
     background-color:#D2D2D2;
+    border-radius: 10px;
+}
+.selected-card {
+    background-color: #C2D7FF !important; /* 선택된 카드의 배경색 */
 }
 </style>

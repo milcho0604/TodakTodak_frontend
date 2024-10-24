@@ -1,6 +1,7 @@
 import CsChat from "@/views/chat/CsChat.vue"
-import ComponentExample from "@/views/chat/ComponentExample.vue"
 import MyChatRoom from "@/views/chat/MyChatRoom.vue"
+import ChatListComponent from "@/views/chat/ChatListComponent.vue"
+
 export const chatRouter = [
     {
         path: '/chat/:chatRoomId',
@@ -13,8 +14,8 @@ export const chatRouter = [
         component: MyChatRoom
     },
     {
-        path: '/component',
-        name: 'ComponentExample',
-        component: ComponentExample
-    },
+        path: '/chat/my-chat/list',
+        name: 'ChatListComponent',
+        component: ChatListComponent
+    }
 ]

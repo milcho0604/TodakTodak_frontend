@@ -1,12 +1,11 @@
 <template>
   <v-app class="app global_bg">
-     <MemberHeaderComponent/>
-    <AppSidebar ref="sidebar" />
+     <MemberHeaderComponent v-if="showHeaderFooter"/>
     
     <v-main class="main-content">
       <router-view/>
     </v-main>
-    <FooterComponent/>
+    <FooterComponent v-if="showHeaderFooter"/>
   </v-app>
 </template>
 
@@ -28,6 +27,12 @@ export default {
   },
   async mounted() {
     await this.initializeFCM();
+  },
+  computed: {
+    showHeaderFooter() {
+      // 특정 라우트에서만 헤더와 푸터를 숨김
+      return !this.$route.path.startsWith('/chat');
+    }
   },
   methods: {
     // FCM 초기화 및 알림 권한 요청
