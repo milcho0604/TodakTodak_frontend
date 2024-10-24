@@ -19,26 +19,70 @@
             variant="underlined"
             label="대표자(원장님) 이름을 입력해주세요." :rules="[rules.required]"></v-text-field>
           <h6 class="text-left">전화번호</h6>
-          <v-text-field v-model="form.adminPhoneNumber"
-            variant="underlined"
-            label="대표자(원장님) 전화번호를 입력해주세요." :rules="[rules.required]"></v-text-field>
-
-          <h6 class="text-left">이메일</h6>
-          <v-text-field v-model="form.adminEmail"
-            variant="underlined"
-            label="대표자(원장님) 이메일을 입력해주세요." :rules="[rules.required, rules.email]"></v-text-field>
+          <v-text-field 
+          v-model="form.adminPhoneNumber"
+          variant="underlined"
+          type="text" 
+          label="대표자(원장님) 전화번호를 입력해주세요.(ex.01012341234)" 
+          :rules="[rules.required]"
+          @input="form.adminPhoneNumber = form.adminPhoneNumber.replace(/[^0-9]/g, '')"
+        >
+        </v-text-field>        
+        <v-text-field
+        v-model="form.adminEmail"
+        variant="underlined"
+        label="대표자(원장님) 이메일을 입력해주세요." 
+        :rules="[rules.required, rules.email]"
+      >
+        <template #append>
+          <v-btn @click="sendVerificationEmail" class="address-btn" small variant="flat">
+            {{ verificationSent ? '인증 재발송' : '인증 코드 발송' }}
+          </v-btn>
+        </template>
+      </v-text-field>
+    
+      <!-- 인증 코드 입력 필드 -->
+      <v-text-field
+      v-model="verificationCode"
+      label="인증번호"
+      variant="underlined"
+      prepend-icon="mdi-key"
+      :rules="[rules.required]"
+      v-if="verificationSent"
+    >
+      <!-- 인증 확인 버튼 -->
+      <template #append>
+        <v-btn @click="checkVerificationCode" class="address-btn" small variant="flat">
+          인증번호 확인
+        </v-btn>
+      </template>
+    </v-text-field>
+    
+      <div v-if="isVerified" class="text-center my-4">
+        <v-icon color="green" large>mdi-check-circle</v-icon>
+        <h3>이메일 인증이 완료되었습니다.</h3>
+      </div>
 
           <h6 class="text-left">비밀번호</h6>
           <v-text-field v-model="form.adminPassword"
             variant="underlined"
-            label="비밀번호를 입력해주세요." :type="'password'" :rules="[rules.required]"></v-text-field>
+            label="비밀번호를 입력해주세요.(비밀번호는 최소 8자 이상입니다.)" :type="'password'" :rules="[rules.required]"></v-text-field>
+                      <!-- 비밀번호 확인 필드 -->
+          <v-text-field 
+          v-model="form.adminPasswordConfirm"
+          variant="underlined"
+          label="비밀번호를 다시 입력해주세요.(비밀번호는 최소 8자 이상입니다.)" 
+          type="password"
+          :rules="[rules.required, confirmPasswordRule]"
+        ></v-text-field>
+
 
           <h5 class="text-left">병원 정보</h5>
 
           <h6 class="text-left">병원 이름(ex.연세소아과)</h6>
           <v-text-field v-model="form.hospitalName"
             variant="underlined"
-            label="병원명을 입력해주세요." :rules="[rules.required]"></v-text-field>
+            label="병원명을 입력해주세요.(ex.연세소아과)" :rules="[rules.required]"></v-text-field>
 
           <h6 class="text-left">주소</h6>
           <v-text-field
@@ -52,13 +96,19 @@
               <v-btn @click="openPostcode" class="address-btn" small variant="flat">주소 검색</v-btn>
             </template>
           </v-text-field>
-          <v-text-field v-model="form.latitude" variant="underlined" label="위도" readonly></v-text-field>
-          <v-text-field v-model="form.longitude" variant="underlined" label="경도" readonly></v-text-field>
+          <!-- <v-text-field v-model="form.latitude" variant="underlined" label="위도" readonly></v-text-field> -->
+          <!-- <v-text-field v-model="form.longitude" variant="underlined" label="경도" readonly></v-text-field> -->
 
           <h6 class="text-left">병원 번호</h6>
-          <v-text-field v-model="form.hospitalPhoneNumber"
-            variant="underlined"
-            label="병원 전화번호를 입력해주세요." :rules="[rules.required]"></v-text-field>
+          <v-text-field 
+          v-model="form.hospitalPhoneNumber" 
+          variant="underlined"
+          type="text" 
+          label="병원 전화번호를 입력해주세요.(ex.0212341234)" 
+          :rules="[rules.required]"
+          @input="form.hospitalPhoneNumber = form.hospitalPhoneNumber.replace(/[^0-9]/g, '')"
+        >
+        </v-text-field>
 
           <h6 class="text-left">사업자 등록번호</h6>
           <v-text-field v-model="form.businessRegistrationInfo"
@@ -111,12 +161,17 @@ export default {
         adminName: '',
         adminEmail: '',
         adminPassword: '',
+        adminPasswordConfirm: '',
         adminPhoneNumber: '',
       },
+      verificationCode: '', // 사용자가 입력할 인증 코드
+      verificationSent: false, // 인증 코드 발송 상태
+      isVerified: false, // 인증 완료 상태
       rules: {
         required: (value) => !!value || '필수 입력 항목입니다.',
         email: (value) => /.+@.+\..+/.test(value) || '유효한 이메일을 입력하세요.',
       },
+      confirmPasswordRule: value => value === this.form.adminPassword || '비밀번호가 일치하지 않습니다.', // 비밀번호 확인 검증
       geocoder: null, // Geocoder 객체
       dialog: false, // 모달 창 상태를 관리
     };
@@ -214,6 +269,41 @@ export default {
       this.dialog = false;
       this.$router.push('/all/hospital/login'); // 확인 버튼 클릭 시 로그인 페이지로 리다이렉트
     },
+    // 이메일 인증 코드 발송
+    async sendVerificationEmail() {
+      if (!this.verificationSent) {
+        try {
+          const response = await axios.post(`${process.env.VUE_APP_API_BASE_URL}/member-service/member/send-verification-code`, {
+            memberEmail: this.form.adminEmail
+          });
+          if (response.status === 200) {
+            this.verificationSent = true;
+            alert('인증 코드가 이메일로 발송되었습니다.');
+          }
+        } catch (error) {
+          alert(error.response?.data?.message || '이메일 인증 코드 발송에 실패했습니다.');
+        }
+      } else {
+        // 인증 코드 확인
+        this.checkVerificationCode();
+      }
+    },
+
+    // 인증 코드 확인
+    async checkVerificationCode() {
+      try {
+        const response = await axios.post(`${process.env.VUE_APP_API_BASE_URL}/member-service/member/verify-email`, {
+          memberEmail: this.form.adminEmail,
+          code: this.verificationCode
+        });
+        if (response.status === 200) {
+          this.isVerified = true;
+          alert('이메일 인증이 성공적으로 완료되었습니다.');
+        }
+      } catch (error) {
+        alert(error.response?.data?.message || '인증 코드 확인에 실패했습니다.');
+      }
+    }
  },
 };
 </script>
