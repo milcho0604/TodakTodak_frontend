@@ -6,65 +6,75 @@
 
     <v-row justify="center">
       <v-col cols="12" sm="10" md="8">
-        <v-card class="simple-card" variant="flat">
-          <div class="signup-title text-center">회원 정보를 입력해주세요.</div>
-          <v-card-text>
-            <!-- 이름 필드 (빈 값 유지) -->
-            <v-text-field
-              label="이름을 입력해주세요."
-              v-model="memberEditReq.name"
-              required
-              placeholder="이름을 입력해주세요."
-              class="custom-input-field"
-            />
+        <v-form ref="form" v-model="formValid">
+          <v-card class="simple-card" variant="flat">
+            <div class="signup-title text-center">회원 정보를 입력해주세요.</div>
+            <v-card-text>
+              <!-- 이름 필드 (빈 값 유지) -->
+              <v-text-field
+                label="이름을 입력해주세요."
+                v-model="memberEditReq.name"
+                required
+                placeholder="이름을 입력해주세요."
+                class="custom-input-field"
+                :rules="[rules.required]"
+              />
 
-            <!-- 이메일 필드 (자동으로 입력됨, 수정 불가) -->
-            <v-text-field
-              label="이메일"
-              v-model="memberEditInfo.memberEmail"
-              disabled
-              class="custom-input-field"
-            />
+              <!-- 이메일 필드 (자동으로 입력됨, 수정 불가) -->
+              <v-text-field
+                label="이메일"
+                v-model="memberEditInfo.memberEmail"
+                disabled
+                class="custom-input-field"
+              />
 
-            <!-- 핸드폰 번호 필드 (빈 값 유지) -->
-            <v-text-field
-            label="핸드폰 번호를 입력해주세요."
-            v-model="memberEditReq.phoneNumber"
-            required
-            placeholder="핸드폰 번호를 입력해주세요."
-            class="custom-input-field"
-            @input="filterPhoneNumber"
-          />
-          
-            <!-- 주소 필드 (빈 값 유지) -->
-            <v-text-field
-              label="주소를 입력해주세요."
-              v-model="fullAddress"
-              readonly
-              placeholder="주소를 입력해주세요."
-              class="custom-input-field"
-            >
-              <template #append-inner>
-                <v-icon @click="openAddressSearch">mdi-magnify</v-icon>
-              </template>
-            </v-text-field>
+              <!-- 핸드폰 번호 필드 (빈 값 유지) -->
+              <v-text-field
+                label="핸드폰 번호를 입력해주세요."
+                v-model="memberEditReq.phoneNumber"
+                required
+                placeholder="핸드폰 번호를 입력해주세요."
+                class="custom-input-field"
+                :rules="[rules.required, rules.phoneNumber]"
+                @input="filterPhoneNumber"
+              />
 
-            <!-- 프로필 이미지 변경 필드 -->
-            <v-file-input
-              label="프로필 이미지 변경"
-              v-model="memberEditReq.profileImage"
-              accept="image/*"
-              class="custom-input-field"
-            ></v-file-input>
+              <!-- 주소 필드 (빈 값 유지) -->
+              <v-text-field
+                label="주소를 입력해주세요."
+                v-model="fullAddress"
+                readonly
+                placeholder="주소를 입력해주세요."
+                class="custom-input-field"
+                :rules="[rules.required]"
+              >
+                <template #append-inner>
+                  <v-icon @click="openAddressSearch">mdi-magnify</v-icon>
+                </template>
+              </v-text-field>
 
-            <!-- 회원가입 완료 버튼 -->
-            <div class="signup-btn-container">
-              <v-btn class="custom-btn signup-complete-btn" @click.prevent="submitForm" variant="flat">
-                회원가입 완료
-              </v-btn>
-            </div>
-          </v-card-text>
-        </v-card>
+              <!-- 프로필 이미지 변경 필드 -->
+              <v-file-input
+                label="프로필 이미지 변경"
+                v-model="memberEditReq.profileImage"
+                accept="image/*"
+                class="custom-input-field"
+              ></v-file-input>
+
+              <!-- 회원가입 완료 버튼 -->
+              <div class="signup-btn-container">
+                <v-btn 
+                  class="custom-btn signup-complete-btn" 
+                  @click.prevent="submitForm" 
+                  variant="flat"
+                  :disabled="!formValid"
+                >
+                  회원가입 완료
+                </v-btn>
+              </div>
+            </v-card-text>
+          </v-card>
+        </v-form>
       </v-col>
     </v-row>
 
@@ -97,6 +107,7 @@ export default {
   name: 'MemberEditPage',
   data() {
     return {
+      formValid: false,  // 폼의 유효성 여부를 확인하는 변수
       completeModal: false,
       isSuccess: false,
       // 사용자의 입력 필드 (빈 값으로 초기화)
@@ -125,24 +136,25 @@ export default {
         },
         profileImgUrl: ''
       },
-      fullAddress: ''  // 주소 초기화
+      fullAddress: '',  // 주소 초기화
+      rules: { // 유효성 검사 규칙 추가
+        required: value => !!value || '필수 입력 항목입니다.',
+        phoneNumber: value => /^\d{10,11}$/.test(value) || '유효한 핸드폰 번호를 입력해주세요.'
+      }
     };
   },
   created() {
-    this.fetchMemberInfo();   // 회원 정보를 가져오지만 필드에는 반영되지 않음
-    // 폼 필드 값들은 빈칸으로 유지
-    this.memberEditReq.name = '';
-    this.memberEditReq.phoneNumber = '';
-    this.fullAddress = '';  // 주소도 초기화
+    // 컴포넌트가 생성될 때 회원 정보를 가져오는 함수 호출
+    this.fetchMemberInfo();
   },
   methods: {
-    // 서버에서 회원 정보를 가져옴
     async fetchMemberInfo() {
       try {
         const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/member-service/member/edit-info`);
         if (response.status === 200 && response.data.result) {
-          this.memberEditInfo = response.data.result;  // 받아온 회원 정보를 저장
-          this.updateFullAddress();  // 주소 갱신
+          // 서버에서 받아온 회원 정보를 memberEditInfo에 할당
+          this.memberEditInfo = response.data.result;  // 여기서 이메일이 할당됩니다.
+          this.fullAddress = `${this.memberEditInfo.address.city} ${this.memberEditInfo.address.street} (${this.memberEditInfo.address.zipcode})`;
         } else {
           alert('회원 정보 조회에 실패했습니다.');
         }
@@ -151,46 +163,38 @@ export default {
       }
     },
     filterPhoneNumber() {
-    this.memberEditReq.phoneNumber = this.memberEditReq.phoneNumber.replace(/[^0-9]/g, '');
+      this.memberEditReq.phoneNumber = this.memberEditReq.phoneNumber.replace(/[^0-9]/g, '');
     },
-    // 주소 필드를 업데이트
-    updateFullAddress() {
-      const { city, street, zipcode } = this.memberEditInfo.address;
-      this.fullAddress = `${city} ${street} (${zipcode})`;
-    },
-    // 폼 제출 시 서버로 데이터를 전송
-    async submitForm() {
-      if (this.memberEditReq.password !== this.memberEditReq.confirmPassword) {
-        alert('비밀번호가 일치하지 않습니다.');
-        return;
-      }
+    submitForm() {
+      if (this.$refs.form.validate()) {
+        // 모든 필드가 유효하면 폼 제출
+        // 서버에 폼 전송 로직 추가
+        try {
+          const formData = new FormData();
+          formData.append('name', this.memberEditReq.name);  // 사용자 입력값을 보냄
+          formData.append('phoneNumber', this.memberEditReq.phoneNumber);
+          formData.append('address', JSON.stringify(this.memberEditReq.address));
 
-      try {
-        const formData = new FormData();
-        formData.append('name', this.memberEditReq.name);  // 사용자 입력값을 보냄
-        formData.append('phoneNumber', this.memberEditReq.phoneNumber);
-        formData.append('address', JSON.stringify(this.memberEditReq.address));
-
-        if (this.memberEditReq.profileImage) {
-          formData.append('profileImage', this.memberEditReq.profileImage);
-        }
-
-        if (this.memberEditReq.password) {
-          formData.append('password', this.memberEditReq.password);
-          formData.append('confirmPassword', this.memberEditReq.confirmPassword);
-        }
-
-        const response = await axios.post(`${process.env.VUE_APP_API_BASE_URL}/member-service/member/edit-info`, formData, {
-          headers: {
-            'Content-Type': 'multipart/form-data'
+          if (this.memberEditReq.profileImage) {
+            formData.append('profileImage', this.memberEditReq.profileImage);
           }
-        });
 
-        this.isSuccess = response.status === 200;
-      } catch (e) {
-        this.isSuccess = false;
-      } finally {
-        this.completeModal = true;  // 모달 열기
+          axios.post(`${process.env.VUE_APP_API_BASE_URL}/member-service/member/edit-info`, formData, {
+            headers: {
+              'Content-Type': 'multipart/form-data'
+            }
+          }).then((response) => {
+            this.isSuccess = response.status === 200;
+          }).catch(() => {
+            this.isSuccess = false;
+          }).finally(() => {
+            this.completeModal = true;  // 모달 열기
+          });
+        } catch (e) {
+          this.isSuccess = false;
+        }
+      } else {
+        alert('모든 필수 입력 항목을 확인하세요.');
       }
     },
     // 주소 검색 기능
