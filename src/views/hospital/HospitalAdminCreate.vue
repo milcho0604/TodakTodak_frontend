@@ -115,7 +115,7 @@
             label="사업자 등록번호를 입력해주세요." :rules="[rules.required]"></v-text-field>
 
           <v-row justify="center" class="button-row">
-            <v-btn class="res-btn" @click="submitForm">가입 요청</v-btn>
+            <v-btn class="res-btn" @click="submitForm" :disabled="!formValid">가입 요청</v-btn>
           </v-row>
         </v-form>
 
