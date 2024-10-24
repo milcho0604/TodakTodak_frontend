@@ -154,12 +154,18 @@
         </v-form>
       </v-card>
     </v-container>
+    <HospitalAdminSideBar/>
   </template>
   
   <script>
-import axios from 'axios';
+  import axios from 'axios';
+  import HospitalAdminSideBar from '@/components/sidebar/HospitalAdminSideBar.vue';
+
   /* global kakao, daum */
   export default {
+    components:{
+      HospitalAdminSideBar,
+    },
     data() {
       return {
         hospital: {
@@ -213,7 +219,7 @@ import axios from 'axios';
             // console.log('hospital.hospitalImagePreview (Base64):', this.hospital.hospitalImagePreview);
         };
         reader.readAsDataURL(file);  // 이미지 파일을 Base64로 읽음
-    }
+      }
     },
 
       async fetchHospitalDetails() {
