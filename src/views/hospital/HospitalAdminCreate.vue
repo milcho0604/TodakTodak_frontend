@@ -66,12 +66,12 @@
           <h6 class="text-left">비밀번호</h6>
           <v-text-field v-model="form.adminPassword"
             variant="underlined"
-            label="비밀번호를 입력해주세요." :type="'password'" :rules="[rules.required]"></v-text-field>
+            label="비밀번호를 입력해주세요.(비밀번호는 최소 8자 이상입니다.)" :type="'password'" :rules="[rules.required]"></v-text-field>
                       <!-- 비밀번호 확인 필드 -->
           <v-text-field 
           v-model="form.adminPasswordConfirm"
           variant="underlined"
-          label="비밀번호를 다시 입력해주세요." 
+          label="비밀번호를 다시 입력해주세요.(비밀번호는 최소 8자 이상입니다.)" 
           type="password"
           :rules="[rules.required, confirmPasswordRule]"
         ></v-text-field>
