@@ -57,10 +57,9 @@
         </v-btn>
       </template>
     </v-text-field>
-    
-      <div v-if="isVerified" class="text-center my-4">
-        <v-icon color="green" large>mdi-check-circle</v-icon>
-        <h5>이메일 인증이 완료되었습니다.</h5>
+      <div v-if="isVerified" class="d-flex align-center text-center mb-4">
+        <v-icon class="mr-2" color="green" size="small">mdi-check-circle</v-icon>
+        <h7 class="bold-text email-verified-text">이메일 인증이 완료되었습니다.</h7>
       </div>
 
           <h6 class="text-left">비밀번호</h6>
@@ -166,7 +165,7 @@ export default {
       },
       verificationCode: '', // 사용자가 입력할 인증 코드
       verificationSent: false, // 인증 코드 발송 상태
-      isVerified: true, // 인증 완료 상태
+      isVerified: false, // 인증 완료 상태
       rules: {
         required: (value) => !!value || '필수 입력 항목입니다.',
         email: (value) => /.+@.+\..+/.test(value) || '유효한 이메일을 입력하세요.',
@@ -367,6 +366,13 @@ export default {
   color: #00499E;
   background-color: #ECF2FD;
   border-radius: 10px; /* 모서리 둥글기 */
+}
+.bold-text {
+  font-weight: 800px; /* 글자 굵게 */
+}
+
+.email-verified-text {
+  color: #1f5223; /* 원하는 색상으로 변경 (#4caf50는 초록색 예시) */
 }
 </style>
   
