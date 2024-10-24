@@ -163,7 +163,7 @@
                 </v-card>
             </v-col>
         </v-row>
-        <v-row @click="doctorDeleteModal=true">
+        <v-row @click="doctorDeleteModal=true" justify="center">
             <div class="delete-button inter-bold">
                 삭제
             </div>
@@ -458,8 +458,8 @@ export default {
     cursor: pointer;
 }
 .delete-button {
-    background-color: #d32f2f;
-    color: white;
+    background-color: #D8D8D8;
+    color: #676767;
     padding: 10px 15px;
     border-radius: 40px;
 }
