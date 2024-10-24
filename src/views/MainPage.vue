@@ -404,7 +404,7 @@ export default {
       }
     },
     navigateToUntactList() {
-      this.$router.push({ path: '/untact/list' });
+      this.$router.push({ path: '/all/untact/list' });
       window.scrollTo(0, 0);
     },
     navigateToCommunityList() {
@@ -412,11 +412,11 @@ export default {
       window.scrollTo(0, 0);
     },
     navigateToHospitalList() {
-      this.$router.push({ path: '/hospital/list' });
+      this.$router.push({ path: '/all/hospital/list' });
       window.scrollTo(0, 0);
     },
     navigateToPostDetail(postId) {
-      this.$router.push({ path: `/post/${postId}` });
+      this.$router.push({ path: `/community/${postId}` });
       window.scrollTo(0, 0);
     }
   }

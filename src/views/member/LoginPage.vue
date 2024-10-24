@@ -123,7 +123,7 @@ export default {
       } catch (e) {
         if (e.response?.status === 403) {
           alert('이메일 인증이 필요합니다.');
-          window.location.href = "/authentication";
+          window.location.href = "/all/authentication";
         } else {
           alert('로그인 실패');
           console.log(e)
@@ -133,10 +133,10 @@ export default {
       }
     },
     findEmail() {
-      this.$router.push("member/find/email");
+      this.$router.push("all/member/find/email");
     },
     findPassword() {
-      this.$router.push("/member/find/password");
+      this.$router.push("/all/member/find/password");
     },
   },
 };

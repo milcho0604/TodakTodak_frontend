@@ -3,12 +3,12 @@ import AdminStatistics from "@/views/todak/AdminStatistics.vue"
 
 export const todakRouter = [
     {
-        path: '/todak/statistics',
+        path: '/admin/todak/statistics',
         name: 'AdminStatistics',
         component: AdminStatistics
     },
     {
-        path: '/todak/report',
+        path: '/admin/todak/report',
         name: 'ReportList',
         component: ReportList
     },

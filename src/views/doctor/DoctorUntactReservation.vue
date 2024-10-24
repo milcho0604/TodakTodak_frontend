@@ -77,7 +77,7 @@
                         </v-row>
                         <div class="untactButton">
                             <v-chip class="no-untact" v-if="reservationDetail.status == 'Confirmed'"
-                                @click="this.$router.push(`/room/${reservationDetail.id}`)"><img
+                                @click="this.$router.push(`/member/room/${reservationDetail.id}`)"><img
                                     src="@/assets/untact_image.png" />
                                 <strong>비대면진료 접속</strong>
                             </v-chip>

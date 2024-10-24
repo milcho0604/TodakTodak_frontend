@@ -31,7 +31,7 @@
             </v-col>
         </v-row>
         <v-row justify="center">
-            <div v-for="doctor in sortedDoctorList" :key=doctor.doctorId class="doctor" @click="$router.push(`/untact/${doctor.memberEmail}/form`)">
+            <div v-for="doctor in sortedDoctorList" :key=doctor.doctorId class="doctor" @click="$router.push(`/member/untact/${doctor.memberEmail}/form`)">
                 <v-row>
                     <v-col cols="2">
                         <v-avatar size="70">

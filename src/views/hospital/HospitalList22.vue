@@ -229,7 +229,7 @@ export default{
         },
         goToDetail(hospitalId) {
             // 병원 상세 페이지로 이동
-            this.$router.push({ path: `/hospital/detail/${hospitalId}` });
+            this.$router.push({ path: `/all/hospital/detail/${hospitalId}` });
         }
     }
 }

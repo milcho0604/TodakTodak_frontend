@@ -57,8 +57,10 @@
                     <v-col class="ml-7">
                         <v-row>
                             <v-col cols="4">
+                                <v-avatar>
                                 <v-img :src="item.profileImgUrl" alt="자녀 이미지" width="30px" height="30px"
-                                    style="border-radius: 30px; display: inline-block; vertical-align: middle;"></v-img>
+                                    style=" display: inline-block; vertical-align: middle; object-fit: cover;"></v-img>
+                                </v-avatar>
                                 <div class="ml-3 childName" style="display: inline-block; vertical-align: middle;">
                                     {{ item.childName }}</div>
                             </v-col>
@@ -97,7 +99,7 @@
                             <v-col cols="4"></v-col>
                             <v-col cols="4" style="text-align: end;">
                                 <v-chip v-if="item.untact && item.medichart == '진료중'" class="no-untact"
-                                    @click="this.$router.push(`/room/${item.id}`)"><img
+                                    @click="this.$router.push(`/member/room/${item.id}`)"><img
                                         src="@/assets/untact_image.png" />
                                     <strong>비대면진료 접속</strong>
                                 </v-chip>

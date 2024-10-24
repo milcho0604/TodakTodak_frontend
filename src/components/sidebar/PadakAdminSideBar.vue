@@ -99,7 +99,7 @@ export default{
             this.$router.push('/admin/cs/list')
         },
         toReportList() {
-            this.$router.push('/todak/report');
+            this.$router.push('/admin/todak/report');
         },
         toPaymentList() {
             this.$router.push('/admin/payment/list');
@@ -108,7 +108,7 @@ export default{
             this.$router.push('/admin/hospital/list');
         },
         toDashBoard() {
-            this.$router.push('/todak/statistics');
+            this.$router.push('/admin/todak/statistics');
         },
     }
 }
