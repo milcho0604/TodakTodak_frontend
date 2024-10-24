@@ -170,7 +170,7 @@ export default {
                         },
                         formatter: (value, ctx) => {
                             let label = ctx.chart.data.labels[ctx.dataIndex];
-                            return label + '\n' + value / this.totalMember * 100 + '%'; // 라벨 + 값
+                            return label + '\n' + (value / this.totalMember).toFixed(2) * 100 + '%'; // 라벨 + 값
                         }
                     },
                     legend: {
