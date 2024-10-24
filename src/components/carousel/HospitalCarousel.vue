@@ -1,7 +1,7 @@
 <template>
     <!-- 병원 Carousel 담는 회색 v-card -->
     <v-card
-      style="background-color: #F5F5F5; border-radius: 15px; padding: 20px; max-width: 1200px; width: 100%;"
+      style="border-radius: 15px; padding: 20px; max-width: 1200px; width: 100%;"
       rounded="0"
       flat
     >
