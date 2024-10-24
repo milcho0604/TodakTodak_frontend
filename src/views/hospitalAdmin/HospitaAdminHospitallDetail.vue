@@ -75,7 +75,7 @@
           <v-text-field
           v-model="hospital.phoneNumber"
           variant="underlined"
-          label="병원 전화번호를 입력해주세요."
+          label="병원 전화번호를 입력해주세요.(ex.0212341234)"
           :rules="[rules.required]"
           :readonly="!isEditing"
           @input="hospital.phoneNumber = hospital.phoneNumber.replace(/[^0-9]/g, '')"
@@ -140,7 +140,7 @@
 
           <v-textarea
           v-model="hospital.notice"
-          label="병원 소개를 입력해주세요."
+          label="병원 공지를 입력해주세요."
           class="hospital-card"
           :readonly="!isEditing"
           :rules="[rules.required]"
