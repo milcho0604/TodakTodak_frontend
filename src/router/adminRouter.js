@@ -3,6 +3,7 @@ import HospitalAdminList from "@/views/admin/HospitalAdminList.vue";
 import HospitalAdminDetail from "@/views/admin/HospitalAdminDetail.vue";
 import PaymentList from "@/views/admin/PaymentList.vue";
 import CsList from "@/views/admin/CsList.vue";
+import AdminCsChat from "@/views/todak/AdminCsChat.vue";
 
 export const adminRouter = [
     {
@@ -29,5 +30,10 @@ export const adminRouter = [
         path: '/admin/cs/list',
         name: 'CsList',
         component: CsList
+    },
+    {
+        path: '/admin/cschat/',
+        name: 'AdminCsChat',
+        component: AdminCsChat,
     },
 ]
