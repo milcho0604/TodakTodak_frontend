@@ -5,7 +5,6 @@ import MyChild from "@/views/child/MyChild.vue";
 import FullCal from "@/views/member/FullCal.vue";
 import MyReviewList from "@/views/member/MyReviewList.vue";
 import FullCal2 from "@/views/member/FullCal2.vue";
-import FullCal3 from "@/views/member/FullCal3.vue";
 
 
 
@@ -45,10 +44,5 @@ export const mypageRouter = [
         path: '/member/mychild-cal',
         name: 'FullCal2',
         component: FullCal2  
-    },
-    {
-        path: '/member/cal',
-        name: 'FullCal3',
-        component: FullCal3  
     },
 ]
