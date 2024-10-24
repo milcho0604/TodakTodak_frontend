@@ -284,7 +284,8 @@ export default {
         },
         async waitingMemberCount() {
             try {
-                const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/member-service/member/waiting/list`);
+                const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/reservation-service/hospital/list/accept`);
+                console.log(response)
                 this.waitingMember = response.data;
             } catch (e) {
                 console.error(e);
