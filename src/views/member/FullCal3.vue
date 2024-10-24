@@ -582,7 +582,7 @@ methods: {
   width: 100%;
   max-width: 1400px;
   margin-top: 20px;
-  gap: 40px; /* 캘린더와 디테일 사이에 공간 추가 */
+  gap: 60px; /* 캘린더와 디테일 사이에 공간 추가 */
   position: relative; /* 자식 요소가 absolute로 배치될 수 있도록 설정 */
 }
 
@@ -624,8 +624,9 @@ methods: {
 /* Detail 관련 스타일 */
 .milcho-details {
   flex: 1;
-  max-width: 300px;
-  width: 300px;
+  max-width: 350px;
+  min-width: 350px;
+  width: 400px;
   height: 800px;
   border: 1px solid #ddd;
   background-color: #f9f9f9;
@@ -729,10 +730,15 @@ methods: {
 
 .milcho-custom-span {
   display: block;
-  width: 400px;
-  word-wrap: break-word;
-  white-space: normal;
-  margin-left: 40px;
+  width: 100%; /* 부모 요소의 너비에 맞춰줍니다 */
+  word-wrap: break-word; /* 긴 단어가 있을 경우 자동 줄바꿈 */
+  white-space: normal; /* 텍스트가 자동으로 줄바꿈되도록 설정 */
+  overflow: hidden; /* 박스를 넘는 텍스트를 숨깁니다 */
+  text-overflow: ellipsis; /* 넘치는 텍스트에 '...'을 표시 */
+  margin-left: 25px; /* 기본 여백으로 설정 */
+  padding: 10px; /* 텍스트와 박스 간의 여백을 추가 */
+  max-height: 150px; /* content 영역에 최대 높이를 설정하여 너무 길지 않게 제한 */
+  overflow-y: auto; /* 너무 긴 내용일 경우 스크롤이 생기게 설정 */
 }
 
 /* FullCalendar Styles */
@@ -762,7 +768,7 @@ methods: {
 .milcho-add-bbtn{
   position: absolute; /* 절대 위치 설정 */
   top: 130px; /* 위에서 20px 내려오게 설정 */
-  left: 1052px; /* 오른쪽 끝에서 20px 떨어지도록 설정 */
+  left: 1102px; /* 오른쪽 끝에서 20px 떨어지도록 설정 */
   z-index: 10; /* 다른 요소 위에 배치 */
 }
 
