@@ -1,14 +1,10 @@
 <template>
     <v-container class="custom-container">
         <v-spacer :style="{ height: '50px' }"></v-spacer>
-        <v-row justify="center" style="position: relative; transform: translateX(380px); margin-bottom: 10px;">
-            <div class="round inter-normal dark-blue" @click="createModal = true">
-                <v-icon class="plus-icon">mdi-plus-circle-outline</v-icon>
-            </div>
-        </v-row>
+
 
         <v-row justify="center">
-            <v-col v-for="doctor in doctors" :key="doctor.id" md="2" lg="1">
+            <v-col v-for="doctor in doctors" :key="doctor.id" md="2" lg="1" class="d-flex flex-column align-items-center">
                 <v-avatar size="70">
                     <v-img @click="handleDoctorClick(doctor)"
                         :src="doctor.profileImgUrl ? doctor.profileImgUrl : defaultImageUrl" class="doctor-img"
@@ -16,7 +12,11 @@
                             filter: selectedDoctor && selectedDoctor.id === doctor.id ? 'brightness(1)' : 'brightness(0.5)'
                         }" />
                 </v-avatar>
+                <v-spacer :style="{ height: '5px' }"></v-spacer>
                 <span v-if="selectedDoctor && selectedDoctor.id === doctor.id" class="inter-light" style="margin-left:3px; font-size: 14px;"> {{ doctor.name }} 의사</span>
+            </v-col>
+            <v-col md="2" lg="1" class="d-flex flex-column align-items-center mt-4">
+                <v-icon class="plus-icon" @click="createModal = true">mdi-plus-circle-outline</v-icon>
             </v-col>
         </v-row>
         <v-spacer :style="{ height: '70px' }"></v-spacer>
@@ -28,7 +28,7 @@
                 <v-avatar style="height:auto; width:180px; border-radius: 5px; object-fit:cover;" class="ml-10">
                     <v-img @click="handleDoctorClick(doctor)"
                         :src="selectedDoctor.profileImgUrl ? selectedDoctor.profileImgUrl : defaultImageUrl"
-                        class="doctor-img" />
+                         />
                 </v-avatar>
             </v-col>
             <v-col cols="9">
@@ -55,7 +55,7 @@
 
         <!-- 의사 정보 bio 카드 -->
         <v-row style="width: 80%; margin: 0 auto;" v-if="selectedDoctor">
-            <v-col cols="10">
+            <v-col cols="11">
                 <!-- 의사약력 -->
                 <v-card-title class="ml-4" style="font-weight:bold;">
                     의사 약력
@@ -73,7 +73,7 @@
                     </v-card-text>
                 </v-card>
             </v-col>
-            <v-col class="ml-2 modify-button">
+            <v-col class="modify-button">
                 <!-- 수정 버튼 -->
                 <div :class="isEditing ? 'edit' : 'modify-button'" @click="toggleEdit">
                     {{ isEditing ? '저장' : '수정' }}
@@ -163,13 +163,18 @@
                 </v-card>
             </v-col>
         </v-row>
-
+        <v-row @click="doctorDeleteModal=true">
+            <div class="delete-button inter-bold">
+                삭제
+            </div>
+        </v-row>
+        <v-spacer :style="{ height: '50px' }"></v-spacer>
         <!-- 의사 추가 모달 -->
         <DoctorCreateModal v-model="createModal" @update:dialog="createModal = $event; this.fetchDoctors()"
             @doctor-exists="openChildExistsDialog">
         </DoctorCreateModal>
 
-        <DoctorDeleteModal v-model="doctorDeleteModal" :doctor-id="selectedDoctorId" :doctor-email="selectedDoctorEmail"
+        <DoctorDeleteModal v-model="doctorDeleteModal" :doctor-id="selectedDoctorId" :doctorEmail="selectedDoctor.doctorEmail"
             @update:dialog="doctorDeleteModal = $event" @deleted="fetchDoctor">
         </DoctorDeleteModal>
 
@@ -449,5 +454,11 @@ export default {
 .edit {
     color: green;
     cursor: pointer;
+}
+.delete-button {
+    background-color: #d32f2f;
+    color: white;
+    padding: 10px 15px;
+    border-radius: 40px;
 }
 </style>

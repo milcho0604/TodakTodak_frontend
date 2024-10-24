@@ -1,5 +1,5 @@
 <template>
-    <v-dialog v-model="dialog" max-width="450px">
+    <v-dialog v-model="dialog" max-width="500px">
         <v-card class="child-modal">
             <v-row class="mt-3" justify="center">
                 <div class="headline inter-bold">의사 등록</div>
@@ -9,11 +9,11 @@
             </v-row>            
             <v-row>
                 <v-col cols="12" class="text-center">
-                    <v-row class="inter-light field-label mt-2">
+                    <v-row class="inter-light field-label mt-2 mr-3">
                         의사 이름
                     </v-row>
                     <v-row class="input-space mb-2">
-                        <input v-model="doctorName" class="email-input ml-2">
+                        <input v-model="doctorName" class="email-input">
                     </v-row>
                     <v-row class="inter-light field-label">
                         이메일
@@ -139,7 +139,7 @@ export default {
 }
 
 .input-space {
-    margin-left: 20px;
+    margin: 0 auto;
     border: 1px solid #ccc;
     border-radius: 5px;
     padding: 5px;
@@ -181,6 +181,7 @@ export default {
 
 .field-label {
     font-size: 15px;
+    margin: 0 auto;
     margin-bottom: 8px; /* 라벨과 입력 필드 사이의 간격 */
 }
 

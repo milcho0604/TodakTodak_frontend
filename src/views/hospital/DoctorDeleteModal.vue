@@ -51,34 +51,35 @@ export default {
     },
     methods: {
         async confirmWithdraw() {
-      if (this.withdrawalConfirmation === "의사 삭제 후 동일 이메일로 등록할 수 없음을 동의합니다") {
-        try {
-            const formData = new FormData();
-            formData.append('doctorEmail', this.doctorEmail);
-            formData.append('confirmation', this.withdrawalConfirmation);
-            console.log('heeerr');
-            console.log(formData);
-          await axios.post(
-            `${process.env.VUE_APP_API_BASE_URL}/member-service/member/delete-doctor`,
-                formData,
-            {
-              headers: {
-                Authorization: `Bearer ${localStorage.getItem("token")}`,
-              },
-            }
-          );
+            if (this.withdrawalConfirmation === "의사 삭제 후 동일 이메일로 등록할 수 없음을 동의합니다") {
+                try {
+                    const formData = new FormData();
+                    formData.append('doctorEmail', this.doctorEmail);
+                    formData.append('confirmation', this.withdrawalConfirmation);
+                    console.log('heeerr');
+                    console.log(this.doctorEmail);
+                    await axios.post(
+                        `${process.env.VUE_APP_API_BASE_URL}/member-service/member/delete-doctor`,
+                        formData,
+                        {
+                            headers: {
+                                Authorization: `Bearer ${localStorage.getItem("token")}`,
+                            },
+                        }
+                    );
 
-          alert("의사 삭제가 완료되었습니다.");
-          this.$router.push("/");
-        } catch (error) {
-          alert("삭제 처리 중 문제가 발생했습니다.");
-        }
-      } else {
-        alert("정확한 문구를 입력해 주십시오.");
-      }
-    },
+                    alert("의사 삭제가 완료되었습니다.");
+                    this.closeModal();
+                } catch (error) {
+                    alert("삭제 처리 중 문제가 발생했습니다.");
+                }
+            } else {
+                alert("정확한 문구를 입력해 주십시오.");
+            }
+        },
         closeModal() {
             this.doctorDeleteModal = false;
+            this.$emit('update:dialog', false);
         },
     }
 }
