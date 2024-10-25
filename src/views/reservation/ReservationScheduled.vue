@@ -73,6 +73,7 @@
                 </v-col>
             </v-row>
             <v-row v-if="doctor" justify="start" class="ml-2">
+                <p style="color: red">{{ this.error }}</p>
                 <v-date-picker v-model="date" :allowed-dates="allowedDates" @input="updateDate" :width="650"
                     style="border-radius: 10px;" color="#C2D7FF">
                 </v-date-picker>
@@ -219,7 +220,7 @@
                             </v-row>
                             <v-row style="margin-top: -10px">
                                 <v-col style="margin-top: -10px" class="inter-bord">
-                                    {{ hostpitalName }} <br>
+                                    {{ this.hospitalName }} <br>
                                     {{ doctor.name }} 원장
                                 </v-col>
                             </v-row>
@@ -308,7 +309,7 @@ export default {
     data() {
         return {
             medicalType: "Scheduled",
-            hostpitalName: "파다다닥",
+            hostpitalName: "",
             hospitalId: '',
             child: null,
             doctor: null,
@@ -332,6 +333,7 @@ export default {
             reservedModal: false,
             successReserveModal: false,
             reason: null,
+            error: '',
         }
     },
     methods: {
@@ -372,25 +374,36 @@ export default {
 
             // 이번 주 일요일을 포함한 다음 주 일요일까지
             const weekEnd = new Date(weekStart);
-            weekEnd.setDate(weekStart.getDate() + 7);
+            weekEnd.setDate(weekStart.getDate() + 7); // 다음 주 일요일까지
 
             // 현재 선택된 의사 객체에서 운영시간을 가져옴
             const operatingHours = this.doctor.operatingHours || [];
             const selectedDay = selectedDate.getDay();
 
             // 운영 시간에 해당하는 요일을 확인.
-            const isValiDay = operatingHours.some(hour => {
+            const isValidDay = operatingHours.some(hour => {
                 const dayOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'].indexOf(hour.dayOfWeek);
                 return dayOfWeek === selectedDay && !hour.untact;
-            })
+            });
 
             // 예약 범위 & 운영 요일
-            return selectedDate >= weekStart && selectedDate <= weekEnd && isValiDay; // 범위 체크
+            return selectedDate >= weekStart && selectedDate <= weekEnd && isValidDay; // 범위 체크
         },
         getTimeClass(time) {
+            const currentTime = new Date();
+            const timeInMinutes = this.timeToMinutes(time);
+            const currentTimeInMinutest = currentTime.getHours() * 60 + currentTime.getMinutes();
+
+            const selectedDate = new Date(this.date);
+            const currendDate = new Date(currentTime.getFullYear(), currentTime.getMonth(), currentTime.getDate());
+
+            const isvalidate = selectedDate.toString() == currendDate.toString();
+
             // 시간 상태에 따라 클래스 반환
             if (this.reservedTimes.includes(time)) {
                 return "reserved"; // 예약된 시간
+            } else if (timeInMinutes < currentTimeInMinutest && isvalidate) {
+                return "reserved";
             } else if (this.selectedTime === time) {
                 return "selected"; // 선택된 시간
             } else {
@@ -492,14 +505,33 @@ export default {
                 this.$router.push('/member/mypage/reservation')
             }
         },
-        operatingTime(openTime, closeTime) {
+        async operatingTime(openTime, closeTime, dayOfWeek) {
             this.doctorTimeSlots = [];
 
+            const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/reservation-service/hospital-operating-hours/getBreakTime/${this.hospitalId}`);
+            const todayOperating = response.data;
+            let breakStart = '';
+            let breakEnd = '';
+
+            todayOperating.find(item => {
+                if (item.dayOfWeek == dayOfWeek) {
+                    breakStart = item.breakStart
+                    breakEnd = item.breakEnd
+                }
+            })
+
+            console.log(breakStart, breakEnd);
             const start = this.timeToMinutes(openTime);
             const end = this.timeToMinutes(closeTime);
 
+            breakStart = this.timeToMinutes(breakStart);
+            breakEnd = this.timeToMinutes(breakEnd);
+
             for (let i = start; i < end; i += 30) {
-                this.doctorTimeSlots.push(this.minutesToTime(i))
+
+                if (i < breakStart || i >= breakEnd) {
+                    this.doctorTimeSlots.push(this.minutesToTime(i))
+                }
             }
 
             console.log(this.doctorTimeSlots);
@@ -524,7 +556,7 @@ export default {
                 else if (!this.date) {
                     throw new Error("진료 날짜를 선택해주세요.")
                 }
-                else if(!this.selectedTime){
+                else if (!this.selectedTime) {
                     throw new Error("진료 시간을 선택해주세요.")
                 }
                 else if (!this.mediItem) {
@@ -545,14 +577,27 @@ export default {
     },
     watch: {
         date(newDate) {
-            console.log(newDate);
-            const options = { weekday: 'long' }
-            const dayOfWeek = newDate.toLocaleDateString('en-US', options);
+            try {
+                this.error = '';
+                const date = new Date();
+                const today = new Date(date.getFullYear(), date.getMonth(), date.getDate());
 
-            const selectDay = this.doctor.operatingHours.filter(item => item.dayOfWeek === dayOfWeek);
-            console.log(selectDay);
-            this.operatingTime(selectDay[0].openTime, selectDay[0].closeTime);
-            this.fetchDoctorTime();
+                if (newDate < today) {
+                    this.date = null;
+                    throw new Error("이전날은 선택할 수 없습니다.")
+                }
+
+                const options = { weekday: 'long' }
+                const dayOfWeek = newDate.toLocaleDateString('en-US', options);
+
+                const selectDay = this.doctor.operatingHours.filter(item => item.dayOfWeek === dayOfWeek);
+                console.log(selectDay);
+                this.operatingTime(selectDay[0].openTime, selectDay[0].closeTime, dayOfWeek);
+                this.fetchDoctorTime();
+            } catch (e) {
+                console.log(e.message)
+                this.error = e.message;
+            }
         }
     },
     computed: {
