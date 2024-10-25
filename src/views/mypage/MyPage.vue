@@ -10,6 +10,7 @@
               alt="프로필 이미지"
               max-width="120px"
               max-height="120px"
+              style="object-fit: contain;"
               class="v-avatar with-shadow"
               @click="triggerFileUpload" 
             ></v-img>

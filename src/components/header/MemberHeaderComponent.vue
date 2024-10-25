@@ -83,14 +83,14 @@
                 />
                 <v-img
                   v-else-if="notification.type === 'PAYMENT'"
-                  src="https://todak-file.s3.ap-northeast-2.amazonaws.com/default-images/pay.png"
+                  src="https://todak-file.s3.ap-northeast-2.amazonaws.com/default-images/pay-removebg-preview.png"
                   width="24"
                   height="24"
                   class="mr-2 fixed-img"
                 />
                 <v-img
                   v-else-if="notification.type === 'CHILD'"
-                  src="https://todak-file.s3.ap-northeast-2.amazonaws.com/default-images/baby.png"
+                  src="https://todak-file.s3.ap-northeast-2.amazonaws.com/default-images/baby-removebg-preview.png"
                   width="24"
                   height="24"
                   class="mr-2 fixed-img"
