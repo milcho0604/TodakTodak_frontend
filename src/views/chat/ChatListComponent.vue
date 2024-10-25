@@ -26,6 +26,11 @@
 
     <!-- 채팅방 리스트 -->
     <v-row class="chat-list">
+        <!-- 채팅방이 없는 경우 표시할 메시지 -->
+        <v-col cols="12" v-if="chatRoomList.length === 0">
+            <p class="text-center text-subtitle-1 mt-5">아직 참여 중인 채팅방이 없습니다.</p>
+        </v-col>
+        
         <v-col cols="12" >
             <!-- 채팅방 카드 -->
             <v-card 
@@ -89,6 +94,7 @@ export default{
             chatRoomList:[],
             selectedChatRoomId: '',
             isReloading: false, // 로딩 상태
+            createdChatRoomId: '' // 채팅방 생성후 return 된 채팅방id
         }
 
     },
@@ -118,11 +124,15 @@ export default{
         toChatRoom(chatRoomId){
             this.$router.push(`/chat/${chatRoomId}`); // 선택한 채팅방으로 경로 이동
         },
-        createNewChatRoom() {
-            // 새로운 채팅방 생성 로직을 여기에 작성
-            console.log("새로운 채팅방 생성");
-            // 예를 들어, 라우팅을 통해 채팅방 생성 페이지로 이동할 수 있습니다.
-            this.$router.push('/create-chat-room'); // 해당 경로를 적절히 변경하세요.
+        async createNewChatRoom() {
+            try{
+                // http://localhost:8080/member-service/chat/chatroom/create
+                const response = await axios.post(`${process.env.VUE_APP_API_BASE_URL}/member-service/chat/chatroom/create`);
+                this.createdChatRoomId = response.data.result;
+                this.$router.push(`/chat/${this.createdChatRoomId}`); // 생성된 채팅방으로 이동
+            }catch(error){
+                console.log(error);
+            }
         },
         goBack() {
             this.$router.go(-1); // 뒤로가기 (히스토리에서 이전 페이지로 이동)
