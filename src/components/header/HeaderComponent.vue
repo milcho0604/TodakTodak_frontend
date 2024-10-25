@@ -1,5 +1,5 @@
 <template>
-  <v-app-bar app  style="background-color: #ECF2FE;">
+  <v-app-bar app style="background-color: #ECF2FE;">
     <v-container fluid class="custom-container">
       <v-row align="center">
         <v-col cols="2" class="justify-start text-no-wrap">
@@ -31,7 +31,7 @@
             <template v-slot:activator="{ props }">
               <v-btn text v-bind="props" height="60">
                 <v-avatar size="40">
-                  <v-img :src=profileImgUrl alt="profileImgUrl"></v-img>
+                  <v-img :src="profileImgUrl" alt="profileImgUrl"></v-img>
                 </v-avatar>
                 <span class="ml-2" style="font-size: 17px;">{{ name }}</span>
               </v-btn>
@@ -57,7 +57,27 @@
               </v-list-item>
             </v-list>
           </v-menu>
-          
+
+          <!-- 새 알림 드롭다운 아이콘 추가 -->
+          <v-menu bottom left>
+            <template v-slot:activator="{ on, attrs }">
+              <v-btn v-bind="attrs" v-on="on" icon>
+                <v-icon>mdi-bell</v-icon>
+                <v-badge color="red" content="5" overlap></v-badge> <!-- 알림 수 표시 -->
+              </v-btn>
+            </template>
+            <v-list>
+              <v-list-item v-for="(notification, index) in notifications" :key="index" @click="handleNotificationClick(notification)">
+                <v-list-item-title>{{ notification.title }}</v-list-item-title>
+                <v-list-item-subtitle>{{ formatDate(notification.createdAt) }}</v-list-item-subtitle>
+              </v-list-item>
+              <v-divider></v-divider>
+              <v-list-item @click="$router.push('/notifications')">
+                <v-list-item-title>모든 알림 보기</v-list-item-title>
+              </v-list-item>
+            </v-list>
+          </v-menu>
+
           <v-btn v-if="!isLogin" @click="kakaoLogin">
             <img src="@/assets/kakao_login_small.png" alt="카카오로그인 버튼">
           </v-btn>
@@ -75,57 +95,63 @@ export default {
     return {
       isLogin: false, // 로그인 상태 확인 변수
       name: "김파닥",
-      profileImgUrl:'https://todak-file.s3.ap-northeast-2.amazonaws.com/default-images/default_user_image.png',
-      memberId:'',
-      role:'',
-      email:'',
+      profileImgUrl: 'https://todak-file.s3.ap-northeast-2.amazonaws.com/default-images/default_user_image.png',
+      memberId: '',
+      role: '',
+      email: '',
+      notifications: [], // 알림 목록 추가
     };
   },
-  created(){
-
-    this.memberId = localStorage.getItem("memberId")
-    this.email = localStorage.getItem("email")
-    const token = localStorage.getItem("token")
-    if(token){
-      // localStorage에 token 있으면 로그인된 상태
+  created() {
+    this.memberId = localStorage.getItem("memberId");
+    this.email = localStorage.getItem("email");
+    const token = localStorage.getItem("token");
+    if (token) {
       this.isLogin = true;
       this.loadUserProfile();
+      this.fetchNotifications(); // 알림 데이터 불러오기
     }
-
-  },
-  mounted() {
-
   },
   methods: {
-    async loadUserProfile(){
-      try{
+    async loadUserProfile() {
+      try {
         const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/member-service/member/id/${this.memberId}`);
-        console.log(response.data);
         this.name = response.data.result.name;
         this.role = response.data.result.role;
-        // 프로필 이미지가 null이면 기본 이미지 경로로 설정
-        this.profileImgUrl = response.data.result.profileImgUrl 
-            ? response.data.result.profileImgUrl
-            : "https://todak-file.s3.ap-northeast-2.amazonaws.com/default-images/default_user_image.png";
-        localStorage.setItem('name', this.name);
-        localStorage.setItem('profileImgUrl', this.profileImgUrl);
-
-
-      }catch(error){
-        console.error("사용자 프로필 loading error : ",error);
+        this.profileImgUrl = response.data.result.profileImgUrl || 'https://todak-file.s3.ap-northeast-2.amazonaws.com/default-images/default_user_image.png';
+      } catch (error) {
+        console.error("사용자 프로필 loading error : ", error);
       }
+    },
+    async fetchNotifications() {
+      try {
+        const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/member-service/fcm/list`);
+        this.notifications = response.data.result.content;
+      } catch (error) {
+        console.error("알림 데이터를 불러오는 중 오류 발생:", error);
+      }
+    },
+    formatDate(dateString) {
+      const date = new Date(dateString);
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, "0");
+      const day = String(date.getDate()).padStart(2, "0");
+      const hours = String(date.getHours()).padStart(2, "0");
+      const minutes = String(date.getMinutes()).padStart(2, "0");
+      return `${year}-${month}-${day} ${hours}:${minutes}`;
+    },
+    handleNotificationClick(notification) {
+      // 알림 클릭 시 처리 로직
+      window.location.href = notification.url || '/';
     },
     kakaoLogin() {
       window.location.href = 'http://localhost:8080/member-service/oauth2/authorization/kakao';
     },
     logout() {
-      localStorage.removeItem('token'); // 토큰 제거
-      localStorage.removeItem('fcmToken') // fcm 토큰 제거
-      this.isLogin = false; // 로그아웃 후 로그인 상태 업데이트
-      this.$router.push('/'); // 로그아웃 후 메인 페이지로 이동
-    },
-    navigateTo(route) {
-      this.$router.push(route); // 해당 경로로 이동
+      localStorage.removeItem('token');
+      localStorage.removeItem('fcmToken');
+      this.isLogin = false;
+      this.$router.push('/');
     }
   }
 };
@@ -139,27 +165,20 @@ export default {
 }
 
 .logo-image {
-  width: 150px; /* 원하는 고정 너비 */
-  max-width: 100%; /* 부모 요소 너비를 넘지 않도록 설정 */
-  height: auto; /* 높이는 비율에 맞춰 자동 조절 */
-  object-fit: contain; /* 이미지가 고정된 크기 안에서 비율을 유지 */
+  width: 150px;
+  max-width: 100%;
+  height: auto;
+  object-fit: contain;
 }
 
-/* 버튼 커스텀 */
 .custom-button {
-  font-weight: bold !important; /* 글씨를 bold로 */
-  font-size: 18px !important; /* 글씨 크기 */
-  text-transform: none !important; /* 대문자 변환 방지 */
-  background-color: transparent !important;  /* 배경을 투명하게 만듦 */
-  box-shadow: none !important; /* 그림자 제거 */
-  border: none !important; /* 버튼 테두리 제거 */
-  outline: none !important; /* 버튼 outline 제거 */
-  box-shadow: none !important; /* 그림자 제거 */
-}
-
-.v-avatar {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
+  font-weight: bold !important;
+  font-size: 18px !important;
+  text-transform: none !important;
+  background-color: transparent !important;
+  box-shadow: none !important;
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
 }
 </style>
