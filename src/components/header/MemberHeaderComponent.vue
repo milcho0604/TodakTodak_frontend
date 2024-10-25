@@ -28,7 +28,7 @@
           v-model="notificationMenu"
           offset-y
           attach="body" 
-          :style="{ position: 'fixed', left: '75%', zIndex: '9999', top: '60px' }"
+          :style="{ position: 'fixed', left: '75%', zIndex: '9999', top: '60px',}"
           :close-on-content-click="false" 
           class="fixed-menu-size"
         >
