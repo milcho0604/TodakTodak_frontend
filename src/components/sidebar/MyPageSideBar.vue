@@ -69,7 +69,7 @@
         :prepend-avatar="cs"
         title="고객센터"
         value="cs"
-        @click="toChat"
+        @click="toChatList"
         ></v-list-item>
 
         <v-list-item
@@ -130,8 +130,18 @@ export default{
         toMyReview() {
             this.$router.push('/member/myReviewList');
         },
-        toChat() {
-            this.$router.push('/chat');
+        toChatList() {
+            // this.$router.push('/chat');
+            // ChatListComponent를 새로운 창에서 열기
+            const chatWindow = window.open(
+            '/chat/my-chat/list',  // ChatListComponent가 렌더링될 URL
+            '_blank',  // 새로운 창을 열기 위한 옵션
+            'width=500,height=800'  // 창의 크기를 지정
+            );
+
+            if (!chatWindow) {
+            alert('팝업이 차단되었습니다. 팝업 차단 설정을 해제해주세요.');
+            }
         },
         toDoctors() {
             this.$router.push('/hospital/doctor/register');

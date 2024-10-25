@@ -15,11 +15,16 @@
         </v-row>
         
         <v-container class="total-container">
+            <!-- 자식에서 이벤트 받기 -->
             <ChatListComponent
             style="width: 40%"
+            
             />
+
+            <!-- 선택된 채팅방 정보 전달 -->
             <CsChat 
             style="width: 60%"
+            
             />
         </v-container>
 
@@ -32,7 +37,7 @@ import CsChat from './CsChat.vue';
 export default{
     data(){
         return{
-
+            selectedChatRoom: '', // 선택된 채팅방 정보를 저장할 상태
         }
 
     },

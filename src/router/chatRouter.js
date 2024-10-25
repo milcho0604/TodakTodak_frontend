@@ -1,8 +1,10 @@
 import CsChat from "@/views/chat/CsChat.vue"
-import ComponentExample from "@/views/chat/ComponentExample.vue"
 import MyChatRoom from "@/views/chat/MyChatRoom.vue"
+import ChatListComponent from "@/views/chat/ChatListComponent.vue"
+
 export const chatRouter = [
     {
+        // 채팅방
         path: '/chat/:chatRoomId',
         name: 'Chat',
         component: CsChat
@@ -13,8 +15,9 @@ export const chatRouter = [
         component: MyChatRoom
     },
     {
-        path: '/component',
-        name: 'ComponentExample',
-        component: ComponentExample
-    },
+        // 회원입장에서 보이는 내 채팅리스트
+        path: '/chat/my-chat/list',
+        name: 'ChatListComponent',
+        component: ChatListComponent
+    }
 ]

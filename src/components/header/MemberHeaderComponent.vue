@@ -156,7 +156,7 @@
               <v-list-item :to="{ path: '/member/child'}">
                 <v-list-item-title>자녀 관리</v-list-item-title>
               </v-list-item>
-              <v-list-item :to="{ path: '/chat'}">
+              <v-list-item @click="toChatList">
                 <v-list-item-title>내 채팅</v-list-item-title>
               </v-list-item>
               <v-list-item :to="{ path: '/member/mychild-cal'}">
@@ -301,7 +301,20 @@ export default {
       localStorage.removeItem('fcmToken');
       this.isLogin = false;
       this.$router.push('/');
-    }
+    },
+    toChatList() {
+        // this.$router.push('/chat');
+        // ChatListComponent를 새로운 창에서 열기
+        const chatWindow = window.open(
+        '/chat/my-chat/list',  // ChatListComponent가 렌더링될 URL
+        '_blank',  // 새로운 창을 열기 위한 옵션
+        'width=600,height=800'  // 창의 크기를 지정
+        );
+
+        if (!chatWindow) {
+        alert('팝업이 차단되었습니다. 팝업 차단 설정을 해제해주세요.');
+        }
+     },
   }
 };
 </script>
