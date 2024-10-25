@@ -59,22 +59,63 @@
               <!-- 필터링된 알림이 있을 때 -->
               <template v-if="filteredNotifications.length > 0">
                 <v-list-item 
-                  v-for="(notification, index) in filteredNotifications" 
-                  :key="index" 
-                  @click="handleNotificationClick(notification)"
-                  :class="{ 'read-notification': notification.read }" 
-                  class="fixed-list-size"
-                >
-                  <v-card class="notification-card">
+                v-for="(notification, index) in filteredNotifications" 
+                :key="index" 
+                @click="handleNotificationClick(notification)"
+                :class="{ 'read-notification': notification.read }" 
+                class="fixed-list-size"
+              >
+                <v-card class="notification-card d-flex align-center">
+                  <!-- 알림 타입에 따른 이미지 표시 -->
+                  <v-img
+                  v-if="notification.type === 'RESERVATION_NOTIFICATION' || notification.type === 'RESERVATION_WAITING'"
+                  src="https://todak-file.s3.ap-northeast-2.amazonaws.com/default-images/hospital-icon.png"
+                  width="24"
+                  height="24"
+                  class="mr-2 fixed-img"
+                />
+                <v-img
+                  v-else-if="notification.type === 'POST' || notification.type === 'COMMENT'"
+                  src="@/assets/community.png"
+                  width="24"
+                  height="24"
+                  class="mr-2 fixed-img"
+                />
+                <v-img
+                  v-else-if="notification.type === 'PAYMENT'"
+                  src="https://todak-file.s3.ap-northeast-2.amazonaws.com/default-images/pay.png"
+                  width="24"
+                  height="24"
+                  class="mr-2 fixed-img"
+                />
+                <v-img
+                  v-else-if="notification.type === 'CHILD'"
+                  src="https://todak-file.s3.ap-northeast-2.amazonaws.com/default-images/baby.png"
+                  width="24"
+                  height="24"
+                  class="mr-2 fixed-img"
+                />
+                <v-img
+                  v-else-if="notification.type === 'CHAT'"
+                  src="@/assets/cs_center_image.png"
+                  width="24"
+                  height="24"
+                  class="mr-2 fixed-img"
+                />
+                
+                  
+                  <!-- 알림 제목과 내용 -->
+                  <v-list-item-content>
                     <v-list-item-title>{{ notification.title }}</v-list-item-title>
                     <v-list-item-title class="small-font">{{ notification.content }}</v-list-item-title>
-
                     <v-list-item-subtitle class="small-font">
                       {{ formatDate(notification.createdAt) }} 
                       <span v-if="notification.read"> | 읽음</span>
                     </v-list-item-subtitle>
-                  </v-card>
-                </v-list-item>
+                  </v-list-item-content>
+                </v-card>
+              </v-list-item>
+                       
               </template>
 
               <!-- 필터링된 알림이 없을 때 -->
@@ -202,6 +243,7 @@ export default {
       try {
         const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/member-service/fcm/list`);
         this.notifications = response.data.result.content;
+        console.log(this.notifications)
         this.updateUnreadCount(); // 읽지 않은 알림 수 업데이트
         this.applyFilter();
       } catch (error) {
@@ -327,4 +369,17 @@ export default {
 .small-font {
   font-size: 12px; /* 원하는 크기로 설정 */
 }
+.fixed-img {
+  width: 24px !important;
+  height: 24px !important;
+  object-fit: contain !important; /* 이미지가 지정된 크기 안에서 잘리더라도 꽉 차도록 */
+  max-width: 24px;
+  max-height: 24px; 
+}
+.v-img__img--contain {
+  width: 24px !important;
+  height: 24px !important;
+  object-fit: contain !important;
+}
+
 </style>
