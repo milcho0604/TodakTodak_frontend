@@ -161,7 +161,7 @@ export default {
       if (city && street && zipcode) {
         this.fullAddress = `${city} ${street} (${zipcode})`;
       } else {
-        this.fullAddress = '(주소 없음)';  // 기본 값을 할당
+        this.fullAddress = '';  // 기본 값을 할당
       }
     },
     // 폼 제출 시 서버로 데이터를 전송
