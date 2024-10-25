@@ -7,7 +7,7 @@ export const doctorRouter = [
         component: DoctorUntactReservation
     },
     {
-        path: '/memebr/doctor/reservation',
+        path: '/member/doctor/reservation',
         name: 'DoctorReservation',
         component: DoctorReservation
     },
