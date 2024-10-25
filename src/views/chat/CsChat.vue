@@ -111,6 +111,9 @@
       });
 
     },
+    onBeforeUnmount() {
+      this.disconnect(); // 컴포넌트 언마운트 시 웹소켓 연결 종료
+    },
     updated() {
       this.scrollToBottom(); // 메시지가 업데이트될 때 스크롤 하단으로 이동
     },
@@ -125,15 +128,15 @@
     },
     methods: {
       connect() {
-      const socket = new SockJS(`${process.env.VUE_APP_API_BASE_URL}/member-service/ws/chat`); 
-      this.stompClient = Stomp.over(socket);
+        const socket = new SockJS(`${process.env.VUE_APP_API_BASE_URL}/member-service/ws/chat`); 
+        this.stompClient = Stomp.over(socket);
 
-      // JWT 토큰을 localStorage에서 가져와 auth-token으로 설정
-      const token = localStorage.getItem('token');
-      this.stompClient.connect({
-        'token': `Bearer ${token}`  // 토큰을 헤더로 전송
-      }, frame => {
-        console.log('Connected: ' + frame);
+        // JWT 토큰을 localStorage에서 가져와 auth-token으로 설정
+        const token = localStorage.getItem('token');
+        this.stompClient.connect({
+          'token': `Bearer ${token}`  // 토큰을 헤더로 전송
+        }, frame => {
+          console.log('Connected: ' + frame);
 
         this.stompClient.subscribe(`/sub/${this.chatRoomId}`, message => {
           console.log("구독시작");
@@ -197,6 +200,13 @@
   // },
   // setChatPageActive(isActive){
   //   this.isChatPageActive = isActive;
+  },
+  disconnect() {
+        if (this.stompClient) {
+            this.stompClient.disconnect(() => {
+                console.log('Disconnected from chat server');
+            });
+        }
   },
   goBack() {
       this.$router.go(-1); // 뒤로가기 (히스토리에서 이전 페이지로 이동)
