@@ -16,13 +16,13 @@
         </v-row>
         <v-spacer :style="{ height: '50px' }"></v-spacer>
   
-      <v-img hospitalImagePreview
-          :src="hospital.hospitalImagePreview || hospital.hospitalImageUrl" 
-          alt="Hospital Image"
-          class="hospital-image"
-          @click="triggerFileInput"
-          style="cursor: pointer;"
-        />
+        <v-img
+        :src="hospital.hospitalImagePreview || hospital.hospitalImageUrl || 'https://todak-file.s3.ap-northeast-2.amazonaws.com/default-images/no-image.png'"
+        alt="Hospital Image"
+        class="hospital-image"
+        @click="triggerFileInput"
+        style="cursor: pointer;"
+      />      
       <v-file-input
         v-model="hospital.hospitalImage"
         label="병원 이미지를 선택해주세요."
@@ -243,6 +243,7 @@
             untactFee: data.untactFee,
             latitude: data.latitude, // 기존 데이터에서 위도 저장
             longitude: data.longitude, // 기존 데이터에서 경도 저장
+            originalDong: data.dong || '', // 기존 동 정보 저장
           };
           this.selectedKeywords = data.keywords ? data.keywords.split(',') : [];
         } catch (error) {
@@ -261,7 +262,8 @@
           const formData = new FormData();
           formData.append('name', this.hospital.name);
           formData.append('address', this.hospital.address);
-          formData.append('dong', this.hospital.dong || '');
+    // 동 정보가 수정되지 않은 경우 기존 동 정보 유지
+          formData.append('dong', this.hospital.dong || this.hospital.originalDong);
           formData.append('phoneNumber', this.hospital.phoneNumber);
           formData.append('description', this.hospital.description);
           formData.append('notice', this.hospital.notice);

@@ -165,7 +165,7 @@ export default {
         const role = decodedToken.role;
         localStorage.setItem("role", role);
 
-        alert("결제 성공 및 토큰 갱신 성공!");
+        alert("결제가 완료되었습니다.");
         window.location.href = "/";
       } catch (error) {
         console.error("결제 처리 중 오류:", error);
