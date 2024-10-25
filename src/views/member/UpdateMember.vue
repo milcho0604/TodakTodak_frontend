@@ -63,9 +63,9 @@
 
               <!-- 회원가입 완료 버튼 -->
               <div class="signup-btn-container">
-                <v-btn 
-                  class="custom-btn signup-complete-btn" 
-                  @click.prevent="submitForm" 
+                <v-btn
+                  class="custom-btn signup-complete-btn"
+                  @click.prevent="submitForm"
                   variant="flat"
                   :disabled="!formValid"
                 >
@@ -144,17 +144,21 @@ export default {
     };
   },
   created() {
-    // 컴포넌트가 생성될 때 회원 정보를 가져오는 함수 호출
-    this.fetchMemberInfo();
+    this.fetchMemberInfo();   // 회원 정보를 가져오지만 필드에는 반영되지 않음
+    // 폼 필드 값들은 빈칸으로 유지
+    this.memberEditReq.name = '';
+    this.memberEditReq.phoneNumber = '';
+    this.fullAddress = '';  // 주소도 초기화
   },
   methods: {
+    // 서버에서 회원 정보를 가져옴
     async fetchMemberInfo() {
       try {
         const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/member-service/member/edit-info`);
         if (response.status === 200 && response.data.result) {
           // 서버에서 받아온 회원 정보를 memberEditInfo에 할당
           this.memberEditInfo = response.data.result;  // 여기서 이메일이 할당됩니다.
-          this.fullAddress = `${this.memberEditInfo.address.city} ${this.memberEditInfo.address.street} (${this.memberEditInfo.address.zipcode})`;
+          // this.fullAddress = `${this.memberEditInfo.address.city} ${this.memberEditInfo.address.street} (${this.memberEditInfo.address.zipcode})`;
         } else {
           alert('회원 정보 조회에 실패했습니다.');
         }
@@ -233,7 +237,11 @@ export default {
     // 모달 닫기
     closeModal() {
       this.completeModal = false;
+    },
+    updateFullAddress(){
+      this.fullAddress = '';
     }
+
   }
 };
 </script>
