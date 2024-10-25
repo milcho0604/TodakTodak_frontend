@@ -12,11 +12,11 @@
 
         <v-col class="d-flex flex-row justify-start text-no-wrap" cols="6">
           <!-- 왼쪽 정렬 -->
-          <v-btn class="custom-button" @click="$router.push('/hospital/list')"> 
+          <v-btn class="custom-button" @click="$router.push('/all/hospital/list')"> 
               주변소아과
           </v-btn>
 
-          <v-btn class="custom-button" @click="$router.push('/untact/list')">
+          <v-btn class="custom-button" @click="$router.push('/all/untact/list')">
             비대면진료
           </v-btn>
 
@@ -79,7 +79,6 @@ export default {
       memberId:'',
       role:'',
       email:'',
-      verified:'',
     };
   },
   created(){
@@ -104,14 +103,12 @@ export default {
         console.log(response.data);
         this.name = response.data.result.name;
         this.role = response.data.result.role;
-        this.verified = response.data.result.verified;
         // 프로필 이미지가 null이면 기본 이미지 경로로 설정
         this.profileImgUrl = response.data.result.profileImgUrl 
             ? response.data.result.profileImgUrl
             : "https://todak-file.s3.ap-northeast-2.amazonaws.com/default-images/default_user_image.png";
         localStorage.setItem('name', this.name);
         localStorage.setItem('profileImgUrl', this.profileImgUrl);
-        localStorage.setItem('verified', this.verified);
 
       }catch(error){
         console.error("사용자 프로필 loading error : ",error);
@@ -123,7 +120,6 @@ export default {
     logout() {
       localStorage.removeItem('token'); // 토큰 제거
       localStorage.removeItem('fcmToken') // fcm 토큰 제거
-      localStorage.removeItem('verified'); // verified 상태도 제거
       this.isLogin = false; // 로그아웃 후 로그인 상태 업데이트
       this.$router.push('/'); // 로그아웃 후 메인 페이지로 이동
     },

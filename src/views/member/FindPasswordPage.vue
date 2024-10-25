@@ -94,7 +94,7 @@ export default {
     },
     closeSuccessModal() {
       this.successDialog = false;
-      this.$router.push("/login"); // 성공 후 로그인 페이지로 이동
+      this.$router.push("/all/hospital/login"); // 성공 후 로그인 페이지로 이동
     },
     closeErrorModal() {
       this.errorDialog = false;

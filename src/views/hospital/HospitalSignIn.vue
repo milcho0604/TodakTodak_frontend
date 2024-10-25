@@ -8,7 +8,7 @@
                     <span class="inner-text inter-bold">스마트한 병원의 선택, 토닥</span>
                 </v-carousel-item>
             </v-carousel>
-            <div class="carousel-button" color="primary" @click="$router.push('/hospital/admin/create')">
+            <div class="carousel-button" color="primary" @click="$router.push('/all/hospital/admin/create')">
                 <span class="inter-bold">도입 신청하기</span>
             </div>
         </div>
@@ -71,8 +71,7 @@
                 </div>
                 <div style="color: #e5e8eb;" class="inter-light mt-2">
                     환자가 병원 방문 날짜와 시간, 진료항목을 선택해 예약하는 기능입니다.
-                    단순 진료 예약부터<br>검진, 접종, 수액 등 원하는 특정 진료항
-                    목에 대해 예약을 받을 수 있습니다.
+                    단순 진료 예약부터<br>검진, 접종 등 원하는 특정 진료항목에 대해 예약을 받을 수 있습니다.
                 </div>
             </v-col>
 
@@ -86,7 +85,7 @@
                 </div>
             </v-col>
             <v-col cols="12" class="text-center">
-                <div class="doib-button" color="primary" @click="$router.push('/hospital/admin/create')">
+                <div class="doib-button" color="primary" @click="$router.push('/all/hospital/admin/create')">
                     <span class="inter-bold">도입 신청하기</span>
                 </div>
             </v-col>

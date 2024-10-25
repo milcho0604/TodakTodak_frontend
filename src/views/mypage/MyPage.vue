@@ -5,17 +5,19 @@
         <!-- 프로필 섹션 -->
         <v-row class="profile-section" no-gutters>
           <v-col cols="3">
-            <v-img
-              :src="memberInfo && memberInfo.profileImgUrl ? memberInfo.profileImgUrl : require('@/assets/default_user_image.png')"
-              alt="프로필 이미지"
-              max-width="120px"
-              max-height="120px"
-              class="v-avatar with-shadow"
-              @click="triggerFileUpload" 
-            ></v-img>
+            <v-avatar size="120">
+              <v-img
+                :src="memberInfo && memberInfo.profileImgUrl ? memberInfo.profileImgUrl : require('@/assets/default_user_image.png')"
+                alt="프로필 이미지"
+                style="object-fit: cover;"
+                class="with-shadow"
+                @click="triggerFileUpload" 
+              ></v-img>
+            </v-avatar>
+            
             <input type="file" ref="fileInput" style="display:none" @change="handleFileUpload"/> <!-- 숨겨진 파일 input -->
           </v-col>
-          <v-col cols="9">
+          <v-col cols="9" class="mt-4">
             <div class="profile-name">{{ memberInfo ? memberInfo.name : '' }}</div>
             <div class="profile-penalty">나의 패널티 : {{ penaltyCount }}회</div>
           </v-col>
@@ -120,19 +122,32 @@
     </v-dialog>
     
   </v-container>
-  <MyPageSideBar/>
+  <MyPageSideBar v-if="role == 'Member'" />
+  <DoctorSideBar v-else-if="role == 'Doctor'"/>
+  <HospitalAdminSideBar v-else-if="role == 'HospitalAdmin'"/>
+  <PadakAdminSideBar v-else-if="role == 'TodakAdmin'"/>
 </template>
 
 <script>
 import axios from "axios";
 import MyPageSideBar from "@/components/sidebar/MyPageSideBar.vue";
+import { jwtDecode } from "jwt-decode";
+import DoctorSideBar from "@/components/sidebar/DoctorSideBar.vue";
+import HospitalAdminSideBar from "@/components/sidebar/HospitalAdminSideBar.vue";
+import PadakAdminSideBar from "@/components/sidebar/PadakAdminSideBar.vue";
 
 export default {
-  components: { MyPageSideBar },
+  components: { 
+    MyPageSideBar ,
+    DoctorSideBar,
+    HospitalAdminSideBar,
+    PadakAdminSideBar,
+  },
   name: "MyPage",
   data() {
     return {
       isEditMode: false,
+      role: "",
       memberInfo: {
         name: "",
         memberEmail: "",
@@ -159,6 +174,8 @@ export default {
     };
   },
   created() {
+    const token = localStorage.getItem('token');
+    this.role = jwtDecode(token).role;
     this.fetchMemberInfo();
     this.fetchPenaltyCount();
   },

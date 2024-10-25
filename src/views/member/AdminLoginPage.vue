@@ -112,11 +112,11 @@ export default {
         } else {
           localStorage.removeItem('savedEmail');
         }
-        window.location.href = "/";
+        window.location.href = "/admin/todak/statistics";
       } catch (e) {
         if (e.response?.status === 403) {
           alert('이메일 인증이 필요합니다.');
-          window.location.href = "/authentication";
+          window.location.href = "/all/authentication";
         } else {
           alert('로그인 실패');
           const error_message = e.response?.data?.status_message || "로그인에 실패했습니다.";

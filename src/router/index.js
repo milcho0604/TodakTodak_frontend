@@ -55,15 +55,15 @@ router.beforeEach((to, from, next) => {
       const userRole = decodedToken.role; // 토큰에서 role 정보 추출
 
       // role이 NonUser라면 결제 페이지로 리다이렉트
-      if (userRole === 'NonUser' && to.path !== '/payment/sub') {
-        next('/payment/sub'); // 결제 페이지로 리다이렉트
+      if (userRole === 'NonUser' && to.path !== '/all/payment/sub') {
+        next('/all/payment/sub'); // 결제 페이지로 리다이렉트
         return;
       }
     } catch (error) {
       console.error('토큰 파싱 오류:', error);
       // 토큰 파싱 오류 시, 로그아웃 처리할 수 있음 또는 오류 처리
       localStorage.removeItem('token');
-      next('/login');
+      next('/');
       return;
     }
   }

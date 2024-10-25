@@ -1,21 +1,26 @@
 <template>
   <div class="text-center">
     <v-container class="custom-container">
+      <div>
+        
+      </div>
       <v-row justify="center" class="mt-4" style="width: 900px; margin: 0 auto;">
         <v-col cols="4" class="text-center">
           <v-row justify="center" class="inter-bold dark-blue subtitle">진료자</v-row>
           <v-row justify="center" class="mt-6">
             <v-col class="text-center" cols="5">
               <v-avatar size="60">
-                <v-img :src="doctor.profileImg" alt="doctor image" />
+                <v-img
+                  :src="doctor.profileImg ? doctor.profileImg : 'https://todak-file.s3.ap-northeast-2.amazonaws.com/default-images/doctor-3d-image.png'"
+                  alt="doctor image" />
               </v-avatar>
             </v-col>
             <v-col class="text-center mt-3" cols="7">
-              <v-row class="inter-bold big-font">{{doctor.doctorName}} 의사</v-row>
-              <v-row class="inter-bold small-font">{{doctor.hospitalName}}</v-row>
+              <v-row class="inter-bold big-font">{{ doctor.doctorName }} 의사</v-row>
+              <v-row class="inter-bold small-font">{{ doctor.hospitalName }}</v-row>
               <v-row class="inter-normal small-font-black">
                 <v-icon class="star-icon">mdi-star</v-icon>
-                {{doctor.reviewPoint}} ({{doctor.reviewCount}})</v-row>
+                {{ doctor.reviewPoint }} ({{ doctor.reviewCount }})</v-row>
             </v-col>
           </v-row>
         </v-col>
@@ -30,8 +35,8 @@
                   </v-avatar>
                 </v-col>
                 <v-col class="text-center" cols="7" style="margin: 15px auto;">
-                  <v-row class="inter-bold big-font">{{child.name}}</v-row>
-                  <v-row class="inter-normal small-font">{{child.ssn}}</v-row>
+                  <v-row class="inter-bold big-font">{{ child.name }}</v-row>
+                  <v-row class="inter-normal small-font">{{ child.ssn }}</v-row>
                 </v-col>
               </v-row>
             </div>
@@ -104,25 +109,25 @@ export default {
   methods: {
     async fetchReservation() {
       try {
-    // 예약 정보를 가져옴
-    const reservationResponse = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/reservation-service/reservation/get/${this.sid}`);
-    const reservationData = reservationResponse.data.result;
-    console.log("Reservation Data:", reservationData);
+        // 예약 정보를 가져옴
+        const reservationResponse = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/reservation-service/reservation/get/${this.sid}`);
+        const reservationData = reservationResponse.data.result;
+        console.log("Reservation Data:", reservationData);
 
-    // doctorEmail로 의사 정보를 가져옴
-    const doctorResponse = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/member-service/member/doctor/${reservationData.doctorEmail}`);
-    this.doctor = doctorResponse.data.result;
-    console.log("Doctor Data:", this.doctor);
+        // doctorEmail로 의사 정보를 가져옴
+        const doctorResponse = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/member-service/member/doctor/${reservationData.doctorEmail}`);
+        this.doctor = doctorResponse.data.result;
+        console.log("Doctor Data:", this.doctor);
 
-    // 자녀 ID로 자녀 정보를 가져옴
-    const childResponse = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/member-service/child/detail/${reservationData.childId}`);
-    this.child = childResponse.data;
-    console.log("Child Data:", this.child);
+        // 자녀 ID로 자녀 정보를 가져옴
+        const childResponse = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/member-service/child/detail/${reservationData.childId}`);
+        this.child = childResponse.data;
+        console.log("Child Data:", this.child);
 
-    // 이후 로직 (예: state에 저장 등)
-  } catch (error) {
-    console.error("Error fetching data:", error);
-  }
+        // 이후 로직 (예: state에 저장 등)
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
     },
     startWebSocketConnection() {
       // this.socket = new WebSocket(`wss://server.todak.site/reservation-service/signal`);
@@ -330,13 +335,15 @@ export default {
         this.socket.close();
       }
 
+      this.updateStatus('Completed');
+
       console.log("Room exited successfully");
       // Role이 Member인 경우에만 alert 메시지 띄우기 & 리뷰 & 결제
       if (localStorage.getItem('role') === 'Member') {
         alert("진료가 종료되었습니다.");
         this.reviewModal = true;
       } else if (localStorage.getItem('role') === 'Doctor') {
-        window.location.href = '/rooms';
+        window.location.href = '/doctor/untact/reservation';
       }
     },
     handlePeerLeave(message) {
@@ -377,6 +384,22 @@ export default {
         .catch(error => {
           console.error('Error creating medical chart:', error);
         });
+    },
+    // 진료 종료시 예약 상태 & 진료 내역 상태 진료완료로 업데이트
+    async updateStatus(data) {
+      console.log(" 진료 완료처리 하려는데 ...")
+      try {
+        const req = {
+          id: this.sid,
+          status: data
+        }
+        console.log(req);
+        await axios.post(`${process.env.VUE_APP_API_BASE_URL}/reservation-service/reservation/hospital/untact/update`,
+          req
+        )
+      } catch (e) {
+        console.log(e)
+      }
     },
     openPayModal() {
       console.log("이제 결제할게");
@@ -471,6 +494,7 @@ export default {
   margin-right: 10px;
   font-size: 14px;
 }
+
 .star-icon {
   margin-top: 2px;
   font-size: 14px;

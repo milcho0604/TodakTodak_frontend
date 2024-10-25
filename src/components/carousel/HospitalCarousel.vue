@@ -1,7 +1,7 @@
 <template>
     <!-- 병원 Carousel 담는 회색 v-card -->
     <v-card
-      style="background-color: #F5F5F5; border-radius: 15px; padding: 20px; max-width: 1200px; width: 100%;"
+      style="border-radius: 15px; padding: 20px; max-width: 1200px; width: 100%;"
       rounded="0"
       flat
     >
@@ -127,7 +127,7 @@
         return this.hospitalList.slice(start, end);
       },
       moveToHospital(id){
-        this.$router.push('/hospital/detail/' + id).then(() => {
+        this.$router.push('/all/hospital/detail/' + id).then(() => {
           // 페이지 이동 후 스크롤을 최상단으로 이동
           window.scrollTo(0, 0);
         });

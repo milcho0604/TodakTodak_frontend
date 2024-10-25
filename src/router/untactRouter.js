@@ -7,34 +7,36 @@ import UntactDetail from '@/views/untact/UntactDetail.vue';
 
 
 export const untactRouter = [
+    // 가짜
     {
         path: '/untact/list2',
         name: 'UntactTreatList',
         component: UntactTreatList
     },
+    // 진짜
     {
-        path: '/untact/list',
+        path: '/all/untact/list',
         name: 'UntactTreatList2',
         component: UntactTreatList2
     },
     {
-        path: '/untact/detail/:doctorEmail',
+        path: '/all/untact/detail/:doctorEmail',
         name: 'UntactDetail',
         component: UntactDetail
     },
     {
-        path: '/untact/:doctorEmail/form',
+        path: '/member/untact/:doctorEmail/form',
         name: 'UntactForm',
         component: UntactForm,
         props:true
     },
     {
-        path: '/rooms',
+        path: '/admin/rooms',
         name: 'RtcTest',
         component: RtcTest
     },
     {
-        path: '/room/:sid',
+        path: '/member/room/:sid',
         name: 'UntactChatRoom',
         component: UntactChatRoom,
         props: true  // 이 설정을 통해 경로 매개변수를 컴포넌트에 전달

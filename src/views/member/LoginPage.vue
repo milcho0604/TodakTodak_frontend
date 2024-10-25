@@ -103,7 +103,7 @@ export default {
 
         const response = await axios.post(`${process.env.VUE_APP_API_BASE_URL}/member-service/member/login`, loginData);
         console.log(response)
-
+        
         const token = response.data.result;
         const decodedToken = jwtDecode(token);
         const role = decodedToken.role;
@@ -123,9 +123,8 @@ export default {
       } catch (e) {
         if (e.response?.status === 403) {
           alert('이메일 인증이 필요합니다.');
-          window.location.href = "/authentication";
+          window.location.href = "/all/authentication";
         } else {
-          alert('로그인 실패');
           console.log(e)
           const error_message = e.response?.data?.status_message || "로그인에 실패했습니다.";
           alert(error_message);
@@ -133,10 +132,10 @@ export default {
       }
     },
     findEmail() {
-      this.$router.push("member/find/email");
+      this.$router.push("all/member/find/email");
     },
     findPassword() {
-      this.$router.push("/member/find/password");
+      this.$router.push("/all/member/find/password");
     },
   },
 };

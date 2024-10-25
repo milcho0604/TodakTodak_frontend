@@ -256,10 +256,15 @@
             </v-dialog>
         </div>
     </v-container>
+    <HospitalAdminSideBar/>
 </template>
 <script>
 import axios from 'axios';
+import HospitalAdminSideBar from '@/components/sidebar/HospitalAdminSideBar.vue';
 export default {
+    components:{
+        HospitalAdminSideBar,
+    },
     data() {
         return {
             immediateList: [],

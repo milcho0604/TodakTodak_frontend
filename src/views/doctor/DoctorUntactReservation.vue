@@ -75,13 +75,25 @@
 
                             </v-col>
                         </v-row>
-                        <div class="untactButton">
-                            <v-chip class="no-untact" v-if="reservationDetail.status == 'Confirmed'"
-                                @click="this.$router.push(`/room/${reservationDetail.id}`)"><img
-                                    src="@/assets/untact_image.png" />
-                                <strong>비대면진료 접속</strong>
-                            </v-chip>
-                        </div>
+                        <v-row no-gutters justify="center">
+                            <v-col cols="auto" class="mr-1">
+                                <div class="untactButton" @click="updateStatus('Cancelled')">
+                                    <v-chip class="cancel" v-if="reservationDetail.status == 'Confirmed'">
+                                        <strong>예약취소</strong>
+                                    </v-chip>
+                                </div>
+                            </v-col>
+                            <v-col  cols="auto"  class="ml-1">
+                                <div class="untactButton">
+                                    <v-chip class="no-untact" v-if="reservationDetail.status == 'Confirmed'"
+                                        @click="this.$router.push(`/member/room/${reservationDetail.id}`)"><img
+                                            src="@/assets/untact_image.png" />
+                                        <strong>비대면진료 접속</strong>
+                                    </v-chip>
+                                </div>
+                            </v-col>
+                        </v-row>
+
                     </div>
                     <div v-else class="pick-coment">
                         <p>상세 내역을 보려면 예약을 선택하세요.</p>
@@ -119,10 +131,16 @@
 
         </div>
     </v-container>
+    <DoctorSideBar/>
 </template>
 <script>
 import axios from 'axios';
+import DoctorSideBar from '@/components/sidebar/DoctorSideBar.vue';
+
 export default {
+    components:{
+        DoctorSideBar,
+    },
     data() {
         return {
             confirmList: [],
@@ -236,7 +254,22 @@ export default {
         },
         formatTime(time) {
             return time.slice(0, 5);
-        }
+        },
+        async updateStatus(data) {
+            try {
+                const req = {
+                    id: this.reservationDetail.id,
+                    status: data
+                }
+                console.log(req);
+                await axios.post(`${process.env.VUE_APP_API_BASE_URL}/reservation-service/reservation/hospital/untact/update`,
+                    req
+                )
+                this.fetchReservation(this.getToday());
+            } catch (e) {
+                console.log(e)
+            }
+        },
     }
 }
 </script>
@@ -318,6 +351,11 @@ export default {
     margin-top: 30px;
     background-color: #00B2FF;
     color: #FFFFFF !important;
+}
+.cancel {
+    margin-top: 30px;
+    background-color: #FFA1A1;
+    color: #A20000 !important;
 }
 
 .datePick {

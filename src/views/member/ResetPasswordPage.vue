@@ -117,7 +117,7 @@ export default {
     },
     closeSuccessModal() {
       this.successModal = false;
-      this.$router.push("/login"); // 성공 후 로그인 페이지로 이동
+      this.$router.push("/all/hospitallogin"); // 성공 후 로그인 페이지로 이동
     },
     closeErrorModal() {
       this.errorModal = false;

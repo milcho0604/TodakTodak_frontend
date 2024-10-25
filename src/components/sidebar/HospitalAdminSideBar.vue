@@ -25,44 +25,37 @@
     <v-list density="compact" nav>
         <v-list-item
         :prepend-avatar="myPage"
-        title="회원리스트"
+        title="마이페이지"
         value="myPage"
-        @click="toMemberList"
-        ></v-list-item>
-
-        <v-list-item
-        :prepend-avatar="child"
-        title="상담리스트"
-        value="childConfig"
-        @click="toCsList"
-        ></v-list-item>
-
-        <v-list-item
-        :prepend-avatar="child"
-        title="신고리스트"
-        value="childConfig"
-        @click="toReportList"
+        @click="toMyPage"
         ></v-list-item>
 
         <v-list-item
         :prepend-avatar="hospital"
-        title="결제리스트"
+        title="예약리스트"
         value="reservation"
-        @click="toPaymentList"
-        ></v-list-item>
-
-        <v-list-item
-        :prepend-avatar="review"
-        title="병원리스트"
-        value="review"
-        @click="toHospitalList"
+        @click="toReservation"
         ></v-list-item>
 
         <v-list-item
         :prepend-avatar="calendar"
-        title="대시보드"
+        title="의사등록"
         value="calendar"
-        @click="toDashBoard"
+        @click="toRegisteDoctor"
+        ></v-list-item>
+
+        <v-list-item
+        :prepend-avatar="doctorQnA"
+        title="병원수정"
+        value="doctorQnA"
+        @click="toModifyHospital"
+        ></v-list-item>
+
+        <v-list-item
+        :prepend-avatar="cs"
+        title="영업시간등록/수정"
+        value="cs"
+        @click="toRegisterModify"
         ></v-list-item>
     </v-list>
     </v-navigation-drawer>
@@ -92,24 +85,21 @@ export default{
         this.profileImgUrl = localStorage.getItem("profileImgUrl");
     },
     methods:{
-        toMemberList() {
-            this.$router.push('/admin/member/list');
+        toMyPage() {
+            this.$router.push('/member/mypage');
         },
-        toCsList(){
-            this.$router.push('/admin/cs/list')
+        toReservation() {
+            this.$router.push('/member/doctor/reservation');
         },
-        toReportList() {
-            this.$router.push('/admin/todak/report');
+        toRegisteDoctor(){
+            this.$router.push('/hospital/doctor/register');
         },
-        toPaymentList() {
-            this.$router.push('/admin/payment/list');
+        toModifyHospital(){
+            this.$router.push('/hospital/admin/detail');
         },
-        toHospitalList() {
-            this.$router.push('/admin/hospital/list');
-        },
-        toDashBoard() {
-            this.$router.push('/admin/todak/statistics');
-        },
+        toRegisterModify(){
+            this.$router.push('');
+        }
     }
 }
 </script>

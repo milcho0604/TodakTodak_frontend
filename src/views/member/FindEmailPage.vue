@@ -36,7 +36,7 @@
 
             <v-row justify="center">
               <v-col cols="auto">
-                <v-btn @click="$router.push('/login')" class="custom-btn btn-fixed-width">로그인 페이지로 돌아가기</v-btn>
+                <v-btn @click="$router.push('/all/hospital/login')" class="custom-btn btn-fixed-width">로그인 페이지로 돌아가기</v-btn>
               </v-col>
             </v-row>
           </v-card-text>

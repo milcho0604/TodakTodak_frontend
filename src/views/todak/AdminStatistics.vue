@@ -15,7 +15,7 @@
                             alt="병원" class="card-icon" />
                     </div>
                     <div class="dashboard-cs-card">
-                        <span class="dashboard-text" @click="$router.push('/')">고객상담 채팅</span>
+                        <span class="dashboard-text" @click="$router.push('/admin/cschat/')">고객상담 채팅</span>
                         <img src="https://todak-file.s3.ap-northeast-2.amazonaws.com/default-images/cs_center_image.png"
                             alt="채팅" class="card-icon" />
                     </div>
@@ -69,11 +69,12 @@
                 <v-spacer :style="{ height: '20px' }"></v-spacer>
                 <div class="dashboard-cards">
                     <div class="dashboard-reportlist-card">
-                        <ReportList/>
+                        <ReportList />
                     </div>
                 </div>
             </v-container>
         </v-container>
+        <PadakAdminSideBar />
     </div>
 </template>
 
@@ -83,13 +84,15 @@ import { Chart, registerables } from 'chart.js'
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 import AdminCsList from './AdminCsList.vue';
 import ReportList from './ReportList.vue';
+import PadakAdminSideBar from '@/components/sidebar/PadakAdminSideBar.vue';
 
 Chart.register(...registerables, ChartDataLabels)
 
 export default {
-    components:{
+    components: {
         AdminCsList,
-        ReportList
+        ReportList,
+        PadakAdminSideBar,
     },
     data() {
         return {
@@ -167,7 +170,7 @@ export default {
                         },
                         formatter: (value, ctx) => {
                             let label = ctx.chart.data.labels[ctx.dataIndex];
-                            return label + '\n' + value / this.totalMember * 100 + '%'; // 라벨 + 값
+                            return label + '\n' + (value / this.totalMember).toFixed(2) * 100 + '%'; // 라벨 + 값
                         }
                     },
                     legend: {
@@ -273,7 +276,7 @@ export default {
         async totalReservationCount() {
             try {
                 const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/reservation-service/reservation/hospital/total/list`);
-                
+
                 this.totalReservation = response.data;
             } catch (e) {
                 console.error(e);
@@ -281,17 +284,18 @@ export default {
         },
         async waitingMemberCount() {
             try {
-                const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/member-service/member/waiting/list`);
+                const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/reservation-service/hospital/list/accept`);
+                console.log(response)
                 this.waitingMember = response.data;
             } catch (e) {
                 console.error(e);
             }
         },
-        async totalAmountCount(){
-            try{
+        async totalAmountCount() {
+            try {
                 const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/reservation-service/payment/get/total`);
                 this.totalAmount = response.data;
-            }catch(e){
+            } catch (e) {
                 console.error(e);
             }
         },

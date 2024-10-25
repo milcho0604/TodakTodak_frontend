@@ -186,10 +186,10 @@ export default {
     },
 
     goToPost(id) {
-      this.$router.push(`/post/${id}`);
+      this.$router.push(`/community/${id}`);
     },
     goToCreatePost() {
-      this.$router.push('/post/create');
+      this.$router.push('/community/create');
     },
   },
   computed: {
