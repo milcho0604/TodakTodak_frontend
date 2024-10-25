@@ -97,7 +97,7 @@ export default {
     data() {
         return {
             totalMember: 0,
-            roles: ['Doctor', 'HospitalAdmin', 'Member'],
+            roles: ['Member','HospitalAdmin', 'Doctor'],
             totalReservation: 0,
             waitingMember: 0,
             totalAmount: 0,
