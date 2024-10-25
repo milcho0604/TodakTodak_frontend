@@ -98,7 +98,7 @@ export default{
             this.$router.push('/hospital/admin/detail');
         },
         toRegisterModify(){
-            this.$router.push('');
+            this.$router.push('/hospital/admin/time');
         }
     }
 }
