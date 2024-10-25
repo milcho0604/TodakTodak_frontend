@@ -177,7 +177,7 @@
               </div>
           </v-col>
           <v-col cols="12" class="text-center">
-              <div class="doib-button" color="primary" @click="$router.push('/hospital/admin/create')">
+              <div class="doib-button" color="primary" @click="$router.push('/all/hospital/admin/create')">
                   <span class="inter-bold">도입 신청하기</span>
               </div>
           </v-col>

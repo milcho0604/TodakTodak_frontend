@@ -170,6 +170,7 @@ export default {
         },
         closeModal() {
             this.$emit('update:dialog', false);
+            window.location.reload();  // 페이지 새로 고침으로 폼 초기화
         }
     }
 };

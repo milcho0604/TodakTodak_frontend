@@ -101,7 +101,7 @@
             autoLogin: this.autoLogin,
           };
   
-          const response = await axios.post(`${process.env.VUE_APP_API_BASE_URL}/member-service/member/hospital/login`, loginData);
+          const response = await axios.post(`${process.env.VUE_APP_API_BASE_URL}/member-service/member/login`, loginData);
           console.log(response)
   
           const token = response.data.result;
@@ -125,7 +125,6 @@
             alert('이메일 인증이 필요합니다.');
             window.location.href = "/all/authentication";
           } else {
-            alert('로그인 실패');
             console.log(e)
             const error_message = e.response?.data?.status_message || "로그인에 실패했습니다.";
             alert(error_message);
