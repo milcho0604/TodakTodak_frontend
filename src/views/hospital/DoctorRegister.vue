@@ -4,16 +4,17 @@
 
 
         <v-row justify="center">
-            <v-col v-for="doctor in doctors" :key="doctor.id" md="2" lg="1" class="d-flex flex-column align-items-center">
+            <v-col v-for="doctor in doctors" :key="doctor.id" md="2" lg="1"
+                class="d-flex flex-column align-items-center">
                 <v-avatar size="70">
                     <v-img @click="handleDoctorClick(doctor)"
-                        :src="doctor.profileImgUrl ? doctor.profileImgUrl : defaultImageUrl" class="doctor-img"
-                        :style="{
-                            filter: selectedDoctor && selectedDoctor.id === doctor.id ? 'brightness(1)' : 'brightness(0.5)'
+                        :src="doctor.profileImgUrl ? doctor.profileImgUrl : defaultImageUrl" class="doctor-img" :style="{
+                            filter: selectedDoctor && selectedDoctor.doctorId == doctor.id ? 'brightness(1)' : 'brightness(0.5)'
                         }" />
                 </v-avatar>
                 <v-spacer :style="{ height: '5px' }"></v-spacer>
-                <span v-if="selectedDoctor && selectedDoctor.id === doctor.id" class="inter-light" style="margin-left:3px; font-size: 14px;"> {{ doctor.name }} </span>
+                <span v-if="selectedDoctor && selectedDoctor.doctorId === doctor.id" class="inter-light"
+                    style="margin-left:3px; font-size: 14px;"> {{ doctor.name }} </span>
             </v-col>
             <v-col md="2" lg="1" class="d-flex flex-column align-items-center mt-4">
                 <v-icon class="plus-icon" @click="createModal = true">mdi-plus-circle-outline</v-icon>
@@ -26,9 +27,7 @@
             <v-col cols="3">
                 <!-- 의사약력 -->
                 <v-avatar style="height:auto; width:180px; border-radius: 5px; object-fit:cover;" class="ml-10">
-                    <v-img
-                        :src="selectedDoctor.profileImgUrl ? selectedDoctor.profileImgUrl : defaultImageUrl"
-                         />
+                    <v-img :src="selectedDoctor.profileImgUrl ? selectedDoctor.profileImgUrl : defaultImageUrl" />
                 </v-avatar>
             </v-col>
             <v-col cols="9">
@@ -37,7 +36,7 @@
                         이름
                     </v-card-title>
                     <v-card-text>
-                        {{ this.selectedDoctor.name }}
+                        {{ this.selectedDoctor.doctorName }}
                     </v-card-text>
                 </div>
                 <div class="ml-1">
@@ -163,7 +162,7 @@
                 </v-card>
             </v-col>
         </v-row>
-        <v-row @click="doctorDeleteModal=true" justify="center">
+        <v-row @click="doctorDeleteModal = true" justify="center">
             <div class="delete-button inter-bold">
                 삭제
             </div>
@@ -174,12 +173,13 @@
             @doctor-exists="openChildExistsDialog">
         </DoctorCreateModal>
 
-        <DoctorDeleteModal v-model="doctorDeleteModal" :doctor-id="selectedDoctorId" :doctorEmail="selectedDoctor.doctorEmail"
-            @update:dialog="doctorDeleteModal = $event" @deleted="fetchDoctor">
+        <DoctorDeleteModal v-model="doctorDeleteModal" :doctor-id="selectedDoctorId"
+            :doctorEmail="selectedDoctor.doctorEmail" @update:dialog="doctorDeleteModal = $event"
+            @deleted="fetchDoctor">
         </DoctorDeleteModal>
 
     </v-container>
-    <HospitalAdminSideBar/>
+    <HospitalAdminSideBar />
 </template>
 
 <script>
@@ -205,7 +205,7 @@ export default {
             createModal: false,
             doctorDeleteModal: false,
             doctors: [],
-            selectedDoctor: null,
+            selectedDoctor: {},
             selectedDoctorId: null,
             selectedDoctorEmail: '',
             createNewHour: false,
@@ -240,7 +240,10 @@ export default {
     watch: {
         selectedDoctor(newDoctor) {
             console.log("의사 변경 감지", newDoctor);
-            this.originalOperatingHours = JSON.parse(JSON.stringify(this.selectedDoctor.operatingHours)); // 깊은 복사
+            if (this.selectedDoctor) {
+                this.originalOperatingHours = JSON.parse(JSON.stringify(this.selectedDoctor.operatingHours)); // 깊은 복사
+            }
+
             console.log("originalOperatingHours", this.originalOperatingHours);
         }
     },
@@ -275,7 +278,9 @@ export default {
                 this.doctors = response.data.result.content;
                 console.log(this.doctors);
                 // this.selectedDoctor = this.doctors[0];
-                this.handleDoctorClick(this.doctors[0])
+                if (this.doctors[0]) {
+                    this.handleDoctorClick(this.doctors[0])
+                }
             } catch (error) {
                 console.error('Failed to fetch doctors:', error);
             }
@@ -289,35 +294,44 @@ export default {
             }
         },
         handleDoctorClick(doctor) {
-            this.selectedDoctor = doctor;
-            this.fetchDoctor(doctor);
+            // this.selectedDoctor = doctor;
+            this.fetchDoctor(doctor.doctorEmail);
         },
-        async fetchDoctor(doctor) {
-            console.log(doctor.operatingHours);
-            // Monday -> 월요일 
-            const daysOfWeek = {
-                Monday: '월요일',
-                Tuesday: '화요일',
-                Wednesday: '수요일',
-                Thursday: '목요일',
-                Friday: '금요일',
-                Saturday: '토요일',
-                Sunday: '일요일'
-            };
-            // 요일 순서 배열
-            const daysOrder = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
-            this.selectedDoctor.operatingHours = doctor.operatingHours
-                .sort((a, b) => {
-                    // 요일 순서대로 정렬
-                    return daysOrder.indexOf(a.dayOfWeek) - daysOrder.indexOf(b.dayOfWeek);
-                })
-                .map(item => {
-                    return {
-                        ...item,
-                        dayOfWeek: daysOfWeek[item.dayOfWeek] || item.dayOfWeek // 영어 요일을 한국어로 변환, 없으면 그대로 반환
-                    }
-                });
-            console.log("eefefefefe", this.selectedDoctor);
+        async fetchDoctor(doctorEmail) {
+            try {
+                const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/member-service/member/doctor/detail/${doctorEmail}`);
+
+                this.selectedDoctor = response.data.result;
+                // console.log(selectedDoctor.operatingHours);
+                // Monday -> 월요일 
+                const daysOfWeek = {
+                    Monday: '월요일',
+                    Tuesday: '화요일',
+                    Wednesday: '수요일',
+                    Thursday: '목요일',
+                    Friday: '금요일',
+                    Saturday: '토요일',
+                    Sunday: '일요일'
+                };
+                // 요일 순서 배열
+                const daysOrder = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+                this.selectedDoctor.operatingHours = this.selectedDoctor.operatingHours
+                    .sort((a, b) => {
+                        // 요일 순서대로 정렬
+                        return daysOrder.indexOf(a.dayOfWeek) - daysOrder.indexOf(b.dayOfWeek);
+                    })
+                    .map(item => {
+                        return {
+                            ...item,
+                            dayOfWeek: daysOfWeek[item.dayOfWeek] || item.dayOfWeek // 영어 요일을 한국어로 변환, 없으면 그대로 반환
+                        }
+                    });
+                console.log("eefefefefe", this.selectedDoctor);
+            } catch (e) {
+                console.log(e);
+            }
+
+
         },
         formatTime(time) {
             return time.slice(0, 5);
@@ -325,10 +339,11 @@ export default {
         async createNewOperatingHours() {
             console.log(this.newOperatingHour);
             try {
-                const response = await axios.post(`${process.env.VUE_APP_API_BASE_URL}/member-service/doctor-operating-hours/register/${this.selectedDoctor.id}`, this.newOperatingHour);
+                const response = await axios.post(`${process.env.VUE_APP_API_BASE_URL}/member-service/doctor-operating-hours/register/${this.selectedDoctor.doctorId}`, this.newOperatingHour);
                 console.log("Successfully submitted:", response.data);
                 this.createNewHour = !this.createNewHour;
-                this.fetchDoctors();
+                alert("진료시간이 등록되었습니다.");
+                this.fetchDoctor(this.selectedDoctor.doctorEmail);
             } catch (error) {
                 console.error("Error submitting:", error);
             }
@@ -367,6 +382,7 @@ export default {
             try {
                 const response = await axios.post(`${process.env.VUE_APP_API_BASE_URL}/member-service/doctor-operating-hours/delete/${hourId}`);
                 console.log("Successfully submitted:", response.data);
+                alert("진료시간이 삭제되었습니다.");
                 this.fetchDoctors();
             } catch (error) {
                 console.error("Error submitting:", error);
@@ -453,10 +469,12 @@ export default {
     color: gray;
     cursor: pointer;
 }
+
 .edit {
     color: green;
     cursor: pointer;
 }
+
 .delete-button {
     background-color: #D8D8D8;
     color: #676767;
