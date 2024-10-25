@@ -365,6 +365,7 @@ export default {
     border-radius: 10px;
     width: 290px;
     padding: 16px 10px;
+    cursor: pointer;
 }
 
 .dark-blue {
@@ -399,6 +400,7 @@ export default {
     margin-right: 10px;
     font-size: 17px;
     color: #010565;
+    cursor: pointer;
 }
 
 .round {
