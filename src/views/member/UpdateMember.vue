@@ -156,7 +156,13 @@ export default {
     // 주소 필드를 업데이트
     updateFullAddress() {
       const { city, street, zipcode } = this.memberEditInfo.address;
-      this.fullAddress = `${city} ${street} (${zipcode})`;
+      // this.fullAddress = `${city} ${street} (${zipcode})`;
+        // 주소가 유효한지 확인 후 업데이트
+      if (city && street && zipcode) {
+        this.fullAddress = `${city} ${street} (${zipcode})`;
+      } else {
+        this.fullAddress = '';  // 기본 값을 할당
+      }
     },
     // 폼 제출 시 서버로 데이터를 전송
     async submitForm() {
