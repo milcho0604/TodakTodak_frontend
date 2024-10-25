@@ -1,5 +1,5 @@
 <template>
-    <v-container>
+    <v-container  id="messageContainer">
       <!-- 채팅방 헤더 -->
       <v-app-bar app scroll-behavior="elevate">
         <!-- 로고 이미지 -->
@@ -24,34 +24,45 @@
         </v-btn>
       </v-app-bar>
 
-      <h2>{{this.chatRoomId}}번 채팅방</h2>
-      
-      <div class="chat-box">
-        <div 
-          v-for="(message, index) in messages" 
-          :key="index" 
-          :class="['message', { 'my-message': message.senderName === currentUserName, 'other-message': message.senderName !== currentUserName }]"
-        >
-          <!-- 메시지 콘텐츠와 아바타 -->
-          <div class="message-wrapper">
-            <!-- 아바타 -->
-            <v-avatar size="60">
-              <v-img :src="message.senderProfileImgUrl"></v-img>
-            </v-avatar>
+      <!-- <h2>{{this.chatRoomId}}번 채팅방</h2> -->
+      <div>
+        <div class="chat-box">
+          <div 
+            v-for="(message, index) in messages" 
+            :key="index" 
+            :class="['message', { 'my-message': message.senderName === currentUserName, 'other-message': message.senderName !== currentUserName }]"
+          >
 
-            <!-- 메시지 콘텐츠 -->
-            <div class="message-content">
-              <strong>{{ message.senderName }}:</strong> {{ message.contents }}
-              <br />
+            <!-- 메시지 발신자 이름 (외부 상단에 고정) -->
+            <!-- <div class="message-sender mx-3">
+              {{ message.senderName }}
+            </div> -->
+            <!-- 메시지 콘텐츠와 아바타 -->
+            <div class="message-wrapper">
+              <!-- 아바타 -->
+              <v-avatar size="60" class="mx-2">
+                <v-img :src="message.senderProfileImgUrl"></v-img>
+              </v-avatar>
+
+              <!-- 메시지 콘텐츠 -->
+              <div class="message-content mx-2">
+                <!-- 메시지 본문 -->
+                  {{ message.contents }}
+              </div>
+            </div>
+            <!-- 메시지 아래에 표시될 createdAt -->
+            <div class="message-time mx-3">
               {{ formatDate(message.createdAt) }}
             </div>
           </div>
         </div>
-      </div>
-      
-      <div class="input-box">
-        <input v-model="messageToSend" @keyup.enter="sendMessage" placeholder="메시지를 입력하세요..." />
-        <button @click="sendMessage">전송</button>
+        
+        <div class="input-box">
+          <input v-model="messageToSend" @keyup.enter="sendMessage" placeholder="메시지를 입력하세요..." />
+          <button @click="sendMessage">
+            <v-icon style="color:#9A9A9A" class="mr-3">mdi-send</v-icon>
+          </button>
+        </div>
       </div>
     </v-container>
   </template>
@@ -59,7 +70,6 @@
   <script>
     import { Stomp } from "@stomp/stompjs";
     import SockJS from "sockjs-client";
-    // import { useRoute } from 'vue-router';
     import axios from 'axios';
   
   export default {
@@ -86,12 +96,25 @@
       // this.$route.params를 사용하여 채팅방 ID를 가져옴
       this.chatRoomId = this.$route.params.chatRoomId;
       this.currentUserName = localStorage.getItem('name'); 
+      
     },
     async mounted() {
       this.connect(); // 웹소켓 connect
       // await this.loadChatRoomMemberInfo(); // 채팅방 참여자 정보 조회
       await this.loadChatMessages(); // 채팅메시지 리스트 조회
+      // this.scrollToBottom(); // 새로운 메시지 수신 시 스크롤 하단으로 이동
+      this.$nextTick(() => {
+        window.scrollTo({
+          top: document.body.scrollHeight,
+          behavior: 'auto'  // 부드러운 스크롤
+        });
+      });
+
     },
+    updated() {
+      this.scrollToBottom(); // 메시지가 업데이트될 때 스크롤 하단으로 이동
+    },
+
     watch: {
       '$route.params.chatRoomId': {
         immediate: true,
@@ -122,6 +145,8 @@
             senderProfileImgUrl: receivedMessage.senderProfileImgUrl,
             createdAt: receivedMessage.createdAt
           });
+          this.scrollToRealBottom(); // 새로운 메시지 수신 시 스크롤 하단으로 이동
+
           console.log("this.message",this.messages);
           console.log("receivedMessage")
           console.log(receivedMessage)
@@ -141,9 +166,11 @@
           contents: this.messageToSend,
           token: localStorage.getItem('token')             
         };
-        
+
         this.stompClient.send(`/pub/${this.chatRoomId}`, {}, JSON.stringify(message));
         this.messageToSend = ''; // 입력 필드 초기화
+        this.scrollToRealBottom();
+
       } else {
         console.error('STOMP client is not connected.'); // 연결되지 않았을 때의 에러 처리
         alert('채팅 서버에 연결되지 않았습니다.'); // 사용자에게 알림
@@ -199,16 +226,16 @@
       console.log(error);
     }
   },
-  // async loadChatRoomMemberInfo(){
-  //   try{
-  //     const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/member-service/chat/member/info/chatroom/${this.chatRoomId}`);
-  //     // 채팅참여자 정보
-  //     this.memberInfo = response.data.result;
-  //     console.log(response.data);
-  //   }catch(error){
-  //     console.log(error);
-  //   }
-  // },
+  async loadChatRoomMemberInfo(){
+    try{
+      const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/member-service/chat/member/info/chatroom/${this.chatRoomId}`);
+      // 채팅참여자 정보
+      this.memberInfo = response.data.result;
+      console.log(response.data);
+    }catch(error){
+      console.log(error);
+    }
+  },
   // 날짜 포맷팅 함수
   formatDate(date) {
     return new Date(date).toLocaleString();
@@ -217,26 +244,48 @@
         // 보낸 사람이 나인지 확인 (senderId 또는 senderEmail 사용 가능)
         return message.senderId === this.myId;
   },
-
-
+  scrollToBottom() {
+    // 메시지 목록을 감싸는 컨테이너 찾기
+    const container = document.getElementById('messageContainer');
+    const inputBox = document.querySelector('.input-box'); // 입력 박스 선택
+    const inputBoxHeight = inputBox ? inputBox.offsetHeight : 0; // 입력 박스의 높이 구하기
+    
+    if (container) {
+        // 잠시 딜레이를 주고 스크롤을 최하단으로 이동
+        setTimeout(() => {
+            container.scrollTop = container.scrollHeight - inputBoxHeight; // 입력 박스 높이만큼 빼줌
+        }, 100);
+    }
+  },
+  scrollToRealBottom() {
+    window.scrollTo({
+        top: document.body.scrollHeight
+    });
+  }
 }
 };
 </script>
 
 <style scoped>
-.chat-container {
-  display: flex;
-  flex-direction: column;
-  width: 400px;
-  margin: 0 auto;
-}
-
 .chat-box {
-  border: 1px solid #ccc;
+  /* border: 1px solid #ccc; */
   min-height: 600px;
   overflow-y: auto;
-  padding: 10px;
-  margin-bottom: 10px;
+  margin-bottom: 40px; /* input-box의 높이만큼 여백 추가 */
+  width: 100%; /* 너비를 100%로 설정 */
+}
+
+.input-box {
+  display: flex;
+  gap: 10px;
+  position: fixed; /* 화면의 하단에 고정 */
+  bottom: 0; /* 하단에서 0px 떨어진 위치 */
+  background-color: white; /* 배경색을 흰색으로 설정 */
+  align-self: center;
+  width: 100%; /* 너비를 100%로 설정하여 부모 요소에 맞춤 */
+  padding: 10px; /* 내부 여백 */
+  z-index: 1000;
+  
 }
 
 /* 아바타와 메시지를 감싸는 래퍼 */
@@ -257,10 +306,47 @@
   background-color: #f1f1f1;
 }
 
-.my-message .message-content {
-  background-color: #007AFF; /* 내가 보낸 메시지 색상 */
-  color: #FFFFFF;
+/* 메시지 발신자 이름은 말풍선 위에 */
+.message-sender {
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.my-message .message-sender {
   text-align: right;
+}
+
+.other-message .message-sender {
+  text-align: left;
+}
+
+/* 메시지 본문은 중앙 */
+.message-bodys {
+  padding: 5px 0;
+}
+
+/* 메시지 시간은 말풍선 아래에 */
+.my-message .message-time {
+  font-size: 0.8em;
+  color: #888;
+  margin-top: 5px;
+  text-align: right;
+  margin-bottom: 5px;
+}  
+
+/* 메시지 시간은 말풍선 아래에 */
+.other-message .message-time {
+  font-size: 0.8em;
+  color: #888888;
+  margin-top: 5px;
+  text-align: left;
+  margin-bottom: 5px;
+}  
+
+.my-message .message-content {
+  background-color: #007bff; /* 내가 보낸 메시지 색상 */
+  color: #FFFFFF;
+  text-align: left;
 }
 
 .other-message .message-content {
@@ -268,10 +354,7 @@
   text-align: left;
 }
 
-.input-box {
-  display: flex;
-  gap: 10px;
-}
+
 
 input {
   flex: 1;
