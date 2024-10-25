@@ -6,6 +6,7 @@
 
     <v-row justify="center">
       <v-col cols="12" sm="10" md="8">
+        <v-form ref="form" v-model="formValid">
         <v-card class="simple-card" variant="flat">
           <div class="signup-title text-center">회원 정보를 입력해주세요.</div>
           <v-card-text>
@@ -65,6 +66,7 @@
             </div>
           </v-card-text>
         </v-card>
+      </v-form>
       </v-col>
     </v-row>
 
@@ -135,6 +137,11 @@ export default {
     this.memberEditReq.phoneNumber = '';
     this.fullAddress = '';  // 주소도 초기화
   },
+  rules: { // 유효성 검사 규칙 추가
+        required: value => !!value || '필수 입력 항목입니다.',
+        phoneNumber: value => /^\d{10,11}$/.test(value) || '유효한 핸드폰 번호를 입력해주세요.'
+      },
+  
   methods: {
     // 서버에서 회원 정보를 가져옴
     async fetchMemberInfo() {
@@ -171,21 +178,22 @@ export default {
         return;
       }
 
-      try {
-        const formData = new FormData();
-        formData.append('name', this.memberEditReq.name);  // 사용자 입력값을 보냄
-        formData.append('phoneNumber', this.memberEditReq.phoneNumber);
-        formData.append('address', JSON.stringify(this.memberEditReq.address));
+      if (this.$refs.form.validate()) {
+        try {
+          const formData = new FormData();
+          formData.append('name', this.memberEditReq.name);  // 사용자 입력값을 보냄
+          formData.append('phoneNumber', this.memberEditReq.phoneNumber);
+          formData.append('address', JSON.stringify(this.memberEditReq.address));
 
-        if (this.memberEditReq.profileImage) {
-          formData.append('profileImage', this.memberEditReq.profileImage);
+          if (this.memberEditReq.profileImage) {
+            formData.append('profileImage', this.memberEditReq.profileImage);
+          }
+
+          if (this.memberEditReq.password) {
+            formData.append('password', this.memberEditReq.password);
+            formData.append('confirmPassword', this.memberEditReq.confirmPassword);
+          }
         }
-
-        if (this.memberEditReq.password) {
-          formData.append('password', this.memberEditReq.password);
-          formData.append('confirmPassword', this.memberEditReq.confirmPassword);
-        }
-
         const response = await axios.post(`${process.env.VUE_APP_API_BASE_URL}/member-service/member/edit-info`, formData, {
           headers: {
             'Content-Type': 'multipart/form-data'
@@ -198,6 +206,7 @@ export default {
       } finally {
         this.completeModal = true;  // 모달 열기
       }
+      
     },
     // 주소 검색 기능
     openAddressSearch() {
