@@ -202,11 +202,24 @@
   //   this.isChatPageActive = isActive;
   },
   disconnect() {
-        if (this.stompClient) {
-            this.stompClient.disconnect(() => {
-                console.log('Disconnected from chat server');
-            });
+    return new Promise((resolve, reject) => {  
+        if (this.stompClient && this.stompClient.connected) {
+            // 구독 해제
+            if (this.subscription) {
+                this.stompClient.unsubscribe(this.subscription);
+            }
+            try {
+                this.stompClient.disconnect(() => {
+                    this.isConnected = false; // 연결 상태 업데이트
+                    resolve();
+                });
+            } catch (error) {
+                reject(error);
+            }
+        } else {
+            resolve(); // 이미 연결되지 않은 상태일 경우
         }
+    });
   },
   goBack() {
       this.$router.go(-1); // 뒤로가기 (히스토리에서 이전 페이지로 이동)
