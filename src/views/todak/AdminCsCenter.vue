@@ -105,7 +105,7 @@
       <!-- CS 영역 -->
       <div class="list-box">
         <!-- 회원정보 영역 -->
-        <div v-if="memberInfo" style="border-bottom: 1px solid" class="user-info">
+        <div v-if="memberInfo" class="user-info">
           <v-avatar size="60" class="wisdom-sender-avatar mx-3">
             <v-img :src='memberInfo.profileImgUrl' />
           </v-avatar>
@@ -119,15 +119,15 @@
           <div class="header">
             <p>상담내용</p>
             <div style="margin-top: -20px;">
-              <span>✏️</span>
-              <span>🗑️</span>
+              <span class="mr-2">✏️</span>
+              <span class="mr-2">🗑️</span>
             </div>
           </div>
           <textarea v-model="consultationContent" class="textarea"></textarea>
           <div class="footer">
             <div class="status-section">
-              <p>처리상태</p>
-              <select v-model="status" class="status-select">
+              <p class="mt-3">처리상태</p>
+              <select v-model="status" class="status-select" style="height: 35px;">
                 <option v-for="item in statusItems" :key="item" :value="item">
                   {{ item }}
                 </option>
@@ -294,13 +294,9 @@ export default {
       return new Date(date).toLocaleString();
     },
     scrollToBottom() {
-      // 메시지 목록을 감싸는 컨테이너 찾기
-      const container = document.getElementById('messageContainer');
-      if (container) {
-          // 잠시 딜레이를 주고 스크롤을 최하단으로 이동
-          setTimeout(() => {
-              container.scrollTop = container.scrollHeight; // 입력 박스 높이만큼 빼줌
-          }, 100);
+      const chatBox = document.querySelector('.cschat-box');
+      if (chatBox) {
+        chatBox.scrollTop = chatBox.scrollHeight; // 최하단으로 스크롤
       }
     },
   },
@@ -379,7 +375,6 @@ export default {
   min-height: 580px;
   border-radius: 10px;
   position: relative;
-  padding-bottom: 30px;
   width: 600px;
   overflow-y: hidden; /* 내부 요소의 스크롤을 위해 overflow-y를 hidden으로 설정 */
   display: flex;
@@ -388,15 +383,22 @@ export default {
 
 .chat-box {
   flex: 1; /* 남은 공간을 차지하게 설정 */
-  height: calc(580px - 30px); /* .cschat-box 높이에서 padding-bottom을 뺀 값으로 설정 */
+  height: calc(580px - 35px) !important; /* .cschat-box 높이에서 padding-bottom을 뺀 값으로 설정 */
   overflow-y: auto; /* 스크롤 가능하게 설정 */
   width: 100%;
+  margin: 0 auto !important;
 }
 
 .input-box {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
   display: flex;
   gap: 10px;
+  padding: 10px;
   background-color: #ff9e9e;
+  border-top: 1px solid #ddd;
 }
 .messageContainer{
   min-height: 580px;
@@ -523,20 +525,23 @@ button {
   display: flex;
   align-items: center;
   /* 이미지와 텍스트를 수직으로 중앙에 정렬 */
-  border-bottom: 1px solid #B3B3B3;
+  border-bottom: 1px solid #bfbfbf;
   padding-bottom: 10px;
 }
 
 .user-name {
-  /* */
+  /* 회원정보 - 이름*/
   font-weight: bold;
+  font-size: 17px;
+  margin-top: 5px;
 }
 
 .user-type {
   /* */
   margin-top: -15px;
+  margin-left: 3px;
   color: #606060;
-  font-size: 13px;
+  font-size: 15px;
 }
 
 .cs-message {
@@ -580,6 +585,7 @@ button {
   /* */
   display: flex;
   align-items: center;
+  height: 10px;
 }
 
 .status-section p {
@@ -596,10 +602,11 @@ button {
 
 .save-btn {
   padding: 8px 16px;
-  background-color: #90CAF9;
+  background-color: #0075FF;
   color: white;
   border: none;
   border-radius: 5px;
   cursor: pointer;
+  height: 35px;
 }
 </style>
