@@ -26,9 +26,12 @@
         <v-row style="width: 80%; margin: 0 auto;" v-if="selectedDoctor">
             <v-col cols="3">
                 <!-- 의사약력 -->
-                <v-avatar style="height:auto; width:180px; border-radius: 5px; object-fit:cover;" class="ml-10">
-                    <v-img :src="selectedDoctor.profileImgUrl ? selectedDoctor.profileImgUrl : defaultImageUrl" />
+                <v-avatar style="height:190px; width:170px; border-radius: 5px; object-fit:cover;" class="ml-10">
+                    <v-img :src="selectedDoctor.doctorImageUrl ? selectedDoctor.doctorImageUrl : defaultImageUrl"
+                        class="doctor-img"
+                        @click="triggerFileUpload" />
                 </v-avatar>
+                <input type="file" ref="fileInput" style="display:none" @change="handleFileUpload"/> <!-- 숨겨진 파일 input -->
             </v-col>
             <v-col cols="9">
                 <div class="ml-1">
@@ -282,6 +285,7 @@ export default {
                     this.handleDoctorClick(this.doctors[0])
                 }
             } catch (error) {
+                alert("의사 정보를 불러오는데 실패했습니다.");
                 console.error('Failed to fetch doctors:', error);
             }
         },
@@ -328,6 +332,7 @@ export default {
                     });
                 console.log("eefefefefe", this.selectedDoctor);
             } catch (e) {
+                alert("의사 정보를 불러오는데 실패했습니다.");
                 console.log(e);
             }
 
@@ -345,6 +350,7 @@ export default {
                 alert("진료시간이 등록되었습니다.");
                 this.fetchDoctor(this.selectedDoctor.doctorEmail);
             } catch (error) {
+                alert('이미 등록된 요일입니다.'); // 에러 메시지 출력
                 console.error("Error submitting:", error);
             }
         },
@@ -372,19 +378,22 @@ export default {
                     }
                 );
                 console.log("Successfully submitted:", response.data);
-                this.fetchDoctors();
+                alert("진료시간이 수정되었습니다.")
+                this.fetchDoctor(this.selectedDoctor.doctorEmail);
             } catch (error) {
+                alert("진료시간 수정을 실패했습니다.");
                 console.error("Error submitting:", error);
             }
-            this.fetchDoctors();
+            // this.fetchDoctors();
         },
         async deleteOperatingHour(hourId) {
             try {
                 const response = await axios.post(`${process.env.VUE_APP_API_BASE_URL}/member-service/doctor-operating-hours/delete/${hourId}`);
                 console.log("Successfully submitted:", response.data);
                 alert("진료시간이 삭제되었습니다.");
-                this.fetchDoctors();
+                this.fetchDoctor(this.selectedDoctor.doctorEmail);
             } catch (error) {
+                alert("진료시간 삭제를 실패했습니다.");
                 console.error("Error submitting:", error);
             }
         },
@@ -411,12 +420,43 @@ export default {
                         'Content-Type': 'multipart/form-data'
                     }
                 });
+                alert("약력이 수정되었습니다.");
                 console.log("Successfully submitted:", response.data);
-                this.fetchDoctors();
+                this.fetchDoctor(this.selectedDoctor.doctorEmail);
             } catch (error) {
+                alert("약력 수정을 실패했습니다.");
                 console.error("Error submitting:", error);
             }
-        }
+        },
+        // 프로필 이미지 변경 기능
+        triggerFileUpload() {
+            this.$refs.fileInput.click(); // 파일 선택 창을 열기
+        },
+        // 파일 업로드 후 처리
+        async handleFileUpload(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const formData = new FormData();
+                formData.append('email', this.selectedDoctor.doctorEmail);
+                formData.append('profileImage', file);
+
+                try {
+                    const response = await axios.post(`${process.env.VUE_APP_API_BASE_URL}/member-service/member/update/doctor/profileImage`, formData, {
+                        headers: {
+                            Authorization: `Bearer ${localStorage.getItem("token")}`,
+                            'Content-Type': 'multipart/form-data',
+                        },
+                    });
+
+                    if (response.status === 200) {
+                        alert("프로필 이미지가 성공적으로 변경되었습니다.");
+                        this.fetchDoctor(this.selectedDoctor.doctorEmail); // 변경된 이미지 정보를 다시 불러옴
+                    }
+                } catch (error) {
+                    alert("프로필 이미지 업데이트 중 오류가 발생했습니다.");
+                }
+            }
+        },
     }
 }
 </script>

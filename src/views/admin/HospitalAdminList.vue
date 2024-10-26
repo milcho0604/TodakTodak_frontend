@@ -50,6 +50,7 @@
                             <th>대표자명</th>
                             <th>이메일</th>
                             <th>승인 상태</th>
+                            <th>탈퇴</th>
                             <th></th>
                         </tr>
                     </thead>
@@ -67,7 +68,16 @@
                                 </v-chip>
                             </td>
                             <td>
-                                <v-icon @click="nextLevel(hospital.id)">mdi-chevron-right</v-icon> <!-- Vuetify 아이콘, 필요에 따라 다른 화살표 아이콘 사용 가능 -->
+                                <v-chip
+                                    color="red"
+                                    dark
+                                    @click="confirmDeleteHospital(hospital.id)"
+                                >
+                                    삭제
+                                </v-chip>
+                            </td>
+                            <td>
+                                <v-icon @click="nextLevel(hospital.id)">mdi-chevron-right</v-icon>
                             </td>
                         </tr>
                     </tbody>
@@ -84,6 +94,30 @@
                 :total-visible="5"
             ></v-pagination>
         </v-row>
+
+        <!-- 삭제 확인 모달 -->
+        <!-- <v-dialog v-model="confirmDialog" max-width="400px">
+            <v-card>
+                <v-card-title class="text-h6">삭제 확인</v-card-title>
+                <v-card-text>이 병원을 삭제하시겠습니까?</v-card-text>
+                <v-card-actions>
+                    <v-btn text @click="confirmDialog = false">취소</v-btn>
+                    <v-btn text color="red" @click="deleteHospital">삭제</v-btn>
+                </v-card-actions>
+            </v-card>
+        </v-dialog> -->
+        <v-dialog v-model="confirmDialog" persistent max-width="400px">
+            <v-card class="approve-modal">
+              <v-card-text>
+                <div class="hospital-modal inter-bold mt-10">이 병원을 삭제하시겠습니까?</div>
+              </v-card-text>
+              <v-card-actions class="center-actions">
+                <v-btn class="modal-cancel-btn" @click="confirmDialog = false">취소</v-btn>
+                <v-divider vertical class="vertical-divider"></v-divider>
+                <v-btn class="modal-submit-btn" @click="deleteHospital">삭제</v-btn>
+              </v-card-actions>
+            </v-card>
+          </v-dialog>
     </v-container>
     <PadakAdminSideBar/>
 </template>
@@ -93,7 +127,7 @@ import axios from 'axios';
 import PadakAdminSideBar from '@/components/sidebar/PadakAdminSideBar.vue';
 
 export default {
-    components:{
+    components: {
         PadakAdminSideBar,
     },
     data() {
@@ -109,6 +143,8 @@ export default {
                 true: '승인된 병원',
                 false: '미승인 병원',
             },
+            confirmDialog: false, // 삭제 확인 모달 상태
+            hospitalIdToDelete: null, // 삭제할 병원의 ID
         };
     },
     created() {
@@ -150,10 +186,25 @@ export default {
         nextLevel(hospitalId) {
             this.$router.push(`/admin/hospital/detail/${hospitalId}`); // 병원의 id를 사용하여 상세 페이지로 이동
         },
-        // 검색어 입력 시 호출되는 메서드
         onSearchInput() {
             this.page = 1; // 검색어 입력 시 페이지를 1로 초기화
             this.fetchHospitals(); // 검색어에 맞는 목록 가져오기
+        },
+        confirmDeleteHospital(id) {
+            this.hospitalIdToDelete = id; // 삭제할 병원의 ID 설정
+            this.confirmDialog = true; // 삭제 확인 모달 열기
+        },
+        async deleteHospital() {
+            try {
+                const url = `${process.env.VUE_APP_API_BASE_URL}/reservation-service/hospital/delete/${this.hospitalIdToDelete}`;
+                await axios.delete(url);
+                this.confirmDialog = false; // 모달 닫기
+                this.fetchHospitals(); // 병원 목록 다시 로드
+                alert('병원이 성공적으로 삭제되었습니다.');
+            } catch (error) {
+                console.error('Error deleting hospital:', error);
+                alert('병원 삭제 중 오류가 발생했습니다.');
+            }
         },
     },
     watch: {
@@ -164,17 +215,66 @@ export default {
     },
 };
 </script>
-
 <style scoped>
-.hospital-title {
+.approve-modal {
+    position: absolute;
+    width: 360px;
+    height: 230px !important;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    background: #FFFFFF;
+    padding: 20px;
+  }
+  
+  .hospital-modal {
     text-align: center;
     margin: auto;
-    font-size: 25px;
+    font-size: 18px;
     color: #00499E;
-}
-
-.selected-chip {
-    background-color: #1976d2 !important;
-    color: white !important;
-}
+  }
+  .center-actions {
+    display: flex;
+    justify-content: center; /* 버튼들을 가운데 정렬 */
+    align-items: center; /* 세로 정렬 */
+    height: 30px;
+    margin-bottom: 30px;
+  }
+  .vertical-divider {
+    height: 34px !important;
+    margin: 0 10px;
+    margin-right: 2px;
+    align-items: center;
+  }
+  
+  .modal-cancel-btn {
+    background-color: #CECECE !important;
+    color: #717171;
+    border-radius: 20px;
+    width: 90px;
+    height: 34px;
+    font-family: 'Inter';
+    font-style: normal;
+    font-weight: 700;
+    line-height: 24px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .modal-submit-btn {
+    background-color: #C2D7FF !important;
+    color: #00499e;
+    border-radius: 20px;
+    width: 90px;
+    height: 34px;
+    font-family: 'Inter';
+    font-style: normal;
+    font-weight: 700;
+    line-height: 24px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-right: 52px;
+  }
 </style>
