@@ -55,7 +55,7 @@ router.beforeEach((to, from, next) => {
       const userRole = decodedToken.role; // 토큰에서 role 정보 추출
 
       // role이 NonUser라면 결제 페이지로 리다이렉트
-      if (userRole === 'NonUser' && to.path !== '/all/payment/sub') {
+      if (userRole === 'NONUSER' && to.path !== '/all/payment/sub') {
         next('/all/payment/sub'); // 결제 페이지로 리다이렉트
         return;
       }

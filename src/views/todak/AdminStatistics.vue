@@ -97,7 +97,7 @@ export default {
     data() {
         return {
             totalMember: 0,
-            roles: ['Doctor', 'HospitalAdmin', 'Member'],
+            roles: ['MEMBER', 'HOSPITAL', 'DOCTOR'],
             totalReservation: 0,
             waitingMember: 0,
             totalAmount: 0,
@@ -225,7 +225,7 @@ export default {
                 const roleCounts = {};
                 members.forEach(member => {
                     const role = member.role;
-                    if (role !== 'TodakAdmin') {
+                    if (role !== 'TODAKADMIN') {
                         this.totalMember += 1;
                         if (roleCounts[role]) {
                             roleCounts[role]++;

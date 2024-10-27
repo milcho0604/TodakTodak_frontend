@@ -22,7 +22,15 @@
           </v-btn>
         </v-col>
 
+        
+
         <v-col cols="4" class="d-flex align-end justify-end text-no-wrap">
+          <!-- <v-switch
+          v-model="isDarkMode"
+          inset
+          label="Dark Mode"
+          @change="toggleDarkMode"
+        ></v-switch> -->
           <!-- 알림 드롭다운 아이콘 -->
           <v-menu
           v-model="notificationMenu"
@@ -199,7 +207,8 @@ export default {
         { value: 'read', text: '읽은 알림' },
         { value: 'today', text: '오늘 알림' }
       ],
-      filteredNotifications: []
+      filteredNotifications: [],
+      isDarkMode: false
     };
   },
   watch: {
@@ -223,6 +232,9 @@ export default {
       this.loadUserProfile();
       this.fetchNotifications();
     }
+    const theme = localStorage.getItem("theme");
+    this.isDarkMode = theme === "dark";
+    this.$vuetify.theme.global.name = this.isDarkMode ? "dark" : "light";
   },
   methods: {
     async loadUserProfile(){
@@ -238,6 +250,11 @@ export default {
       } catch(error) {
         console.error("사용자 프로필 loading error : ", error);
       }
+    },
+    toggleDarkMode() {
+      this.isDarkMode = !this.isDarkMode;
+      this.$vuetify.theme.global.name = this.isDarkMode ? "dark" : "light";
+      localStorage.setItem("theme", this.isDarkMode ? "dark" : "light");
     },
     async fetchNotifications() {
       try {
