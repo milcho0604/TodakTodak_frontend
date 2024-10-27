@@ -60,7 +60,7 @@
 
         <v-list-item
         :prepend-avatar="doctorQnA"
-        title="의사 Q&A"
+        title="My Q&A"
         value="doctorQnA"
         @click="toMyQnA"
         ></v-list-item>
@@ -70,14 +70,6 @@
         title="고객센터"
         value="cs"
         @click="toChatList"
-        ></v-list-item>
-
-        <v-list-item
-        v-if="isDoctorAdmin"
-        :prepend-avatar="doctors"
-        title="의사관리"
-        value="toDoctors"
-        @click="toDoctors"
         ></v-list-item>
 
     </v-list>
@@ -125,7 +117,7 @@ export default{
         },
         toMyQnA() {
             // 아직 페이지 없어서 마이페이지로 라우팅
-            this.$router.push('/member/mypage');
+            this.$router.push('/member/mypage/myPost');
         },
         toMyReview() {
             this.$router.push('/member/myReviewList');
@@ -142,9 +134,6 @@ export default{
             if (!chatWindow) {
             alert('팝업이 차단되었습니다. 팝업 차단 설정을 해제해주세요.');
             }
-        },
-        toDoctors() {
-            this.$router.push('/hospital/doctor/register');
         },
 
     }

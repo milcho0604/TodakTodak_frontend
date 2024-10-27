@@ -13,8 +13,8 @@
         <v-row>
             <v-col class="report-text">처리 상태</v-col>
             <v-col class="report-text">작업</v-col>
-            <v-col>
-                <v-btn @click="updateStatus">상태를 Completed로 변경</v-btn>
+            <v-col style="text-align: right;" class="mr-15">
+                <v-btn @click="updateStatus">처리 완료</v-btn>
             </v-col>
         </v-row>
         <v-row>

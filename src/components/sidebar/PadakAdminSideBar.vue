@@ -24,6 +24,13 @@
 
     <v-list density="compact" nav>
         <v-list-item
+        :prepend-avatar="calendar"
+        title="대시보드"
+        value="calendar"
+        @click="toDashBoard"
+        ></v-list-item>
+        
+        <v-list-item
         :prepend-avatar="myPage"
         title="회원리스트"
         value="myPage"
@@ -56,13 +63,6 @@
         title="병원리스트"
         value="review"
         @click="toHospitalList"
-        ></v-list-item>
-
-        <v-list-item
-        :prepend-avatar="calendar"
-        title="대시보드"
-        value="calendar"
-        @click="toDashBoard"
         ></v-list-item>
     </v-list>
     </v-navigation-drawer>
