@@ -177,7 +177,7 @@
         </DoctorCreateModal>
 
         <DoctorDeleteModal v-model="doctorDeleteModal" :doctor-id="selectedDoctorId"
-            :doctorEmail="selectedDoctor.doctorEmail" @update:dialog="doctorDeleteModal = $event"
+            :doctorEmail="selectedDoctor.doctorEmail" @update:dialog="doctorDeleteModal = $event; this.fetchDoctors()"
             @deleted="fetchDoctor">
         </DoctorDeleteModal>
 
@@ -520,5 +520,6 @@ export default {
     color: #676767;
     padding: 10px 15px;
     border-radius: 40px;
+    cursor: pointer;
 }
 </style>
