@@ -432,12 +432,17 @@ export default {
             }catch(e){
                 alert(e.message)
             }
+        },
+        async reservationValidation(){
+            const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/reservation-service/reservation/isValid/${this.hospitalId}`)
+            console.log(response);
         }
     },
     async created() {
         this.fetchChildList();
         const route = useRoute();
         this.hospitalId = route.params.hospitalId;
+        this.reservationValidation;
         this.hospitalName = this.$route.query.hospitalName;
         this.fetchWaitingData();
         this.fetchDoctorList();
