@@ -125,7 +125,7 @@
   <MyPageSideBar v-if="role == 'MEMBER'" />
   <DoctorSideBar v-else-if="role == 'DOCTOR'"/>
   <HospitalAdminSideBar v-else-if="role == 'HOSPITAL'"/>
-  <PadakAdminSideBar v-else-if="role == 'TODAK'"/>
+  <PadakAdminSideBar v-else-if="role == 'ADMIN'"/>
 </template>
 
 <script>
