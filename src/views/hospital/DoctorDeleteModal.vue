@@ -113,6 +113,7 @@ export default {
     /* 글자 수에 맞춰 버튼 길이 조정 */
     text-align: center;
     color: #00499E;
+    cursor: pointer;
 }
 
 .round-grey {
@@ -124,5 +125,6 @@ export default {
     /* 글자 수에 맞춰 버튼 길이 조정 */
     text-align: center;
     color: #7F7D7D;
+    cursor: pointer;
 }
 </style>
