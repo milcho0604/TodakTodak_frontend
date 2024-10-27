@@ -350,8 +350,8 @@ export default {
                 alert("진료시간이 등록되었습니다.");
                 this.fetchDoctor(this.selectedDoctor.doctorEmail);
             } catch (error) {
-                alert('이미 등록된 요일입니다.'); // 에러 메시지 출력
-                console.error("Error submitting:", error);
+                alert(error.response.data.status_message); // 에러 메시지 출력
+                console.error("Error submitting:", error.response);
             }
         },
         async updateOperatingHour(hour) {
