@@ -1,8 +1,7 @@
 <template>
   <v-container class="custom1-container">
-    <v-row justify="center">
+    <!-- <v-row justify="center">
       <v-col cols="12" sm="9" md="8" lg="7">
-        <!-- 프로필 섹션 -->
         <v-row>
           <v-col cols="3">
           </v-col>
@@ -12,10 +11,12 @@
           </v-col>
         </v-row>
       </v-col>
-    </v-row>
+    </v-row> -->
+    <!-- 전체 대시보드 영억 -->
     <div class="dashboard-cards">
+      <!-- 채팅리스트 영역 -->
       <div class="cslist-box">
-        <div class="subtitle inter-bold">나문희 내역</div>
+        <div class="subtitle inter-bold">채팅 리스트</div>
         <div v-for="cs in paginatedCsList" :key="cs.id">
           <div class="reservation" @click="savedMessage(cs.chatRoom)">
             <div>
@@ -28,22 +29,27 @@
         </div>
         <!-- Pagination -->
         <v-pagination v-model="csPage" :length="csTotalPages" :total-visible="2" class="pagination"
-          color="primary"></v-pagination>
+          color="primary">
+        </v-pagination>
       </div>
+      <!-- 채팅창 영역 -->
       <div class="cschat-box">
+        <!-- 채팅방 -->
         <div class="chat-box">
           <div v-for="(message, index) in messages" :key="index"
             :class="['message', { 'my-message': message.senderName === currentUserName, 'other-message': message.senderName !== currentUserName }]">
             <strong>{{ message.senderName }}:</strong> {{ message.content }}
           </div>
         </div>
-
+        <!-- 채팅 전송창 -->
         <div class="input-box">
           <input v-model="messageToSend" @keyup.enter="sendMessage" placeholder="메시지를 입력하세요..." />
           <button @click="sendMessage">전송</button>
         </div>
       </div>
+      <!-- CS 영역 -->
       <div class="list-box">
+        <!-- 회원정보 영역 -->
         <div v-if="memberInfo" style="border-bottom: 1px solid" class="user-info">
           <img :src='memberInfo.profileImgUrl' class="profile-img" />
           <div style="display: inline-block;">
@@ -177,7 +183,8 @@ export default {
     },
     async listChatRoom() {
       const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/member-service/chat/chatroom/list/admin`);
-      response.data.result.forEach(list => {
+      console.log("나야 채팅방",response)
+      response.data.result.content.forEach(list => {
         this.chatRoomList.push({
           chatRoom: list.chatRoomId,
           senderName: list.senderName,
@@ -186,8 +193,8 @@ export default {
         })
       })
     },
-    formatDate(data) {
-      return data.replaceAll("-", ". ")
+    formatDate(date) {
+      return new Date(date).toLocaleString();
     },
     sendMessage() {
       if (this.messageToSend.trim() !== '') {
@@ -247,7 +254,10 @@ export default {
 }
 
 .custom1-container {
-  width: 1300px;
+  /* min-width: 1500px;*/
+  min-width: 100%;
+  min-height: 100%;
+
 }
 
 .cs-text {
@@ -321,11 +331,11 @@ button {
 .cslist-box {
   background-color: #F7F7F7;
   margin: 10px 10px;
-  min-height: 580px;
+  min-height: 100%;
   border-radius: 10px;
   position: relative;
   padding-bottom: 90px;
-  width: 250px;
+  min-width: 20%;
 }
 
 .cschat-box {

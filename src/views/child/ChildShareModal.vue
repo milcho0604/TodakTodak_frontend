@@ -95,7 +95,13 @@ export default {
                 alert('자녀 공유 성공');
                 this.closeModal(); // 공유 후 모달 닫기
             } catch (error) {
-                console.error("Failed to share child:", error);
+                if(error.response.data.status_code == 400) {
+                    alert(error.response.data.status_message);
+                } else {
+                    alert("자녀 공유에 실패하였습니다.");
+                }
+                
+                console.error("Failed to share child:", error.response.data.status_message);
             }
         }
     }
@@ -127,6 +133,7 @@ export default {
     display: inline-block;
     text-align: center;
     color: #00499E;
+    cursor: pointer;
 }
 .round-grey {
     background-color: #D9D9D9;
@@ -136,6 +143,7 @@ export default {
     display: inline-block;
     text-align: center;
     color: #7F7D7D;
+    cursor: pointer;
 }
 .search {
     border-radius: 10px;
@@ -159,7 +167,7 @@ export default {
     background-color: #f2f3f4;
 }
 .selected-member {
-    background-color: #f2f3f4;
+    border: 2px solid #0B99FF;
 }
 .info {
     margin: 10px 0px;
