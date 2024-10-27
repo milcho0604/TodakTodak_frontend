@@ -122,10 +122,10 @@
     </v-dialog>
     
   </v-container>
-  <MyPageSideBar v-if="role == 'Member'" />
-  <DoctorSideBar v-else-if="role == 'Doctor'"/>
-  <HospitalAdminSideBar v-else-if="role == 'HospitalAdmin'"/>
-  <PadakAdminSideBar v-else-if="role == 'TodakAdmin'"/>
+  <MyPageSideBar v-if="role == 'MEMBER'" />
+  <DoctorSideBar v-else-if="role == 'DOCTOR'"/>
+  <HospitalAdminSideBar v-else-if="role == 'HOSPITAL'"/>
+  <PadakAdminSideBar v-else-if="role == 'TODAK'"/>
 </template>
 
 <script>

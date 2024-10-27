@@ -122,6 +122,9 @@ axios.interceptors.response.use(
       // 403 에러 시 홈으로 리다이렉트
       router.push({ name: 'HOME' }); // 'Home' 라우트 이름으로 리다이렉트
     }
+    else if(error.response && error.response.status === 503){
+      router.push({ name: 'HOME'});
+    }
     return Promise.reject(error);
   }
 );
