@@ -124,24 +124,45 @@
             <p>상담내용</p>
             <div style="margin-top: -20px;">
               <!-- 상담내용 수정버튼 -->
-              <span class="mr-2">✏️</span>
+              <button v-if="hasCsData" @click="isEditMode = true">✏️</button>
               <!-- 상담내용 삭제버튼 -->
-              <span class="mr-2">🗑️</span>
+              <button v-if="hasCsData">🗑️</button>
             </div>
           </div>
           <!-- 상담내용 입력 창 -->
-          <textarea v-model="csContents" class="textarea"></textarea>
+          <textarea 
+          v-model="csContents" 
+          :readonly="!isEditMode"
+          class="textarea"
+          :class="{ 'readonly-textarea': !isEditMode }"
+          ></textarea>
           <div class="footer">
             <div class="status-section">
               <p class="mt-3">처리상태</p>
-              <select v-model="csStatus" class="status-select" style="height: 35px;">
+              <select v-model="csStatus" class="status-select" style="height: 35px;" :disabled="!isEditMode">
                 <option v-for="item in statusItems" :key="item.key" :value="item.value">
                   {{ item.value }}
                 </option>
               </select>              
             </div>
-            <!-- 상담내용 저장버튼 -->
-            <button @click="saveConsultation" class="save-btn">저장</button>
+            <!-- CS 데이터가 있고 수정 모드일 때: "수정완료" -->
+            <button 
+            v-if="hasCsData && isEditMode" 
+            @click="updateConsultation" 
+            class="save-btn"
+            >
+            수정완료
+            </button>
+
+            <!-- CS 데이터가 없고 수정 모드일 때: "저장" -->
+            <button 
+            v-if="!hasCsData && isEditMode" 
+            @click="saveConsultation" 
+            class="save-btn"
+            >
+            저장
+            </button>
+
           </div>
         </div>
         <div class="cs-list">
@@ -211,6 +232,8 @@ export default {
       csPostModal: false,
       csPostModalTitle : "",
       csPostModalContents: "",
+      isEditMode: true, // 편집 모드 상태 추가
+      hasCsData: false, // 해당 채팅방에 존재하는 CS 데이터가 있는지
     };
   },
   created() {
@@ -335,6 +358,13 @@ export default {
         if (response.data.result && response.data.result.length > 0) {
           this.csContents = response.data.result[0].csContents;
           this.csStatus = response.data.result[0].csStatus;
+          this.isEditMode = false; // CS 데이터가 있을 경우 읽기 전용 모드로 설정
+          this.hasCsData = true; // 해당 채팅방에 CS 데이터 있음 (수정, 삭제버튼 보임)
+        }else {
+          this.csContents = ''; // 데이터가 없을 경우 초기화
+          this.csStatus = '';
+          this.isEditMode = true; // CS 데이터가 없을 경우 편집 모드로 설정
+          this.hasCsData = false;
         }
       }catch(error){
         console.log(error);
@@ -359,7 +389,7 @@ export default {
         this.csPostModalContents = 'CS 상담내용이 성공적으로 저장되었습니다!'
         this.$refs.csChatList.fetchCsList(); // fetchCsList 호출
       }catch(error){
-        console(error);
+        console.log(error);
       }
     },
     // 날짜 포맷팅 함수
@@ -639,12 +669,19 @@ button {
 }
 
 .textarea {
-  /* */
+  /* CS상담내용 작성 텍스트필드 */
   width: 100%;
   height: 100px;
   padding: 10px;
   border-radius: 5px;
   border: 1px solid #ccc;
+}
+.readonly-textarea {
+  width: 100%;
+  height: 80px;
+  padding: 10px;
+  background-color: #f5f5f5; /* 밝은 회색 배경 */
+  color: #000000; 
 }
 
 .footer {
@@ -682,4 +719,6 @@ button {
   cursor: pointer;
   height: 35px;
 }
+
+
 </style>
