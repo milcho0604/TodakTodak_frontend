@@ -26,7 +26,7 @@
 
       <!-- <h2>{{this.chatRoomId}}번 채팅방</h2> -->
       <div>
-        <div class="chat-box">
+        <div class="chat-box" ref="chatBox">
           <div 
             v-for="(message, index) in messages" 
             :key="index" 
@@ -41,7 +41,8 @@
             <div class="message-wrapper">
               <!-- 아바타 -->
               <v-avatar size="60" class="mx-2">
-                <v-img :src="message.senderProfileImgUrl"></v-img>
+                <v-img :src="message.senderProfileImgUrl ? message.senderProfileImgUrl : 'https://todak-file.s3.ap-northeast-2.amazonaws.com/default-images/default_user_image.png'"
+                ></v-img>
               </v-avatar>
 
               <!-- 메시지 콘텐츠 -->
@@ -284,6 +285,13 @@
     window.scrollTo({
         top: document.body.scrollHeight
     });
+    // const chatBox = document.querySelector('.chat-box');
+    // const inputBox = document.querySelector('.input-box');
+    // const inputBoxHeight = inputBox ? inputBox.offsetHeight : 0;
+
+    // if (chatBox) {
+    //   chatBox.scrollTop = chatBox.scrollHeight - inputBoxHeight - 20; // input-box 높이 + 여유 공간 20px
+    // }
   }
 }
 };

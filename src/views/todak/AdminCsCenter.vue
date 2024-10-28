@@ -27,25 +27,25 @@
                   <v-row>
                     <v-col cols=2>
                       <!-- 송신자 프로필 이미지 -->
-                      <v-avatar size="50" class="wisdom-sender-avatar mx-3 my-3">
+                      <v-avatar size="40" class="wisdom-sender-avatar mx-3 my-3">
                           <v-img :src="chatRoom.senderProfileImgUrl" alt="Profile Image" />
                       </v-avatar>
                     </v-col>
                     <v-col cols="10">
                         <v-row class="d-flex justify-space-between">
                           <!-- 송신자 이름 -->
-                          <v-card-title class="mt-3 ml-3" style="font-weight:bold; font-size:17px;">
+                          <v-card-title class="mt-3 ml-3" style="font-weight:bold; font-size:15px;">
                               <span>{{ chatRoom.senderName }}</span>
                           </v-card-title>
                           
                           <!-- 채팅 보낸 시각 -->
                           <v-card-title class="mt-2 mr-3">
-                          <span style="font-size: 12px; color:#9A9A9A;">{{ formatDate(chatRoom.recentChatTime) }}</span>
+                          <span style="font-size: 10px; color:#9A9A9A;">{{ formatDate(chatRoom.recentChatTime) }}</span>
                           </v-card-title>
                         </v-row>
                         <v-row>
                           <!-- 마지막 채팅 메시지 -->
-                          <v-card-subtitle class="ml-3 mb-2" style="font-size:16px;">
+                          <v-card-subtitle class="ml-3 mt-n2" style="font-size:13px;">
                               {{ chatRoom.lastMessage }}
                           </v-card-subtitle>
                         </v-row>
@@ -98,7 +98,9 @@
         <!-- 채팅 전송창 -->
         <div class="input-box">
           <input v-model="messageToSend" @keyup.enter="sendMessage" placeholder="메시지를 입력하세요..." />
-          <button @click="sendMessage">전송</button>
+          <button @click="sendMessage">
+            <v-icon style="color:#9A9A9A">mdi-send</v-icon>
+          </button>
         </div>
       </div>
 
@@ -119,28 +121,54 @@
           <div class="header">
             <p>상담내용</p>
             <div style="margin-top: -20px;">
+              <!-- 상담내용 수정버튼 -->
               <span class="mr-2">✏️</span>
+              <!-- 상담내용 삭제버튼 -->
               <span class="mr-2">🗑️</span>
             </div>
           </div>
-          <textarea v-model="consultationContent" class="textarea"></textarea>
+          <!-- 상담내용 입력 창 -->
+          <textarea v-model="csContents" class="textarea"></textarea>
           <div class="footer">
             <div class="status-section">
               <p class="mt-3">처리상태</p>
-              <select v-model="status" class="status-select" style="height: 35px;">
-                <option v-for="item in statusItems" :key="item" :value="item">
-                  {{ item }}
+              <select v-model="csStatus" class="status-select" style="height: 35px;">
+                <option v-for="item in statusItems" :key="item.key" :value="item.value">
+                  {{ item.value }}
                 </option>
-              </select>
+              </select>              
             </div>
+            <!-- 상담내용 저장버튼 -->
             <button @click="saveConsultation" class="save-btn">저장</button>
           </div>
         </div>
         <div class="cs-list">
-          <AdminCsListForCsChat v-if="memberInfo" :member-id="memberInfo.id"/>
+          <AdminCsListForCsChat v-if="memberInfo" :member-id="memberInfo.memberId"/>
         </div>
       </div>
     </div>
+
+    <!-- 상담내용 저장,수정,삭제 완료했다는 모달 -->
+    <v-dialog
+    v-model="csPostModal"
+    width="auto"
+  >
+    <v-card
+      max-width="400"
+      :prepend-avatar="cs"
+      :text="csPostModalContents"
+      :title="csPostModalTitle"
+      style="border-radius: 10px;"
+    >
+      <template v-slot:actions>
+        <v-btn
+          class="ms-auto"
+          text="확인"
+          @click="csPostModal = false"
+        ></v-btn>
+      </template>
+    </v-card>
+  </v-dialog>
   </v-container>
   <MyPageSideBar />
 </template>
@@ -170,9 +198,17 @@ export default {
       itemsPerPage: 10,
       csPage: 1,
       memberInfo: null, // 채팅 건 회원정보
-      consultationContent: '',
-      status: '처리중',
-      statusItems: ['처리중', '완료', '보류'],
+      memberId: '', // 채팅 건 회원id
+      csContents: '', // 상담내용
+      csStatus: '처리중',
+      statusItems: [
+        { key: 'INPROCESS', value: '처리중' },
+        { key: 'COMPLETED', value: '처리완료' }
+      ],
+      cs: 'https://todak-file.s3.ap-northeast-2.amazonaws.com/default-images/cs_center_image.png',
+      csPostModal: false,
+      csPostModalTitle : "",
+      csPostModalContents: "",
     };
   },
   created() {
@@ -259,6 +295,7 @@ export default {
     async selectChatRoom(id) {
       this.selectedChatRoomId = id; // 선택한 채팅방 id
       this.chatRoomId = id; // 채팅방 id
+      this.loadCSbyChatRoomId(id); // 채팅방 id로 CS 조회
       this.scrollToBottom();
       try {
         this.messages = [];
@@ -282,13 +319,45 @@ export default {
     },
     // 채팅방 리스트 (admin입장 채팅방 리스트)
     async loadMemberChatList(){
-          try {
-              const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/member-service/chat/chatroom/list/admin`);
-              this.chatRoomList = response.data.result.content;
-          } catch (error) {
-              console.log(error);
-          }
-      },
+      try {
+          const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/member-service/chat/chatroom/list/admin`);
+          this.chatRoomList = response.data.result.content;
+      } catch (error) {
+          console.log(error);
+      }
+    },
+    // 채팅방 id로 CS 조회
+    async loadCSbyChatRoomId(id){
+      try{
+        const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/member-service/cs/detail/chatroom-id/${id}`);
+        this.csContents = response.data.result.csContents;
+        this.csStatus = response.data.result.csStatus;
+
+      }catch(error){
+        console.log(error);
+      }
+    },
+    // 상담내용 저장(create)
+    async saveConsultation(){
+      // selectedStatus 조건에 맞는 item 객체가 있다면 item.key 값을 갖고, 없다면 undefined
+      const selectedStatus = this.statusItems.find(item => item.value === this.csStatus)?.key;
+      
+      const body = {
+        chatRoomId: this.chatRoomId, // 채팅방 Id
+        csContents: this.csContents, // 상담내용
+        csStatus: selectedStatus // 변환된 key 값 사용
+      };
+      
+      try{
+        const response = await axios.post(`${process.env.VUE_APP_API_BASE_URL}/member-service/cs/create`, body);
+        console.log(response.data);
+        this.csPostModal = true;
+        this.csPostModalTitle = 'CS 상담내용 저장완료',
+        this.csPostModalContents = 'CS 상담내용이 성공적으로 저장되었습니다!'
+      }catch(error){
+        console(error);
+      }
+    },
     // 날짜 포맷팅 함수
     formatDate(date) {
       return new Date(date).toLocaleString();
@@ -452,7 +521,7 @@ export default {
 
 /* 메시지 시간은 말풍선 아래에 */
 .other-message .message-time {
-  font-size: 0.8em;
+  font-size: 0.6em;
   color: #888888;
   margin-top: 5px;
   text-align: left;
