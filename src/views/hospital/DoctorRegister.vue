@@ -28,10 +28,10 @@
                 <!-- 의사약력 -->
                 <v-avatar style="height:190px; width:170px; border-radius: 5px; object-fit:cover;" class="ml-10">
                     <v-img :src="selectedDoctor.doctorImageUrl ? selectedDoctor.doctorImageUrl : defaultImageUrl"
-                        class="doctor-img"
-                        @click="triggerFileUpload" />
+                        class="doctor-img" @click="triggerFileUpload" />
                 </v-avatar>
-                <input type="file" ref="fileInput" style="display:none" @change="handleFileUpload"/> <!-- 숨겨진 파일 input -->
+                <input type="file" ref="fileInput" style="display:none" @change="handleFileUpload" />
+                <!-- 숨겨진 파일 input -->
             </v-col>
             <v-col cols="9">
                 <div class="ml-1">
@@ -92,7 +92,7 @@
                     진료 시간
                 </v-card-title>
                 <!-- 새 진료 시간 추가 버튼 -->
-                <v-row justify="end" class="mb-1" style="margin-right: 50px;"> <!-- 버튼을 오른쪽 끝으로 배치 -->
+                <v-row justify="end" class="mb-1" style="margin-right: 50px;" > <!-- 버튼을 오른쪽 끝으로 배치 -->
                     <div class="round inter-normal dark-blue" @click="createNewHour = !createNewHour"
                         v-if="!createNewHour">
                         <v-icon class="plus-icon">mdi-plus-circle-outline</v-icon>
@@ -104,42 +104,15 @@
                 </v-row>
                 <v-card class="doctor-bio-card mx-4" variant="flat">
                     <v-card-text>
-                        <!-- + 버튼 눌렀을 경우 새 진료 시간 추가 입력칸 보이게 -->
-                        <div v-if="createNewHour" class="createNewOperatingHours ml-10">
-                            <v-row v-for="(hour, index) in newOperatingHour" :key="index" justify="center">
-                                <v-col cols="3">
-                                    <v-select outline v-model="hour.dayOfWeek" :items="weekdays" item-title="name"
-                                        item-value="value" label="요일"></v-select>
-                                </v-col>
-
-                                <v-col cols="3">
-                                    <v-text-field v-model="hour.openTime" label="오픈 시간" type="time"></v-text-field>
-                                </v-col>
-
-                                <v-col cols="3">
-                                    <v-text-field v-model="hour.closeTime" label="종료 시간" type="time"></v-text-field>
-                                </v-col>
-
-                                <v-col cols="2">
-                                    <v-checkbox v-model="hour.untact" label="비대면"></v-checkbox>
-                                </v-col>
-
-                            </v-row>
-                            <v-row justify="center" class="mb-10">
-                                <v-btn @click="createNewOperatingHours" class="save-button"><span
-                                        class="inter-bold">저장</span></v-btn>
-                            </v-row>
-
-                        </div>
-                        <v-row v-for="hour in selectedDoctor.operatingHours" :key="hour.id" class="oper-hour">
+                        <v-row v-for="hour in selectedDoctor.operatingHours" :key="hour.id" class="oper-hour" justify="center">
                             <v-col cols="2" style="text-align: center">
                                 {{ hour.dayOfWeek }}
                             </v-col>
-                            <v-col style="text-align: center">
-                                <input type="text" v-model="hour.openTime" @change="checkIfChanged(hour.id)">
+                            <v-col style="text-align: center" >
+                                <input type="text" v-model="hour.openTime" @change="checkIfChanged(hour.id)" style="text-align: center">
                             </v-col>
                             <v-col style="text-align: center">
-                                <input type="text" v-model="hour.closeTime" @change="checkIfChanged(hour.id)">
+                                <input type="text" v-model="hour.closeTime" @change="checkIfChanged(hour.id)" style="text-align: center">
                             </v-col>
                             <v-col cols="2" style="text-align: center">
                                 <v-chip :key="index" color="#0075FF" size="default" class="mr-2">
@@ -182,6 +155,59 @@
         </DoctorDeleteModal>
 
     </v-container>
+    <!-- 진료 시간 생성 모달 -->
+    <v-dialog v-model="createNewHour" max-width="600px" class="d-fle,x justify-center">
+        <v-card max-width="600px">
+            <v-card-title class="d-flex justify-center">
+                <span class="cs-title inter-bold mt-10">진료 시간</span>
+            </v-card-title>
+            <v-card-text class="d-flex flex-column align-center">
+                <v-row v-for="(hour, index) in newOperatingHour" :key="index" justify="center">
+                    <v-col cols="8">
+                        <!-- 요일 선택 -->
+                        <v-select v-model="hour.dayOfWeek" :items="weekdays" variant="outlined" label="요일"
+                            item-title="name" item-value="value" style="flex: 1; min-width: 200px; margin-left: 32px"></v-select>
+                    </v-col>
+                    <v-col cols="4">
+                        <!-- 비대면 여부 -->
+                        <v-checkbox v-model="hour.untact" label="비대면"></v-checkbox>
+                    </v-col>
+
+                    <v-col class="d-flex align-center" cols="6">
+                        <v-icon @click.stop="openTimeMenu = !openTimeMenu" class="mr-2 mb-3">
+                            mdi-clock-time-four-outline
+                        </v-icon>
+                        <v-text-field v-model="hour.openTime" label="오픈 시간" variant="outlined" :rules="timeRules"
+                            @focus="openTimeMenu = true" style="flex: 1; min-width: 200px;" />
+                        <v-menu v-model="openTimeMenu" :close-on-content-click="false" activator="parent"
+                            transition="scale-transition">
+                            <v-time-picker v-model="hour.openTime" @change="openTimeMenu = false"
+                                format="24hr"></v-time-picker>
+                        </v-menu>
+                    </v-col>
+
+                    <!-- 클로즈 시간 선택 -->
+                    <v-col class="d-flex align-center" cols="6">
+                        <v-icon @click.stop="closeTimeMenu = !closeTimeMenu" class="mr-2 mb-3">
+                            mdi-clock-time-four-outline
+                        </v-icon>
+                        <v-text-field v-model="hour.closeTime" label="종료 시간" variant="outlined"
+                            :rules="timeRules" @focus="closeTimeMenu = true" style="flex: 1; min-width: 200px;" />
+                        <v-menu v-model="closeTimeMenu" :close-on-content-click="false" activator="parent"
+                            transition="scale-transition">
+                            <v-time-picker v-model="hour.closeTime" @change="closeTimeMenu = false"
+                                format="24hr"></v-time-picker>
+                        </v-menu>
+                    </v-col>
+                </v-row>
+                <v-row justify="center" class="mb-10">
+                    <v-btn @click="createNewOperatingHours" class="save-button"><span
+                            class="inter-bold">저장</span></v-btn>
+                </v-row>
+            </v-card-text>
+        </v-card>
+    </v-dialog>
+
     <HospitalAdminSideBar />
 </template>
 
@@ -215,6 +241,8 @@ export default {
             newOperatingHour: [
                 { dayOfWeek: "", openTime: "", closeTime: "", untact: false }
             ],
+            openTimeMenu: false,
+            closeTimeMenu: false,
             originalOperatingHours: [], // 초기 값을 저장하는 배열
             changedHours: [], // 변경된 시간의 ID를 저장할 배열
             isEditing: false, // 수정 중인지 여부를 관리
@@ -231,9 +259,7 @@ export default {
         }
     },
     created() {
-        console.log('되냐???????');
         this.fetchDoctors();
-        console.log('되냐?');
     },
     computed: {
         dayOfWeekList() {
@@ -522,4 +548,11 @@ export default {
     border-radius: 40px;
     cursor: pointer;
 }
+
+.cs-title {
+    text-align: center;
+    margin: auto;
+    font-size: 25px;
+    color: #00499E;
+  }
 </style>
