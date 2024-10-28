@@ -154,10 +154,10 @@ export default {
                 true: '탈퇴 회원',
             },
             roleOptions: {
-                TodakAdmin: '관리자',
-                HospitalAdmin: '병원관리자',
-                Member: '회원',
-                Doctor: '의사',
+                ADMIN: '관리자',
+                HOSPITAL: '병원관리자',
+                MEMBER: '회원',
+                DOCTOR: '의사',
             },
         };
     },
@@ -181,6 +181,7 @@ export default {
                     role: this.filterRoleStatus, // 선택된 Role 필터
                 };
 
+                console.log(params);
                 if (this.searchQuery) {
                     params.query = this.searchQuery;
                 }
