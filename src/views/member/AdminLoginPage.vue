@@ -114,7 +114,15 @@ export default {
         }
         window.location.href = "/admin/todak/statistics";
       } catch (e) {
-        if (e.response?.status === 403) {
+        if (e.response?.status === 422) {
+          alert('잘못된 이메일/비밀번호입니다.');
+        } else if (e.response?.status === 403) {
+          alert('토닥 관계자만 로그인이 가능합니다');
+          window.location.href = "/";
+        } else if (e.response?.status === 423) {
+          alert('정지된 계정입니다.');
+          window.location.href = "/";
+        }else if (e.response?.status === 401) {
           alert('이메일 인증이 필요합니다.');
           window.location.href = "/all/authentication";
         } else {
