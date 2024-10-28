@@ -449,9 +449,6 @@ body {
   margin: 0;
 }
 
-.v-application {
-  background-color: #f5f5f5;
-}
 
 .custom-carousel {
   width: 100%;
