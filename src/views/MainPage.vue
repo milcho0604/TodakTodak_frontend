@@ -454,8 +454,8 @@ body {
 }
 
 .custom-carousel {
-  width: 1200px;
-  height: 450px;
+  width: 100%;
+  height: auto;
 }
 
 .post-card {
