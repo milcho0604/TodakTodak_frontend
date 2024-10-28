@@ -28,7 +28,8 @@
                     <v-col cols=2>
                       <!-- 송신자 프로필 이미지 -->
                       <v-avatar size="40" class="wisdom-sender-avatar mx-3 my-3">
-                          <v-img :src="chatRoom.senderProfileImgUrl" alt="Profile Image" />
+                          <v-img :src="chatRoom.senderProfileImgUrl ? chatRoom.senderProfileImgUrl : 'https://todak-file.s3.ap-northeast-2.amazonaws.com/default-images/default_user_image.png'"
+                          alt="Profile Image" />
                       </v-avatar>
                     </v-col>
                     <v-col cols="10">
@@ -78,7 +79,7 @@
                 <div class="message-wrapper">
                   <!-- 아바타 -->
                   <v-avatar size="50" class="mx-2">
-                    <v-img :src="message.senderProfileImgUrl"></v-img>
+                    <v-img :src="message.senderProfileImgUrl ? message.senderProfileImgUrl : 'https://todak-file.s3.ap-northeast-2.amazonaws.com/default-images/default_user_image.png'"/>
                   </v-avatar>
     
                   <!-- 메시지 콘텐츠 -->
@@ -109,7 +110,8 @@
         <!-- 회원정보 영역 -->
         <div v-if="memberInfo" class="user-info">
           <v-avatar size="60" class="wisdom-sender-avatar mx-3">
-            <v-img :src='memberInfo.profileImgUrl' />
+            <v-img :src="memberInfo.profileImgUrl ? memberInfo.profileImgUrl : 'https://todak-file.s3.ap-northeast-2.amazonaws.com/default-images/default_user_image.png'"
+            />
           </v-avatar>
           <div style="display: inline-block;">
             <p class="user-name">{{ memberInfo.name }}</p>
