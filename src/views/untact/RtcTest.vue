@@ -13,7 +13,7 @@
                             <label for="rooms-list">Select one of the rooms created:</label><br />
                             <h4>
                                 <span v-for="r in rooms" :key="r.id">
-                                    <a :href="`/room/${r.id}`" :id="`button-link-${r.id}`">
+                                    <a :href="`/member/room/${r.id}`" :id="`button-link-${r.id}`">
                                         <button type="button"
                                             class="btn badge badge-primary">
                                             {{ r.id }}

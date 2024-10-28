@@ -112,3 +112,19 @@ axios.interceptors.request.use(
 
 
 
+axios.interceptors.response.use(
+  (response) => {
+    // 응답 성공 시 처리
+    return response;
+  },
+  (error) => {
+    if (error.response && error.response.status === 403) {
+      // 403 에러 시 홈으로 리다이렉트
+      router.push({ name: 'HOME' }); // 'Home' 라우트 이름으로 리다이렉트
+    }
+    else if(error.response && error.response.status === 503){
+      router.push({ name: 'HOME'});
+    }
+    return Promise.reject(error);
+  }
+);

@@ -198,12 +198,17 @@
       <v-spacer :style="{ height: '30px' }"></v-spacer>
     </v-card>
   </v-dialog>
+  <HospitalAdminSideBar/>
 </template>
 
 <script>
 import axios from 'axios';
+import HospitalAdminSideBar from '@/components/sidebar/HospitalAdminSideBar.vue';
 
 export default {
+  components:{
+    HospitalAdminSideBar,
+  },
   data() {
     return {
       operatingHours: [], // 영업시간 데이터

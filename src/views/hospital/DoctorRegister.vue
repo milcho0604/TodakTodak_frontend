@@ -177,7 +177,7 @@
         </DoctorCreateModal>
 
         <DoctorDeleteModal v-model="doctorDeleteModal" :doctor-id="selectedDoctorId"
-            :doctorEmail="selectedDoctor.doctorEmail" @update:dialog="doctorDeleteModal = $event"
+            :doctorEmail="selectedDoctor.doctorEmail" @update:dialog="doctorDeleteModal = $event; this.fetchDoctors()"
             @deleted="fetchDoctor">
         </DoctorDeleteModal>
 
@@ -350,8 +350,8 @@ export default {
                 alert("진료시간이 등록되었습니다.");
                 this.fetchDoctor(this.selectedDoctor.doctorEmail);
             } catch (error) {
-                alert('이미 등록된 요일입니다.'); // 에러 메시지 출력
-                console.error("Error submitting:", error);
+                alert(error.response.data.status_message); // 에러 메시지 출력
+                console.error("Error submitting:", error.response);
             }
         },
         async updateOperatingHour(hour) {
@@ -520,5 +520,6 @@ export default {
     color: #676767;
     padding: 10px 15px;
     border-radius: 40px;
+    cursor: pointer;
 }
 </style>

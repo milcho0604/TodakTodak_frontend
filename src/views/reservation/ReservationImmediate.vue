@@ -22,7 +22,8 @@
             <v-row>
                 <!-- childOptions 배열에 있는 아이들을 반복 렌더링 -->
                 <v-col v-for="(child, index) in childOptions" :key="index">
-                    <div class="child" @click="addChild(child)" :class="{ 'selected-child': this.child == child }">
+                    <div class="child" @click="reservationValidation(child)"
+                        :class="{ 'selected-child': this.child == child }">
                         <v-row justify="center">
                             <v-col class="text-center" cols="3">
                                 <img :src="child.imageUrl" alt="child image"
@@ -253,16 +254,19 @@
             </v-dialog>
             <v-dialog v-model="successReserveModal" max-width="600px">
                 <v-card>
-                    <v-card-title class="submodal mt-6 inter-bold text-center">
+                    <v-card-title v-if="isValidation" class="submodal mt-6 inter-bold text-center">
                         당일접수가 성공적으로 완료되었습니다!
                     </v-card-title>
+                    <v-card-title v-else class="submodal mt-6 inter-bold text-center">
+                        해당 자녀의 당일접수가 이미 존재합니다.
+                    </v-card-title>
                     <v-container style="text-align: center;" class="mt-3">
-                        <v-row>
+                        <v-row v-if="isValidation">
                             <v-col class="waiting">
                                 {{ totalWaiting }}명 대기중
                             </v-col>
                         </v-row>
-                        <v-row>
+                        <v-row v-if="isValidation">
                             <v-col class="waiting-text" style="margin-top: -20px;">
                                 현재 내 차례는 <span style="color: #0066FF;">{{ myWaiting }}</span>번 째 입니다.
                             </v-col>
@@ -317,12 +321,10 @@ export default {
             waitingData: null,
             totalWaiting: null,
             myWaiting: null,
+            isValidation: null,
         }
     },
     methods: {
-        addChild(child) {
-            this.child = child;
-        },
         addDoctor(doctor) {
             this.doctor = doctor;
         },
@@ -419,18 +421,43 @@ export default {
         },
         reserved() {
             try {
-                if(!this.child){
+                if (!this.isValidation) {
+                    alert("이미 예약이 존재합니다.");
+                    this.successReserveModal = true;
+                }
+                else if (!this.child) {
                     throw new Error("자녀를 선택해주세요.")
                 }
-                else if(!this.doctor){
+                else if (!this.doctor) {
                     throw new Error("의사를 선택해주세요.")
                 }
-                else if(!this.mediItem){
+                else if (!this.mediItem) {
                     throw new Error("진료항목을 선택해주세요.")
                 }
-                this.reservedModal = true;
-            }catch(e){
+                else {
+                    this.reservedModal = true;
+                }
+            } catch (e) {
                 alert(e.message)
+            }
+        },
+        async reservationValidation(child) {
+            try {
+                console.log(child);
+                const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/reservation-service/reservation/isValid`,{
+                    params: {
+                        hospitalId: this.hospitalId,
+                        childId: child.id
+                    }
+                })
+                this.isValidation = response.data;
+                if (!this.isValidation) {
+                    this.successReserveModal = true;
+                }else{
+                    this.child = child;
+                }
+            }catch(e){
+                console.log(e.message);
             }
         }
     },

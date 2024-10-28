@@ -72,12 +72,17 @@
         </v-row>
       </v-container>
     </v-app>
+    <MyPageSideBar />
   </template>
   
   <script>
   import axios from 'axios';
+  import MyPageSideBar from '@/components/sidebar/MyPageSideBar.vue';
   
   export default {
+    components:{
+      MyPageSideBar,
+    },
     data() {
       return {
         sortOrder: "latest",
