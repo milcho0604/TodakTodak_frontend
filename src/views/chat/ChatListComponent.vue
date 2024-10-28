@@ -44,7 +44,8 @@
                     <v-col cols=2>
                         <!-- 송신자 프로필 이미지 -->
                         <v-avatar size="70" class="sender-avatar mx-3 my-3">
-                            <v-img :src="chatRoom.senderProfileImgUrl" alt="Profile Image" />
+                            <v-img :src="chatRoom.senderProfileImgUrl ? chatRoom.senderProfileImgUrl : 'https://todak-file.s3.ap-northeast-2.amazonaws.com/default-images/default_user_image.png'" 
+                            alt="Profile Image" />
                         </v-avatar>
                     </v-col>
                     <v-col cols="10">
@@ -113,6 +114,7 @@ export default{
             try {
                 const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/member-service/chat/chatroom/list/member`);
                 this.chatRoomList = response.data.result.content;
+                console.log(response.data);
             } catch (error) {
                 console.log(error);
             }
