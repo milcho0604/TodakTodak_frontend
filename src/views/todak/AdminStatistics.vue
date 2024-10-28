@@ -225,7 +225,7 @@ export default {
                 const roleCounts = {};
                 members.forEach(member => {
                     const role = member.role;
-                    if (role !== 'TODAKADMIN') {
+                    if (role !== 'ADMIN') {
                         this.totalMember += 1;
                         if (roleCounts[role]) {
                             roleCounts[role]++;
