@@ -145,7 +145,7 @@
           </div>
         </div>
         <div class="cs-list">
-          <AdminCsListForCsChat v-if="memberInfo" :member-id="memberInfo.memberId"/>
+          <AdminCsListForCsChat v-if="memberInfo" :member-id="memberInfo.memberId" ref="csChatList"/>
         </div>
       </div>
     </div>
@@ -202,7 +202,7 @@ export default {
       memberInfo: null, // 채팅 건 회원정보
       memberId: '', // 채팅 건 회원id
       csContents: '', // 상담내용
-      csStatus: '처리중',
+      csStatus: '',
       statusItems: [
         { key: 'INPROCESS', value: '처리중' },
         { key: 'COMPLETED', value: '처리완료' }
@@ -332,9 +332,10 @@ export default {
     async loadCSbyChatRoomId(id){
       try{
         const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/member-service/cs/detail/chatroom-id/${id}`);
-        this.csContents = response.data.result.csContents;
-        this.csStatus = response.data.result.csStatus;
-
+        if (response.data.result && response.data.result.length > 0) {
+          this.csContents = response.data.result[0].csContents;
+          this.csStatus = response.data.result[0].csStatus;
+        }
       }catch(error){
         console.log(error);
       }
@@ -356,6 +357,7 @@ export default {
         this.csPostModal = true;
         this.csPostModalTitle = 'CS 상담내용 저장완료',
         this.csPostModalContents = 'CS 상담내용이 성공적으로 저장되었습니다!'
+        this.$refs.csChatList.fetchCsList(); // fetchCsList 호출
       }catch(error){
         console(error);
       }
