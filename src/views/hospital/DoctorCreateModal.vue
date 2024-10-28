@@ -9,13 +9,13 @@
             </v-row>            
             <v-row>
                 <v-col cols="12" class="text-center">
-                    <v-row class="inter-light field-label mt-2 mr-3">
+                    <v-row class="inter-light field-label mt-2 ml-6">
                         의사 이름
                     </v-row>
                     <v-row class="input-space mb-2">
                         <input v-model="doctorName" class="email-input">
                     </v-row>
-                    <v-row class="inter-light field-label">
+                    <v-row class="inter-light field-label ml-6">
                         이메일
                     </v-row>
                     <v-row class="input-space mb-2 email-container">

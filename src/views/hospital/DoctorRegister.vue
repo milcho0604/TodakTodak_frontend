@@ -92,7 +92,7 @@
                     진료 시간
                 </v-card-title>
                 <!-- 새 진료 시간 추가 버튼 -->
-                <v-row justify="end" class="mb-1" style="margin-right: 50px;"> <!-- 버튼을 오른쪽 끝으로 배치 -->
+                <v-row justify="end" class="mb-1" style="margin-right: 50px;" > <!-- 버튼을 오른쪽 끝으로 배치 -->
                     <div class="round inter-normal dark-blue" @click="createNewHour = !createNewHour"
                         v-if="!createNewHour">
                         <v-icon class="plus-icon">mdi-plus-circle-outline</v-icon>
@@ -104,15 +104,15 @@
                 </v-row>
                 <v-card class="doctor-bio-card mx-4" variant="flat">
                     <v-card-text>
-                        <v-row v-for="hour in selectedDoctor.operatingHours" :key="hour.id" class="oper-hour">
+                        <v-row v-for="hour in selectedDoctor.operatingHours" :key="hour.id" class="oper-hour" justify="center">
                             <v-col cols="2" style="text-align: center">
                                 {{ hour.dayOfWeek }}
                             </v-col>
-                            <v-col style="text-align: center">
-                                <input type="text" v-model="hour.openTime" @change="checkIfChanged(hour.id)">
+                            <v-col style="text-align: center" >
+                                <input type="text" v-model="hour.openTime" @change="checkIfChanged(hour.id)" style="text-align: center">
                             </v-col>
                             <v-col style="text-align: center">
-                                <input type="text" v-model="hour.closeTime" @change="checkIfChanged(hour.id)">
+                                <input type="text" v-model="hour.closeTime" @change="checkIfChanged(hour.id)" style="text-align: center">
                             </v-col>
                             <v-col cols="2" style="text-align: center">
                                 <v-chip :key="index" color="#0075FF" size="default" class="mr-2">
