@@ -10,12 +10,13 @@
 </template>
 
 <script>
-import axios from 'axios';
+// import axios from 'axios';
 import FooterComponent from './components/footer/FooterComponent.vue';
 import MemberHeaderComponent from './components/header/MemberHeaderComponent.vue';
+// import { initFirebase, requestFcmToken, setupMessageListener } from "@/firebase";
 
 // FCM 관련 Firebase SDK
-import { getMessaging, getToken, onMessage } from 'firebase/messaging';
+// import { getMessaging, getToken, onMessage } from 'firebase/messaging';
 
 export default {
   inject: ['firebase'],
@@ -25,9 +26,9 @@ export default {
     FooterComponent,
     MemberHeaderComponent,
   },
-  async mounted() {
-    await this.initializeFCM();
-  },
+  // async mounted() {
+  //   await this.initializeFCM();
+  // },
   computed: {
     showHeaderFooter() {
       // 특정 라우트에서만 헤더와 푸터를 숨김
@@ -36,84 +37,112 @@ export default {
   },
   methods: {
     // FCM 초기화 및 알림 권한 요청
-    async initializeFCM() {
-      const messaging = getMessaging(this.firebase);
+    // async initializeFCM() {
+    //   await navigator.serviceWorker.ready;
+    //   const permission = await Notification.requestPermission();
+    //   console.log('Permission: ', permission);
+    //   if (permission !== 'granted') {
+    //     alert('알림을 허용해주세요!');
+    //     return;
+    //   }
+    // },
+    // async initializeFCM() {
+    //   console.log("Initializing FCM...");
+      
+    //   await navigator.serviceWorker.ready;
+    //   const permission = await Notification.requestPermission();
+    //   console.log("Permission:", permission);
+      
+    //   if (permission !== 'granted') {
+    //     alert("알림을 허용해주세요!");
+    //     return;
+    //   }
+      
+      // initFirebase(); // Firebase 초기화
+      // await requestFcmToken(); // FCM 토큰 요청
+      // setupMessageListener(); // 메시지 수신 설정
+    // },
 
-      // 서비스 워커가 준비될 때까지 대기
-      await navigator.serviceWorker.ready;
+    // async initializeFCM() {
+    //   const messaging = getMessaging(this.firebase);
 
-      // 알림 권한 요청
-      const permission = await Notification.requestPermission();
-      console.log('Permission: ', permission);
-      if (permission !== 'granted') {
-        alert('알림을 허용해주세요!');
-        return;
-      }
 
-      try {
-        // FCM 토큰 요청
-        const token = await getToken(messaging, {
-          vapidKey: process.env.VUE_APP_FIREBASE_VAP_ID
-        });
+    //   // 서비스 워커가 준비될 때까지 대기
+    //   await navigator.serviceWorker.ready;
 
-        if (token) {
-          console.log('FCM Token: ', token);
-          localStorage.setItem('fcmToken', token);
+    //   // 알림 권한 요청
+    //   const permission = await Notification.requestPermission();
+    //   console.log('Permission: ', permission);
+    //   if (permission !== 'granted') {
+    //     alert('알림을 허용해주세요!');
+    //     return;
+    //   }
+    // },
 
-          // 이메일과 토큰 헤더 정보
-          const memberEmail = localStorage.getItem('email');
-          const BearerToken = localStorage.getItem('token');
+    //   try {
+    //     // FCM 토큰 요청
+        // const token = await getToken(messaging, {
+        //   vapidKey: process.env.VUE_APP_FIREBASE_VAP_ID
+        // });
+
+    //     if (token) {
+    //       // console.log('FCM Token: ', token);
+    //       // localStorage.setItem('fcmToken', token);
+
+    //       // 이메일과 토큰 헤더 정보
+    //       const memberEmail = localStorage.getItem('email');
+    //       const BearerToken = localStorage.getItem('token');
           
-          // FCM 토큰 서버로 전송
-          await axios.post(`${process.env.VUE_APP_API_BASE_URL}/member-service/fcm/token`, { fcmToken: token }, {
-            headers: { Authorization: `Bearer ${BearerToken}`, memberEmail: memberEmail }
-          });
-        }
-      } catch (err) {
-        console.error('Failed to get FCM token', err);
-      }
+    //       // FCM 토큰 서버로 전송
+    //       await axios.post(`${process.env.VUE_APP_API_BASE_URL}/member-service/fcm/token`, { fcmToken: token }, {
+    //         headers: { Authorization: `Bearer ${BearerToken}`, memberEmail: memberEmail }
+    //       });
+    //     }
+    //   } catch (err) {
+    //     console.error('Failed to get FCM token', err);
+    //   }
 
-      // 메시지 수신 시 로직 처리
-      onMessage(messaging, (payload) => {
-        console.log('Received message: ', payload);
-        const notificationTitle = payload.notification.title;
-        const notificationOptions = {
-          body: payload.notification.body,
-          icon: "favicon.ico",
-          data: payload.data // URL과 알림 ID를 포함하는 data 필드
-        };
+    //   // 메시지 수신 시 로직 처리
+    //   onMessage(messaging, (payload) => {
+    //     console.log('Received message: ', payload);
+    //     const notificationTitle = payload.notification.title;
+    //     const notificationOptions = {
+    //       body: payload.notification.body,
+    //       icon: "favicon.ico",
+    //       data: payload.data // URL과 알림 ID를 포함하는 data 필드
+    //     };
 
-        if (Notification.permission === 'granted') {
-          const notification = new Notification(notificationTitle, notificationOptions);
+    //     if (Notification.permission === 'granted') {
+    //       const notification = new Notification(notificationTitle, notificationOptions);
 
-          // 알림 클릭 시 동작
-          notification.onclick = async (event) => {
-            event.preventDefault();
-            const notificationId = payload.data.notificationId; // 알림 ID 추출
-            const url = payload.data.url; // data에서 URL 추출
+    //       // 알림 클릭 시 동작
+    //       notification.onclick = async (event) => {
+    //         event.preventDefault();
+    //         const notificationId = payload.data.notificationId; // 알림 ID 추출
+    //         const url = payload.data.url; // data에서 URL 추출
 
-            // 알림 읽음 처리 API 호출
-            if (notificationId) {
-              try {
-                const notificationIdAsLong = parseInt(notificationId, 10);
-                const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/member-service/fcm/read/${notificationIdAsLong}`);
-                console.log('알림 읽음 처리 완료:', response.data);
+    //         // 알림 읽음 처리 API 호출
+    //         if (notificationId) {
+    //           try {
+    //             const notificationIdAsLong = parseInt(notificationId, 10);
+    //             const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/member-service/fcm/read/${notificationIdAsLong}`);
+    //             console.log('알림 읽음 처리 완료:', response.data);
 
-                // 읽은 알림 사라지게 처리 (해당 로직 필요 시 추가)
-                notification.close();
-              } catch (err) {
-                console.error('알림 읽음 처리 중 오류 발생:', err);
-              }
-            }
+    //             // 읽은 알림 사라지게 처리 (해당 로직 필요 시 추가)
+    //             notification.close();
+    //           } catch (err) {
+    //             console.error('알림 읽음 처리 중 오류 발생:', err);
+    //           }
+    //         }
 
-            // URL로 이동
-            if (url) {
-              window.open(url, '_self'); // 현재 창에서 리다이렉트
-            }
-          };
-        }
-      });
-    },
+    //         // URL로 이동
+    //         if (url) {
+    //           window.open(url, '_self'); // 현재 창에서 리다이렉트
+    //         }
+    //       };
+    //     }
+    //   });
+    // },
 
     // fcmToken이 localStorage에 생길 때까지 대기
     waitForToken() {

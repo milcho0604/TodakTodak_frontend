@@ -148,10 +148,15 @@ export default {
       window.location.href = 'http://localhost:8080/member-service/oauth2/authorization/kakao';
     },
     logout() {
+      console.log("Logout function called"); // 호출 여부 확인
       localStorage.removeItem('token');
       localStorage.removeItem('fcmToken');
+      localStorage.removeItem('role');
+      localStorage.removeItem('profileImgUrl');
+      localStorage.removeItem('name');
+      console.log(localStorage); // 삭제 후 확인
       this.isLogin = false;
-      this.$router.push('/');
+      window.location.href = "/";
     }
   }
 };
