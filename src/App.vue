@@ -1,7 +1,19 @@
 <template>
   <v-app class="app global_bg">
-     <MemberHeaderComponent v-if="showHeaderFooter"/>
-    
+
+    <div v-if="role == 'HOSPITAL'"> 
+      <HospitalHeaderComponent v-if="showHeaderFooter"/>
+     </div>
+     <div v-else-if="role == 'ADMIN'"> 
+      <AdminHeaderComponent v-if="showHeaderFooter"/>
+     </div>
+     <div v-else-if="role == 'DOCTOR'"> 
+      <DoctorHeaderComponent v-if="showHeaderFooter"/>
+     </div>
+     <div v-else>
+      <MemberHeaderComponent v-if="showHeaderFooter"/>
+     </div>
+
     <v-main class="main-content">
       <router-view/>
     </v-main>
@@ -13,6 +25,9 @@
 import axios from 'axios';
 import FooterComponent from './components/footer/FooterComponent.vue';
 import MemberHeaderComponent from './components/header/MemberHeaderComponent.vue';
+import HospitalHeaderComponent from './components/header/HospitalHeaderComponent.vue';
+import AdminHeaderComponent from './components/header/AdminHeaderComponent.vue';
+import DoctorHeaderComponent from './components/header/DoctorHeaderComponent.vue';
 
 // FCM 관련 Firebase SDK
 import { getMessaging, getToken, onMessage } from 'firebase/messaging';
@@ -24,9 +39,18 @@ export default {
     // HeaderComponent,
     FooterComponent,
     MemberHeaderComponent,
+    HospitalHeaderComponent,
+    AdminHeaderComponent,
+    DoctorHeaderComponent,
+  },
+  data() {
+    return {
+      role: null,
+    }
   },
   async mounted() {
     await this.initializeFCM();
+    this.role = localStorage.getItem('role');
   },
   computed: {
     showHeaderFooter() {
