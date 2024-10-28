@@ -200,13 +200,13 @@ export default {
 
         getRoleLabel(role) {
             switch (role) {
-                case 'TodakAdmin':
+                case 'ADMIN':
                     return '관리자';
-                case 'HospitalAdmin':
+                case 'HOSPITAL':
                     return '병원관리자';
-                case 'Member':
+                case 'MEMBER':
                     return '회원';
-                case 'Doctor':
+                case 'DOCTOR':
                     return '의사';
                 default:
                     return '알 수 없음';
@@ -214,13 +214,13 @@ export default {
         },
         getRoleColor(role) {
             switch (role) {
-                case 'TodakAdmin':
+                case 'ADMIN':
                     return 'blue'; // 관리자: 파란색
-                case 'HospitalAdmin':
+                case 'HOSPITAL':
                     return 'green'; // 병원관리자: 초록색
-                case 'Member':
+                case 'MEMBER':
                     return 'grey'; // 회원: 회색
-                case 'Doctor':
+                case 'DOCTOR':
                     return 'purple'; // 의사: 보라색
                 default:
                     return 'grey'; // 기본 색상: 회색
