@@ -51,7 +51,7 @@ import axios from 'axios';
 export default {
     props:{
         memberId: {
-            type: String,
+            type: Number,
             required: true
         }
     },
@@ -85,6 +85,7 @@ export default {
                     this.csList = response.data.result;
                     this.filteredCsList = this.csList; // 필터링 결과를 따로 저장
                     this.totalPages = response.data.totalPages;
+                    console.log("csList : ", this.csList);
                 } else {
                     console.error('Invalid response structure:', response.data);
                     this.csList = [];

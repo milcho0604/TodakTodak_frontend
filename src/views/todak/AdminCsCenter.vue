@@ -124,9 +124,9 @@
             <p>상담내용</p>
             <div style="margin-top: -20px;">
               <!-- 상담내용 수정버튼 -->
-              <button v-if="hasCsData" @click="isEditMode = true">✏️</button>
+              <button v-if="hasCsData" @click="toggleEditMode">✏️</button>
               <!-- 상담내용 삭제버튼 -->
-              <button v-if="hasCsData">🗑️</button>
+              <button v-if="hasCsData" @click="deleteCsData">🗑️</button>
             </div>
           </div>
           <!-- 상담내용 입력 창 -->
@@ -223,7 +223,8 @@ export default {
       memberInfo: null, // 채팅 건 회원정보
       memberId: '', // 채팅 건 회원id
       csContents: '', // 상담내용
-      csStatus: '',
+      csStatus: '', // CS 처리상태 (처리중, 처리완료)
+      csId: '', // CS id
       statusItems: [
         { key: 'INPROCESS', value: '처리중' },
         { key: 'COMPLETED', value: '처리완료' }
@@ -324,10 +325,17 @@ export default {
       this.scrollToBottom();
       try {
         this.messages = [];
-        this.connect(id); // 해당 채팅방 id로 웹소켓 연결
-        this.loadChatMessages(id); // 해당 채팅방 메시지리스트 조회
-        const member = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/member-service/chat/member/info/chatroom/${id}`); // 채팅 걸은 회원정보
+        await this.disconnect();
+        await this.connect(id); // 해당 채팅방 id로 웹소켓 연결
+        await this.loadChatMessages(id); // 해당 채팅방 메시지리스트 조회
+        
+        // 멤버 정보를 비동기 요청으로 받아온 후 fetchCsList 호출
+        const member = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/member-service/chat/member/info/chatroom/${id}`);
         this.memberInfo = member.data.result;
+        this.$nextTick(() => {
+          this.$refs.csChatList.fetchCsList(); // memberInfo가 설정된 후 호출
+        });
+
       } catch (e) {
         console.error(e);
       }
@@ -358,6 +366,7 @@ export default {
         if (response.data.result && response.data.result.length > 0) {
           this.csContents = response.data.result[0].csContents;
           this.csStatus = response.data.result[0].csStatus;
+          this.csId = response.data.result[0].id;
           this.isEditMode = false; // CS 데이터가 있을 경우 읽기 전용 모드로 설정
           this.hasCsData = true; // 해당 채팅방에 CS 데이터 있음 (수정, 삭제버튼 보임)
         }else {
@@ -388,6 +397,48 @@ export default {
         this.csPostModalTitle = 'CS 상담내용 저장완료',
         this.csPostModalContents = 'CS 상담내용이 성공적으로 저장되었습니다!'
         this.$refs.csChatList.fetchCsList(); // fetchCsList 호출
+        this.isEditMode = false; // 수정모드 X
+        this.loadCSbyChatRoomId(this.chatRoomId);
+      }catch(error){
+        console.log(error);
+      }
+    },
+    // 상담내용 수정(update)
+    async updateConsultation(){
+      // selectedStatus 조건에 맞는 item 객체가 있다면 item.key 값을 갖고, 없다면 undefined
+      const selectedStatus = this.statusItems.find(item => item.value === this.csStatus)?.key;
+      
+      const body = {
+        id: this.csId, // CS id
+        chatRoomId: this.chatRoomId, // 채팅방 id
+        csContents: this.csContents, // 상담내용
+        csStatus: selectedStatus // 변환된 key 값 사용
+      };
+      
+      try{
+        const response = await axios.post(`${process.env.VUE_APP_API_BASE_URL}/member-service/cs/update`, body);
+        console.log(response.data);
+        this.csPostModal = true;
+        this.csPostModalTitle = 'CS 상담내용 수정완료',
+        this.csPostModalContents = 'CS 상담내용이 성공적으로 수정되었습니다!'
+        this.$refs.csChatList.fetchCsList(); // fetchCsList 호출
+        this.isEditMode = false; // 수정모드 X
+        this.loadCSbyChatRoomId(this.chatRoomId);
+      }catch(error){
+        console.log(error);
+      }
+    },
+    // 상담내용 삭제(delete)
+    async deleteCsData(){
+      try{
+        const response = await axios.delete(`${process.env.VUE_APP_API_BASE_URL}/member-service/cs/delete/${this.csId}`);
+        console.log(response.data);
+        this.csPostModal = true;
+        this.csPostModalTitle = 'CS 상담내용 삭제완료',
+        this.csPostModalContents = 'CS 상담내용이 성공적으로 삭제되었습니다!'
+        this.$refs.csChatList.fetchCsList(); // fetchCsList 호출
+        this.isEditMode = false; // 수정모드 X
+        this.loadCSbyChatRoomId(this.chatRoomId);
       }catch(error){
         console.log(error);
       }
@@ -397,11 +448,22 @@ export default {
       return new Date(date).toLocaleString();
     },
     scrollToBottom() {
-      const chatBox = document.querySelector('.cschat-box');
+      const chatBox = document.querySelector('.chat-box');
       if (chatBox) {
-        chatBox.scrollTop = chatBox.scrollHeight; // 최하단으로 스크롤
+        // chatBox.scrollTop = chatBox.scrollHeight; // 최하단으로 스크롤
+        // 잠시 딜레이를 주고 스크롤을 최하단으로 이동
+        setTimeout(() => {
+          chatBox.scrollTop = chatBox.scrollHeight;
+        }, 100);
       }
     },
+    toggleEditMode(){
+      if(this.isEditMode){
+        this.isEditMode = false;
+      }else{
+        this.isEditMode = true;
+      }
+    }
   },
   computed: {
 
@@ -486,7 +548,7 @@ export default {
 
 .chat-box {
   flex: 1; /* 남은 공간을 차지하게 설정 */
-  height: calc(580px - 35px) !important; /* .cschat-box 높이에서 padding-bottom을 뺀 값으로 설정 */
+  height: 700px !important; /* .cschat-box 높이에서 padding-bottom을 뺀 값으로 설정 */
   overflow-y: auto; /* 스크롤 가능하게 설정 */
   width: 100%;
   margin: 0 auto !important;
@@ -678,8 +740,9 @@ button {
 }
 .readonly-textarea {
   width: 100%;
-  height: 80px;
+  height: 100px;
   padding: 10px;
+  margin-bottom: 10px;
   background-color: #f5f5f5; /* 밝은 회색 배경 */
   color: #000000; 
 }

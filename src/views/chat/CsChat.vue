@@ -26,7 +26,7 @@
 
       <!-- <h2>{{this.chatRoomId}}번 채팅방</h2> -->
       <div>
-        <div class="chat-box" ref="chatBox">
+        <div class="chat-box" ref="chatBox" id="chat-box">
           <div 
             v-for="(message, index) in messages" 
             :key="index" 
@@ -103,7 +103,7 @@
       this.connect(); // 웹소켓 connect
       // await this.loadChatRoomMemberInfo(); // 채팅방 참여자 정보 조회
       await this.loadChatMessages(); // 채팅메시지 리스트 조회
-      // this.scrollToBottom(); // 새로운 메시지 수신 시 스크롤 하단으로 이동
+      this.scrollToBottom(); // 새로운 메시지 수신 시 스크롤 하단으로 이동
       this.$nextTick(() => {
         window.scrollTo({
           top: document.body.scrollHeight,
@@ -270,7 +270,7 @@
   },
   scrollToBottom() {
     // 메시지 목록을 감싸는 컨테이너 찾기
-    const container = document.getElementById('messageContainer');
+    const container = document.getElementById('chat-box');
     const inputBox = document.querySelector('.input-box'); // 입력 박스 선택
     const inputBoxHeight = inputBox ? inputBox.offsetHeight : 0; // 입력 박스의 높이 구하기
     
