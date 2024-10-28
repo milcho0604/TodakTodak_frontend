@@ -115,7 +115,7 @@
                         <span @click="openReportModal('comment', comment)" class="d-flex align-center action-link">
                           <v-icon small>mdi-alarm-light-outline</v-icon> 신고
                         </span>
-                        <ReportComment v-if="showReportCommentModal" :postId="reportData.postId" :commentId="comment.id"
+                        <ReportComment v-if="showReportCommentModal" :postId="reportData.postId" :commentId="reportData.commentId"
                           :reportedEmail="comment.doctorEmail" :comments="postDetail.comments"
                           @close="closeReportCommentModal" />
                       </div>
@@ -183,9 +183,9 @@
                               class="d-flex align-center action-link mr-2">
                               <v-icon>mdi-alarm-light-outline</v-icon> 신고
                             </span>
-                            <ReportReply v-if="showReportReplyModal" :postId="reportData.postId"
-                              :commentId="reply.replyId" :reportedEmail="reply.doctorEmail"
-                              :comments="postDetail.comments" @close="closeReportReplyModal" />
+                            <ReportReply v-if="showReportReplyModal" :postId="reportData.postId" :commentId="reportData.commentId"
+                              :reportedEmail="reply.doctorEmail"
+                              :comments="postDetail.replys" @close="closeReportReplyModal" />
                           </div>
                         </v-col>
                       </div>
@@ -288,7 +288,6 @@ export default {
 
         const commentResponse = await axios.get((`${process.env.VUE_APP_API_BASE_URL}/community-service/comment/list/${postId}`));
         this.postDetail.comments = commentResponse.data.result;
-        console.log(this.postDetail);
         // 댓글 및 대댓글 초기화
         this.postDetail.comments.forEach(comment => {
           comment.replies = comment.replies || []; // 대댓글 배열 초기화
@@ -377,11 +376,14 @@ export default {
     },
     openReportModal(type, comment = null) {
       console.log(type, type);
+      console.log('여기여기여기');
       console.log('comment : ', comment);
       this.reportData = {
         postId: this.postDetail.id,
         commentId: comment ? comment.id : null,
       };
+      console.log("!!!!!@!!!!!!!")
+      console.log(this.reportData);
       if (type === 'post') {
         this.showReportPostModal = true;
       } else if (type === 'comment') {
