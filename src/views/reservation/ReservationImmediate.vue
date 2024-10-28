@@ -22,7 +22,8 @@
             <v-row>
                 <!-- childOptions 배열에 있는 아이들을 반복 렌더링 -->
                 <v-col v-for="(child, index) in childOptions" :key="index">
-                    <div class="child" @click="addChild(child)" :class="{ 'selected-child': this.child == child }">
+                    <div class="child" @click="reservationValidation(child)"
+                        :class="{ 'selected-child': this.child == child }">
                         <v-row justify="center">
                             <v-col class="text-center" cols="3">
                                 <img :src="child.imageUrl" alt="child image"
@@ -257,7 +258,7 @@
                         당일접수가 성공적으로 완료되었습니다!
                     </v-card-title>
                     <v-card-title v-else class="submodal mt-6 inter-bold text-center">
-                        당일접수가 이미 존재합니다.
+                        해당 자녀의 당일접수가 이미 존재합니다.
                     </v-card-title>
                     <v-container style="text-align: center;" class="mt-3">
                         <v-row v-if="isValidation">
@@ -324,9 +325,6 @@ export default {
         }
     },
     methods: {
-        addChild(child) {
-            this.child = child;
-        },
         addDoctor(doctor) {
             this.doctor = doctor;
         },
@@ -443,12 +441,23 @@ export default {
                 alert(e.message)
             }
         },
-        async reservationValidation() {
-            const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/reservation-service/reservation/isValid/${this.hospitalId}`)
-            this.isValidation = response.data;
-            if (!this.isValidation) {
-                this.fetchWaitingData();
-                this.successReserveModal = true;
+        async reservationValidation(child) {
+            try {
+                console.log(child);
+                const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/reservation-service/reservation/isValid`,{
+                    params: {
+                        hospitalId: this.hospitalId,
+                        childId: child.id
+                    }
+                })
+                this.isValidation = response.data;
+                if (!this.isValidation) {
+                    this.successReserveModal = true;
+                }else{
+                    this.child = child;
+                }
+            }catch(e){
+                console.log(e.message);
             }
         }
     },
@@ -456,7 +465,6 @@ export default {
         this.fetchChildList();
         const route = useRoute();
         this.hospitalId = route.params.hospitalId;
-        this.reservationValidation();
         this.hospitalName = this.$route.query.hospitalName;
         this.fetchWaitingData();
         this.fetchDoctorList();
