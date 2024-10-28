@@ -55,11 +55,15 @@
         <video class="remote_video" :class="{ tiny: !isRemoteVideoVisible }" ref="remoteVideo" autoplay playsinline
           style="transform: scaleX(-1);"></video>
       </div>
-      <div id="buttons">
-        <button type="button" class="button inter-bold" @click="exitRoom">
-          진료 종료
+      <div>
+        <button v-if="role == 'DOCTOR'" type="button" class="back-button inter-bold" @click="$router.go(-1);">
+          나가기
+        </button>
+        <button v-if="role == 'DOCTOR'" type="button" class="button inter-bold" @click="exitRoom">
+          진료 완료
         </button>
       </div>
+
 
       <!-- 리뷰 모달 -->
       <ReviewComponent v-model="reviewModal" :reservationId=this.sid @update:dialog="reviewModal = $event;"
@@ -98,13 +102,15 @@ export default {
       chartCreated: false,
       reviewModal: false,
       payModal: false,
-      messageQueue: [] // 메시지 큐 초기화
+      messageQueue: [], // 메시지 큐 초기화
+      role: null,
     };
   },
   created() {
     this.fetchReservation();
   },
   mounted() {
+    this.role = localStorage.getItem('role');
     this.startWebSocketConnection();
   },
   methods: {
@@ -505,7 +511,14 @@ export default {
   width: 290px;
   padding: 15px 10px;
 }
-
+.back-button {
+  background-color: #CECECE;
+  color: #717171;
+  border-radius: 10px;
+  padding: 5px 15px;
+  margin-right: 10px;
+  font-size: 14px;
+}
 .button {
   background-color: #C2D7FF;
   border-radius: 10px;
