@@ -144,7 +144,7 @@
                 </v-card-actions>
             </v-card>
         </v-dialog>
-        <v-dialog v-model="confirmModal" style="width: 70%">
+        <v-dialog v-model="confirmModal" style="width: 700px">
             <v-card>
                 <v-card-text>
                     <v-container>

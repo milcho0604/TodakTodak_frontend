@@ -449,13 +449,10 @@ body {
   margin: 0;
 }
 
-.v-application {
-  background-color: #f5f5f5;
-}
 
 .custom-carousel {
-  width: 1200px;
-  height: 450px;
+  width: 100%;
+  height: auto;
 }
 
 .post-card {

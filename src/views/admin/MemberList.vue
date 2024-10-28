@@ -154,10 +154,10 @@ export default {
                 true: '탈퇴 회원',
             },
             roleOptions: {
-                TodakAdmin: '관리자',
-                HospitalAdmin: '병원관리자',
-                Member: '회원',
-                Doctor: '의사',
+                ADMIN: '관리자',
+                HOSPITAL: '병원관리자',
+                MEMBER: '회원',
+                DOCTOR: '의사',
             },
         };
     },
@@ -181,6 +181,7 @@ export default {
                     role: this.filterRoleStatus, // 선택된 Role 필터
                 };
 
+                console.log(params);
                 if (this.searchQuery) {
                     params.query = this.searchQuery;
                 }
@@ -200,13 +201,13 @@ export default {
 
         getRoleLabel(role) {
             switch (role) {
-                case 'TodakAdmin':
+                case 'ADMIN':
                     return '관리자';
-                case 'HospitalAdmin':
+                case 'HOSPITAL':
                     return '병원관리자';
-                case 'Member':
+                case 'MEMBER':
                     return '회원';
-                case 'Doctor':
+                case 'DOCTOR':
                     return '의사';
                 default:
                     return '알 수 없음';
@@ -214,13 +215,13 @@ export default {
         },
         getRoleColor(role) {
             switch (role) {
-                case 'TodakAdmin':
+                case 'ADMIN':
                     return 'blue'; // 관리자: 파란색
-                case 'HospitalAdmin':
+                case 'HOSPITAL':
                     return 'green'; // 병원관리자: 초록색
-                case 'Member':
+                case 'MEMBER':
                     return 'grey'; // 회원: 회색
-                case 'Doctor':
+                case 'DOCTOR':
                     return 'purple'; // 의사: 보라색
                 default:
                     return 'grey'; // 기본 색상: 회색

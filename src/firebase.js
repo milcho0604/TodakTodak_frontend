@@ -45,26 +45,6 @@ export const initFirebase = () => {
     }
   });
 };
-// // Firebase 초기화 함수
-// export const initFirebase = () => {
-//   if (!getApps().length) {
-//     const firebaseApp = initializeApp(firebaseConfig);
-//     messaging = getMessaging(firebaseApp);
-//     console.log("Firebase initialized and Messaging instance created.");
-//   }  {
-//     const existingApp = getApp();
-//     messaging = getMessaging(existingApp);
-//     console.log("Using existing Firebase instance.");
-//   }
-//   // 서비스 워커가 활성화될 때 등록
-//   if ('serviceWorker' in navigator) {
-//     navigator.serviceWorker.register('/firebase-messaging-sw.js').then(() => {
-//       console.log("Service Worker registered.");
-//     }).catch((error) => {
-//       console.error("Service Worker registration failed:", error);
-//     });
-//   }
-// };
 
 // FCM 토큰 요청 함수
 export const requestFcmToken = async () => {
@@ -106,18 +86,6 @@ export const requestFcmToken = async () => {
   }
 };
 
-// // 서비스 워커를 등록 해제하고 캐시를 무효화하는 함수
-// const unregisterServiceWorkerAndClearCache = async () => {
-//   if ('serviceWorker' in navigator) {
-//       const registrations = await navigator.serviceWorker.getRegistrations();
-//       for (let registration of registrations) {
-//           await registration.unregister();
-//       }
-//       const cacheKeys = await caches.keys();
-//       await Promise.all(cacheKeys.map((key) => caches.delete(key)));
-//       console.log("Service worker unregistered and cache cleared.");
-//   }
-// };
 
 // FCM 토큰 삭제 함수
 export const removeFcmToken = async () => {
@@ -149,21 +117,19 @@ export const setupMessageListener = async () => {
   
   if (!messaging) initFirebase();
   
-  
   onMessage(messaging, (payload) => {
-    console.log("Received message:", payload);  // 메시지 수신 로그 추가
-    
+    console.log('Received message: ', payload);
     const notificationTitle = payload.notification.title;
     const notificationOptions = {
       body: payload.notification.body,
-      icon: "/favicon.ico",
-      data: payload.data,
+      icon: "favicon.ico",
+      data: payload.data // URL과 알림 ID를 포함하는 data 필드
     };
     
     console.log("Notification Title:", notificationTitle);
     console.log("Notification Body:", notificationOptions.body);
     
-    if (Notification.permission === "granted") {
+    if (Notification.permission === 'granted') {
       const notification = new Notification(notificationTitle, notificationOptions);
       console.log("Notification displayed:", notification); // 알림이 표시되었는지 확인
 
@@ -173,6 +139,7 @@ export const setupMessageListener = async () => {
         const url = payload.data.url;
 
         if (notificationId) {
+          console.log("id는" + notificationId)
           try {
             await axios.get(`${process.env.VUE_APP_API_BASE_URL}/member-service/fcm/read/${notificationId}`);
             notification.close();

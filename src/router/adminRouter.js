@@ -3,7 +3,10 @@ import HospitalAdminList from "@/views/admin/HospitalAdminList.vue";
 import HospitalAdminDetail from "@/views/admin/HospitalAdminDetail.vue";
 import PaymentList from "@/views/admin/PaymentList.vue";
 import CsList from "@/views/admin/CsList.vue";
-import AdminCsChat from "@/views/todak/AdminCsChat.vue";
+import AdminCsDashBoard from "@/views/todak/AdminCsDashBoard.vue";
+import AdminChatListComponent from "@/views/todak/AdminChatListComponent.vue";
+import AdminCsCenter from "@/views/todak/AdminCsCenter.vue";
+import AdminCsChatting from "@/views/todak/AdminCsChatting.vue";
 
 export const adminRouter = [
     {
@@ -37,8 +40,27 @@ export const adminRouter = [
         component: CsList
     },
     {
-        path: '/admin/cschat/',
-        name: 'AdminCsChat',
-        component: AdminCsChat,
+        // admin 고객센터 dashboard
+        path: '/admin/cs/dashboard',
+        name: 'AdminCsDashBoard',
+        component: AdminCsDashBoard,
+    },
+    {
+        // admin 고객센터 dashboard
+        path: '/admin/cs/center',
+        name: 'AdminCsCenter',
+        component: AdminCsCenter,
+    },
+    {
+        // admin 입장에서 보이는 채팅리스트 (모든 채팅리스트)
+        path: '/admin/cschat/list',
+        name: 'AdminChatListComponent',
+        component: AdminChatListComponent,
+    },
+    {
+        // admin 입장채팅방
+        path: '/admin/cs/chatroom/:chatRoomId',
+        name: 'AdminCsChatting',
+        component: AdminCsChatting,
     },
 ]
