@@ -15,95 +15,158 @@ const firebaseConfig = {
 
 let messaging;
 
-// Firebase 초기화 함수
 export const initFirebase = () => {
-  if (!getApps().length) {
-    const firebaseApp = initializeApp(firebaseConfig);
-    messaging = getMessaging(firebaseApp);
-    console.log("Firebase initialized and Messaging instance created.");
-  } else {
-    const existingApp = getApp();
-    messaging = getMessaging(existingApp);
-    console.log("Using existing Firebase instance.");
-  }
+  return new Promise((resolve, reject) => {
+    if (!getApps().length) {
+      const firebaseApp = initializeApp(firebaseConfig);
+      messaging = getMessaging(firebaseApp);
+      console.log("Firebase initialized and Messaging instance created.");
+    } else {
+      const existingApp = getApp();
+      messaging = getMessaging(existingApp);
+      console.log("Using existing Firebase instance.");
+    }
+
+    // Service Worker 등록
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker
+        .register('/firebase-messaging-sw.js')
+        .then((registration) => {
+          console.log('Service Worker registered with scope:', registration.scope);
+          resolve(); // 성공 시 Promise 해제
+        })
+        .catch((error) => {
+          console.error('Service Worker registration failed:', error);
+          reject(error); // 실패 시 Promise 거부
+        });
+    } else {
+      console.error('실패 실패 실패');
+      resolve(); // 서비스 워커가 지원되지 않는 경우에도 성공으로 간주
+    }
+  });
 };
+// // Firebase 초기화 함수
+// export const initFirebase = () => {
+//   if (!getApps().length) {
+//     const firebaseApp = initializeApp(firebaseConfig);
+//     messaging = getMessaging(firebaseApp);
+//     console.log("Firebase initialized and Messaging instance created.");
+//   }  {
+//     const existingApp = getApp();
+//     messaging = getMessaging(existingApp);
+//     console.log("Using existing Firebase instance.");
+//   }
+//   // 서비스 워커가 활성화될 때 등록
+//   if ('serviceWorker' in navigator) {
+//     navigator.serviceWorker.register('/firebase-messaging-sw.js').then(() => {
+//       console.log("Service Worker registered.");
+//     }).catch((error) => {
+//       console.error("Service Worker registration failed:", error);
+//     });
+//   }
+// };
 
 // FCM 토큰 요청 함수
 export const requestFcmToken = async () => {
-  // Firebase 초기화 상태 확인
   if (!messaging) {
-    initFirebase();
+      initFirebase();
   }
+  await waitForServiceWorkerActivation();  // Service Worker가 준비될 때까지 대기
 
   try {
-    const vapidKey = process.env.VUE_APP_FIREBASE_VAP_ID;
-    console.log("VAPID Key:", vapidKey);  // VAPID 키 확인 로그 추가
+      const vapidKey = process.env.VUE_APP_FIREBASE_VAP_ID;
+      const currentStoredToken = localStorage.getItem("fcmToken");
 
-    if (!vapidKey) {
-      throw new Error("VAPID key is missing in environment variables.");
-    }
+      // 새로운 FCM 토큰 요청
+      let newToken = await getToken(messaging, { vapidKey });
+      console.log("Requested FCM Token:", newToken);
 
-    const token = await getToken(messaging, { vapidKey });
-    console.log("FCM Token retrieved:", token);
-    localStorage.setItem("fcmToken", token);
-    return token;
+      // 기존 토큰과 비교하여 동일한 경우 강제로 새로운 토큰 발급 시도
+      if (newToken === currentStoredToken) {
+          console.log("Existing FCM token matches the new request. Attempting forced reissue...");
+
+          // 기존 토큰을 무효화하고 새 토큰 발급
+          await removeFcmToken();
+
+          // // 서비스 워커 캐시 무효화
+          // await unregisterServiceWorkerAndClearCache();
+
+          // 강제로 새 토큰 발급
+          newToken = await getToken(messaging, { vapidKey });
+          console.log("Forced reissue of FCM token:", newToken);
+      }
+
+      // 로컬에 새로운 토큰 저장
+      localStorage.setItem("fcmToken", newToken);
+      console.log("New FCM token issued and stored:", newToken);
+      return newToken;
   } catch (error) {
-    console.error("Failed to retrieve FCM token:", error);
+      console.error("Failed to get FCM token:", error);
+      return null;
   }
 };
+
+// // 서비스 워커를 등록 해제하고 캐시를 무효화하는 함수
+// const unregisterServiceWorkerAndClearCache = async () => {
+//   if ('serviceWorker' in navigator) {
+//       const registrations = await navigator.serviceWorker.getRegistrations();
+//       for (let registration of registrations) {
+//           await registration.unregister();
+//       }
+//       const cacheKeys = await caches.keys();
+//       await Promise.all(cacheKeys.map((key) => caches.delete(key)));
+//       console.log("Service worker unregistered and cache cleared.");
+//   }
+// };
+
 // FCM 토큰 삭제 함수
 export const removeFcmToken = async () => {
-  console.log("FCM 토큰 삭제 함수");
-
-  // Firebase 초기화 확인
-  if (!messaging) {
-    console.log("Initializing Firebase for token removal...");
-    initFirebase();
-  }
+  console.log("Attempting to delete FCM token...");
+  await waitForServiceWorkerActivation();
 
   try {
-    if (!messaging) {
-      console.warn("Messaging not initialized after initFirebase call.");
-      return;
-    }
-    
-    console.log("Attempting to retrieve the current FCM token...");
-    const currentToken = await getToken(messaging, { vapidKey: process.env.VUE_APP_FIREBASE_VAP_ID });
-
-    if (currentToken) {
-      console.log("Current FCM Token found:", currentToken);
-      const isDeleted = await deleteToken(messaging);
-      if (isDeleted) {
-        console.log("FCM Token deleted successfully from the client.");
-        localStorage.removeItem('fcmToken'); // 로컬 스토리지에서 토큰 제거
+      const currentToken = await getToken(messaging, { vapidKey: process.env.VUE_APP_FIREBASE_VAP_ID });
+      if (currentToken) {
+          const isDeleted = await deleteToken(messaging);
+          if (isDeleted) {
+              console.log("FCM Token deleted successfully.");
+              localStorage.removeItem("fcmToken");
+          } else {
+              console.warn("Failed to delete FCM token from Firebase.");
+          }
       } else {
-        console.warn("Failed to delete FCM token from the client.");
+          console.warn("No FCM token found to delete.");
       }
-    } else {
-      console.warn("No FCM token to delete.");
-    }
   } catch (error) {
-    console.error("Failed to delete FCM token:", error);
+      console.error("Failed to delete FCM token:", error);
   }
 };
-
 
 
 // 메시지 수신 설정
-export const setupMessageListener = () => {
+export const setupMessageListener = async () => {
+  console.log("Setting up message listener..."); // 리스너 설정 시작 확인
+  
   if (!messaging) initFirebase();
-
+  
+  
   onMessage(messaging, (payload) => {
     console.log("Received message:", payload);  // 메시지 수신 로그 추가
+    
     const notificationTitle = payload.notification.title;
     const notificationOptions = {
       body: payload.notification.body,
       icon: "/favicon.ico",
       data: payload.data,
     };
-
+    
+    console.log("Notification Title:", notificationTitle);
+    console.log("Notification Body:", notificationOptions.body);
+    
     if (Notification.permission === "granted") {
       const notification = new Notification(notificationTitle, notificationOptions);
+      console.log("Notification displayed:", notification); // 알림이 표시되었는지 확인
+
       notification.onclick = async (event) => {
         event.preventDefault();
         const notificationId = payload.data.notificationId;
@@ -125,6 +188,7 @@ export const setupMessageListener = () => {
   });
 };
 
+
 // fcmToken이 localStorage에 생길 때까지 대기하는 함수
 export const waitForToken = () => {
   return new Promise((resolve) => {
@@ -135,5 +199,17 @@ export const waitForToken = () => {
         resolve();
       }
     }, 100); // 100ms마다 확인
+  });
+};
+
+export const waitForServiceWorkerActivation = async () => {
+  return new Promise((resolve) => {
+    if (navigator.serviceWorker.controller) {
+      resolve();
+    } else {
+      navigator.serviceWorker.ready.then(() => {
+        resolve();
+      });
+    }
   });
 };

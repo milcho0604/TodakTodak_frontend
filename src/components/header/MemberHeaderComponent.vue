@@ -23,7 +23,6 @@
         </v-col>
 
         
-
         <v-col cols="4" class="d-flex align-end justify-end text-no-wrap">
           <!-- <v-switch
           v-model="isDarkMode"
@@ -185,7 +184,9 @@
   </v-app-bar>
 </template>
 
+
 <script>
+import { initFirebase } from "@/firebase";
 import axios from 'axios'
 import { removeFcmToken } from "@/firebase";
 export default {
@@ -224,6 +225,7 @@ export default {
     }
   },
   created(){
+    initFirebase();
     this.memberId = localStorage.getItem("memberId");
     this.email = localStorage.getItem("email");
     const token = localStorage.getItem("token");
@@ -338,7 +340,7 @@ export default {
       console.log("After removal:", localStorage); // 삭제 후 localStorage 상태 확인
 
       this.isLogin = false;
-      // window.location.href = "/";
+      window.location.href = "/";
       })
       .catch((error) => {
         console.error("로그아웃에 실패했습니다:", error); // 로그아웃 실패 메시지

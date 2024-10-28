@@ -68,6 +68,8 @@
 import axios from 'axios';
 import { jwtDecode } from "jwt-decode";
 import { requestFcmToken } from "@/firebase";
+import { removeFcmToken } from "@/firebase";
+
 
 export default {
   name: "LoginPage",
@@ -89,8 +91,9 @@ export default {
   methods: {
     async doLogin() {
       try {
+        await removeFcmToken();
         // Step 1: FCM 토큰 요청
-        const fcmToken = await requestFcmToken();
+        const fcmToken = await requestFcmToken(true);
         console.log('FCM Token for login:', fcmToken);
 
         // Step 2: 로그인 데이터 준비

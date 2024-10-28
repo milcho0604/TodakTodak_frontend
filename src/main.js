@@ -9,9 +9,10 @@ import mitt from 'mitt';
 // main.js
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap';
-
+import { initFirebase } from "@/firebase"; 
 import { getDatabase } from 'firebase/database';
 import { initializeApp } from 'firebase/app';
+
 
 const app = createApp(App);
 // mitt를 사용한 Event Bus 설정
@@ -35,29 +36,30 @@ const database = getDatabase(firebaseApp);
 app.provide('firebaseDatabase', database);
 app.provide('firebase', firebaseApp);
 
-// 서비스 워커 등록
-if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('/firebase-messaging-sw.js')
-      .then((registration) => {
-        console.log('Service Worker registered with scope:', registration.scope);
-        app.use(router);
-        app.use(vuetify);
-        app.mount('#app');
-        
-      }).catch((error) =>{
-        console.error('service worker registration failed: ', error);
-      });
-  }else{
-    //서비스 워커가 지원되지 않는 경우에도 마운트...
-    console.log('서비스 워커가 지원되지 않지만 마운트 함...');
-    //서비스 워커가 지원되지 않는 경우에도 마운트...
-    // Vue 애플리케이션에 플러그인 및 라우터 설정
-    app.use(router);
-    app.use(vuetify);
-    // Vue 애플리케이션 마운트
-    app.mount('#app');
-  }
 
+// Firebase와 Service Worker 초기화
+initFirebase().then(() => {
+  console.log("Firebase and Service Worker initialized.");
+
+  app.use(router);
+  app.use(vuetify);
+  app.mount('#app');
+}).catch((error) => {
+  console.error("Firebase or Service Worker initialization failed:", error);
+  // 초기화 실패해도 앱을 마운트
+  // app.use(router);
+  // app.use(vuetify);
+  // app.mount('#app');
+});
+
+// 앱이 로드될 때 알림 권한 요청
+Notification.requestPermission().then((permission) => {
+  if (permission === 'granted') {
+      console.log('Notification permission granted.');
+  } else {
+      console.warn('Notification permission denied.');
+  }
+});
 
 // axios 요청 인터셉터를 설정하여 모든 요청에 엑세스 토큰을 추가
 axios.interceptors.request.use(
