@@ -93,7 +93,7 @@
                     <v-col cols="6">
                       <v-list-item-title style="font-weight: bold; font-size: 20px !important;">
                         <v-avatar size="40">
-                          <v-img :src="comment.profileImgUrl" alt="profileImgUrl"></v-img>
+                          <v-img :src="comment.profileImg" alt="profileImg"></v-img>
                         </v-avatar>
                         {{ comment.name }}
                       </v-list-item-title>
@@ -164,7 +164,7 @@
                           <v-list-item-title style="font-size: 20px; margin-bottom: 4px;">
                             <v-icon small>mdi-arrow-right-bottom</v-icon>
                             <v-avatar size="40">
-                              <v-img :src="comment.profileImgUrl" alt="profileImgUrl"></v-img>
+                              <v-img :src="reply.profileImg" alt="profileImg"></v-img>
                             </v-avatar>
                             &nbsp;{{ reply.name }}
                           </v-list-item-title>
@@ -244,7 +244,7 @@ export default {
   },
   methods: {
     edit() {
-      this.$router.push(`community/update/${this.postDetail.id}`);
+      this.$router.push(`/community/update/${this.postDetail.id}`);
     },
     async toggleLike() {
       const postId = this.postDetail.id;
@@ -336,8 +336,8 @@ export default {
       try {
         await axios.post(`${process.env.VUE_APP_API_BASE_URL}/community-service/comment/reply/create`, {
           postId: postId,
-          content: comment.newComment,
           parentId: comment.id,
+          content: comment.newComment,
         });
         comment.newComment = '';
         this.fetchPostDetail();
