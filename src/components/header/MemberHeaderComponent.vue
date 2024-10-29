@@ -186,7 +186,7 @@
 
 
 <script>
-import { initFirebase } from "@/firebase";
+// import { initFirebase } from "@/firebase";
 import axios from 'axios'
 import { removeFcmToken } from "@/firebase";
 export default {
@@ -225,7 +225,7 @@ export default {
     }
   },
   created(){
-    initFirebase();
+    // initFirebase();
     this.memberId = localStorage.getItem("memberId");
     this.email = localStorage.getItem("email");
     const token = localStorage.getItem("token");

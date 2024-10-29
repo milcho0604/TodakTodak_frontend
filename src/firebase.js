@@ -1,182 +1,94 @@
 // firebase.js
+import { initializeApp } from "firebase/app";
+import { getMessaging, getToken, deleteToken, onMessage } from "firebase/messaging";
+import { getDatabase } from "firebase/database"; // Firebase Realtime Database
 
-import { initializeApp, getApps, getApp } from "firebase/app";
-import { getMessaging, getToken, onMessage, deleteToken } from "firebase/messaging";
-import axios from 'axios';
-
+// Firebase configuration
 const firebaseConfig = {
-  apiKey: "AIzaSyBSH8wJ7aoblNAj8Kj7iNTfsJhlEL4KEcE",
-  authDomain: "padak-todak.firebaseapp.com",
-  projectId: "padak-todak",
-  storageBucket: "padak-todak.appspot.com",
-  messagingSenderId: "22351664979",
-  appId: "1:22351664979:web:f8a3cc4b2f5e249d88b3a6"
+  apiKey: "AIzaSyByoMzqxbfXuHca-m6gEOBBnTVjJj-fTv4",
+  authDomain: "todak-1f8d0.firebaseapp.com",
+  projectId: "todak-1f8d0",
+  storageBucket: "todak-1f8d0.appspot.com",
+  messagingSenderId: "167301418487",
+  appId: "1:167301418487:web:8eaa552ab9a39e306ff2f2",
+  measurementId: "G-P904DPFNZQ",
+  databaseUrl: "https://todak-1f8d0-default-rtdb.asia-southeast1.firebasedatabase.app"
 };
 
-let messaging;
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const messaging = getMessaging(app);
+const database = getDatabase(app); // Initialize Realtime Database
 
-export const initFirebase = () => {
-  return new Promise((resolve, reject) => {
-    if (!getApps().length) {
-      const firebaseApp = initializeApp(firebaseConfig);
-      messaging = getMessaging(firebaseApp);
-      console.log("Firebase initialized and Messaging instance created.");
-    } else {
-      const existingApp = getApp();
-      messaging = getMessaging(existingApp);
-      console.log("Using existing Firebase instance.");
-    }
+// Export the database instance
+export { database };
 
-    // Service Worker 등록
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker
-        .register('/firebase-messaging-sw.js')
-        .then((registration) => {
-          console.log('Service Worker registered with scope:', registration.scope);
-          resolve(); // 성공 시 Promise 해제
-        })
-        .catch((error) => {
-          console.error('Service Worker registration failed:', error);
-          reject(error); // 실패 시 Promise 거부
-        });
-    } else {
-      console.error('실패 실패 실패');
-      resolve(); // 서비스 워커가 지원되지 않는 경우에도 성공으로 간주
-    }
-  });
-};
-
-// FCM 토큰 요청 함수
+// Request FCM token
 export const requestFcmToken = async () => {
-  if (!messaging) {
-      initFirebase();
+  const permission = await Notification.requestPermission();
+  if (permission !== 'granted') {
+    console.log("Notification permissions not granted.");
+    return null;
   }
-  await waitForServiceWorkerActivation();  // Service Worker가 준비될 때까지 대기
 
   try {
-      const vapidKey = process.env.VUE_APP_FIREBASE_VAP_ID;
-      const currentStoredToken = localStorage.getItem("fcmToken");
+    const vapidKey = process.env.VUE_APP_FIREBASE_VAP_ID;
+    const currentToken = await getToken(messaging, { vapidKey });
 
-      // 새로운 FCM 토큰 요청
-      let newToken = await getToken(messaging, { vapidKey });
-      console.log("Requested FCM Token:", newToken);
-
-      // 기존 토큰과 비교하여 동일한 경우 강제로 새로운 토큰 발급 시도
-      if (newToken === currentStoredToken) {
-          console.log("Existing FCM token matches the new request. Attempting forced reissue...");
-
-          // 기존 토큰을 무효화하고 새 토큰 발급
-          await removeFcmToken();
-
-          // // 서비스 워커 캐시 무효화
-          // await unregisterServiceWorkerAndClearCache();
-
-          // 강제로 새 토큰 발급
-          newToken = await getToken(messaging, { vapidKey });
-          console.log("Forced reissue of FCM token:", newToken);
-      }
-
-      // 로컬에 새로운 토큰 저장
-      localStorage.setItem("fcmToken", newToken);
-      console.log("New FCM token issued and stored:", newToken);
-      return newToken;
-  } catch (error) {
-      console.error("Failed to get FCM token:", error);
+    if (currentToken) {
+      console.log("FCM Token retrieved:", currentToken);
+      localStorage.setItem("fcmToken", currentToken);
+      return currentToken;
+    } else {
+      console.log("No FCM token available.");
       return null;
-  }
-};
-
-
-// FCM 토큰 삭제 함수
-export const removeFcmToken = async () => {
-  console.log("Attempting to delete FCM token...");
-  await waitForServiceWorkerActivation();
-
-  try {
-      const currentToken = await getToken(messaging, { vapidKey: process.env.VUE_APP_FIREBASE_VAP_ID });
-      if (currentToken) {
-          const isDeleted = await deleteToken(messaging);
-          if (isDeleted) {
-              console.log("FCM Token deleted successfully.");
-              localStorage.removeItem("fcmToken");
-          } else {
-              console.warn("Failed to delete FCM token from Firebase.");
-          }
-      } else {
-          console.warn("No FCM token found to delete.");
-      }
+    }
   } catch (error) {
-      console.error("Failed to delete FCM token:", error);
+    console.error("Error retrieving FCM token:", error);
+    return null;
   }
 };
 
+// Delete FCM token
+export const removeFcmToken = async () => {
+  const currentToken = localStorage.getItem("fcmToken");
+  if (currentToken) {
+    try {
+      const deleted = await deleteToken(messaging);
+      if (deleted) {
+        console.log("FCM Token deleted successfully.");
+        localStorage.removeItem("fcmToken");
+      } else {
+        console.warn("Failed to delete FCM token.");
+      }
+    } catch (error) {
+      console.error("Failed to delete FCM token:", error);
+    }
+  } else {
+    console.warn("No FCM token found to delete.");
+  }
+};
 
-// 메시지 수신 설정
-export const setupMessageListener = async () => {
-  console.log("Setting up message listener..."); // 리스너 설정 시작 확인
-  
-  if (!messaging) initFirebase();
-  
+// Foreground message listener
+export const setupMessageListener = () => {
   onMessage(messaging, (payload) => {
-    console.log('Received message: ', payload);
+    console.log("Message received in foreground:", payload);
+    
     const notificationTitle = payload.notification.title;
     const notificationOptions = {
       body: payload.notification.body,
       icon: "favicon.ico",
-      data: payload.data // URL과 알림 ID를 포함하는 data 필드
+      data: payload.data
     };
-    
-    console.log("Notification Title:", notificationTitle);
-    console.log("Notification Body:", notificationOptions.body);
-    
+
     if (Notification.permission === 'granted') {
       const notification = new Notification(notificationTitle, notificationOptions);
-      console.log("Notification displayed:", notification); // 알림이 표시되었는지 확인
-
-      notification.onclick = async (event) => {
+      notification.onclick = (event) => {
         event.preventDefault();
-        const notificationId = payload.data.notificationId;
-        const url = payload.data.url;
-
-        if (notificationId) {
-          console.log("id는" + notificationId)
-          try {
-            await axios.get(`${process.env.VUE_APP_API_BASE_URL}/member-service/fcm/read/${notificationId}`);
-            notification.close();
-          } catch (err) {
-            console.error("Error marking notification as read:", err);
-          }
-        }
-        if (url) {
-          window.open(url, "_self");
-        }
+        const redirectUrl = payload.data.url;
+        if (redirectUrl) window.open(redirectUrl, "_self");
+        notification.close();
       };
-    }
-  });
-};
-
-
-// fcmToken이 localStorage에 생길 때까지 대기하는 함수
-export const waitForToken = () => {
-  return new Promise((resolve) => {
-    const interval = setInterval(() => {
-      const token = localStorage.getItem('fcmToken');
-      if (token) {
-        clearInterval(interval);
-        resolve();
-      }
-    }, 100); // 100ms마다 확인
-  });
-};
-
-export const waitForServiceWorkerActivation = async () => {
-  return new Promise((resolve) => {
-    if (navigator.serviceWorker.controller) {
-      resolve();
-    } else {
-      navigator.serviceWorker.ready.then(() => {
-        resolve();
-      });
     }
   });
 };
