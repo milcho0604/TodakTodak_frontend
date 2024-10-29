@@ -286,17 +286,6 @@
 
 <br>
 <details>
-  <summary>당일예약 일반 진료 예약 알림</summary>
-  <img src="https://github.com/user-attachments/assets/c4726460-a844-4209-bb61-cbf7d0cbc063">
-</details>
-
-<details>
-  <summary>당일예약 예방 접종 예약 알림</summary>
-  <img src="https://github.com/user-attachments/assets/9e2ebf52-1a66-4d46-9f58-adc41c554ab6">
-</details>
-
-<br>
-<details>
   <summary>예약 내역 조회</summary>
   <img src="https://github.com/user-attachments/assets/9fec6295-9bbc-429b-a112-962ed4659d3e">
 </details>
@@ -519,14 +508,25 @@
 
 #### 📣 예약 알림
 
+<br>
 <details>
-  <summary>오늘 예약 : 일반진료 예약 알림</summary>
-  <img src="https://github.com/user-attachments/assets/92b18623-12bf-403c-a24e-d54901a79890">
+  <summary>당일예약 : 일반 진료 예약 알림</summary>
+  <img src="https://github.com/user-attachments/assets/6c34a088-7d64-4d2e-b4d2-d69f2c9a5e6b">
 </details>
 
 <details>
-  <summary>오늘 예약 : 예방접종 예약알림</summary>
-  <img src="https://github.com/user-attachments/assets/be03c2ef-eca2-4a2e-b4a7-a1913229b5f8">
+  <summary>당일예약 : 예방 접종 예약 알림</summary>
+  <img src="https://github.com/user-attachments/assets/60e47513-314c-40d7-8270-229cdf69a996">
+</details>
+
+<details>
+  <summary>스케쥴 예약 : 일반진료 예약 알림</summary>
+  <img src="https://github.com/user-attachments/assets/4ec0c6a2-a97b-41e0-9108-dd568fa4ebab">
+</details>
+
+<details>
+  <summary>스케쥴 예약 : 예방접종 예약알림</summary>
+  <img src="https://github.com/user-attachments/assets/b3c1b987-8c6c-4db5-9394-5a27cdf11240">
 </details>
 
 
