@@ -113,7 +113,7 @@ export default {
             try {
                 const params = {
                     page: this.page - 1, // 페이지는 0부터 시작
-                    size: 3, // 페이지당 5개씩
+                    size: 10, // 페이지당 5개씩
                     csStatus: this.filterCsStatus !== 'all' ? this.filterCsStatus : null,
                     query: this.searchQuery || null, // 검색어를 이메일 또는 이름에 적용
                 };

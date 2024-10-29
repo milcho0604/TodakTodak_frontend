@@ -35,8 +35,6 @@
         </h5>
       </v-row>
 
-      <v-spacer :style="{ height: '50px' }"></v-spacer>
-
       <v-container style=" max-width: 1200px;">
         <!-- 위치 gps -->
         <v-row class="mt-2 ml-2">

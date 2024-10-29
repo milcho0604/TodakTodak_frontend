@@ -36,10 +36,11 @@
         <!-- 페이지 네이션 -->
         <v-row justify="center" class="mt-4">
             <v-pagination
-                v-model="page"
+                v-model="currentPage"
                 :length="totalPages"
                 @input="fetchCsList"
-                :total-visible="3"
+                :total-visible="2"
+                class="pagination-center" 
             ></v-pagination>
         </v-row>
     </v-container>
@@ -60,8 +61,8 @@ export default {
             csList: [], // 전체 상담 내역 목록
             filteredCsList: [], // 필터된 상담 내역 목록 추가
             searchQuery: '', // 검색어
-            page: 1, // 현재 페이지
-            totalPages: 1, // 전체 페이지 수
+            currentPage: 1,  // 현재 페이지
+            totalPages: 0,   // 총 페이지 수
             filterCsStatus: 'all', // 상담 상태 필터 상태 (초기값 'all')
             csStatusOptions: {
                 all: '전체',
@@ -73,18 +74,25 @@ export default {
     created() {
         this.fetchCsList();
     },
+    watch:{
+        currentPage(newCurrnetPage){
+            if(newCurrnetPage){
+                this.fetchCsList();
+            }
+        }
+    },
     methods: {
         async fetchCsList() {
             try {
-                const url = `${process.env.VUE_APP_API_BASE_URL}/member-service/cs/list/member/${this.memberId}`;
-                console.log(url);
-                // const response = await axios.get(url, { params });
-                const response = await axios.get(url);
+                let params = {
+                    page: this.currentPage -1
+                };
+                const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/member-service/cs/list/member/${this.memberId}`,{params});
                 
                 if (response.data && response.data.result) {
-                    this.csList = response.data.result;
+                    this.csList = response.data.result.content;
                     this.filteredCsList = this.csList; // 필터링 결과를 따로 저장
-                    this.totalPages = response.data.totalPages;
+                    this.totalPages = response.data.result.totalPages; // 총 페이지 수 저장
                     console.log("csList : ", this.csList);
                 } else {
                     console.error('Invalid response structure:', response.data);
@@ -120,12 +128,6 @@ export default {
             this.$router.push(`/admin/cd/detail/${csId}`); // 병원의 id를 사용하여 상세 페이지로 이동
         },
     },
-    watch: {
-        page(newPage) {
-            console.log(newPage)
-            this.fetchCsList(); // 페이지 변경 시 목록 다시 로드ㄴ
-        },
-    },
     mounted() {
         console.log("나는 멤버 아이디",this.memberId);
     }
@@ -140,4 +142,10 @@ export default {
     font-weight: bold;
     color: #676767;
 }
+.pagination-center {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+  }
 </style>

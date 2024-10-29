@@ -58,6 +58,13 @@
         </v-container>
         
         <!-- 페이지 네이션 -->
+        <v-pagination
+        v-model="currentPage"
+        :length="totalPages"
+        :total-visible="2"
+        @input="loadAdminChatList"
+        class="pagination-center" 
+        ></v-pagination>
       </div>
 
       <!-- 채팅창 영역 -->
@@ -192,7 +199,6 @@
       </template>
     </v-card>
   </v-dialog>
-  <v-spacer :style="{ height: '50px' }"></v-spacer>
   </v-container>
   <MyPageSideBar />
 </template>
@@ -236,10 +242,12 @@ export default {
       csPostModalContents: "",
       isEditMode: true, // 편집 모드 상태 추가
       hasCsData: false, // 해당 채팅방에 존재하는 CS 데이터가 있는지
+      currentPage: 1,  // 현재 페이지
+      totalPages: 0,   // 총 페이지 수
     };
   },
   created() {
-    this.loadMemberChatList(); // 채팅 리스트 load
+    this.loadAdminChatList(); // 채팅 리스트 load
     this.currentUserName = localStorage.getItem('name');  // 현재 접속한 user 이름
   },
   onBeforeUnmount() {
@@ -247,7 +255,15 @@ export default {
   },
   updated() {
       this.scrollToBottom(); // 메시지가 업데이트될 때 스크롤 하단으로 이동
-    },
+  },
+  watch:{
+        currentPage(newCurrnetPage){
+            if(newCurrnetPage){
+                this.loadAdminChatList();
+            }
+        }
+
+  },
   methods: {
     connect(id) {
       this.chatRoomId = id;
@@ -352,10 +368,14 @@ export default {
       }
     },
     // 채팅방 리스트 (admin입장 채팅방 리스트)
-    async loadMemberChatList(){
+    async loadAdminChatList(){
       try {
-          const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/member-service/chat/chatroom/list/admin`);
+          let params = {
+              page: this.currentPage -1
+          };
+          const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/member-service/chat/chatroom/list/admin`,{params});
           this.chatRoomList = response.data.result.content;
+          this.totalPages = response.data.result.totalPages; // 총 페이지 수 저장
       } catch (error) {
           console.log(error);
       }
@@ -494,7 +514,7 @@ export default {
   background-color: #F7F7F7;
   padding: 10px;
   margin: 10px 10px;
-  min-height: 580px;
+  max-height: 800px;
   width: 500px;
   border-radius: 10px;
   position: relative;
@@ -505,11 +525,12 @@ export default {
   /* 채팅방 리스트 영역 */
   background-color: #F7F7F7;
   margin: 10px 10px;
-  min-height: 100%;
+  max-height: 800px;
   border-radius: 10px;
   position: relative;
   padding-bottom: 90px;
   width: 450px;
+  position: relative;
 }
 .wisdom-outer-box {
   display: flex;
@@ -537,7 +558,7 @@ export default {
   /* 채팅방 영역 */
   background-color: #F7F7F7;
   margin: 10px 10px;
-  min-height: 580px;
+  max-height: 800px;
   border-radius: 10px;
   position: relative;
   width: 600px;
@@ -673,17 +694,6 @@ button {
   height: 80px;
 }
 
-.pagination {
-  /* */
-  margin-top: 20px;
-  display: flex;
-  margin-right: 40px;
-  position: absolute;
-  bottom: 20px;
-  left: 0;
-  right: 0;
-}
-
 .user-info {
   /* */
   display: flex;
@@ -781,6 +791,11 @@ button {
   cursor: pointer;
   height: 35px;
 }
-
+.pagination-center {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+}
 
 </style>
