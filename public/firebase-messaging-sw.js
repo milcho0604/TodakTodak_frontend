@@ -13,7 +13,7 @@ const firebaseConfig = {
   messagingSenderId: "167301418487",
   appId: "1:167301418487:web:8eaa552ab9a39e306ff2f2",
   measurementId: "G-P904DPFNZQ",
-  databaseUrl: "https://todak-1f8d0-default-rtdb.asia-southeast1.firebasedatabase.app"
+  databaseURL: "https://todak-1f8d0-default-rtdb.asia-southeast1.firebasedatabase.app"
 };
 
 // Initialize Firebase
