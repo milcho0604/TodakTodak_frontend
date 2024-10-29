@@ -348,8 +348,6 @@ export default {
     },
 
     toChatList() {
-        // this.$router.push('/chat');
-        // ChatListComponent를 새로운 창에서 열기
         const chatWindow = window.open(
         '/chat/my-chat/list',  // ChatListComponent가 렌더링될 URL
         '_blank',  // 새로운 창을 열기 위한 옵션

@@ -155,7 +155,7 @@ export default {
             try {
                 const params = {
                     page: this.page - 1, // 페이지는 0부터 시작
-                    size: 2, // 페이지당 10개씩
+                    size: 10, // 페이지당 10개씩
                     accept: this.filterAcceptStatus !== 'all' ? this.filterAcceptStatus : null, // 필터 적용
                 };
 

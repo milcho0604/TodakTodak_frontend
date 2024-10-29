@@ -16,7 +16,7 @@ import { communityRouter } from './communityRouter';
 import { mypageRouter } from './mypageRouter';
 import { todakRouter } from './todakRouter';
 import { doctorRouter } from './doctorRouter';
-import { adminRouter } from './adminRouter';
+// import { adminRouter } from './adminRouter';
 import { hospitalAdmin } from './hospitalAdmin';
 
 const routes = [
@@ -35,7 +35,7 @@ const routes = [
   ...mypageRouter,
   ...todakRouter,
   ...doctorRouter,
-  ...adminRouter,
+  // ...adminRouter, // adminRouter에 있던 내용 todakRouter로 옮김
   ...hospitalAdmin,
 ];
 

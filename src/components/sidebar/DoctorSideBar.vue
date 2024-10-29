@@ -3,20 +3,21 @@
     v-model="drawer"
     :rail="rail"
     permanent
-    style="background-color: #ECF2FE;"
+    style="background-color: #CEE4FF;"
     @click="rail = false"
     >
-    <v-list-item
-        :prepend-avatar="profileImgUrl"
-        :title="name"
-        nav
-    >
+
+    <v-list-item nav>
+        <template v-slot:prepend>
+            <v-avatar size="40" style="background-color: white;">
+                <v-img :src="profileImgUrl" alt="Profile image"></v-img>
+            </v-avatar>
+        </template>
+
+        <v-list-item-title class="custom-avatar">{{ name }}</v-list-item-title>
+
         <template v-slot:append>
-        <v-btn
-            icon="mdi-chevron-left"
-            variant="text"
-            @click.stop="rail = !rail"
-        ></v-btn>
+            <v-btn icon="mdi-chevron-left" variant="text" @click.stop="rail = !rail"></v-btn>
         </template>
     </v-list-item>
 

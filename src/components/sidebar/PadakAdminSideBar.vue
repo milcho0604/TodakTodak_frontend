@@ -3,13 +3,14 @@
     v-model="drawer"
     :rail="rail"
     permanent
-    style="background-color: #ECF2FE;"
+    style="background-color: #3C3C3C;"
     @click="rail = false"
     >
     <v-list-item
         :prepend-avatar="profileImgUrl"
         :title="name"
         nav
+        class="todak-sidebar"
     >
         <template v-slot:append>
         <v-btn
@@ -24,44 +25,58 @@
 
     <v-list density="compact" nav>
         <v-list-item
-        :prepend-avatar="calendar"
+        :prepend-avatar="statics"
         title="대시보드"
-        value="calendar"
+        value="dashboard"
+        class="todak-sidebar"
         @click="toDashBoard"
         ></v-list-item>
         
         <v-list-item
-        :prepend-avatar="myPage"
-        title="회원리스트"
-        value="myPage"
+        :prepend-avatar="member"
+        title="회원 리스트"
+        value="memberList"
+        class="todak-sidebar"
         @click="toMemberList"
         ></v-list-item>
 
         <v-list-item
-        :prepend-avatar="child"
-        title="상담리스트"
-        value="childConfig"
+        :prepend-avatar="cs"
+        title="고객상담 채팅"
+        value="csChat"
+        class="todak-sidebar"
+        @click="toCsChat"
+        ></v-list-item>
+
+        <v-list-item
+        :prepend-avatar="reservation"
+        title="상담 리스트"
+        value="csList"
+        class="todak-sidebar"
         @click="toCsList"
         ></v-list-item>
 
         <v-list-item
-        :prepend-avatar="child"
-        title="신고리스트"
-        value="childConfig"
+        :prepend-avatar="siren"
+        title="신고 리스트"
+        value="reportList"
+        class="todak-sidebar"
         @click="toReportList"
         ></v-list-item>
 
         <v-list-item
-        :prepend-avatar="hospital"
-        title="결제리스트"
-        value="reservation"
+        :prepend-avatar="pay"
+        title="결제 리스트"
+        value="payList"
+        class="todak-sidebar"
         @click="toPaymentList"
         ></v-list-item>
 
         <v-list-item
-        :prepend-avatar="review"
-        title="병원리스트"
-        value="review"
+        :prepend-avatar="hospital"
+        title="병원 리스트"
+        value="hospitalList"
+        class="todak-sidebar"
         @click="toHospitalList"
         ></v-list-item>
     </v-list>
@@ -85,6 +100,10 @@ export default{
             reservation: 'https://todak-file.s3.ap-northeast-2.amazonaws.com/default-images/reservation-icon.png',
             review: 'https://todak-file.s3.ap-northeast-2.amazonaws.com/default-images/review-icon.png',
             hospital: 'https://todak-file.s3.ap-northeast-2.amazonaws.com/default-images/hospital-icon.png',
+            pay: 'https://todak-file.s3.ap-northeast-2.amazonaws.com/default-images/pay-removebg-preview.png',
+            member: 'https://todak-file.s3.ap-northeast-2.amazonaws.com/default-images/default_user_image.png',
+            siren: 'https://todak-file.s3.ap-northeast-2.amazonaws.com/default-images/siren-image.png',
+            statics: 'https://todak-file.s3.ap-northeast-2.amazonaws.com/default-images/statics-image.png',
         }
     },
     created(){
@@ -94,6 +113,9 @@ export default{
     methods:{
         toMemberList() {
             this.$router.push('/admin/member/list');
+        },
+        toCsChat() {
+            this.$router.push('/admin/cs/center');
         },
         toCsList(){
             this.$router.push('/admin/cs/list')
@@ -114,5 +136,9 @@ export default{
 }
 </script>
 <style scoped>
+.todak-sidebar {
+    color: #ffffff;
+    font-weight: bold;
+}
   
 </style>

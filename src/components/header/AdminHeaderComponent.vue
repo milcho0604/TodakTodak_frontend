@@ -1,11 +1,11 @@
 <template>
-  <v-app-bar app scroll-behavior="elevate">
+  <v-app-bar app scroll-behavior="elevate" style="background-color: #1F1F1F;">
     <v-container fluid class="custom-container">
       <v-row align="center">
         <v-col cols="2" class="justify-start text-no-wrap">
           <v-toolbar-title>
-            <router-link to="/" class="logo">
-              <img src="@/assets/todak-new-logo-removebg.png" alt="TodakTodak Logo" class="logo-image" />
+            <router-link to="/" class="logo">              
+              <img src="@/assets/graymode-todak-logo.png" alt="TodakTodak Logo" class="logo-image" />
             </router-link>
           </v-toolbar-title>
         </v-col>
@@ -30,19 +30,33 @@
           <v-menu v-if="isLogin" open-on-hover>
             <template v-slot:activator="{ props }">
               <v-btn text v-bind="props" height="60">
-                <v-avatar size="40">
+                <v-avatar size="40" style="background-color: white;">
                   <v-img :src=profileImgUrl alt="profileImgUrl"></v-img>
                 </v-avatar>
-                <span class="ml-2" style="font-size: 17px;">{{ name }}</span>
+                <span class="ml-2" style="font-size: 17px; color: white">{{ name }}</span>
               </v-btn>
             </template>
             <v-list>
-              <v-list-item :to="{ path: '/member/mypage'}">
-                <v-list-item-title>마이 페이지</v-list-item-title>
+              <v-list-item @click="toDashBoard">
+                <v-list-item-title>대시보드</v-list-item-title>
               </v-list-item>
-              <v-list-item :href="`/member/mypage/reservation`">
-                <v-list-item-title>예약내역</v-list-item-title>
+
+              <v-list-item @click="toCsChat">
+                <v-list-item-title>고객상담 채팅</v-list-item-title>
               </v-list-item>
+
+              <v-list-item @click="toMemberList">
+                <v-list-item-title>회원 리스트</v-list-item-title>
+              </v-list-item>
+
+              <v-list-item  @click="toPaymentList">
+                <v-list-item-title>결제 리스트</v-list-item-title>
+              </v-list-item>
+
+              <v-list-item  @click="toHospitalList">
+                <v-list-item-title>병원 리스트</v-list-item-title>
+              </v-list-item>
+
               <v-list-item @click="logout">
                 <v-list-item-title>로그아웃</v-list-item-title>
               </v-list-item>
@@ -114,9 +128,28 @@ export default {
       this.isLogin = false; // 로그아웃 후 로그인 상태 업데이트
       this.$router.push('/'); // 로그아웃 후 메인 페이지로 이동
     },
-    navigateTo(route) {
-      this.$router.push(route); // 해당 경로로 이동
-    }
+    toMemberList() {
+            this.$router.push('/admin/member/list');
+        },
+    toCsChat() {
+        this.$router.push('/admin/cs/center');
+    },
+    toCsList(){
+        this.$router.push('/admin/cs/list')
+    },
+    toReportList() {
+        this.$router.push('/admin/todak/report');
+    },
+    toPaymentList() {
+        this.$router.push('/admin/payment/list');
+    },
+    toHospitalList() {
+        this.$router.push('/admin/hospital/list');
+    },
+    toDashBoard() {
+        this.$router.push('/admin/todak/statistics');
+    },
+
   }
 };
 </script>
@@ -140,6 +173,7 @@ export default {
   font-size: 18px !important; /* 글씨 크기 */
   text-transform: none !important; /* 대문자 변환 방지 */
   background-color: transparent !important;  /* 배경을 투명하게 만듦 */
+  color: white;
   box-shadow: none !important; /* 그림자 제거 */
   border: none !important; /* 버튼 테두리 제거 */
   outline: none !important; /* 버튼 outline 제거 */
