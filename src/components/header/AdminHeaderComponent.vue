@@ -42,19 +42,19 @@
               </v-list-item>
 
               <v-list-item @click="toCsChat">
-                <v-list-item-title>고객상담채팅</v-list-item-title>
+                <v-list-item-title>고객상담 채팅</v-list-item-title>
               </v-list-item>
 
               <v-list-item @click="toMemberList">
-                <v-list-item-title>회원리스트</v-list-item-title>
+                <v-list-item-title>회원 리스트</v-list-item-title>
               </v-list-item>
 
               <v-list-item  @click="toPaymentList">
-                <v-list-item-title>결제리스트</v-list-item-title>
+                <v-list-item-title>결제 리스트</v-list-item-title>
               </v-list-item>
 
               <v-list-item  @click="toHospitalList">
-                <v-list-item-title>병원리스트</v-list-item-title>
+                <v-list-item-title>병원 리스트</v-list-item-title>
               </v-list-item>
 
               <v-list-item @click="logout">
