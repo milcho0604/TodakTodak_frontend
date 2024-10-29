@@ -11,7 +11,10 @@ const firebaseConfig = {
 };
 
 // Firebase 초기화
-firebase.initializeApp(firebaseConfig);
+// Firebase 초기화 중복 방지
+if (!firebase.apps.length) {
+  firebase.initializeApp(firebaseConfig);
+}
 
 const messaging = firebase.messaging();
 
@@ -23,7 +26,7 @@ messaging.onBackgroundMessage((payload) => {
   const notificationTitle = payload.notification.title;
   const notificationOptions = {
     body: payload.notification.body,
-    icon: "favicon.ico",
+    icon: "todak-heart.png",
     data: {
       url: redirectUrl,
       notificationId: payload.data.notificationId  // 알림 ID 포함

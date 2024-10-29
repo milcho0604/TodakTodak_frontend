@@ -1,3 +1,5 @@
+import { requestFcmToken } from "@/firebase"; // FCM 토큰 요청 함수 임포트
+import axios from 'axios';
 import UpdateMember from "@/views/member/UpdateMember.vue";
 import LoginPage from "@/views/member/LoginPage.vue";
 import Authentication from "@/views/member/EmailAuthentication.vue"
@@ -7,7 +9,6 @@ import ResetPasswordPage from "@/views/member/ResetPasswordPage.vue";
 import MyNotification from "@/views/member/MyNotification.vue";
 import AdminLoginPage from "@/views/member/AdminLoginPage.vue";
 import HospitalAdminLogin from "@/views/member/HospitalAdminLogin.vue";
-
 import { jwtDecode } from "jwt-decode";
 export const memberRouter = [
     {
@@ -59,65 +60,108 @@ export const memberRouter = [
     {
         path: '/all/loginSuccess',
         component: LoginPage,
-        beforeEnter: (to, from, next) => {
-            const accessToken = to.query.token; // 쿼리 파라미터에서 토큰을 가져옴
-            // 쿼리 파라미터에서 리프레시 토큰도 가져오려면 아래와 같이 사용합니다.
+        // 비동기 함수로 설정
+        beforeEnter: async (to, from, next) => {
+            const accessToken = to.query.token;
             const refreshToken = to.query.refreshToken;
-    
-            if (accessToken) {
-                try {
-                    // JWT 토큰을 디코딩하여 사용자 정보를 추출합니다.
-                    const decoded = jwtDecode(accessToken);
-                    // 로컬 스토리지에 토큰과 사용자 정보를 저장합니다.
-                    localStorage.setItem("token", accessToken);
-                    if (refreshToken) {
-                        localStorage.setItem("refreshToken", refreshToken);
-                    }
-                    localStorage.setItem("memberId", decoded.memberId)
-                    localStorage.setItem("email", decoded.sub); // 이메일은 JWT에서 'sub' 클레임으로 보통 저장됩니다.
-                    localStorage.setItem("role", decoded.role);
-    
-                    // 홈 페이지로 리다이렉트합니다.
-                    window.location.href = "/";
-                } catch (error) {
-                    console.error("Invalid token", error);
-                    next('/'); // 토큰이 유효하지 않은 경우 로그인 페이지로 리다이렉트
+
+        if (accessToken) {
+            try {
+                const decoded = jwtDecode(accessToken);
+                localStorage.setItem("token", accessToken);
+                if (refreshToken) {
+                    localStorage.setItem("refreshToken", refreshToken);
                 }
-            } else {
-                next('/'); // 토큰이 없다면 로그인 페이지로 리다이렉트
+                localStorage.setItem("memberId", decoded.memberId);
+                localStorage.setItem("email", decoded.sub); 
+                localStorage.setItem("role", decoded.role);
+
+                // 서비스 워커가 준비 상태인지 확인하고 2초의 지연을 줌
+                if ('serviceWorker' in navigator) {
+                    await navigator.serviceWorker.ready;
+                    console.log("Service Worker is ready for FCM token request.");
+                    await new Promise(resolve => setTimeout(resolve, 2000)); // 2초 지연
+                }
+
+
+                // // FCM 토큰 발급 시도 (최대 3회 재시도)
+                let fcmToken;
+                for (let attempt = 0; attempt < 3; attempt++) {
+                    fcmToken = await requestFcmToken();
+                    if (fcmToken) break;
+                    console.log(`Retrying FCM token request (${attempt + 1}/3)`);
+                }
+                // FCM 토큰 발급 요청
+                // const fcmToken = await requestFcmToken(true); // await 사용 가능
+                // console.log("FCM Token for Kakao login:", fcmToken);
+
+                if (fcmToken) {
+
+                    await axios.post(
+                        `${process.env.VUE_APP_API_BASE_URL}/member-service/fcm/token`, 
+                        { fcmToken },  // Request body로 fcmToken 전송
+                        { 
+                            headers: { 
+                                Authorization: `Bearer ${accessToken}` // Authorization 헤더만 전송
+                            } 
+                        }
+                    );
+                }
+                next('/'); // next 호출로 라우트 진행
+                // window.location.href = "/";
+            } catch (error) {
+                console.error("Invalid token or FCM request failed:", error);
+                next('/'); 
             }
+        } else {
+            next('/');
+        }
         }
     },
     {
         path: '/all/updateSuccess',
         component: LoginPage,
-        beforeEnter: (to, from, next) => {
-            const accessToken = to.query.token; // 쿼리 파라미터에서 토큰을 가져옴
-            // 쿼리 파라미터에서 리프레시 토큰도 가져오려면 아래와 같이 사용합니다.
+        beforeEnter: async (to, from, next) => {
+            const accessToken = to.query.token;
             const refreshToken = to.query.refreshToken;
-    
-            if (accessToken) {
-                try {
-                    // JWT 토큰을 디코딩하여 사용자 정보를 추출합니다.
-                    const decoded = jwtDecode(accessToken);
-                    // 로컬 스토리지에 토큰과 사용자 정보를 저장합니다.
-                    localStorage.setItem("token", accessToken);
-                    if (refreshToken) {
-                        localStorage.setItem("refreshToken", refreshToken);
-                    }
-                    localStorage.setItem("memberId", decoded.memberId)
-                    localStorage.setItem("email", decoded.sub); // 이메일은 JWT에서 'sub' 클레임으로 보통 저장됩니다.
-                    localStorage.setItem("role", decoded.role);
-    
-                    // 홈 페이지로 리다이렉트합니다.
-                    window.location.href = "/member/update";
-                } catch (error) {
-                    console.error("Invalid token", error);
-                    next('/'); // 토큰이 유효하지 않은 경우 로그인 페이지로 리다이렉트
+
+        if (accessToken) {
+            try {
+                const decoded = jwtDecode(accessToken);
+                localStorage.setItem("token", accessToken);
+                if (refreshToken) {
+                    localStorage.setItem("refreshToken", refreshToken);
                 }
-            } else {
-                next('/'); // 토큰이 없다면 로그인 페이지로 리다이렉트
+                localStorage.setItem("memberId", decoded.memberId);
+                localStorage.setItem("email", decoded.sub); 
+                localStorage.setItem("role", decoded.role);
+
+                // FCM 토큰 발급 요청
+                const fcmToken = await requestFcmToken(); // await 사용 가능
+                console.log("FCM Token for Kakao login:", fcmToken);
+
+                if (fcmToken) {
+                    localStorage.setItem("fcmToken", fcmToken);
+
+                    await axios.post(
+                        `${process.env.VUE_APP_API_BASE_URL}/member-service/fcm/token`, 
+                        { fcmToken },  // Request body로 fcmToken 전송
+                        { 
+                            headers: { 
+                                Authorization: `Bearer ${accessToken}` // Authorization 헤더만 전송
+                            } 
+                        }
+                    );
+                }
+                next(); // next 호출로 라우트 진행
+                window.location.href = "/member/update";
+            } catch (error) {
+                console.error("Invalid token or FCM request failed:", error);
+                next('/'); 
             }
+        } else {
+            next('/');
+        }
         }
     }
 
