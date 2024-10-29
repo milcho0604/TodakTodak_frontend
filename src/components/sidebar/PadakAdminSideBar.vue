@@ -138,6 +138,7 @@ export default{
 <style scoped>
 .todak-sidebar {
     color: #ffffff;
+    font-weight: bold;
 }
   
 </style>
