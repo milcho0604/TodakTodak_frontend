@@ -31,23 +31,23 @@
         ></v-list-item>
 
         <v-list-item
-        :prepend-avatar="hospital"
+        :prepend-avatar="reservation"
         title="예약목록"
         value="reservation"
         @click="toReservation"
         ></v-list-item>
 
         <v-list-item
-        :prepend-avatar="calendar"
+        :prepend-avatar="doctor"
         title="의사등록"
-        value="calendar"
+        value="doctor"
         @click="toRegisteDoctor"
         ></v-list-item>
 
         <v-list-item
-        :prepend-avatar="doctorQnA"
+        :prepend-avatar="hospital"
         title="병원수정"
-        value="doctorQnA"
+        value="hospital"
         @click="toModifyHospital"
         ></v-list-item>
 
@@ -78,6 +78,7 @@ export default{
             reservation: 'https://todak-file.s3.ap-northeast-2.amazonaws.com/default-images/reservation-icon.png',
             review: 'https://todak-file.s3.ap-northeast-2.amazonaws.com/default-images/review-icon.png',
             hospital: 'https://todak-file.s3.ap-northeast-2.amazonaws.com/default-images/hospital-icon.png',
+            doctor: 'https://todak-file.s3.ap-northeast-2.amazonaws.com/default-images/doctor-3d-image.png',
         }
     },
     created(){
