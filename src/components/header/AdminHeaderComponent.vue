@@ -1,11 +1,11 @@
 <template>
-  <v-app-bar app scroll-behavior="elevate" style="background-color: #FFEEF0;">
+  <v-app-bar app scroll-behavior="elevate" style="background-color: #1F1F1F;">
     <v-container fluid class="custom-container">
       <v-row align="center">
         <v-col cols="2" class="justify-start text-no-wrap">
           <v-toolbar-title>
-            <router-link to="/" class="logo">
-              <img src="@/assets/todak-new-logo-removebg.png" alt="TodakTodak Logo" class="logo-image" />
+            <router-link to="/" class="logo">              
+              <img src="@/assets/graymode-todak-logo.png" alt="TodakTodak Logo" class="logo-image" />
             </router-link>
           </v-toolbar-title>
         </v-col>
@@ -30,10 +30,10 @@
           <v-menu v-if="isLogin" open-on-hover>
             <template v-slot:activator="{ props }">
               <v-btn text v-bind="props" height="60">
-                <v-avatar size="40">
+                <v-avatar size="40" style="background-color: white;">
                   <v-img :src=profileImgUrl alt="profileImgUrl"></v-img>
                 </v-avatar>
-                <span class="ml-2" style="font-size: 17px;">{{ name }}</span>
+                <span class="ml-2" style="font-size: 17px; color: white">{{ name }}</span>
               </v-btn>
             </template>
             <v-list>
@@ -137,6 +137,7 @@ export default {
   font-size: 18px !important; /* 글씨 크기 */
   text-transform: none !important; /* 대문자 변환 방지 */
   background-color: transparent !important;  /* 배경을 투명하게 만듦 */
+  color: white;
   box-shadow: none !important; /* 그림자 제거 */
   border: none !important; /* 버튼 테두리 제거 */
   outline: none !important; /* 버튼 outline 제거 */

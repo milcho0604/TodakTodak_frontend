@@ -1,11 +1,11 @@
 <template>
-  <v-app-bar app scroll-behavior="elevate" style="background-color: #FFF0BC;">
+  <v-app-bar app scroll-behavior="elevate" style="background-color: #B5D5FD;">
     <v-container fluid class="custom-container">
       <v-row align="center">
         <v-col cols="2" class="justify-start text-no-wrap">
           <v-toolbar-title>
             <router-link to="/" class="logo">
-              <img src="@/assets/todak-new-logo-removebg.png" alt="TodakTodak Logo" class="logo-image" />
+              <img src="@/assets/blue-todak-logo.png" alt="TodakTodak Logo" class="logo-image" />
             </router-link>
           </v-toolbar-title>
         </v-col>
@@ -30,8 +30,8 @@
           <v-menu v-if="isLogin" open-on-hover>
             <template v-slot:activator="{ props }">
               <v-btn text v-bind="props" height="60">
-                <v-avatar size="40">
-                  <v-img :src=profileImgUrl alt="profileImgUrl"></v-img>
+                <v-avatar size="40" style="background-color: white;">
+                  <v-img :src=profileImgUrl alt="profileImgUrl" ></v-img>
                 </v-avatar>
                 <span class="ml-2" style="font-size: 17px;">{{ name }}</span>
               </v-btn>
