@@ -450,7 +450,6 @@ export default {
     scrollToBottom() {
       const chatBox = document.querySelector('.chat-box');
       if (chatBox) {
-        // chatBox.scrollTop = chatBox.scrollHeight; // 최하단으로 스크롤
         // 잠시 딜레이를 주고 스크롤을 최하단으로 이동
         setTimeout(() => {
           chatBox.scrollTop = chatBox.scrollHeight;
@@ -548,7 +547,7 @@ export default {
 
 .chat-box {
   flex: 1; /* 남은 공간을 차지하게 설정 */
-  height: 700px !important; /* .cschat-box 높이에서 padding-bottom을 뺀 값으로 설정 */
+  height: 670px !important; /* .cschat-box 높이에서 padding-bottom을 뺀 값으로 설정 */
   overflow-y: auto; /* 스크롤 가능하게 설정 */
   width: 100%;
   margin: 0 auto !important;
