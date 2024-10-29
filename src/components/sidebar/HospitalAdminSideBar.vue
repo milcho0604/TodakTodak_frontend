@@ -3,7 +3,7 @@
     v-model="drawer"
     :rail="rail"
     permanent
-    style="background-color: #ECF2FE;"
+    style="background-color: #FFF0BC;"
     @click="rail = false"
     >
     <v-list-item
@@ -32,7 +32,7 @@
 
         <v-list-item
         :prepend-avatar="hospital"
-        title="예약리스트"
+        title="예약목록"
         value="reservation"
         @click="toReservation"
         ></v-list-item>

@@ -3,7 +3,7 @@
     v-model="drawer"
     :rail="rail"
     permanent
-    style="background-color: #ECF2FE;"
+    style="background-color: #FFEEF0;"
     @click="rail = false"
     >
     <v-list-item
@@ -32,35 +32,35 @@
         
         <v-list-item
         :prepend-avatar="myPage"
-        title="회원리스트"
+        title="회원 목록"
         value="myPage"
         @click="toMemberList"
         ></v-list-item>
 
         <v-list-item
         :prepend-avatar="child"
-        title="상담리스트"
+        title="상담 목록"
         value="childConfig"
         @click="toCsList"
         ></v-list-item>
 
         <v-list-item
         :prepend-avatar="child"
-        title="신고리스트"
+        title="신고 목록"
         value="childConfig"
         @click="toReportList"
         ></v-list-item>
 
         <v-list-item
         :prepend-avatar="hospital"
-        title="결제리스트"
+        title="결제 목록"
         value="reservation"
         @click="toPaymentList"
         ></v-list-item>
 
         <v-list-item
         :prepend-avatar="review"
-        title="병원리스트"
+        title="병원"
         value="review"
         @click="toHospitalList"
         ></v-list-item>
