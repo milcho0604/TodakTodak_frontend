@@ -1,130 +1,103 @@
-import { createApp } from 'vue'
-import App from './App.vue'
-import router from '@/router/index.js'
+// main.js
+
+import { createApp } from 'vue';
+import App from './App.vue';
+import router from '@/router/index.js';
 import vuetify from './plugins/vuetify';
 import '@mdi/font/css/materialdesignicons.css';
 import axios from 'axios';
-// import '@/assets/css/font.css';
 import mitt from 'mitt';
-// main.js
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap';
 
-import { getDatabase } from 'firebase/database';
-import { initializeApp } from 'firebase/app';
+import { setupMessageListener, database } from './firebase'; // Import database instance
 
 const app = createApp(App);
-// mitt를 사용한 Event Bus 설정
+
+// Event Bus 설정
 const emitter = mitt();
 app.config.globalProperties.emitter = emitter;
 
-const firebaseConfig = {
-  apiKey: "AIzaSyBSH8wJ7aoblNAj8Kj7iNTfsJhlEL4KEcE",
-  authDomain: "padak-todak.firebaseapp.com",
-  projectId: "padak-todak",
-  storageBucket: "padak-todak.appspot.com",
-  messagingSenderId: "22351664979",
-  appId: "1:22351664979:web:f8a3cc4b2f5e249d88b3a6",
-  databaseURL: "https://padak-todak-default-rtdb.asia-southeast1.firebasedatabase.app"
-
-};
-
-const firebaseApp = initializeApp(firebaseConfig);
-const database = getDatabase(firebaseApp);
-
+// Provide database instance for global access
 app.provide('firebaseDatabase', database);
-app.provide('firebase', firebaseApp);
 
-// 서비스 워커 등록
+// Register service worker for FCM
 if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('/firebase-messaging-sw.js')
-      .then((registration) => {
-        console.log('Service Worker registered with scope:', registration.scope);
-        app.use(router);
-        app.use(vuetify);
-        app.mount('#app');
-        
-      }).catch((error) =>{
-        console.error('service worker registration failed: ', error);
-      });
-  }else{
-    //서비스 워커가 지원되지 않는 경우에도 마운트...
-    console.log('서비스 워커가 지원되지 않지만 마운트 함...');
-    //서비스 워커가 지원되지 않는 경우에도 마운트...
-    // Vue 애플리케이션에 플러그인 및 라우터 설정
-    app.use(router);
-    app.use(vuetify);
-    // Vue 애플리케이션 마운트
-    app.mount('#app');
+  navigator.serviceWorker.register('/firebase-messaging-sw.js')
+    .then((registration) => {
+      console.log('Service Worker registered with scope:', registration.scope);
+    })
+    .catch((error) => {
+      console.error('Service Worker registration failed:', error);
+    });
+}
+
+// Request FCM token and set up foreground message listener on page load
+document.addEventListener("DOMContentLoaded", async () => {
+  await setupMessageListener();
+});
+
+// Notification permission request
+Notification.requestPermission().then((permission) => {
+  if (permission === 'granted') {
+    console.log('Notification permission granted.');
+  } else {
+    console.warn('Notification permission denied.');
   }
+});
 
-
-// axios 요청 인터셉터를 설정하여 모든 요청에 엑세스 토큰을 추가
+// Axios 인터셉터 설정
 axios.interceptors.request.use(
-    config => {
-        const token = localStorage.getItem('token');
-        if (token) {
-            config.headers['Authorization'] = `Bearer ${token}`;
-        }
-        return config;
-    },
-    error => {
-        console.error('Axios 요청 인터셉터 오류:', error);
-        return Promise.reject(error);
+  config => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      config.headers['Authorization'] = `Bearer ${token}`;
     }
+    return config;
+  },
+  error => {
+    console.error('Axios request interceptor error:', error);
+    return Promise.reject(error);
+  }
 );
 
-
-// axios 응답 인터셉터를 설정하여 401 오류 처리 및 토큰 갱신
-// axios.interceptors.response.use(
-//     response => response,
-//     async error => {
-//         if (error.response && error.response.status === 401) {
-//             const refreshToken = localStorage.getItem('refreshToken');
-
-//             if (refreshToken) {
-//                 try {
-//                     // 토큰 갱신 요청a
-//                     localStorage.removeItem('token');
-//                     const response = await axios.post(
-//                         `${process.env.VUE_APP_API_BASE_URL}/member/refresh-token`,
-//                         { refreshToken }
-//                     );
-//                     localStorage.setItem('token', response.data.result.token);
-//                     window.location.reload();
-//                 } catch (e) {
-//                     console.error('토큰 갱신 실패:', e);
-//                     localStorage.clear();
-//                     window.location.href = '/login';
-//                 }
-//             } else {
-//                 // 리프레시 토큰이 없는 경우 로그인 페이지로 리다이렉트
-//                 console.warn('리프레시 토큰이 없음, 로그인 페이지로 리다이렉트합니다.');
-//                 localStorage.clear();
-//                 window.location.href = '/login';
-//             }
-//         } else {
-//             console.error('Axios 응답 오류:', error);
-//         }
-//         return Promise.reject(error);
-//     }
-// );
-
-
-
 axios.interceptors.response.use(
-  (response) => {
-    // 응답 성공 시 처리
-    return response;
-  },
-  (error) => {
-    if (error.response && error.response.status === 403) {
-      // 403 에러 시 홈으로 리다이렉트
-      router.push({ name: 'HOME' }); // 'Home' 라우트 이름으로 리다이렉트
-    }
-    else if(error.response && error.response.status === 503){
-      router.push({ name: 'HOME'});
+  response => response,
+  async error => {
+    if (error.response && error.response.status === 401) {
+      const refreshToken = localStorage.getItem('refreshToken');
+
+      if (refreshToken) {
+        try {
+          localStorage.removeItem('token');
+          const response = await axios.post(
+            `${process.env.VUE_APP_API_BASE_URL}/member/refresh-token`,
+            { refreshToken }
+          );
+          localStorage.setItem('token', response.data.result.token);
+          window.location.reload();
+        } catch (e) {
+          console.error('Token refresh failed:', e);
+          localStorage.clear();
+          window.location.href = '/login';
+        }
+      } else {
+        console.warn('No refresh token found, redirecting to login page.');
+        localStorage.clear();
+        window.location.href = '/login';
+      }
+    } else if (error.response && error.response.status === 403) {
+      router.push({ name: 'HOME' });
+    } else if (error.response && error.response.status === 503) {
+      router.push({ name: 'HOME' });
+    } else {
+      console.error('Axios response error:', error);
     }
     return Promise.reject(error);
   }
 );
+
+// Vue app 마운트
+app.use(router);
+app.use(vuetify);
+app.mount('#app');

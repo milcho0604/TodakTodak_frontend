@@ -21,9 +21,6 @@
             의사 Q&A
           </v-btn>
         </v-col>
-
-
-
         <v-col cols="4" class="d-flex align-end justify-end text-no-wrap">
           <!-- <v-switch
           v-model="isDarkMode"
@@ -151,9 +148,11 @@
   </v-app-bar>
 </template>
 
-<script>
-import axios from 'axios'
 
+<script>
+// import { initFirebase } from "@/firebase";
+import axios from 'axios'
+import { removeFcmToken } from "@/firebase";
 export default {
   data() {
     return {
@@ -190,7 +189,8 @@ export default {
       this.applyFilter();
     }
   },
-  created() {
+  created(){
+    // initFirebase();
     this.memberId = localStorage.getItem("memberId");
     this.email = localStorage.getItem("email");
     const token = localStorage.getItem("token");
@@ -282,15 +282,39 @@ export default {
       window.location.href = 'http://localhost:8080/member-service/oauth2/authorization/kakao';
     },
     logout() {
+      console.log("Logout function called"); // 호출 여부 확인
+      
+      // 현재 사용자의 이메일 가져오기
+      const memberEmail = localStorage.getItem('email');
+      console.log("Retrieved email from localStorage:", memberEmail)
+      // 로그아웃 API 호출
+      
+      axios.post(`${process.env.VUE_APP_API_BASE_URL}/member-service/fcm/logout`, {
+        // axios.post('http://localhost:8080/member-service/fcm/logout', {
+          memberEmail: memberEmail
+      })
+      .then((response) => {
+        console.log(response.data); // 로그아웃 성공 메시지 출력
+
+
+      // 로컬 저장소에서 사용자 데이터 제거
+      removeFcmToken(); // Firebase FCM 토큰 삭제
       localStorage.removeItem('token');
-      localStorage.removeItem('fcmToken');
+      localStorage.removeItem('role');
+      localStorage.removeItem('profileImgUrl');
+      localStorage.removeItem('name');
+      console.log("After removal:", localStorage); // 삭제 후 localStorage 상태 확인
+
       this.isLogin = false;
-      this.$router.push('/');
+      window.location.href = "/";
+      })
+      .catch((error) => {
+        console.error("로그아웃에 실패했습니다:", error); // 로그아웃 실패 메시지
+      });
     },
+
     toChatList() {
-      // this.$router.push('/chat');
-      // ChatListComponent를 새로운 창에서 열기
-      const chatWindow = window.open(
+        const chatWindow = window.open(
         '/chat/my-chat/list',  // ChatListComponent가 렌더링될 URL
         '_blank',  // 새로운 창을 열기 위한 옵션
         'width=600,height=800'  // 창의 크기를 지정

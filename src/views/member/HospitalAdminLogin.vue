@@ -73,7 +73,8 @@
   <script>
   import axios from 'axios';
   import { jwtDecode } from "jwt-decode";
-  
+  import { requestFcmToken } from "@/firebase";
+
   export default {
     name: "LoginPage",
     data() {
@@ -94,32 +95,42 @@
     methods: {
       async doLogin() {
         try {
-          const loginData = {
-            memberEmail: this.memberEmail,
-            password: this.password,
-            rememberEmail: this.rememberEmail,
-            autoLogin: this.autoLogin,
-          };
-  
-          const response = await axios.post(`${process.env.VUE_APP_API_BASE_URL}/member-service/hospital/member/login`, loginData);
-          console.log(response)
-  
-          const token = response.data.result;
-          const decodedToken = jwtDecode(token);
-          const role = decodedToken.role;
-          const memberId = decodedToken.memberId;
-  
-          localStorage.setItem('token', token);
-          localStorage.setItem('role', role);
-          localStorage.setItem('memberId', memberId);
-          localStorage.setItem('email', this.memberEmail);
+   // Step 1: FCM 토큰 요청
+        const fcmToken = await requestFcmToken();
+        console.log('FCM Token for login:', fcmToken);
+
+        // Step 2: 로그인 데이터 준비
+        const loginData = {
+          memberEmail: this.memberEmail,
+          password: this.password,
+          fcmToken: fcmToken,
+          rememberEmail: this.rememberEmail,
+          autoLogin: this.autoLogin,
+        };
+
+        // Step 3: FCM 토큰을 포함하여 로그인 요청 전송
+        const response = await axios.post(`${process.env.VUE_APP_API_BASE_URL}/member-service/member/hospital/login`, loginData);
+
+        // Step 4: 로그인 성공 시 토큰과 사용자 정보 로컬에 저장
+        const token = response.data.result;
+        const decodedToken = jwtDecode(token);
+        const role = decodedToken.role;
+        const memberId = decodedToken.memberId;
+        
+
+        localStorage.setItem('token', token);
+        localStorage.setItem('role', role);
+        localStorage.setItem('memberId', memberId);
+        localStorage.setItem('email', this.memberEmail);
+        localStorage.setItem('fcmToken', fcmToken);
+
   
           if (this.rememberEmail) {
             localStorage.setItem('savedEmail', this.memberEmail);
           } else {
             localStorage.removeItem('savedEmail');
           }
-          window.location.href = "/";
+          // window.location.href = "/";
         } catch (e) {
           if (e.response?.status === 422) {
           alert('잘못된 이메일/비밀번호입니다.');

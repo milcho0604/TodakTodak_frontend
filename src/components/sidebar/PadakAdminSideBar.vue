@@ -1,56 +1,93 @@
 <template>
-    <v-navigation-drawer v-model="drawer" :rail="rail" permanent style="background-color: #3C3C3C;" @click="rail = false">
-        <v-list-item nav>
-            <template v-slot:prepend>
-                <v-avatar size="40" style="background-color: white;">
-                    <v-img :src="profileImgUrl" alt="Profile image"></v-img>
-                </v-avatar>
-            </template>
+    <v-navigation-drawer
+    v-model="drawer"
+    :rail="rail"
+    permanent
+    style="background-color: #3C3C3C;"
+    @click="rail = false"
+    >
+    <v-list-item
+        :prepend-avatar="profileImgUrl"
+        :title="name"
+        nav
+        class="todak-sidebar"
+    >
+        <template v-slot:append>
+        <v-btn
+            icon="mdi-chevron-left"
+            variant="text"
+            @click.stop="rail = !rail"
+        ></v-btn>
+        </template>
+    </v-list-item>
 
-            <v-list-item-title class="custom-avatar">{{ name }}</v-list-item-title>
+    <v-divider></v-divider>
 
-            <template v-slot:append>
-                <v-btn icon="mdi-chevron-left" variant="text" @click.stop="rail = !rail"></v-btn>
-            </template>
-        </v-list-item>
+    <v-list density="compact" nav>
+        <v-list-item
+        :prepend-avatar="statics"
+        title="대시보드"
+        value="dashboard"
+        class="todak-sidebar"
+        @click="toDashBoard"
+        ></v-list-item>
+        
+        <v-list-item
+        :prepend-avatar="member"
+        title="회원 리스트"
+        value="memberList"
+        class="todak-sidebar"
+        @click="toMemberList"
+        ></v-list-item>
 
-        <v-divider></v-divider>
+        <v-list-item
+        :prepend-avatar="cs"
+        title="고객상담 채팅"
+        value="csChat"
+        class="todak-sidebar"
+        @click="toCsChat"
+        ></v-list-item>
 
-        <v-list density="compact" nav>
-            <v-list-item :prepend-avatar="calendar" title="대시보드" value="calendar" @click="toDashBoard"
-                class="custom-avatar">
-            </v-list-item>
+        <v-list-item
+        :prepend-avatar="reservation"
+        title="상담 리스트"
+        value="csList"
+        class="todak-sidebar"
+        @click="toCsList"
+        ></v-list-item>
 
-            <v-list-item :prepend-avatar="myPage" title="회원 목록" value="myPage" @click="toMemberList"
-                class="custom-avatar">
+        <v-list-item
+        :prepend-avatar="siren"
+        title="신고 리스트"
+        value="reportList"
+        class="todak-sidebar"
+        @click="toReportList"
+        ></v-list-item>
 
-            </v-list-item>
+        <v-list-item
+        :prepend-avatar="pay"
+        title="결제 리스트"
+        value="payList"
+        class="todak-sidebar"
+        @click="toPaymentList"
+        ></v-list-item>
 
-            <v-list-item :prepend-avatar="child" title="상담 목록" value="childConfig" @click="toCsList"
-                class="custom-avatar">
-
-            </v-list-item>
-
-            <v-list-item :prepend-avatar="child" title="신고 목록" value="childConfig" @click="toReportList"
-                class="custom-avatar">
-
-            </v-list-item>
-
-            <v-list-item :prepend-avatar="hospital" title="결제 목록" value="reservation" @click="toPaymentList"
-                class="custom-avatar">
-            </v-list-item>
-
-            <v-list-item :prepend-avatar="review" title="병원" value="review" @click="toHospitalList"
-                class="custom-avatar"></v-list-item>
-        </v-list>
+        <v-list-item
+        :prepend-avatar="hospital"
+        title="병원 리스트"
+        value="hospitalList"
+        class="todak-sidebar"
+        @click="toHospitalList"
+        ></v-list-item>
+    </v-list>
     </v-navigation-drawer>
     <v-main style="height: 250px"></v-main>
 </template>
 <script>
 
-export default {
-    data() {
-        return {
+export default{
+    data(){
+        return{
             drawer: true,
             rail: true,
             name: '',
@@ -63,17 +100,24 @@ export default {
             reservation: 'https://todak-file.s3.ap-northeast-2.amazonaws.com/default-images/reservation-icon.png',
             review: 'https://todak-file.s3.ap-northeast-2.amazonaws.com/default-images/review-icon.png',
             hospital: 'https://todak-file.s3.ap-northeast-2.amazonaws.com/default-images/hospital-icon.png',
+            pay: 'https://todak-file.s3.ap-northeast-2.amazonaws.com/default-images/pay-removebg-preview.png',
+            member: 'https://todak-file.s3.ap-northeast-2.amazonaws.com/default-images/default_user_image.png',
+            siren: 'https://todak-file.s3.ap-northeast-2.amazonaws.com/default-images/siren-image.png',
+            statics: 'https://todak-file.s3.ap-northeast-2.amazonaws.com/default-images/statics-image.png',
         }
     },
-    created() {
+    created(){
         this.name = localStorage.getItem("name");
         this.profileImgUrl = localStorage.getItem("profileImgUrl");
     },
-    methods: {
+    methods:{
         toMemberList() {
             this.$router.push('/admin/member/list');
         },
-        toCsList() {
+        toCsChat() {
+            this.$router.push('/admin/cs/center');
+        },
+        toCsList(){
             this.$router.push('/admin/cs/list')
         },
         toReportList() {
@@ -92,12 +136,9 @@ export default {
 }
 </script>
 <style scoped>
-.custom-avatar .v-list-item__prepend {
-    background-color: white !important;
-    /* 흰색으로 변경 */
+.todak-sidebar {
+    color: #ffffff;
+    font-weight: bold;
 }
-
-.custom-avatar {
-    color: white;
-}
+  
 </style>
