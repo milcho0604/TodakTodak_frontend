@@ -11,7 +11,7 @@
         </v-col>
 
         <v-col class="d-flex flex-row justify-start text-no-wrap" cols="6">
-          <v-btn class="custom-button" @click="$router.push('/all/hospital/list')"> 
+          <v-btn class="custom-button" @click="$router.push('/all/hospital/list')">
             주변소아과
           </v-btn>
           <v-btn class="custom-button" @click="$router.push('/all/untact/list')">
@@ -21,8 +21,6 @@
             의사 Q&A
           </v-btn>
         </v-col>
-
-        
         <v-col cols="4" class="d-flex align-end justify-end text-no-wrap">
           <!-- <v-switch
           v-model="isDarkMode"
@@ -30,99 +28,67 @@
           label="Dark Mode"
           @change="toggleDarkMode"
         ></v-switch> -->
+
+
           <!-- 알림 드롭다운 아이콘 -->
-          <v-menu
-          v-model="notificationMenu"
-          offset-y
-          attach="body" 
-          :style="{ position: 'fixed', left: '75%', zIndex: '9999', top: '60px',}"
-          :close-on-content-click="false" 
-          class="fixed-menu-size"
-        >
-        
+          <v-menu v-model="notificationMenu" offset-y attach="body"
+            :style="{ position: 'fixed', left: '75%', zIndex: '9999', top: '60px', }" :close-on-content-click="false"
+            class="fixed-menu-size">
+
             <template v-slot:activator="{ on, attrs }">
-              <v-btn icon v-bind="attrs" v-on="on" @click="toggleNotificationMenu">
-                <v-icon>mdi-bell</v-icon>
-                <v-badge color="red" :content="unreadCount" overlap></v-badge> <!-- 읽지 않은 알림 수 표시 -->
+              <v-btn icon v-bind="attrs" v-on="on" @click="toggleNotificationMenu" class="mb-1">
+                <div v-if="unreadCount > 0">
+                  <v-icon>mdi-bell</v-icon>
+                  <v-badge color="red" :content="unreadCount" overlap></v-badge> <!-- 읽지 않은 알림 수 표시 -->
+                </div>
+                <div v-else><v-icon>mdi-bell-outline</v-icon></div>
               </v-btn>
             </template>
 
             <!-- 알림 목록 -->
-            <v-list>
+            <v-list style="background-color: transparent; backdrop-filter: blur(1px); box-shadow: none !important;">
               <!-- 필터링 버튼 -->
               <v-row justify="end" class="my-2 mr-1">
-                <v-chip
-                  v-for="option in filterOptions"
-                  :key="option.value"
-                  @click="setFilter(option.value)"
-                  :class="{ 'v-chip--active': filter === option.value }"
-                  class="my-2 mr-2"
-                  outlined
-                >
+                <v-chip v-for="option in filterOptions" :key="option.value" @click="setFilter(option.value)"
+                  :class="{ 'v-chip--active': filter === option.value }" class="my-2 mr-2" outlined>
                   {{ option.text }}
                 </v-chip>
               </v-row>
 
               <!-- 필터링된 알림이 있을 때 -->
               <template v-if="filteredNotifications.length > 0">
-                <v-list-item 
-                v-for="(notification, index) in filteredNotifications" 
-                :key="index" 
-                @click="handleNotificationClick(notification)"
-                :class="{ 'read-notification': notification.read }" 
-                class="fixed-list-size"
-              >
-                <v-card class="notification-card d-flex align-center">
-                  <!-- 알림 타입에 따른 이미지 표시 -->
-                  <v-img
-                  v-if="notification.type === 'RESERVATION_NOTIFICATION' || notification.type === 'RESERVATION_WAITING'"
-                  src="https://todak-file.s3.ap-northeast-2.amazonaws.com/default-images/hospital-icon.png"
-                  width="24"
-                  height="24"
-                  class="mr-2 fixed-img"
-                />
-                <v-img
-                  v-else-if="notification.type === 'POST' || notification.type === 'COMMENT'"
-                  src="@/assets/community.png"
-                  width="24"
-                  height="24"
-                  class="mr-2 fixed-img"
-                />
-                <v-img
-                  v-else-if="notification.type === 'PAYMENT'"
-                  src="https://todak-file.s3.ap-northeast-2.amazonaws.com/default-images/pay-removebg-preview.png"
-                  width="24"
-                  height="24"
-                  class="mr-2 fixed-img"
-                />
-                <v-img
-                  v-else-if="notification.type === 'CHILD'"
-                  src="https://todak-file.s3.ap-northeast-2.amazonaws.com/default-images/baby-removebg-preview.png"
-                  width="24"
-                  height="24"
-                  class="mr-2 fixed-img"
-                />
-                <v-img
-                  v-else-if="notification.type === 'CHAT'"
-                  src="@/assets/cs_center_image.png"
-                  width="24"
-                  height="24"
-                  class="mr-2 fixed-img"
-                />
-                
-                  
-                  <!-- 알림 제목과 내용 -->
-                  <v-list-item-content>
-                    <v-list-item-title>{{ notification.title }}</v-list-item-title>
-                    <v-list-item-title class="small-font">{{ notification.content }}</v-list-item-title>
-                    <v-list-item-subtitle class="small-font">
-                      {{ formatDate(notification.createdAt) }} 
-                      <span v-if="notification.read"> | 읽음</span>
-                    </v-list-item-subtitle>
-                  </v-list-item-content>
-                </v-card>
-              </v-list-item>
-                       
+                <v-list-item v-for="(notification, index) in filteredNotifications" :key="index"
+                  @click="handleNotificationClick(notification)" :class="{ 'read-notification': notification.read }"
+                  class="fixed-list-size">
+                  <v-card class="notification-card d-flex align-center">
+                    <!-- 알림 타입에 따른 이미지 표시 -->
+                    <v-img
+                      v-if="notification.type === 'RESERVATION_NOTIFICATION' || notification.type === 'RESERVATION_WAITING'"
+                      src="https://todak-file.s3.ap-northeast-2.amazonaws.com/default-images/hospital-icon.png"
+                      width="24" height="24" class="mr-2 fixed-img" />
+                    <v-img v-else-if="notification.type === 'POST' || notification.type === 'COMMENT'"
+                      src="@/assets/community.png" width="24" height="24" class="mr-2 fixed-img" />
+                    <v-img v-else-if="notification.type === 'PAYMENT'"
+                      src="https://todak-file.s3.ap-northeast-2.amazonaws.com/default-images/pay-removebg-preview.png"
+                      width="24" height="24" class="mr-2 fixed-img" />
+                    <v-img v-else-if="notification.type === 'CHILD'"
+                      src="https://todak-file.s3.ap-northeast-2.amazonaws.com/default-images/baby-removebg-preview.png"
+                      width="24" height="24" class="mr-2 fixed-img" />
+                    <v-img v-else-if="notification.type === 'CHAT'" src="@/assets/cs_center_image.png" width="24"
+                      height="24" class="mr-2 fixed-img" />
+
+                    <!-- 알림 제목과 내용 -->
+                    <v-list-item-content>
+                      <v-list-item-title style="font-weight: 600" class="mt-1">{{ notification.title
+                        }}</v-list-item-title>
+                      <v-list-item-title class="small-font ">{{ notification.content }}</v-list-item-title>
+                      <v-list-item-subtitle class="small-font mb-1">
+                        {{ formatDate(notification.createdAt) }}
+                        <span v-if="notification.read"> | 읽음</span>
+                      </v-list-item-subtitle>
+                    </v-list-item-content>
+                  </v-card>
+                </v-list-item>
               </template>
 
               <!-- 필터링된 알림이 없을 때 -->
@@ -133,10 +99,8 @@
                   </v-card>
                 </v-list-item>
               </template>
-
-              <v-divider></v-divider>
               <v-list-item @click="$router.push('/member/notification/list')">
-                <v-card class="notification-card">
+                <v-card class="notification-card-to-all">
                   <v-list-item-title>모든 알림 보기</v-list-item-title>
                 </v-card>
               </v-list-item>
@@ -157,16 +121,16 @@
               <v-list-item :href="`/member/mypage/reservation`">
                 <v-list-item-title>나의 예약내역</v-list-item-title>
               </v-list-item>
-              <v-list-item :to="{ path: '/member/mypage'}">
+              <v-list-item :to="{ path: '/member/mypage' }">
                 <v-list-item-title>마이 페이지</v-list-item-title>
               </v-list-item>
-              <v-list-item :to="{ path: '/member/child'}">
+              <v-list-item :to="{ path: '/member/child' }">
                 <v-list-item-title>자녀 관리</v-list-item-title>
               </v-list-item>
               <v-list-item @click="toChatList">
                 <v-list-item-title>내 채팅</v-list-item-title>
               </v-list-item>
-              <v-list-item :to="{ path: '/member/mychild-cal'}">
+              <v-list-item :to="{ path: '/member/mychild-cal' }">
                 <v-list-item-title>우리아이 캘린더</v-list-item-title>
               </v-list-item>
               <v-list-item @click="logout">
@@ -174,7 +138,7 @@
               </v-list-item>
             </v-list>
           </v-menu>
-          
+
           <v-btn v-if="!isLogin" @click="kakaoLogin">
             <img src="@/assets/kakao_login_small.png" alt="카카오로그인 버튼">
           </v-btn>
@@ -214,6 +178,7 @@ export default {
   },
   watch: {
     notificationMenu(val) {
+      console.log("바ㄱ귐");
       if (val) {
         // 팝업이 열릴 때 필터링된 알림 목록 새로 설정
         this.applyFilter();
@@ -229,7 +194,7 @@ export default {
     this.memberId = localStorage.getItem("memberId");
     this.email = localStorage.getItem("email");
     const token = localStorage.getItem("token");
-    if(token){
+    if (token) {
       this.isLogin = true;
       this.loadUserProfile();
       this.fetchNotifications();
@@ -239,17 +204,17 @@ export default {
     this.$vuetify.theme.global.name = this.isDarkMode ? "dark" : "light";
   },
   methods: {
-    async loadUserProfile(){
-      try{
+    async loadUserProfile() {
+      try {
         const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/member-service/member/id/${this.memberId}`);
         this.name = response.data.result.name;
         this.role = response.data.result.role;
-        this.profileImgUrl = response.data.result.profileImgUrl 
-            ? response.data.result.profileImgUrl
-            : "https://todak-file.s3.ap-northeast-2.amazonaws.com/default-images/default_user_image.png";
+        this.profileImgUrl = response.data.result.profileImgUrl
+          ? response.data.result.profileImgUrl
+          : "https://todak-file.s3.ap-northeast-2.amazonaws.com/default-images/default_user_image.png";
         localStorage.setItem('name', this.name);
         localStorage.setItem('profileImgUrl', this.profileImgUrl);
-      } catch(error) {
+      } catch (error) {
         console.error("사용자 프로필 loading error : ", error);
       }
     },
@@ -283,6 +248,7 @@ export default {
       } else {
         this.filteredNotifications = this.notifications;
       }
+      console.log(this.filteredNotifications);
     },
     async handleNotificationClick(notification) {
       if (!notification.read) {
@@ -352,12 +318,12 @@ export default {
         '/chat/my-chat/list',  // ChatListComponent가 렌더링될 URL
         '_blank',  // 새로운 창을 열기 위한 옵션
         'width=600,height=800'  // 창의 크기를 지정
-        );
+      );
 
-        if (!chatWindow) {
+      if (!chatWindow) {
         alert('팝업이 차단되었습니다. 팝업 차단 설정을 해제해주세요.');
-        }
-     },
+      }
+    },
   }
 };
 </script>
@@ -393,11 +359,22 @@ export default {
 
 /* 알림 카드의 투명도 적용 */
 .notification-card {
-  background-color: #f4f2f2!important;
+  background-color: rgba(244, 242, 242, 0.9) !important;
   color: black !important;
   border-radius: 20px;
   padding: 10px;
-  margin-bottom: 5px;
+  margin-bottom: 1px;
+}
+
+.notification-card-to-all {
+  background-color: rgba(244, 242, 242, 0.9) !important;
+  color: rgb(65, 65, 65) !important;
+  width: 160px;
+  font-size: 14px;
+  border-radius: 20px;
+  padding: 6px;
+  text-align: center;
+  margin: 2px auto;
 }
 
 /* 읽은 알림 배경색 */
@@ -408,34 +385,44 @@ export default {
 .v-chip--active {
   background-color: #C2D7FF;
   color: #00499E;
+  font-weight: bold;
 }
 
 .fixed-menu-size {
-  width: 450px; /* 너비 고정 */
-  max-height: 500px; /* 최대 높이 고정 */
-  overflow-y: auto; /* 스크롤 가능하게 설정 */
+  width: 450px;
+  /* 너비 고정 */
+  max-height: 460px;
+  /* 최대 높이 고정 */
+  overflow-y: auto;
+  /* 스크롤 가능하게 설정 */
 }
 
 .fixed-list-size {
-  width: 350px !important; /* 너비 고정 */
-  max-height: 500px; /* 최대 높이 고정 */
-  overflow-y: auto; /* 스크롤 가능하게 설정 */
+  width: 350px !important;
+  /* 너비 고정 */
+  max-height: 500px;
+  /* 최대 높이 고정 */
+  overflow-y: auto;
+  /* 스크롤 가능하게 설정 */
 }
 
 .small-font {
-  font-size: 12px; /* 원하는 크기로 설정 */
+  font-size: 13px;
+  /* 원하는 크기로 설정 */
 }
+
 .fixed-img {
   width: 24px !important;
   height: 24px !important;
-  object-fit: contain !important; /* 이미지가 지정된 크기 안에서 잘리더라도 꽉 차도록 */
+  object-fit: contain !important;
+  /* 이미지가 지정된 크기 안에서 잘리더라도 꽉 차도록 */
   max-width: 24px;
-  max-height: 24px; 
+  max-height: 24px;
 }
+
 .v-img__img--contain {
   width: 24px !important;
   height: 24px !important;
   object-fit: contain !important;
 }
-
 </style>
