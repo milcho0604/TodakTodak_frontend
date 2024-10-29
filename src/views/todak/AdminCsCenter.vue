@@ -175,7 +175,7 @@
     <v-dialog
     v-model="csPostModal"
     width="auto"
-  >
+    >
     <v-card
       max-width="400"
       :prepend-avatar="cs"
@@ -192,6 +192,7 @@
       </template>
     </v-card>
   </v-dialog>
+  <v-spacer :style="{ height: '50px' }"></v-spacer>
   </v-container>
   <MyPageSideBar />
 </template>
@@ -547,7 +548,7 @@ export default {
 
 .chat-box {
   flex: 1; /* 남은 공간을 차지하게 설정 */
-  height: 670px !important; /* .cschat-box 높이에서 padding-bottom을 뺀 값으로 설정 */
+  height: 700px !important; /* .cschat-box 높이에서 padding-bottom을 뺀 값으로 설정 */
   overflow-y: auto; /* 스크롤 가능하게 설정 */
   width: 100%;
   margin: 0 auto !important;
@@ -655,7 +656,7 @@ button {
   background-color: white;
   margin-top: 20px;
   border-radius: 10px;
-  min-height: 330px;
+  min-height: 470px;
 }
 
 .subtitle {
