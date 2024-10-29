@@ -64,7 +64,8 @@
 실시간 진료 예약 및 비대면 진료 시스템의 구축은 저출산과 소아청소년과 폐지 문제로 인한 소아과 진료의 어려움을 해결하는 데 효과적인 방법입니다. 이 시스템을 통해 부모와 의료
 
 ## 🥕요구사항정의서🥕
-[토닥토닥 요구사항정의 - 시트1.pdf](https://github.com/user-attachments/files/16960875/-.1.pdf)🐶
+[토닥토닥 요구사항정의](https://github.com/user-attachments/files/16960875/-.1.pdf)<br>
+🐶
 [토닥토닥 요구사항정의 링크](https://docs.google.com/spreadsheets/d/1cADwkU7hRr3ORXeoPF6agGtAuPji-jDmKSRgDJrVxoQ/edit?usp=sharing)
 
 ## 화면 설계서
@@ -119,8 +120,8 @@
 ## 스택
 
 ### BACKEND
-<img src="https://img.shields.io/badge/Spring-green?style=for-the-badge&logo=Spring&logoColor=white"><img src="https://img.shields.io/badge/Spring Boot-6DB33F?style=for-the-badge&logo=Spring Boot&logoColor=white"><img src="https://img.shields.io/badge/Springsecurity-6DB33F?style=for-the-badge&logo=springsecurity&logoColor=white">
-<img src="https://img.shields.io/badge/Spring Data JPA -13C100?style=for-the-badge&logo=Spring Boot&logoColor=white"><img src="https://img.shields.io/badge/websocket-010101?style=for-the-badge&logo=socketdotio&logoColor=white"><img src="https://img.shields.io/badge/redis-FF4438?style=for-the-badge&logo=redis&logoColor=white"><img src="https://img.shields.io/badge/apachekafka-231F20?style=for-the-badge&logo=apachekafka&logoColor=white"><img src="https://img.shields.io/badge/mariadb-003545?style=for-the-badge&logo=mariadb&logoColor=white"><img src="https://img.shields.io/badge/docker-2496ED?style=for-the-badge&logo=docker&logoColor=white">
+<img src="https://img.shields.io/badge/Spring-green?style=for-the-badge&logo=Spring&logoColor=white"> <img src="https://img.shields.io/badge/Spring Boot-6DB33F?style=for-the-badge&logo=Spring Boot&logoColor=white"> <img src="https://img.shields.io/badge/Springsecurity-6DB33F?style=for-the-badge&logo=springsecurity&logoColor=white">
+<img src="https://img.shields.io/badge/Spring Data JPA -13C100?style=for-the-badge&logo=Spring Boot&logoColor=white"> <img src="https://img.shields.io/badge/websocket-010101?style=for-the-badge&logo=socketdotio&logoColor=white"> <img src="https://img.shields.io/badge/redis-FF4438?style=for-the-badge&logo=redis&logoColor=white"> <img src="https://img.shields.io/badge/apachekafka-231F20?style=for-the-badge&logo=apachekafka&logoColor=white"> <img src="https://img.shields.io/badge/mariadb-003545?style=for-the-badge&logo=mariadb&logoColor=white"> <img src="https://img.shields.io/badge/docker-2496ED?style=for-the-badge&logo=docker&logoColor=white"> 
 ![Firebase](https://img.shields.io/badge/firebase-%23039BE5.svg?style=for-the-badge&logo=firebase)
 
 
@@ -180,7 +181,7 @@
   <img src="https://github.com/user-attachments/assets/d4dea919-bc8b-4700-8109-1464b894a851">
 </details>
 
-#### 👶 자녀 등록 및 수정 삭제
+#### 👶 자녀 등록 및 수정 삭제, 공유
 <details>
   <summary>자녀 정보 추가 : 유효한 주민번호 입력</summary>
   <img src="https://github.com/user-attachments/assets/f8299dc4-b66b-4db9-91fd-ac7b4af53f1b">
@@ -196,13 +197,12 @@
   <img src="https://github.com/user-attachments/assets/0852970d-4092-43a0-b725-4b3cd13eb828">
 </details>
 
-#### 👶 자녀 공유
 <details>
   <summary>자녀 공유</summary>
   <img src="https://github.com/user-attachments/assets/d3b4d2f2-852d-411c-8148-d4e6a0ddc8e0">
 </details>
 
-### 📆공유 캘린더
+### 📆 공유 캘린더
 
 <details>
   <summary>공유 캘린더 조회</summary>
@@ -238,7 +238,7 @@
 
 ### 🏥 진료 예약
 
-#### -당일 예약-
+#### - 당일 예약 -
 <details>
   <summary>오늘 예약 - 예방접종 예약</summary>
   <img src="https://github.com/user-attachments/assets/cafc6cc2-47d8-424c-bc93-9ab43dc8ad91">
@@ -249,7 +249,8 @@
   <img src="https://github.com/user-attachments/assets/dec7a7a6-e093-4e34-95b5-d1c9312907e3">
 </details>
 
-#### -스케쥴 예약-
+
+#### - 스케쥴 예약 -
 
 <details>
   <summary>스케쥴 예약 - 일반진료 예약</summary>
@@ -261,7 +262,7 @@
   <img src="https://github.com/user-attachments/assets/7b67df23-8234-498a-9016-2bcd6c9543d6">
 </details>
 
-#### -비대면 진료-
+#### - 비대면 진료 -
 
 <details>
   <summary>비대면 진료 - 접수</summary>
@@ -312,6 +313,81 @@
   <img src="https://github.com/user-attachments/assets/a817538a-7a05-49cf-b2b4-a3c161839bdb">
 </details>
 
+<details>
+  <summary>이름 검색</summary>
+  <img src="https://github.com/user-attachments/assets/dc2f5b5f-dfed-45f0-a729-1c922c44b06d">
+</details>
+
+<details>
+  <summary>거리순,별점,리뷰순조회</summary>
+  <img src="https://github.com/user-attachments/assets/9f696232-b29c-4038-81a0-d91619e5fbd9">
+</details>
+
+
+
+### 👥 커뮤니티
+
+<details>
+  <summary>게시글 작성</summary>
+  <img src="https://github.com/user-attachments/assets/916eb341-da6f-4fb8-8d6e-31ab9c6a22e5">
+</details>
+
+<details>
+  <summary>게시글 수정</summary>
+  <img src="https://github.com/user-attachments/assets/fc6a1745-859d-4d1f-b963-352b0282dff6">
+</details>
+
+<details>
+  <summary>게시글 삭제</summary>
+  <img src="https://github.com/user-attachments/assets/043a2c78-fac4-4fca-a053-f1e1996f0158">
+</details>
+<br>
+<details>
+  <summary>댓글 작성</summary>
+  <img src="https://github.com/user-attachments/assets/1be2df1d-48ef-4e19-8a76-1a8def72b242">
+</details>
+
+<details>
+  <summary>댓글 작성- 권한관리</summary>
+  <img src="https://github.com/user-attachments/assets/2485f70f-1ae2-4bbc-b753-4e8fc0855b38">
+</details>
+
+<details>
+  <summary>댓글 수정</summary>
+  <img src="https://github.com/user-attachments/assets/b3545f25-a343-4b3b-90bd-424387e5b060">
+</details>
+
+<details>
+  <summary>댓글 삭제</summary>
+  <img src="https://github.com/user-attachments/assets/c53b8a72-2005-47d5-8e94-19980c940d6c">
+</details>
+
+<br>
+<details>
+  <summary>게시글 신고</summary>
+  <img src="https://github.com/user-attachments/assets/e8dfd069-3fd1-4675-ba59-d5ec031c465c">
+</details>
+
+<details>
+  <summary>댓글 신고</summary>
+  <img src="https://github.com/user-attachments/assets/409ef23c-d372-4d1b-afb9-f224bca8c0f4">
+</details>
+
+<details>
+  <summary>대댓글 신고</summary>
+  <img src="https://github.com/user-attachments/assets/1c2a4b47-dad0-4b31-8b4c-b846ad792d19">
+</details>
+<br>
+<details>
+  <summary>게시글 조회수 정렬</summary>
+  <img src="https://github.com/user-attachments/assets/1d585d78-1653-455a-bae8-8d36f21b20d7">
+</details>
+
+<details>
+  <summary>게시글 최신순 정렬</summary>
+  <img src="https://github.com/user-attachments/assets/e4224455-3b52-4482-940d-617837112574">
+</details>
+
 
 ### 👨‍⚕️ 의사
 
@@ -325,6 +401,16 @@
 <details>
   <summary>의사 이메일 로그인</summary>
   <img src="https://github.com/user-attachments/assets/9ec6f87c-5ad2-4a32-b9a1-4c755e0ddcc8">
+</details>
+
+<details>
+  <summary>의사 비대면진료 예약내역 조회</summary>
+  <img src="https://github.com/user-attachments/assets/b08a86e6-dd30-441d-9e4a-bd402deecfd0">
+</details>
+
+<details>
+  <summary>의사 비대면진료 예약내역 취소</summary>
+  <img src="https://github.com/user-attachments/assets/1cfc318c-377c-4d2d-ae81-97f44deecbaf">
 </details>
 
 ### 🧑‍💼 병원 관리자
@@ -396,6 +482,39 @@
 <details>
   <summary>의사 근무시간 삭제</summary>
   <img src="https://github.com/user-attachments/assets/6e375089-cc3a-4af5-8b6b-d52ccc921a60">
+</details>
+
+<details>
+  <summary>의사 근무시간 - 병원 영업시간 초과 불가</summary>
+  <img src="https://github.com/user-attachments/assets/34b0df21-57b4-4669-b568-757293d126e3">
+</details>
+
+<details>
+  <summary>>의사 근무시간 - 중복요일 저장 불가</summary>
+  <img src="https://github.com/user-attachments/assets/d9c5af9b-ddb0-4b72-8e15-038e8e031919">
+</details>
+
+#### ✅ 예약 접수 및 취소
+
+
+<details>
+  <summary>오늘 예약 접수</summary>
+  <img src="https://github.com/user-attachments/assets/3e8a2990-7501-4e47-bdb8-f40757a70fa0">
+</details>
+
+<details>
+  <summary>스케쥴 예약 접수</summary>
+  <img src="https://github.com/user-attachments/assets/8c7a13b9-70e4-4799-a931-68c997fa3d23">
+</details>
+
+<details>
+  <summary>오늘 예약 취소</summary>
+  <img src="https://github.com/user-attachments/assets/015c2d4e-274a-427b-ad4a-539b02412a83">
+</details>
+
+<details>
+  <summary>스케쥴 예약 취소</summary>
+  <img src="https://github.com/user-attachments/assets/20fd34a4-c8f9-4a19-b917-faef18fa3c27">
 </details>
 
 #### 📣 예약 알림
