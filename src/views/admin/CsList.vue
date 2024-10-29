@@ -66,7 +66,7 @@
                             </td>
                             <td>{{ cs.chatRoomId }}</td>
                             <td>
-                                <v-icon @click="nextLevel(cs.id)">mdi-chevron-right</v-icon> <!-- Vuetify 아이콘, 필요에 따라 다른 화살표 아이콘 사용 가능 -->
+                                <v-icon @click="nextLevel(cs.chatRoomId)">mdi-chevron-right</v-icon> <!-- Vuetify 아이콘, 필요에 따라 다른 화살표 아이콘 사용 가능 -->
                             </td>
                         </tr>
                     </tbody>
@@ -113,7 +113,7 @@ export default {
             try {
                 const params = {
                     page: this.page - 1, // 페이지는 0부터 시작
-                    size: 3, // 페이지당 5개씩
+                    size: 10, // 페이지당 5개씩
                     csStatus: this.filterCsStatus !== 'all' ? this.filterCsStatus : null,
                     query: this.searchQuery || null, // 검색어를 이메일 또는 이름에 적용
                 };
@@ -155,8 +155,17 @@ export default {
             this.page = 1; // 검색어 입력 시 페이지를 1로 초기화
             this.fetchCsList(); // 검색어에 맞는 목록 가져오기
         },
-        nextLevel(csId) {
-            this.$router.push(`/admin/cd/detail/${csId}`); // 병원의 id를 사용하여 상세 페이지로 이동
+        nextLevel(chatRoomId) {
+            // 해당 채팅방 새창띄우기
+            const chatWindow = window.open(
+            `/chat/${chatRoomId}`,  // ChatListComponent가 렌더링될 URL
+            '_blank',  // 새로운 창을 열기 위한 옵션
+            'width=600,height=800'  // 창의 크기를 지정
+            );
+
+            if (!chatWindow) {
+            alert('팝업이 차단되었습니다. 팝업 차단 설정을 해제해주세요.');
+            }
         },
     },
     watch: {
