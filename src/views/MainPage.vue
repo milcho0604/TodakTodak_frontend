@@ -1,9 +1,9 @@
 <template>
   <v-app>
-    <v-container style="width: 100%;" fluid>
+    <v-container style="width: 100%;" class="no-padding" fluid>
       <div class="banner">
         <!-- 배너 carousel -->
-        <v-carousel class="custom-carousel" show-arrows="hover" cycle hide-delimiter-background>
+        <v-carousel class="custom-carousel no-padding" show-arrows="hover" cycle hide-delimiter-background>
           <v-carousel-item v-for="(slide, i) in slides" :key="i">
             <v-img :src="slide" class="carousel-image" cover></v-img>
             <span class="inner-text inter-bold">스마트한 병원의 선택, 토닥</span>
@@ -447,10 +447,18 @@ body {
   margin: 0;
 }
 
+.no-padding {
+  padding: 0 !important;
+}
+
 
 .custom-carousel {
   width: 100%;
   height: auto;
+}
+
+.custom-carousel .v-carousel__item {
+  padding: 0 !important; /* 각 carousel item의 padding 제거 */
 }
 
 .post-card {
@@ -524,6 +532,8 @@ body {
   width: 100%;
   filter: brightness(0.7);
   /* 이미지의 밝기를 50%로 줄임 */
+  height: 100vh; /* 화면 높이를 100%로 설정 */
+  object-fit: cover; /* 이미지를 요소의 크기에 맞게 채움 */
 }
 
 .inner-text {
