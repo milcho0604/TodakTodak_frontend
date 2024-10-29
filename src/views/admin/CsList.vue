@@ -84,12 +84,17 @@
             ></v-pagination>
         </v-row>
     </v-container>
+    <PadakAdminSideBar/>
 </template>
 
 <script>
 import axios from 'axios';
+import PadakAdminSideBar from '@/components/sidebar/PadakAdminSideBar.vue';
 
 export default {
+    components: {
+        PadakAdminSideBar,
+    },
     data() {
         return {
             csList: [], // 전체 상담 내역 목록

@@ -3,13 +3,14 @@
     v-model="drawer"
     :rail="rail"
     permanent
-    style="background-color: #ECF2FE;"
+    style="background-color: #3C3C3C;"
     @click="rail = false"
     >
     <v-list-item
         :prepend-avatar="profileImgUrl"
         :title="name"
         nav
+        class="todak-sidebar"
     >
         <template v-slot:append>
         <v-btn
@@ -27,6 +28,7 @@
         :prepend-avatar="statics"
         title="대시보드"
         value="dashboard"
+        class="todak-sidebar"
         @click="toDashBoard"
         ></v-list-item>
         
@@ -34,6 +36,7 @@
         :prepend-avatar="member"
         title="회원리스트"
         value="memberList"
+        class="todak-sidebar"
         @click="toMemberList"
         ></v-list-item>
 
@@ -41,6 +44,7 @@
         :prepend-avatar="cs"
         title="고객상담채팅"
         value="csChat"
+        class="todak-sidebar"
         @click="toCsChat"
         ></v-list-item>
 
@@ -48,6 +52,7 @@
         :prepend-avatar="reservation"
         title="상담리스트"
         value="csList"
+        class="todak-sidebar"
         @click="toCsList"
         ></v-list-item>
 
@@ -55,6 +60,7 @@
         :prepend-avatar="siren"
         title="신고리스트"
         value="reportList"
+        class="todak-sidebar"
         @click="toReportList"
         ></v-list-item>
 
@@ -62,6 +68,7 @@
         :prepend-avatar="pay"
         title="결제리스트"
         value="payList"
+        class="todak-sidebar"
         @click="toPaymentList"
         ></v-list-item>
 
@@ -69,6 +76,7 @@
         :prepend-avatar="hospital"
         title="병원리스트"
         value="hospitalList"
+        class="todak-sidebar"
         @click="toHospitalList"
         ></v-list-item>
     </v-list>
@@ -128,5 +136,8 @@ export default{
 }
 </script>
 <style scoped>
+.todak-sidebar {
+    color: #ffffff;
+}
   
 </style>

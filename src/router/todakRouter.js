@@ -16,6 +16,7 @@ export const todakRouter = [
         component: AdminStatistics
     },
     {
+        // 신고목록
         path: '/admin/todak/report',
         name: 'ReportList',
         component: ReportList
@@ -51,7 +52,7 @@ export const todakRouter = [
         component: CsList
     },
     {
-        // admin 고객센터 dashboard
+        // admin 고객센터 채팅 + CS관리
         path: '/admin/cs/center',
         name: 'AdminCsCenter',
         component: AdminCsCenter,
