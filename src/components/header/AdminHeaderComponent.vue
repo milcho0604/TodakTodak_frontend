@@ -1,5 +1,5 @@
 <template>
-  <v-app-bar app scroll-behavior="elevate">
+  <v-app-bar app scroll-behavior="elevate" style="background-color: #FFEEF0;">
     <v-container fluid class="custom-container">
       <v-row align="center">
         <v-col cols="2" class="justify-start text-no-wrap">
@@ -37,11 +37,8 @@
               </v-btn>
             </template>
             <v-list>
-              <v-list-item :to="{ path: '/member/mypage'}">
-                <v-list-item-title>마이 페이지</v-list-item-title>
-              </v-list-item>
-              <v-list-item :href="`/member/mypage/reservation`">
-                <v-list-item-title>예약내역</v-list-item-title>
+              <v-list-item :to="{ path: '/admin/todak/statistics'}">
+                <v-list-item-title>대시보드</v-list-item-title>
               </v-list-item>
               <v-list-item @click="logout">
                 <v-list-item-title>로그아웃</v-list-item-title>

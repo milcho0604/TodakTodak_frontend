@@ -3,7 +3,7 @@
     v-model="drawer"
     :rail="rail"
     permanent
-    style="background-color: #ECF2FE;"
+    style="background-color: #FFF0BC;"
     @click="rail = false"
     >
     <v-list-item
