@@ -14,7 +14,7 @@
       <MemberHeaderComponent v-if="showHeaderFooter"/>
      </div>
 
-    <v-main class="main-content">
+    <v-main class="main-content" style="padding-bottom: 50px;">
       <router-view/>
     </v-main>
     <FooterComponent v-if="showHeaderFooter"/>
