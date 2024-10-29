@@ -37,9 +37,26 @@
               </v-btn>
             </template>
             <v-list>
-              <v-list-item :to="{ path: '/admin/todak/statistics'}">
+              <v-list-item @click="toDashBoard">
                 <v-list-item-title>대시보드</v-list-item-title>
               </v-list-item>
+
+              <v-list-item @click="toCsChat">
+                <v-list-item-title>고객상담채팅</v-list-item-title>
+              </v-list-item>
+
+              <v-list-item @click="toMemberList">
+                <v-list-item-title>회원리스트</v-list-item-title>
+              </v-list-item>
+
+              <v-list-item  @click="toPaymentList">
+                <v-list-item-title>결제리스트</v-list-item-title>
+              </v-list-item>
+
+              <v-list-item  @click="toHospitalList">
+                <v-list-item-title>병원리스트</v-list-item-title>
+              </v-list-item>
+
               <v-list-item @click="logout">
                 <v-list-item-title>로그아웃</v-list-item-title>
               </v-list-item>
@@ -111,9 +128,28 @@ export default {
       this.isLogin = false; // 로그아웃 후 로그인 상태 업데이트
       this.$router.push('/'); // 로그아웃 후 메인 페이지로 이동
     },
-    navigateTo(route) {
-      this.$router.push(route); // 해당 경로로 이동
-    }
+    toMemberList() {
+            this.$router.push('/admin/member/list');
+        },
+    toCsChat() {
+        this.$router.push('/admin/cs/center');
+    },
+    toCsList(){
+        this.$router.push('/admin/cs/list')
+    },
+    toReportList() {
+        this.$router.push('/admin/todak/report');
+    },
+    toPaymentList() {
+        this.$router.push('/admin/payment/list');
+    },
+    toHospitalList() {
+        this.$router.push('/admin/hospital/list');
+    },
+    toDashBoard() {
+        this.$router.push('/admin/todak/statistics');
+    },
+
   }
 };
 </script>
