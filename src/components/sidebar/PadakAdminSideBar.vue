@@ -38,6 +38,13 @@
         ></v-list-item>
 
         <v-list-item
+        :prepend-avatar="cs"
+        title="고객상담채팅"
+        value="csChat"
+        @click="toCsChat"
+        ></v-list-item>
+
+        <v-list-item
         :prepend-avatar="child"
         title="상담리스트"
         value="childConfig"
@@ -94,6 +101,9 @@ export default{
     methods:{
         toMemberList() {
             this.$router.push('/admin/member/list');
+        },
+        toCsChat() {
+            this.$router.push('/admin/cs/center');
         },
         toCsList(){
             this.$router.push('/admin/cs/list')
