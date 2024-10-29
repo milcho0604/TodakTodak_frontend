@@ -34,7 +34,7 @@
         
         <v-list-item
         :prepend-avatar="member"
-        title="회원리스트"
+        title="회원 리스트"
         value="memberList"
         class="todak-sidebar"
         @click="toMemberList"
@@ -42,7 +42,7 @@
 
         <v-list-item
         :prepend-avatar="cs"
-        title="고객상담채팅"
+        title="고객상담 채팅"
         value="csChat"
         class="todak-sidebar"
         @click="toCsChat"
@@ -50,7 +50,7 @@
 
         <v-list-item
         :prepend-avatar="reservation"
-        title="상담리스트"
+        title="상담 리스트"
         value="csList"
         class="todak-sidebar"
         @click="toCsList"
@@ -58,7 +58,7 @@
 
         <v-list-item
         :prepend-avatar="siren"
-        title="신고리스트"
+        title="신고 리스트"
         value="reportList"
         class="todak-sidebar"
         @click="toReportList"
@@ -66,7 +66,7 @@
 
         <v-list-item
         :prepend-avatar="pay"
-        title="결제리스트"
+        title="결제 리스트"
         value="payList"
         class="todak-sidebar"
         @click="toPaymentList"
@@ -74,7 +74,7 @@
 
         <v-list-item
         :prepend-avatar="hospital"
-        title="병원리스트"
+        title="병원 리스트"
         value="hospitalList"
         class="todak-sidebar"
         @click="toHospitalList"
