@@ -73,6 +73,9 @@
 <script>
 import axios from 'axios';
 import { jwtDecode } from "jwt-decode";
+import { requestFcmToken } from "@/firebase";
+// import { initFirebase } from "@/firebase";
+
 
 export default {
   name: "LoginPage",
@@ -94,25 +97,36 @@ export default {
   methods: {
     async doLogin() {
       try {
-        const loginData = {
-          memberEmail: this.memberEmail,
-          password: this.password,
-          rememberEmail: this.rememberEmail,
-          autoLogin: this.autoLogin,
-        };
+      // await initFirebase(); // Service Worker가 준비될 때까지 대기
+      // Step 1: FCM 토큰 요청
+      const fcmToken = await requestFcmToken(true);
+      console.log('FCM Token for login:', fcmToken);
 
-        const response = await axios.post(`${process.env.VUE_APP_API_BASE_URL}/member-service/member/hospital/login`, loginData);
-        console.log(response)
-        
-        const token = response.data.result;
-        const decodedToken = jwtDecode(token);
-        const role = decodedToken.role;
-        const memberId = decodedToken.memberId;
+      // Step 2: 로그인 데이터 준비
+      const loginData = {
+        memberEmail: this.memberEmail,
+        password: this.password,
+        fcmToken: fcmToken,
+        rememberEmail: this.rememberEmail,
+        autoLogin: this.autoLogin,
+      };
 
-        localStorage.setItem('token', token);
-        localStorage.setItem('role', role);
-        localStorage.setItem('memberId', memberId);
-        localStorage.setItem('email', this.memberEmail);
+      // Step 3: FCM 토큰을 포함하여 로그인 요청 전송
+      const response = await axios.post(`${process.env.VUE_APP_API_BASE_URL}/member-service/member/hospital/login`, loginData);
+
+      // Step 4: 로그인 성공 시 토큰과 사용자 정보 로컬에 저장
+      const token = response.data.result;
+      const decodedToken = jwtDecode(token);
+      const role = decodedToken.role;
+      const memberId = decodedToken.memberId;
+      
+
+      localStorage.setItem('token', token);
+      localStorage.setItem('role', role);
+      localStorage.setItem('memberId', memberId);
+      localStorage.setItem('email', this.memberEmail);
+      localStorage.setItem('fcmToken', fcmToken);
+
 
         if (this.rememberEmail) {
           localStorage.setItem('savedEmail', this.memberEmail);
@@ -122,21 +136,21 @@ export default {
         window.location.href = "/";
       } catch (e) {
         if (e.response?.status === 422) {
-          alert('잘못된 이메일/비밀번호입니다.');
-        } else if (e.response?.status === 403) {
-          alert('병원 관계자만 로그인이 가능합니다');
-          window.location.href = "/";
-        } else if (e.response?.status === 423) {
-          alert('정지된 계정입니다.');
-          window.location.href = "/";
-        }else if (e.response?.status === 401) {
-          alert('이메일 인증이 필요합니다.');
-          window.location.href = "/all/authentication";
-        } else {
-          alert('로그인 실패');
-          const error_message = e.response?.data?.status_message || "로그인에 실패했습니다.";
-          alert(error_message);
-        }
+        alert('잘못된 이메일/비밀번호입니다.');
+      } else if (e.response?.status === 403) {
+        alert('토닥 관계자만 로그인이 가능합니다');
+        window.location.href = "/";
+      } else if (e.response?.status === 423) {
+        alert('정지된 계정입니다.');
+        window.location.href = "/";
+      }else if (e.response?.status === 401) {
+        alert('이메일 인증이 필요합니다.');
+        window.location.href = "/all/authentication";
+      } else {
+        alert('로그인 실패');
+        const error_message = e.response?.data?.status_message || "로그인에 실패했습니다.";
+        alert(error_message);
+      }
       }
     },
     findEmail() {
