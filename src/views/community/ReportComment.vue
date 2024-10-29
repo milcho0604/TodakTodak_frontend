@@ -47,6 +47,7 @@ export default {
       show: true,
       reportContent: '',
       fetchedComments: [],
+      reports: []
     };
   },
   async mounted() {
@@ -60,23 +61,15 @@ export default {
   },
   methods: {
     async submitReport() {
-      const comment = this.fetchedComments.find(c => c.id === this.commentId); // commentId로 특정 댓글 찾기
-      console.log('Comment ID:', this.commentId);
-
-      if (!comment) {
+      if (!this.commentId) {
         console.error("댓글을 찾을 수 없습니다.");
         return;
       }
 
       try {
-        const reporterEmail = localStorage.getItem('email');
-        const reportedEmail = comment.doctorEmail;
-
         const payload = {
-          reporterEmail,
-          reportedEmail,
           reason: this.reportContent,
-          commentId: this.comment.id || null,
+          commentId: this.commentId || null,
         };
         const response = await axios.post(`${process.env.VUE_APP_API_BASE_URL}/community-service/report/create`, payload);
         if (response.status === 201) {

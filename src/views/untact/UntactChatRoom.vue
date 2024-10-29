@@ -2,7 +2,7 @@
   <div class="text-center">
     <v-container class="custom-container">
       <div>
-        
+
       </div>
       <v-row justify="center" class="mt-4" style="width: 900px; margin: 0 auto;">
         <v-col cols="4" class="text-center">
@@ -55,11 +55,15 @@
         <video class="remote_video" :class="{ tiny: !isRemoteVideoVisible }" ref="remoteVideo" autoplay playsinline
           style="transform: scaleX(-1);"></video>
       </div>
-      <div id="buttons">
-        <button type="button" class="button inter-bold" @click="exitRoom">
-          진료 종료
+      <div>
+        <button v-if="role == 'DOCTOR'" type="button" class="back-button inter-bold" @click="$router.go(-1);">
+          나가기
+        </button>
+        <button v-if="role == 'DOCTOR'" type="button" class="button inter-bold" @click="exitRoom">
+          진료 완료
         </button>
       </div>
+
 
       <!-- 리뷰 모달 -->
       <ReviewComponent v-model="reviewModal" :reservationId=this.sid @update:dialog="reviewModal = $event;"
@@ -97,13 +101,16 @@ export default {
       medicalChartId: null,
       chartCreated: false,
       reviewModal: false,
-      payModal: false
+      payModal: false,
+      messageQueue: [], // 메시지 큐 초기화
+      role: null,
     };
   },
   created() {
     this.fetchReservation();
   },
   mounted() {
+    this.role = localStorage.getItem('role');
     this.startWebSocketConnection();
   },
   methods: {
@@ -280,10 +287,27 @@ export default {
     },
 
     sendToServer(msg) {
-      if (this.socket.readyState === WebSocket.OPEN) {
-        this.socket.send(JSON.stringify(msg));
-      } else {
-        console.warn('WebSocket is not open. Current state:', this.socket.readyState);
+      this.messageQueue.push(JSON.stringify(msg)); // 메시지를 큐에 추가
+      this.processQueue(); // 큐 처리 시도
+    },
+
+    processQueue() {
+      // 이미 메시지 전송 중이거나 WebSocket이 열려 있지 않으면 종료
+      if (this.isSending || this.socket.readyState !== WebSocket.OPEN) {
+        return;
+      }
+
+      // 큐에서 메시지를 꺼내고 전송 플래그를 활성화
+      const message = this.messageQueue.shift();
+      if (message) {
+        this.isSending = true;
+        this.socket.send(message);
+
+        // 메시지 전송 후, 전송 상태를 업데이트하고 다음 메시지를 큐에서 꺼내도록 딜레이
+        setTimeout(() => {
+          this.isSending = false; // 전송 완료 후 플래그 초기화
+          this.processQueue(); // 다음 메시지 전송 시도
+        }, 100); // 딜레이는 필요에 따라 조정 가능 (100ms 예시)
       }
     },
 
@@ -335,14 +359,15 @@ export default {
         this.socket.close();
       }
 
-      this.updateStatus('Completed');
+
 
       console.log("Room exited successfully");
       // Role이 Member인 경우에만 alert 메시지 띄우기 & 리뷰 & 결제
-      if (localStorage.getItem('role') === 'Member') {
+      if (localStorage.getItem('role') === 'MEMBER') {
         alert("진료가 종료되었습니다.");
         this.reviewModal = true;
-      } else if (localStorage.getItem('role') === 'Doctor') {
+      } else if (localStorage.getItem('role') === 'DOCTOR') {
+        this.updateStatus('Completed');
         window.location.href = '/doctor/untact/reservation';
       }
     },
@@ -486,7 +511,14 @@ export default {
   width: 290px;
   padding: 15px 10px;
 }
-
+.back-button {
+  background-color: #CECECE;
+  color: #717171;
+  border-radius: 10px;
+  padding: 5px 15px;
+  margin-right: 10px;
+  font-size: 14px;
+}
 .button {
   background-color: #C2D7FF;
   border-radius: 10px;

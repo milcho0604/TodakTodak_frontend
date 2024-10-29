@@ -112,7 +112,8 @@
 | **편리한 공유캘린더**          | 자녀의 예약 일정을 공유하며, 개인 일정까지 한 눈에 편리하게 관리 할 수 있습니다.                 |
 | **용이한 병원 관리**          | 복잡했던 병원 등록 및 병원 일정관리, 의료진 관리의 어려움을 줄이고  편의성을 높였습니다.             |
 | **실시간으로 소통이 가능한 CS문의** | 관리자와 실시간으로 소통할 수 있는 채팅 기능을 통해 빠르게 문제 해결과 지원을 제공합니다.             |
-| **fcm알림**  | 예약 확인 및 대기 상황 변경 안내 ,자녀 공유, 결제 알림 등 상황별 사용자에게 적절한 알림을 제공합니다.    |
+| **즉각적인 fcm알림**  | 예약 확인 및 대기 상황 변경 안내 ,자녀 공유, 결제 알림 등 상황별 사용자에게 적절한 알림을 제공합니다.    |
+| **안전한 결제** | 카카오 페이를 통해 간편하게 결제하고 포트원 결제를 통해 안전하게 결제하여 간편하고 다양한 결제 수단을 제공합니다. |
 <br>
 
 ## 스택
@@ -204,9 +205,36 @@
 ### 📆공유 캘린더
 
 <details>
-  <summary>공유 캘린더 - 조회</summary>
+  <summary>공유 캘린더 조회</summary>
   <img src="https://github.com/user-attachments/assets/251c81a1-5d00-4825-b9ca-a9b1b316eb1b">
 </details>
+
+
+<details>
+  <summary>공유 캘린더 일정 저장 </summary>
+  <img src="https://github.com/user-attachments/assets/12b95ae9-87e7-4d6c-b699-406f071a7e37">
+</details>
+
+<details>
+  <summary>공유 캘린더 일정 수정 </summary>
+  <img src="https://github.com/user-attachments/assets/f8426a25-5165-457b-a11e-b2af708e3b52">
+</details>
+
+<details>
+  <summary>공유 캘린더 일정 상태변경 </summary>
+  <img src="https://github.com/user-attachments/assets/4536d810-2af9-451a-8c29-e5bb31156b65">
+</details>
+
+<details>
+  <summary>공유 캘린더 예약일정 공유 </summary>
+  <img src="https://github.com/user-attachments/assets/8d4be5c4-90ec-4d7d-a7e9-bbecce743df8">
+</details>
+
+<details>
+  <summary>공유 캘린더 개인일정 공유 x </summary>
+  <img src="https://github.com/user-attachments/assets/9f181e01-6aae-4438-a18d-f8ca08b3887e">
+</details>
+
 
 ### 🏥 진료 예약
 
@@ -253,6 +281,17 @@
 <details>
   <summary>비대면 진료 - 리뷰</summary>
   <img src="https://github.com/user-attachments/assets/00eefb24-15b9-4bc3-9bc8-ea4bab8e12cf">
+</details>
+
+<br>
+<details>
+  <summary>당일예약 일반 진료 예약 알림</summary>
+  <img src="https://github.com/user-attachments/assets/c4726460-a844-4209-bb61-cbf7d0cbc063">
+</details>
+
+<details>
+  <summary>당일예약 예방 접종 예약 알림</summary>
+  <img src="https://github.com/user-attachments/assets/9e2ebf52-1a66-4d46-9f58-adc41c554ab6">
 </details>
 
 <br>
