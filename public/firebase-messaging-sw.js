@@ -1,76 +1,73 @@
+// firebase-messaging-sw.js
+
+// Import Firebase scripts
 importScripts('https://www.gstatic.com/firebasejs/10.13.2/firebase-app-compat.js');
 importScripts('https://www.gstatic.com/firebasejs/10.13.2/firebase-messaging-compat.js');
 
+// Firebase configuration
 const firebaseConfig = {
-  apiKey: "AIzaSyBSH8wJ7aoblNAj8Kj7iNTfsJhlEL4KEcE",
-  authDomain: "padak-todak.firebaseapp.com",
-  projectId: "padak-todak",
-  storageBucket: "padak-todak.appspot.com",
-  messagingSenderId: "22351664979",
-  appId: "1:22351664979:web:f8a3cc4b2f5e249d88b3a6"
+  apiKey: "AIzaSyByoMzqxbfXuHca-m6gEOBBnTVjJj-fTv4",
+  authDomain: "todak-1f8d0.firebaseapp.com",
+  projectId: "todak-1f8d0",
+  storageBucket: "todak-1f8d0.appspot.com",
+  messagingSenderId: "167301418487",
+  appId: "1:167301418487:web:8eaa552ab9a39e306ff2f2",
+  measurementId: "G-P904DPFNZQ",
+  databaseURL: "https://todak-1f8d0-default-rtdb.asia-southeast1.firebasedatabase.app"
 };
 
-// Firebase 초기화
-// Firebase 초기화 중복 방지
+// Initialize Firebase
 if (!firebase.apps.length) {
   firebase.initializeApp(firebaseConfig);
 }
 
+// Initialize Firebase Messaging
 const messaging = firebase.messaging();
 
-// 백그라운드 메시지 수신
+// Handle background messages
 messaging.onBackgroundMessage((payload) => {
-  console.log('[firebase-messaging-sw.js] Received background message ', payload);
-  console.log(parseInt(payload.data.notificationId, 10))
-  const redirectUrl = payload.data.url;
+  console.log('[firebase-messaging-sw.js] Received background message', payload);
+
+  // Extract notification details
   const notificationTitle = payload.notification.title;
   const notificationOptions = {
     body: payload.notification.body,
     icon: "todak-heart.png",
     data: {
-      url: redirectUrl,
-      notificationId: payload.data.notificationId  // 알림 ID 포함
+      url: payload.data.url,
+      notificationId: payload.data.notificationId
     }
   };
 
-  // 알림 표시
+  // Display notification
   self.registration.showNotification(notificationTitle, notificationOptions);
 });
 
-// 알림 클릭 시 리다이렉트 및 읽음 처리
-self.addEventListener('notificationclick', async function(event) {
-  const notificationId = event.notification.data ? event.notification.data.notificationId : null;
-  const redirectUrl = event.notification.data ? event.notification.data.url : null;
+// Notification click event
+self.addEventListener('notificationclick', async (event) => {
+  event.notification.close(); // Close notification
 
-  event.notification.close(); // 알림 닫기
+  const notificationId = event.notification.data?.notificationId;
+  const redirectUrl = event.notification.data?.url;
 
+  // Mark notification as read (optional)
   if (notificationId) {
-    // String을 Long으로 변환
-    const notificationIdAsLong = parseInt(notificationId, 10);
-
     try {
-      // fetch를 사용해 알림을 읽음 처리하는 백엔드 API 호출
-      const response = await fetch(`${process.env.VUE_APP_API_BASE_URL}/member-service/fcm/read/${notificationIdAsLong}`, {
-        method: 'GET',
-      });
-      const data = await response.json();
-      console.log('알림 읽음 처리 완료:', data);
+      await fetch(`/member-service/fcm/read/${notificationId}`, { method: 'GET' });
+      console.log(`Notification ${notificationId} marked as read.`);
     } catch (err) {
-      console.error('알림 읽음 처리 중 오류 발생:', err);
+      console.error('Error marking notification as read:', err);
     }
   }
 
+  // Redirect to URL if provided
   if (redirectUrl) {
     event.waitUntil(
-      clients.matchAll({ type: 'window', includeUncontrolled: true }).then(windowClients => {
-        // 현재 열린 클라이언트(탭) 확인
-        const client = windowClients.find(wc => wc.focused || wc.visibilityState === 'visible');
-
+      clients.matchAll({ type: 'window', includeUncontrolled: true }).then((windowClients) => {
+        const client = windowClients.find((wc) => wc.focused || wc.visibilityState === 'visible');
         if (client) {
-          // 현재 열린 탭에서 URL을 변경
-          return client.navigate(redirectUrl).then(client => client.focus());
+          return client.navigate(redirectUrl).then((client) => client.focus());
         } else {
-          // 열려 있는 창이 없으면 새 창을 엶
           return clients.openWindow(redirectUrl);
         }
       })
