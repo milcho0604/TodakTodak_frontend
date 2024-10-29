@@ -173,7 +173,7 @@
           </div>
         </div>
         <div class="cs-list">
-          <AdminCsListForCsChat v-if="memberInfo" :member-id="memberInfo.memberId" ref="csChatList"/>
+          <AdminCsListForCsChat v-if="memberInfo" :member-id="memberInfo.memberId" ref="csChatList" @select-chat-room="selectChatRoom"/>
         </div>
       </div>
     </div>

@@ -17,7 +17,7 @@
                     </thead>
                     <tbody>
                         <!-- 만약 눌렀을때 그 채팅방으로 이동하고 싶으면 여기서 @click 넣으면 됌 -->
-                        <tr v-for="cs in filteredCsList" :key="cs.id">
+                        <tr v-for="cs in filteredCsList" :key="cs.id" @click="$emit('select-chat-room', cs.chatRoomId)">
                             <td>{{ cs.id }}</td>
                             <td>{{ cs.csContents }}</td>
                             <td>
@@ -123,9 +123,6 @@ export default {
         onSearchInput() {
             this.page = 1; // 검색어 입력 시 페이지를 1로 초기화
             this.fetchCsList(); // 검색어에 맞는 목록 가져오기
-        },
-        nextLevel(csId) {
-            this.$router.push(`/admin/cd/detail/${csId}`); // 병원의 id를 사용하여 상세 페이지로 이동
         },
     },
     mounted() {
