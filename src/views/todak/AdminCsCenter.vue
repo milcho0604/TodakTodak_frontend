@@ -562,8 +562,7 @@ export default {
   display: flex;
   gap: 10px;
   padding: 10px;
-  background-color: #ff9e9e;
-  border-top: 1px solid #ddd;
+  background-color: #F7F7F7;
 }
 .messageContainer{
   min-height: 580px;
