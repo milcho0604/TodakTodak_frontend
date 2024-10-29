@@ -90,7 +90,7 @@
                             <td>{{ member.name }}</td>
                             <td>{{ member.memberEmail }}</td>
                             <td>{{ member.phone }}</td>
-                            <td>{{ member.address.city }} {{ member.address.street }} ({{ member.address.zipcode }})</td>
+                            <td>{{ member.address?.city || '' }} {{ member.address?.street || '' }} ({{ member.address?.zipcode || '' }})</td>
                             <td>
                                 <v-chip :color="getRoleColor(member.role)" dark small>
                                     {{ getRoleLabel(member.role) }}
