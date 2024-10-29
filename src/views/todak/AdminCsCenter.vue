@@ -200,20 +200,20 @@
     </v-card>
   </v-dialog>
   </v-container>
-  <MyPageSideBar />
+<PadakAdminSideBar/>
 </template>
 
 <script>
 import { Stomp } from "@stomp/stompjs";
 import SockJS from "sockjs-client";
-import MyPageSideBar from "@/components/sidebar/MyPageSideBar.vue";
 import AdminCsListForCsChat from "./AdminCsListForCsChat.vue";
+import PadakAdminSideBar from "@/components/sidebar/PadakAdminSideBar.vue";
 import axios from "axios";
 
 export default {
   components: {
-    MyPageSideBar,
     AdminCsListForCsChat,
+    PadakAdminSideBar
   },
   data() {
     return {

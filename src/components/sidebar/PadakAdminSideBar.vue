@@ -24,16 +24,16 @@
 
     <v-list density="compact" nav>
         <v-list-item
-        :prepend-avatar="calendar"
+        :prepend-avatar="statics"
         title="대시보드"
-        value="calendar"
+        value="dashboard"
         @click="toDashBoard"
         ></v-list-item>
         
         <v-list-item
-        :prepend-avatar="myPage"
+        :prepend-avatar="member"
         title="회원리스트"
-        value="myPage"
+        value="memberList"
         @click="toMemberList"
         ></v-list-item>
 
@@ -45,30 +45,30 @@
         ></v-list-item>
 
         <v-list-item
-        :prepend-avatar="child"
+        :prepend-avatar="reservation"
         title="상담리스트"
-        value="childConfig"
+        value="csList"
         @click="toCsList"
         ></v-list-item>
 
         <v-list-item
-        :prepend-avatar="child"
+        :prepend-avatar="siren"
         title="신고리스트"
-        value="childConfig"
+        value="reportList"
         @click="toReportList"
         ></v-list-item>
 
         <v-list-item
-        :prepend-avatar="hospital"
+        :prepend-avatar="pay"
         title="결제리스트"
-        value="reservation"
+        value="payList"
         @click="toPaymentList"
         ></v-list-item>
 
         <v-list-item
-        :prepend-avatar="review"
+        :prepend-avatar="hospital"
         title="병원리스트"
-        value="review"
+        value="hospitalList"
         @click="toHospitalList"
         ></v-list-item>
     </v-list>
@@ -92,6 +92,10 @@ export default{
             reservation: 'https://todak-file.s3.ap-northeast-2.amazonaws.com/default-images/reservation-icon.png',
             review: 'https://todak-file.s3.ap-northeast-2.amazonaws.com/default-images/review-icon.png',
             hospital: 'https://todak-file.s3.ap-northeast-2.amazonaws.com/default-images/hospital-icon.png',
+            pay: 'https://todak-file.s3.ap-northeast-2.amazonaws.com/default-images/pay-removebg-preview.png',
+            member: 'https://todak-file.s3.ap-northeast-2.amazonaws.com/default-images/default_user_image.png',
+            siren: 'https://todak-file.s3.ap-northeast-2.amazonaws.com/default-images/siren-image.png',
+            statics: 'https://todak-file.s3.ap-northeast-2.amazonaws.com/default-images/statics-image.png',
         }
     },
     created(){
