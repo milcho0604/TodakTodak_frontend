@@ -116,7 +116,7 @@ export default {
     this.disconnect(); // 컴포넌트 언마운트 시 웹소켓 연결 종료
   },
   updated() {
-    this.scrollToRealBottom(); // 메시지가 업데이트될 때 스크롤 하단으로 이동
+    this.scrollToBottom(); // 메시지가 업데이트될 때 스크롤 하단으로 이동
   },
 
   watch: {
@@ -149,7 +149,7 @@ export default {
           senderProfileImgUrl: receivedMessage.senderProfileImgUrl,
           createdAt: receivedMessage.createdAt
         });
-        this.scrollToRealBottom(); // 새로운 메시지 수신 시 스크롤 하단으로 이동
+        this.scrollToBottom(); // 새로운 메시지 수신 시 스크롤 하단으로 이동
 
         console.log("this.message",this.messages);
         console.log("receivedMessage")
@@ -173,7 +173,7 @@ sendMessage() {
 
       this.stompClient.send(`/pub/${this.chatRoomId}`, {}, JSON.stringify(message));
       this.messageToSend = ''; // 입력 필드 초기화
-      this.scrollToRealBottom();
+      this.scrollToBottom();
 
     } else {
       console.error('STOMP client is not connected.'); // 연결되지 않았을 때의 에러 처리
@@ -269,16 +269,12 @@ isMyMessage(message) {
       return message.senderId === this.myId;
 },
 scrollToBottom() {
-  // 메시지 목록을 감싸는 컨테이너 찾기
-  const container = document.getElementById('chat-box');
-  const inputBox = document.querySelector('.input-box'); // 입력 박스 선택
-  const inputBoxHeight = inputBox ? inputBox.offsetHeight : 0; // 입력 박스의 높이 구하기
-  
-  if (container) {
-      // 잠시 딜레이를 주고 스크롤을 최하단으로 이동
-      setTimeout(() => {
-          container.scrollTop = container.scrollHeight - inputBoxHeight; // 입력 박스 높이만큼 빼줌
-      }, 100);
+  const chatBox = document.getElementById('.chat-box');
+  if (chatBox) {
+    // 잠시 딜레이를 주고 스크롤을 최하단으로 이동
+    setTimeout(() => {
+      chatBox.scrollTop = chatBox.scrollHeight;
+    }, 10);
   }
 },
 scrollToRealBottom() {
