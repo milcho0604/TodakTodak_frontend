@@ -1,5 +1,5 @@
 <template>
-  <v-app v-if="role" class="app global_bg">
+  <v-app class="app global_bg">
     <div v-if="role == 'HOSPITAL'"> 
       <HospitalHeaderComponent v-if="showHeaderFooter"/>
     </div>
