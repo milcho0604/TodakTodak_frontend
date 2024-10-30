@@ -96,8 +96,8 @@
         <!-- carousel -->
         <v-col cols="8">
           <v-carousel class="feat-carousel" show-arrows="hover" cycle hide-delimiter-background>
-            <v-carousel-item v-for="(feat, i) in features" :key="i">
-              <v-img :src="feat"></v-img>
+            <v-carousel-item v-for="(feat, i) in features" :key="i" @click="navigateToUrl(feat.url); console.log('와이라노..')">
+              <v-img :src="feat.image"></v-img>
             </v-carousel-item>
           </v-carousel>
         </v-col>
@@ -227,9 +227,10 @@ export default {
         'https://todak-file.s3.amazonaws.com/ebdf224e-6e83-4dfa-8e18-8d540066aa8e_little-baby-being-health-clinic-vaccination.jpg'
       ],
       features: [
-        'https://todak-file.s3.amazonaws.com/fa78cd60-2533-4806-9d3f-494d19f75278_Group 989010.png',
-        'https://todak-file.s3.amazonaws.com/e0f8b98d-cdb9-4623-8ae3-f4fcc2d4c318_Group 989010-2.png',
-        'https://todak-file.s3.amazonaws.com/41392fb5-aaca-4a6c-b37a-3c322fa783c6_Group 989011.png',
+        { image: 'https://todak-file.s3.amazonaws.com/fa78cd60-2533-4806-9d3f-494d19f75278_Group 989010.png', url: '/member/mychild-cal' },
+        { image: 'https://todak-file.s3.amazonaws.com/e0f8b98d-cdb9-4623-8ae3-f4fcc2d4c318_Group 989010-2.png', url: '/chat/my-chat/list' },
+        { image: 'https://todak-file.s3.amazonaws.com/41392fb5-aaca-4a6c-b37a-3c322fa783c6_Group 989011.png', url: '/member/mypage/reservation' },
+        
       ],
       dong: '신대방동',
       latitude: '37.497203', // 사용자 현재 위도
@@ -435,7 +436,10 @@ export default {
     navigateToPostDetail(postId) {
       this.$router.push({ path: `/community/${postId}` });
       window.scrollTo(0, 0);
-    }
+    },
+    navigateToUrl(url) {
+    this.$router.push(url); // Vue Router로 URL 이동
+  }
   }
 };
 </script>
