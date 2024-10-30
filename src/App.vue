@@ -1,18 +1,9 @@
 <template>
-  <v-app v-if="role" class="app global_bg">
-    <div v-if="role == 'HOSPITAL'"> 
-      <HospitalHeaderComponent v-if="showHeaderFooter"/>
-    </div>
-    <div v-else-if="role == 'ADMIN'"> 
-      <AdminHeaderComponent v-if="showHeaderFooter"/>
-    </div>
-    <div v-else-if="role == 'DOCTOR'"> 
-      <DoctorHeaderComponent v-if="showHeaderFooter"/>
-    </div>
-    <div v-else>
-      <MemberHeaderComponent v-if="showHeaderFooter"/>
-    </div>
-
+  <v-app class="app global_bg">
+    <component 
+      :is="getHeaderComponent" 
+      v-if="showHeaderFooter"
+    />
     <v-main class="main-content">
       <router-view/>
     </v-main>
@@ -47,7 +38,7 @@ export default {
       role: null,
     }
   },
-  async mounted() {
+  async created() {
     // await initFirebase(); // 앱이 로드될 때 Firebase 초기화 및 Service Worker 등록
 
     // await this.initializeFCM();
@@ -59,6 +50,18 @@ export default {
     showHeaderFooter() {
       // 특정 라우트에서만 헤더와 푸터를 숨김
       return !this.$route.path.startsWith('/chat');
+    },
+    getHeaderComponent() {
+      switch (this.role) {
+        case 'HOSPITAL':
+          return 'HospitalHeaderComponent';
+        case 'ADMIN':
+          return 'AdminHeaderComponent';
+        case 'DOCTOR':
+          return 'DoctorHeaderComponent';
+        default:
+          return 'MemberHeaderComponent';
+      }
     }
   },
   methods: {
