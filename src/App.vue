@@ -1,18 +1,17 @@
 <template>
-  <v-app class="app global_bg">
-
+  <v-app v-if="role" class="app global_bg">
     <div v-if="role == 'HOSPITAL'"> 
       <HospitalHeaderComponent v-if="showHeaderFooter"/>
-     </div>
-     <div v-else-if="role == 'ADMIN'"> 
+    </div>
+    <div v-else-if="role == 'ADMIN'"> 
       <AdminHeaderComponent v-if="showHeaderFooter"/>
-     </div>
-     <div v-else-if="role == 'DOCTOR'"> 
+    </div>
+    <div v-else-if="role == 'DOCTOR'"> 
       <DoctorHeaderComponent v-if="showHeaderFooter"/>
-     </div>
-     <div v-else>
+    </div>
+    <div v-else>
       <MemberHeaderComponent v-if="showHeaderFooter"/>
-     </div>
+    </div>
 
     <v-main class="main-content">
       <router-view/>
