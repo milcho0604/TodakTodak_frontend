@@ -279,7 +279,7 @@ export default {
             symptomsModal: false,
             confirmModal: false,
             successReserveModal: false,
-            totalWaiting: 0,
+            totalWaiting: 1,
             waitingData: null,
         };
     },

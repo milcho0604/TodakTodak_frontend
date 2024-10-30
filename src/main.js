@@ -88,8 +88,6 @@ axios.interceptors.response.use(
       }
     } else if (error.response && error.response.status === 403) {
       router.push({ name: 'HOME' });
-    } else if (error.response && error.response.status === 503) {
-      router.push({ name: 'HOME' });
     } else {
       console.error('Axios response error:', error);
     }
