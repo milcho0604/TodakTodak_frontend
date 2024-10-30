@@ -311,7 +311,7 @@ export default {
       }
     },
 
-    exitRoom() {
+    async exitRoom() {
       // WebRTC 연결 종료 및 방 나가기 로직 추가
       console.log("Exiting the room...");
 
@@ -367,8 +367,16 @@ export default {
         alert("진료가 종료되었습니다.");
         this.reviewModal = true;
       } else if (localStorage.getItem('role') === 'DOCTOR') {
-        this.updateStatus('Completed');
-        window.location.href = '/doctor/untact/reservation';
+        try {
+          // updateStatus가 완료될 때까지 기다립니다.
+          await this.updateStatus('Completed');
+          // updateStatus가 성공적으로 완료되면 페이지 이동
+          window.location.href = '/doctor/untact/reservation';
+        } catch (error) {
+          // updateStatus가 실패하면 오류 메시지를 출력하고 페이지 이동하지 않음
+          console.error("Status update failed:", error);
+          alert("진료 상태 업데이트에 실패했습니다. 다시 시도해주세요.");
+        }
       }
     },
     handlePeerLeave(message) {
@@ -412,18 +420,20 @@ export default {
     },
     // 진료 종료시 예약 상태 & 진료 내역 상태 진료완료로 업데이트
     async updateStatus(data) {
-      console.log(" 진료 완료처리 하려는데 ...")
+      console.log("진료 완료처리 중...");
       try {
         const req = {
           id: this.sid,
           status: data
-        }
+        };
         console.log(req);
-        await axios.post(`${process.env.VUE_APP_API_BASE_URL}/reservation-service/reservation/hospital/untact/update`,
+        await axios.post(
+          `${process.env.VUE_APP_API_BASE_URL}/reservation-service/reservation/hospital/untact/update`,
           req
-        )
+        );
       } catch (e) {
-        console.log(e)
+        console.log(e);
+        throw e; // 오류 발생 시 상위 함수에서 처리하도록 예외 throw
       }
     },
     openPayModal() {
@@ -511,6 +521,7 @@ export default {
   width: 290px;
   padding: 15px 10px;
 }
+
 .back-button {
   background-color: #CECECE;
   color: #717171;
@@ -519,6 +530,7 @@ export default {
   margin-right: 10px;
   font-size: 14px;
 }
+
 .button {
   background-color: #C2D7FF;
   border-radius: 10px;
