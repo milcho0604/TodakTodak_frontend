@@ -9,6 +9,7 @@ import axios from 'axios';
 import mitt from 'mitt';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap';
+import Vue3Lottie from 'vue3-lottie'
 
 import { setupMessageListener, database } from './firebase'; // Import database instance
 
@@ -96,6 +97,7 @@ axios.interceptors.response.use(
 );
 
 // Vue app 마운트
+app.use(Vue3Lottie)
 app.use(router);
 app.use(vuetify);
 app.mount('#app');

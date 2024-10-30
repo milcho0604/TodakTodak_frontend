@@ -20,7 +20,7 @@
           <v-img :src="slide"></v-img>
         </v-carousel-item>
       </v-carousel> -->
-      
+
       <v-spacer :style="{ height: '60px' }"></v-spacer>
 
       <!-- 우리동네 인기 소아과 타이틀 -->
@@ -34,7 +34,7 @@
           평점으로 검증된 우리동네 소아과
         </h5>
       </v-row>
-
+      
       <v-container style=" max-width: 1200px;">
         <!-- 위치 gps -->
         <v-row class="mt-2 ml-2">
@@ -46,8 +46,11 @@
           </v-btn>
         </v-row>
         <!-- 인기소아과 carousel 컴포넌트-->
-        <v-row justify="center" class="mt-n2">
+        <v-row justify="center" class="mt-n2" v-if="!loading">
           <HospitalCarousel :windowCount="2" :hospitalList="hospitalList" />
+        </v-row>
+        <v-row justify="center" class="mt-n2" v-else>
+          <Vue3Lottie :animationData="AstronautJSON" :height="200" :width="200" />
         </v-row>
       </v-container>
 
@@ -96,7 +99,8 @@
         <!-- carousel -->
         <v-col cols="8">
           <v-carousel class="feat-carousel" show-arrows="hover" cycle hide-delimiter-background>
-            <v-carousel-item v-for="(feat, i) in features" :key="i" @click="navigateToUrl(feat.url); console.log('와이라노..')">
+            <v-carousel-item v-for="(feat, i) in features" :key="i"
+              @click="navigateToUrl(feat.url); console.log('와이라노..')">
               <v-img :src="feat.image"></v-img>
             </v-carousel-item>
           </v-carousel>
@@ -168,34 +172,20 @@
 
       <v-spacer :style="{ height: '70px' }"></v-spacer>
       <v-row class="doib-box" justify="center">
-          <v-col cols="12">
-              <div class="inter-bold doib-text">
-                  병원을 쉽고 편리하게 운영하고 싶다면<br>
-                  토닥 도입 상담을 신청하세요
-              </div>
-          </v-col>
-          <v-col cols="12" class="text-center">
-              <div class="doib-button" color="primary" @click="$router.push('/all/hospital/admin/create')">
-                  <span class="inter-bold">도입 신청하기</span>
-              </div>
-          </v-col>
+        <v-col cols="12">
+          <div class="inter-bold doib-text">
+            병원을 쉽고 편리하게 운영하고 싶다면<br>
+            토닥 도입 상담을 신청하세요
+          </div>
+        </v-col>
+        <v-col cols="12" class="text-center">
+          <div class="doib-button" color="primary" @click="$router.push('/all/hospital/admin/create')">
+            <span class="inter-bold">도입 신청하기</span>
+          </div>
+        </v-col>
       </v-row>
       <v-spacer :style="{ height: '70px' }"></v-spacer>
 
-      <!-- 데이터 로딩 중일때 띄워줄 모달 -->
-      <v-dialog v-model="loading" max-width="500px">
-        <v-card class="loading-modal">
-          <!-- 로딩 진행 표시 (v-progress-linear) -->
-          <v-progress-linear color="#0075FF" height="4" indeterminate></v-progress-linear>
-
-          <v-card-title class="loading-title">
-            데이터 로딩중
-          </v-card-title>
-          <v-card-text class="loading-text">
-            회원님의 현재 위치 정보를 기반으로 <br>병원 리스트를 불러오고 있습니다.
-          </v-card-text>
-        </v-card>
-      </v-dialog>
     </v-container>
   </v-app>
 </template>
@@ -204,6 +194,8 @@
 import HospitalCarousel from '@/components/carousel/HospitalCarousel.vue';
 import DoctorCarousel from '@/components/carousel/DoctorCarousel.vue';
 import axios from 'axios';
+import { Vue3Lottie } from 'vue3-lottie'
+import AstronautJSON from '@/assets/loading.json';
 
 // 카카오맵 rest api 호출 axios 커스텀
 const apiClient = axios.create({
@@ -217,10 +209,12 @@ export default {
   components: {
     HospitalCarousel,
     DoctorCarousel,
+    Vue3Lottie,
   },
   name: "App",
   data() {
     return {
+      AstronautJSON,
       slides: [
         'https://todak-file.s3.amazonaws.com/162a0f6a-24ee-41e2-9435-29b4b3941daf_adult-taking-care-baby-weight.jpg',
         'https://todak-file.s3.amazonaws.com/17db471c-500e-46c1-a74c-948174883ac0_doctor-performing-routine-medical-checkup.jpg',
@@ -230,7 +224,7 @@ export default {
         { image: 'https://todak-file.s3.amazonaws.com/fa78cd60-2533-4806-9d3f-494d19f75278_Group 989010.png', url: '/member/mychild-cal' },
         { image: 'https://todak-file.s3.amazonaws.com/e0f8b98d-cdb9-4623-8ae3-f4fcc2d4c318_Group 989010-2.png', url: '/chat/my-chat/list' },
         { image: 'https://todak-file.s3.amazonaws.com/41392fb5-aaca-4a6c-b37a-3c322fa783c6_Group 989011.png', url: '/member/mypage/reservation' },
-        
+
       ],
       dong: '신대방동',
       latitude: '37.497203', // 사용자 현재 위도
@@ -438,8 +432,8 @@ export default {
       window.scrollTo(0, 0);
     },
     navigateToUrl(url) {
-    this.$router.push(url); // Vue Router로 URL 이동
-  }
+      this.$router.push(url); // Vue Router로 URL 이동
+    }
   }
 };
 </script>
@@ -537,10 +531,11 @@ body {
   color: white;
   font-size: 45px;
 }
+
 .doib-box {
-  background: linear-gradient(to left, rgba(254, 254, 254, 0.125), rgba(158, 158, 158, 0.5)), 
-  url('/src/assets/doctor-image.png') no-repeat center center;
-background-size: cover;
+  background: linear-gradient(to left, rgba(254, 254, 254, 0.125), rgba(158, 158, 158, 0.5)),
+    url('/src/assets/doctor-image.png') no-repeat center center;
+  background-size: cover;
   width: 100%;
   height: auto;
   margin: 0 auto;
