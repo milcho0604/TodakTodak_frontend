@@ -147,6 +147,9 @@ export default {
           type: 'join',
           data: this.localRoom
         });
+
+        // PeerConnection 재설정
+        this.createPeerConnection();
       }
       this.socket.onclose = () => {
         console.log('Socket has been closed');
@@ -275,6 +278,42 @@ export default {
         this.$refs.remoteVideo.srcObject = event.streams[0];
         this.isRemoteVideoVisible = true;  // 상대방 화면이 있음을 표시
       };
+      this.myPeerConnection.onconnectionstatechange = () => {
+        console.log('Connection state:', this.myPeerConnection.connectionState);
+        if (this.myPeerConnection.connectionState === 'disconnected' ||
+          this.myPeerConnection.connectionState === 'failed' ||
+          this.myPeerConnection.connectionState === 'closed') {
+          console.log('Connection lost, attempting to reconnect...');
+          this.handleReconnection();
+        }
+      };
+    },
+    handleReconnection() {
+      // 기존 PeerConnection과 트랙 삭제
+      if (this.myPeerConnection) {
+        this.myPeerConnection.close();
+      }
+
+      // 새 PeerConnection 생성
+      this.createPeerConnection();
+
+      // 새 Offer 생성 및 전송
+      this.myPeerConnection.createOffer()
+        .then(offer => {
+          return this.myPeerConnection.setLocalDescription(offer);
+        })
+        .then(() => {
+          this.sendToServer({
+            from: this.localUserName,
+            type: 'offer',
+            sdp: this.myPeerConnection.localDescription,
+            data: this.localRoom
+          });
+          console.log('Reconnection offer sent');
+        })
+        .catch(error => {
+          console.log('Reconnection offer creation failed:', error);
+        });
     },
     handleAnswerMessage(message) {
       console.log("The peer has accepted the request");
@@ -420,20 +459,18 @@ export default {
     },
     // 진료 종료시 예약 상태 & 진료 내역 상태 진료완료로 업데이트
     async updateStatus(data) {
-      console.log("진료 완료처리 중...");
+      console.log(" 진료 완료처리 하려는데 ...")
       try {
         const req = {
           id: this.sid,
           status: data
-        };
+        }
         console.log(req);
-        await axios.post(
-          `${process.env.VUE_APP_API_BASE_URL}/reservation-service/reservation/hospital/untact/update`,
+        await axios.post(`${process.env.VUE_APP_API_BASE_URL}/reservation-service/reservation/hospital/untact/update`,
           req
-        );
+        )
       } catch (e) {
-        console.log(e);
-        throw e; // 오류 발생 시 상위 함수에서 처리하도록 예외 throw
+        console.log(e)
       }
     },
     openPayModal() {
