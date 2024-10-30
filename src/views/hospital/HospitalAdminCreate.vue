@@ -253,8 +253,8 @@ export default {
             console.log(response);
           })
           .catch((error) => {
-            console.error('가입 오류:', error);
-            alert('가입 중 오류가 발생했습니다.');
+            console.error('가입 오류:', error.response.data.status_message);
+            alert(error.response.data.status_message);
           });
       } else {
         alert('입력된 정보를 확인하세요.');
