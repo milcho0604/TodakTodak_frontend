@@ -52,7 +52,7 @@
         ></v-list-item>
 
         <v-list-item
-        :prepend-avatar="cs"
+        :prepend-avatar="clock"
         title="영업시간등록/수정"
         value="cs"
         @click="toRegisterModify"
@@ -79,6 +79,7 @@ export default{
             review: 'https://todak-file.s3.ap-northeast-2.amazonaws.com/default-images/review-icon.png',
             hospital: 'https://todak-file.s3.ap-northeast-2.amazonaws.com/default-images/hospital-icon.png',
             doctor: 'https://todak-file.s3.ap-northeast-2.amazonaws.com/default-images/doctor-3d-image.png',
+            clock:'https://todak-file.s3.ap-northeast-2.amazonaws.com/default-images/operating-hours.png',
         }
     },
     created(){
