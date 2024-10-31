@@ -31,7 +31,7 @@
               <v-rating
                 v-model="review.rating"
                 length="5"
-                color="#0094FF"
+                color="#0075FF"
                 background-color="#C5C5C5"
                 dense
                 readonly
@@ -67,7 +67,7 @@
           <v-rating
             v-model="editedRating"
             length="5"
-            color="#0094FF"
+            color="#0075FF"
             background-color="#E7EEF0"
             class="modal-rating"
             justify="center"
@@ -271,7 +271,7 @@ export default {
 .rating-text {
   margin-left: 5px;
   font-size: 14px;
-  color: #0094FF;
+  color: #00499E;
   margin-top: -16px;
 }
 

@@ -70,7 +70,7 @@
                                         </v-card-title>
                                         <!-- 병원 평균평점, 리뷰개수 -->
                                         <v-card-text class="rating-text mt-4 ml-n7">
-                                            <v-icon color="#00499E">mdi-star</v-icon>
+                                            <v-icon color="#0075FF">mdi-star</v-icon>
                                             {{ hospital.averageRating }} ({{ hospital.reviewCount }})
                                         </v-card-text>
                                     </div>
@@ -433,7 +433,7 @@ export default {
 
 .rating-text {
     font-weight: bold;
-    color: #00499E;
+    color: #0075FF;
 }
 
 .distance-text {

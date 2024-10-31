@@ -8,7 +8,7 @@
 
                 <!-- 평점 입력 -->
                 <div class="rating-label inter-bold">진료 만족도를 남겨주세요!</div>
-                <v-rating v-model="rating" length="5" color="#0094FF" background-color="#E7EEF0"
+                <v-rating v-model="rating" length="5" color="#0075FF" background-color="#E7EEF0"
                     class="modal-rating" justify="center"></v-rating>
 
                 <!-- 텍스트 박스 -->
