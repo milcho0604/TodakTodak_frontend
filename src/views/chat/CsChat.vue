@@ -100,6 +100,10 @@ export default {
     
   },
   async mounted() {
+    if (!this.isSubscribed) {  // 구독이 되어 있지 않을 경우에만 구독 실행
+        this.subscribeToMessages();
+        this.isSubscribed = true;
+    }
     this.connect(); // 웹소켓 connect
     // await this.loadChatRoomMemberInfo(); // 채팅방 참여자 정보 조회
     await this.loadChatMessages(); // 채팅메시지 리스트 조회
@@ -110,7 +114,6 @@ export default {
         behavior: 'auto'  // 부드러운 스크롤
       });
     });
-
   },
   onBeforeUnmount() {
     this.disconnect(); // 컴포넌트 언마운트 시 웹소켓 연결 종료
