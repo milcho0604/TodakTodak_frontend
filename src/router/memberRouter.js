@@ -86,10 +86,10 @@ export const memberRouter = [
 
                 // // FCM 토큰 발급 시도 (최대 3회 재시도)
                 let fcmToken;
-                for (let attempt = 0; attempt < 3; attempt++) {
+                for (let attempt = 0; attempt < 5; attempt++) {
                     fcmToken = await requestFcmToken();
                     if (fcmToken) break;
-                    console.log(`Retrying FCM token request (${attempt + 1}/3)`);
+                    console.log(`Retrying FCM token request (${attempt + 1}/5)`);
                 }
                 // FCM 토큰 발급 요청
                 // const fcmToken = await requestFcmToken(true); // await 사용 가능
@@ -108,7 +108,7 @@ export const memberRouter = [
                     );
                 }
                 next('/'); // next 호출로 라우트 진행
-                // window.location.href = "/";
+                window.location.href = "/";
             } catch (error) {
                 console.error("Invalid token or FCM request failed:", error);
                 next('/'); 
@@ -137,12 +137,17 @@ export const memberRouter = [
                 localStorage.setItem("role", decoded.role);
 
                 // FCM 토큰 발급 요청
-                const fcmToken = await requestFcmToken(); // await 사용 가능
-                console.log("FCM Token for Kakao login:", fcmToken);
+                let fcmToken;
+                for (let attempt = 0; attempt < 5; attempt++) {
+                    fcmToken = await requestFcmToken();
+                    if (fcmToken) break;
+                    console.log(`Retrying FCM token request (${attempt + 1}/5)`);
+                }
+                // FCM 토큰 발급 요청
+                // const fcmToken = await requestFcmToken(true); // await 사용 가능
+                // console.log("FCM Token for Kakao login:", fcmToken);
 
                 if (fcmToken) {
-                    localStorage.setItem("fcmToken", fcmToken);
-
                     await axios.post(
                         `${process.env.VUE_APP_API_BASE_URL}/member-service/fcm/token`, 
                         { fcmToken },  // Request body로 fcmToken 전송
