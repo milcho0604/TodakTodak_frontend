@@ -141,8 +141,8 @@
             </v-list>
           </v-menu>
           
-          <v-btn v-if="!isLogin" @click="kakaoLogin">
-            <img src="@/assets/kakao_login_small.png" alt="카카오로그인 버튼">
+          <v-btn v-if="!isLogin" @click="kakaoLogin" class="mb-2">
+            <img src="@/assets/kakao_login_small.png" alt="카카오로그인 버튼" class="mb-1">
           </v-btn>
         </v-col>
       </v-row>
