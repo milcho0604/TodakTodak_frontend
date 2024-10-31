@@ -135,7 +135,7 @@
           if (e.response?.status === 422) {
           alert('잘못된 이메일/비밀번호입니다.');
         } else if (e.response?.status === 403) {
-          alert('토닥 관계자만 로그인이 가능합니다');
+          alert('병원 관계자만 로그인이 가능합니다');
           window.location.href = "/";
         } else if (e.response?.status === 423) {
           alert('정지된 계정입니다.');
