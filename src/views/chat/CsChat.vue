@@ -91,7 +91,6 @@ export default {
       memberInfo:[], // 채팅참여자(상대방) 정보
       myId: '', // 현재 접속자 id
       currentUserName: null,
-      receivedMessageIds: new Set(), // 최근에 수신된 message-id 저장용 Set
     };
   },
   created(){
@@ -132,62 +131,20 @@ export default {
   //   }
   // },
   methods: {
-//     connect() {
-//       const socket = new SockJS(`${process.env.VUE_APP_API_BASE_URL}/member-service/ws/chat`); 
-//       this.stompClient = Stomp.over(socket);
+    connect() {
+      const socket = new SockJS(`${process.env.VUE_APP_API_BASE_URL}/member-service/ws/chat`); 
+      this.stompClient = Stomp.over(socket);
 
-//       // JWT 토큰을 localStorage에서 가져와 auth-token으로 설정
-//       const token = localStorage.getItem('token');
-//       this.stompClient.connect({
-//         'token': `Bearer ${token}`  // 토큰을 헤더로 전송
-//       }, frame => {
-//         console.log('Connected: ' + frame);
-
-//       this.stompClient.subscribe(`/sub/${this.chatRoomId}`, message => {
-//         console.log("구독시작");
-//         const receivedMessage = JSON.parse(message.body);
-//         this.messages.push({
-//           senderId: receivedMessage.senderId,
-//           senderName: receivedMessage.senderName,
-//           contents: receivedMessage.contents,
-//           senderProfileImgUrl: receivedMessage.senderProfileImgUrl,
-//           createdAt: receivedMessage.createdAt
-//         });
-//         this.scrollToBottom(); // 새로운 메시지 수신 시 스크롤 하단으로 이동
-
-//         console.log("this.message",this.messages);
-//         console.log("receivedMessage")
-//         console.log(receivedMessage)
-//       });
-//     }, error => {
-//       console.error('Connection error:', error);
-//       setTimeout(() => {
-//         this.connect(); // 연결 실패 시 재시도
-//       }, 5000);
-//     });
-// },
-connect() {
-    const socket = new SockJS(`${process.env.VUE_APP_API_BASE_URL}/member-service/ws/chat`); 
-    this.stompClient = Stomp.over(socket);
-
-    const token = localStorage.getItem('token');
-    this.stompClient.connect({
-      'token': `Bearer ${token}`
-    }, frame => {
-      console.log('Connected: ' + frame);
+      // JWT 토큰을 localStorage에서 가져와 auth-token으로 설정
+      const token = localStorage.getItem('token');
+      this.stompClient.connect({
+        'token': `Bearer ${token}`  // 토큰을 헤더로 전송
+      }, frame => {
+        console.log('Connected: ' + frame);
 
       this.stompClient.subscribe(`/sub/${this.chatRoomId}`, message => {
+        console.log("구독시작");
         const receivedMessage = JSON.parse(message.body);
-
-        // 중복 메시지 필터링 로직
-        const messageId = message.headers['message-id']; // message-id 가져오기
-        if (this.receivedMessageIds.has(messageId)) {
-          console.log("Duplicate message ignored:", messageId);
-          return; // 중복 메시지 무시
-        }
-
-        // 새로운 메시지라면 Set에 추가하고 표시
-        this.receivedMessageIds.add(messageId);
         this.messages.push({
           senderId: receivedMessage.senderId,
           senderName: receivedMessage.senderName,
@@ -195,11 +152,11 @@ connect() {
           senderProfileImgUrl: receivedMessage.senderProfileImgUrl,
           createdAt: receivedMessage.createdAt
         });
+        this.scrollToBottom(); // 새로운 메시지 수신 시 스크롤 하단으로 이동
 
-        // 오래된 message-id 삭제 (1분 후 자동 제거)
-        setTimeout(() => this.receivedMessageIds.delete(messageId), 60000);
-
-        this.scrollToBottom();
+        console.log("this.message",this.messages);
+        console.log("receivedMessage")
+        console.log(receivedMessage)
       });
     }, error => {
       console.error('Connection error:', error);
@@ -207,7 +164,7 @@ connect() {
         this.connect(); // 연결 실패 시 재시도
       }, 5000);
     });
-  },
+},
 sendMessage() {
   if (this.messageToSend.trim() !== '') {
     if (this.stompClient && this.stompClient.connected) {
