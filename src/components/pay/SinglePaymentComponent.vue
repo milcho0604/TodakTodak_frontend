@@ -93,14 +93,14 @@ export default {
     async fetchPaymentData() {
       try {
         const memberResponse = await axios.get(
-          "http://localhost:8080/reservation-service/payment/get/member"
+          `${process.env.VUE_APP_API_BASE_URL}/reservation-service/payment/get/member`
         );
         this.paymentData.buyerName = memberResponse.data.name;
         this.paymentData.buyerEmail = memberResponse.data.memberEmail;
         this.paymentData.buyerTel = memberResponse.data.phoneNumber;
 
         const feeResponse = await axios.get(
-          `http://localhost:8080/reservation-service/payment/get/reservation/${this.reservationId}`
+          `${process.env.VUE_APP_API_BASE_URL}/reservation-service/payment/get/reservation/${this.reservationId}`
         );
         if (feeResponse.status === 200 && feeResponse.data !== null) {
           this.paymentData.amount = feeResponse.data;
@@ -149,7 +149,7 @@ export default {
         IMP.request_pay(paymentParams, (rsp) => {
           if (rsp.success) {
             axios
-              .post("http://localhost:8080/reservation-service/payment/single", {
+              .post(`${process.env.VUE_APP_API_BASE_URL}/reservation-service/payment/single`, {
                 impUid: rsp.imp_uid,
               })
               .then((response) => {

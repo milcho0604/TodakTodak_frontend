@@ -63,7 +63,7 @@
                 <v-spacer :style="{ height: '20px' }"></v-spacer>
                 <div class="dashboard-cards">
                     <div class="dashboard-cslist-card">
-                        <AdminCsList/>
+                        <AdminCsList />
                     </div>
                 </div>
                 <v-spacer :style="{ height: '20px' }"></v-spacer>
@@ -213,16 +213,29 @@ export default {
         },
         async getMemberList() {
             try {
-                const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/member-service/member/list`, {
-                    params: {
-                        verified: true,
-                        deleted: false,
-                    }
-                });
-                const members = response.data.result.content;
+                let page = 0;
+                let hasNextPage = true;
+                const allMembers = [];
+
+                while (hasNextPage) {
+                    const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/member-service/member/list`, {
+                        params: {
+                            verified: true,
+                            deleted: false,
+                            page: page,
+                            size: 100, // 페이지당 가져올 데이터 수를 설정
+                        }
+                    });
+                    const members = response.data.result.content;
+                    allMembers.push(...members);
+
+                    // 다음 페이지가 있는지 여부를 확인
+                    hasNextPage = !response.data.result.last;
+                    page += 1;
+                }
                 // role별로 멤버 수 카운트
                 const roleCounts = {};
-                members.forEach(member => {
+                allMembers.forEach(member => {
                     const role = member.role;
                     if (role !== 'ADMIN') {
                         this.totalMember += 1;

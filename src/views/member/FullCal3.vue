@@ -340,7 +340,7 @@ methods: {
       this.memberColors = {};
 
       axios
-          .get(`http://localhost:8080/reservation-service/reservation/list/child/${child.id}`)
+          .get(`${process.env.VUE_APP_API_BASE_URL}/reservation-service/reservation/list/child/${child.id}`)
           .then((response) => {
               const reservationEvents = response.data.map((reservation) => {
                   let memberName = reservation.memberName;
