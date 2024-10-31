@@ -119,14 +119,14 @@ export default {
     this.scrollToBottom(); // 메시지가 업데이트될 때 스크롤 하단으로 이동
   },
 
-  watch: {
-    '$route.params.chatRoomId': {
-      immediate: true,
-      handler(newValue) {
-        this.chatRoomId = newValue;
-      }
-    }
-  },
+  // watch: {
+  //   '$route.params.chatRoomId': {
+  //     immediate: true,
+  //     handler(newValue) {
+  //       this.chatRoomId = newValue;
+  //     }
+  //   }
+  // },
   methods: {
     connect() {
       const socket = new SockJS(`${process.env.VUE_APP_API_BASE_URL}/member-service/ws/chat`); 
