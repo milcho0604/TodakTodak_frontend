@@ -279,7 +279,7 @@ export default {
       });
     },
     kakaoLogin() {
-      window.location.href = 'http://localhost:8080/member-service/oauth2/authorization/kakao';
+      window.location.href = `${process.env.VUE_APP_API_BASE_URL}/member-service/oauth2/authorization/kakao`;
     },
     logout() {
       console.log("Logout function called"); // 호출 여부 확인
