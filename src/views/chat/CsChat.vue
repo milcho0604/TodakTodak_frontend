@@ -129,7 +129,7 @@ export default {
   },
   methods: {
     connect() {
-      const socket = new SockJS(`${process.env.VUE_APP_API_BASE_URL}/member-service/ws/chat`); 
+      const socket = new SockJS(`${process.env.VUE_APP_API_BASE_URL}/member-service/wss/chat`); 
       this.stompClient = Stomp.over(socket);
 
       // JWT 토큰을 localStorage에서 가져와 auth-token으로 설정

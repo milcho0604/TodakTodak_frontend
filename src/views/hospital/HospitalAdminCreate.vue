@@ -95,8 +95,8 @@
               <v-btn @click="openPostcode" class="address-btn" small variant="flat">주소 검색</v-btn>
             </template>
           </v-text-field>
-          <!-- <v-text-field v-model="form.latitude" variant="underlined" label="위도" readonly></v-text-field> -->
-          <!-- <v-text-field v-model="form.longitude" variant="underlined" label="경도" readonly></v-text-field> -->
+          <v-text-field v-model="form.latitude" variant="underlined" label="위도" readonly></v-text-field>
+          <v-text-field v-model="form.longitude" variant="underlined" label="경도" readonly></v-text-field>
 
           <h6 class="text-left">병원 번호</h6>
           <v-text-field 
