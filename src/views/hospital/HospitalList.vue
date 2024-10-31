@@ -19,7 +19,7 @@
             class="d-flex flex-row justify-center text-no-wrap"
             align="center"
             >
-                <h2>👶🏻 주변 소아과</h2>
+                <h2>주변 소아과</h2>
             </v-col>
 
             <v-col cols="4">
@@ -427,7 +427,7 @@ export default{
                     };
                 });
                 this.hospitalList = await Promise.all(
-                    response.data.result.map(async (hospital) => {
+                    this.hospitalList.map(async (hospital) => {
                         const waitingRef = ref(this.firebaseDatabase, `todakpadak/${hospital.name}`);
                         return new Promise((resolve) => {
                             onValue(waitingRef, (snapshot) => {
