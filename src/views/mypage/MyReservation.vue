@@ -84,7 +84,7 @@
                                 <v-chip v-if="reserveType == '지난예약' &&
                                     item.status == 'Completed'"
                                     :class="item.review ? 'review' : 'no-review'"
-                                    @click="item.review ? this.$router.push('/') : reviewData(item)"><img
+                                    @click="item.review ? () => {} : reviewData(item)"><img
                                         src="@/assets/pencil_img.png" /><strong>리뷰쓰기</strong>
                                 </v-chip>
                             </v-col>
@@ -113,7 +113,7 @@
                                 <v-chip v-if="reserveType == '지난예약' && item.reservationType == 'Immediate' &&
                                     item.status == 'Completed' && item.medichart != '진료중'"
                                     :class="item.review ? 'review' : 'no-review'"
-                                    @click="item.review ? this.$router.push('/') : reviewData(item)"><img
+                                    @click="item.review ? () => {} : reviewData(item)"><img
                                         src="@/assets/pencil_img.png" /><strong>리뷰쓰기</strong>
                                 </v-chip>
                             </v-col>

@@ -426,6 +426,7 @@ export default{
                         keywordList: hospital.keywords ? hospital.keywords.split(",") : []
                     };
                 });
+                console.log(this.hospitalList);
                 this.hospitalList = await Promise.all(
                     this.hospitalList.map(async (hospital) => {
                         const waitingRef = ref(this.firebaseDatabase, `todakpadak/${hospital.name}`);
