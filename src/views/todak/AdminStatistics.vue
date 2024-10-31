@@ -145,7 +145,6 @@ export default {
                 scales: {
                     y: {
                         beginAtZero: true,
-                        max: 10,
                         ticks: {
                             stepSize: 1
                         },
