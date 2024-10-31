@@ -343,8 +343,7 @@ export default {
                 const formattedDong = this.dong.replace(/\s+/g, '');
 
                 let params = {
-                    // dong: formattedDong, // 띄어쓰기 제거된 동 이름
-                    dong: encodeURIComponent(formattedDong),
+                    dong: formattedDong, // 띄어쓰기 제거된 동 이름
                     latitude: this.latitude,
                     longitude: this.longitude,
                     sort: this.sort,
