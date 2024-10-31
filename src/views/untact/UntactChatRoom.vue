@@ -137,8 +137,8 @@ export default {
       }
     },
     startWebSocketConnection() {
-      // this.socket = new WebSocket(`wss://server.todak.site/reservation-service/signal`);
-      this.socket = new WebSocket(`ws://localhost:8080/reservation-service/signal`);
+      this.socket = new WebSocket(`wss://server.todak.site/reservation-service/signal`);
+      // this.socket = new WebSocket(`ws://localhost:8080/reservation-service/signal`);
 
       this.socket.onopen = () => {
         console.log(`WebSocket connection opened to Room: #${this.localRoom}`);
