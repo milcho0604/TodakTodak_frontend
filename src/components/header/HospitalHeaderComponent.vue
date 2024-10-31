@@ -199,7 +199,7 @@ export default {
       }
     },
     kakaoLogin() {
-      window.location.href = 'http://localhost:8080/member-service/oauth2/authorization/kakao';
+      window.location.href = `${process.env.VUE_APP_API_BASE_URL}/member-service/oauth2/authorization/kakao`;
     },
     logout() {
       localStorage.removeItem('token'); // 토큰 제거
