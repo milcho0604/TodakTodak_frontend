@@ -677,7 +677,7 @@ button {
   background-color: white;
   margin-top: 20px;
   border-radius: 10px;
-  min-height: 470px;
+  min-height: 460px;
 }
 
 .subtitle {

@@ -63,8 +63,8 @@
                   size="default"
                   class="mr-2"
                   >
-                  {{ keyword }} 
-              </v-chip>
+                    {{ keyword }} 
+                  </v-chip>
                 </v-row>
               </v-card>
             </v-col>

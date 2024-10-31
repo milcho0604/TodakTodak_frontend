@@ -91,7 +91,7 @@
     </v-dialog>
 
     <!-- 리뷰 삭제 모달 -->
-    <v-dialog v-model="isDeleteModalOpen" width="630" persistent>
+    <v-dialog v-model="isDeleteModalOpen" width="400" persistent>
       <v-card class="review-delete-modal">
         <v-card-title class="delete-modal-title">리뷰 삭제</v-card-title>
         <v-card-text class="delete-modal-text">
@@ -365,7 +365,7 @@ export default {
 }
 
 .review-delete-modal {
-  width: 630px;
+  width: 400px;
   height: 221px;
   background-color: #FFFFFF;
   border-radius: 20px;
@@ -381,28 +381,31 @@ export default {
   font-size: 30px;
   text-align: center;
   color: #676767;
+  margin-top:20px;
 }
 
 .delete-modal-actions {
   display: flex;
   justify-content: center;
-  margin-top: 20px;
-  gap: 15px;
+
+  margin-bottom: 30px;
 }
 
 .cancel-btn {
   background-color: #D8D8D8;
   color: #676767;
   border-radius: 40px;
-  width: 117px;
+  width: 70px;
   height: 40px;
+  font-weight: bold;
 }
 
 .delete-btn {
-  background-color: #C2D7FF;
-  color: #00499E;
+  background-color: #FFAFAF;
+  color: #650101;
   border-radius: 40px;
-  width: 117px;
+  width: 70px;
   height: 40px;
+  font-weight: bold;
 }
 </style>
