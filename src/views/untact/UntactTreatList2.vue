@@ -7,7 +7,7 @@
                 <!-- 공간 맞추기위한 빈 col -->
             </v-col>
             <v-col cols="4" class="d-flex flex-row justify-center text-no-wrap" align="center">
-                <h2>💉비대면 진료</h2>
+                <!-- <h2>비대면 진료</h2> -->
             </v-col>
 
             <v-col cols="4">
@@ -58,7 +58,7 @@
             <!-- 의사리스트 -->
             <v-row>
                 <v-col cols="12" v-for="doctor in doctorList" :key="doctor.doctorId">
-                    <v-card style="width:800px !important;" variant="outlined" class="custom-card justify-center"
+                    <v-card style="width:800px !important;" variant="text" class="custom-card justify-center"
                         @click="goToDetail(doctor.memberEmail)" clickable>
                         <div class="d-flex flex-no-wrap">
                             <v-avatar size="80" class="ma-5">
@@ -225,12 +225,6 @@ export default {
 }
 
 .custom-card {
-    border: 2px solid #DBDBDB;
-    /* 테두리 색상만 변경 */
-    border-radius: 10px;
-    /* 모서리 둥글기 */
-    background-color: white !important;
-    /* 카드 내부 배경색 고정 */
     width: 1000px !important;
     margin: 0 auto;
     padding: 10px 0;

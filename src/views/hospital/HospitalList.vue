@@ -19,7 +19,7 @@
             class="d-flex flex-row justify-center text-no-wrap"
             align="center"
             >
-                <h2>주변 소아과</h2>
+                <!-- <h2>주변 소아과</h2> -->
             </v-col>
 
             <v-col cols="4">
@@ -91,7 +91,7 @@
                 <v-col cols="12" v-for="hospital in filteredHospitalList" :key="hospital.id">
                     <v-card
                         style="width:780px !important;"
-                        variant="outlined"
+                        variant="text"
                         class="custom-card justify-center"
                         @click="goToDetail(hospital.id)"
                         clickable
@@ -472,10 +472,7 @@ export default{
     width: 100% !important; /* 컨테이너의 폭을 100%로 설정 */
 }
 .custom-card {
-    border: 2px solid #DBDBDB; /* 테두리 색상만 변경 */
-    border-radius: 10px; /* 모서리 둥글기 */
-    background-color: white !important; /* 카드 내부 배경색 고정 */
-    /* width: 1000px !important; */
+    width: 1000px !important;
     margin: 0 auto;
   }
 /* v-avatar border-radius */
