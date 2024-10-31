@@ -280,6 +280,7 @@ export default {
         this.stompClient.subscribe(`/sub/${id}`, message => {
           console.log("구독시작");
           const receivedMessage = JSON.parse(message.body);
+          console.log(receivedMessage);
           this.messages.push({
             senderId: receivedMessage.senderId,
             senderName: receivedMessage.senderName,
