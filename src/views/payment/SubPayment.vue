@@ -1,20 +1,23 @@
 <template>
-    <v-container class="signin-container" fluid>
+    <v-container style="width: 100%;" class="no-padding" fluid>
         <div class="banner">
             <!-- 배너 carousel -->
-            <v-carousel class="custom-carousel" show-arrows="hover" cycle hide-delimiter-background>
+            <v-carousel class="custom-carousel no-padding" show-arrows="hover" cycle hide-delimiter-background>
                 <v-carousel-item v-for="(slide, i) in slides" :key="i">
                     <v-img :src="slide" class="carousel-image" cover></v-img>
                     <span class="inner-text inter-bold">
-                      정기결제 이후, 토닥 서비스로 병원의 성장을 도약시키는 스마트한 선택을 경험하세요.
+                        정기 결제로 토닥 서비스의 스마트한 기능을 경험하세요.
                     </span>
                 </v-carousel-item>
             </v-carousel>
             <div class="carousel-button" color="primary" @click="showDialog = true">
-                  <PaymentModal v-model="showDialog" />
+                <PaymentModal v-model="showDialog" />
                 <span class="inter-bold">정기 결제하기</span>
             </div>
         </div>
+    </v-container>
+    <v-container class="signin-container" fluid>
+
         <v-spacer :style="{ height: '70px' }"></v-spacer>
         <v-row style="width: 80%; margin: 0 auto;">
             <v-col>
@@ -88,8 +91,8 @@
                 </div>
             </v-col>
             <v-col cols="12" class="text-center">
-                <div class="doib-button" color="primary"  @click="showDialog = true">
-              <PaymentModal v-model="showDialog" />
+                <div class="doib-button" color="primary" @click="showDialog = true">
+                    <PaymentModal v-model="showDialog" />
                     <span class="inter-bold">토닥과 함께하기</span>
                 </div>
             </v-col>
@@ -112,18 +115,27 @@ export default {
         }
     },
     components: {
-    PaymentModal,
-  },
+        PaymentModal,
+    },
 }
 </script>
 <style scoped>
+.no-padding {
+    padding: 0 !important;
+}
+
 .custom-carousel {
     width: 100%;
 }
+
+.custom-carousel .v-carousel__item {
+    padding: 0 !important;
+    /* 각 carousel item의 padding 제거 */
+}
+
 .carousel-image {
     width: 100%;
     filter: brightness(0.7);
-    /* 이미지의 밝기를 50%로 줄임 */
 }
 
 .carousel-button {
@@ -148,7 +160,7 @@ export default {
 .inner-text {
     position: absolute;
     bottom: 60%;
-    right: 33%;
+    right: 15%;
     color: white;
     font-size: 45px;
 }
@@ -206,9 +218,9 @@ export default {
 }
 
 .doib-box {
-    background: linear-gradient(to left, rgba(254, 254, 254, 0.125), rgba(158, 158, 158, 0.5)), 
-    url('/src/assets/doctor-image.png') no-repeat center center;
-background-size: cover;
+    background: linear-gradient(to left, rgba(254, 254, 254, 0.125), rgba(158, 158, 158, 0.5)),
+        url('/src/assets/doctor-image.png') no-repeat center center;
+    background-size: cover;
     width: 79%;
     height: 250px;
     margin: 0 auto;
