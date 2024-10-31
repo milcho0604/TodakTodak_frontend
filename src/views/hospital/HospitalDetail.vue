@@ -11,7 +11,7 @@
 
         <v-row>
             <h2 class="ml-5">{{ hospital.name }}</h2>
-            <v-icon color="#00499E" class="ml-2 mt-2" style="font-size:22px">mdi-star</v-icon>
+            <v-icon color="#0075FF" class="ml-2 mt-2" style="font-size:22px">mdi-star</v-icon>
             <v-text class="ml-1 mt-1 rating-text">
                 {{ hospital.averageRating }} ({{ hospital.reviewCount }})
             </v-text>

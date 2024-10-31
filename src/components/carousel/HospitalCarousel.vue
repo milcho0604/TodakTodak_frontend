@@ -57,11 +57,12 @@
                 <!-- 병원키워드 -->
                 <v-row class="ml-5">
                   <v-chip
-                  v-for="(keyword, index) in hospital.keywordList"
+                  v-for="(keyword, index) in hospital.keywordList.slice(0, 4)"
                   :key="index"
                   color="#0075FF"
-                  size="default"
+                  size="small"
                   class="mr-2"
+                  style="font-size: 11px;"
                   >
                     {{ keyword }} 
                   </v-chip>

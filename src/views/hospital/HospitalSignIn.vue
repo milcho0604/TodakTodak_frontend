@@ -1,8 +1,8 @@
 <template>
-    <v-container class="signin-container" fluid>
+    <v-contianer>
         <div class="banner">
             <!-- 배너 carousel -->
-            <v-carousel class="custom-carousel" show-arrows="hover" cycle hide-delimiter-background>
+            <v-carousel class="custom-carousel no-padding" show-arrows="hover" cycle hide-delimiter-background>
                 <v-carousel-item v-for="(slide, i) in slides" :key="i">
                     <v-img :src="slide" class="carousel-image" cover></v-img>
                     <span class="inner-text inter-bold">스마트한 병원의 선택, 토닥</span>
@@ -12,6 +12,9 @@
                 <span class="inter-bold">도입 신청하기</span>
             </div>
         </div>
+    </v-contianer>
+    <v-container class="signin-container" fluid>
+
         <v-spacer :style="{ height: '70px' }"></v-spacer>
         <v-row style="width: 80%; margin: 0 auto;">
             <v-col>

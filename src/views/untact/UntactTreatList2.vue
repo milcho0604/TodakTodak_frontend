@@ -1,21 +1,6 @@
 <template>
     <v-container fluid class="custom-container">
         <v-spacer :style="{ height: '50px' }"></v-spacer>
-        <!-- 주변소아과, gps -->
-        <v-row>
-            <v-col cols="4">
-                <!-- 공간 맞추기위한 빈 col -->
-            </v-col>
-            <v-col cols="4" class="d-flex flex-row justify-center text-no-wrap" align="center">
-                <h2>💉비대면 진료</h2>
-            </v-col>
-
-            <v-col cols="4">
-                <!-- 공간 맞추기위한 빈 col -->
-            </v-col>
-        </v-row>
-
-        <v-spacer :style="{ height: '30px' }"></v-spacer>
 
         <!-- 검색창 -->
         <v-row>
@@ -57,8 +42,8 @@
         <v-container class="hospital-list-container d-flex justify-center align-center">
             <!-- 의사리스트 -->
             <v-row>
-                <v-col cols="12" v-for="doctor in doctorList" :key="doctor.doctorId">
-                    <v-card style="width:800px !important;" variant="outlined" class="custom-card justify-center"
+                <v-col cols="12" v-for="doctor in doctorList" :key="doctor.doctorId" class=no-padding>
+                    <v-card style="width:800px !important;" variant="text" class="custom-card justify-center"
                         @click="goToDetail(doctor.memberEmail)" clickable>
                         <div class="d-flex flex-no-wrap">
                             <v-avatar size="80" class="ma-5">
@@ -87,11 +72,13 @@
                                 <!-- 병원 평균평점, 리뷰개수 -->
                                 <div>
                                     <v-icon color="#0075FF">mdi-star</v-icon>
-                                    <v-text style="color:#0075FF; font-weight:bold;">{{ doctor.reviewPoint }} ({{ doctor.reviewCount }})</v-text>
+                                    <v-text style="color:#0075FF; font-weight:bold;">{{ doctor.reviewPoint }} ({{
+                                        doctor.reviewCount }})</v-text>
                                 </div>
                             </div>
                         </div>
                     </v-card>
+                    <v-divider style="width: 750px; margin: 0 auto;"></v-divider>
                 </v-col>
             </v-row>
         </v-container>
@@ -119,7 +106,6 @@
                     @click="getCurrentLocation">
                     현위치 병원 보기
                 </v-btn>
-
             </v-card>
         </v-dialog>
 
@@ -225,12 +211,6 @@ export default {
 }
 
 .custom-card {
-    border: 2px solid #DBDBDB;
-    /* 테두리 색상만 변경 */
-    border-radius: 10px;
-    /* 모서리 둥글기 */
-    background-color: white !important;
-    /* 카드 내부 배경색 고정 */
     width: 1000px !important;
     margin: 0 auto;
     padding: 10px 0;
@@ -300,5 +280,9 @@ export default {
     margin-left: auto;
     margin-right: auto;
     /* 버튼을 수평 중앙에 정렬 */
+}
+
+.no-padding {
+    padding: 0 !important;
 }
 </style>

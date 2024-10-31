@@ -345,6 +345,7 @@ export default {
 
 .untactButton {
     text-align: center;
+    cursor: pointer;
 }
 
 .no-untact {
