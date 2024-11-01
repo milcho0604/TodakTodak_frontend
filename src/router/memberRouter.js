@@ -10,6 +10,17 @@ import MyNotification from "@/views/member/MyNotification.vue";
 import AdminLoginPage from "@/views/member/AdminLoginPage.vue";
 import HospitalAdminLogin from "@/views/member/HospitalAdminLogin.vue";
 import { jwtDecode } from "jwt-decode";
+
+
+// 비동기 서비스 워커 준비 및 지연 함수
+async function checkServiceWorkerReady() {
+    if ('serviceWorker' in navigator) {
+      await navigator.serviceWorker.ready;
+      console.log("Service Worker is ready for FCM token request.");
+      setTimeout(() => console.log("2-second delay completed"), 2000);
+    }
+  }
+
 export const memberRouter = [
     {
         path: '/member/update',
@@ -77,13 +88,13 @@ export const memberRouter = [
                 localStorage.setItem("role", decoded.role);
 
                 // 서비스 워커가 준비 상태인지 확인하고 2초의 지연을 줌
-                if ('serviceWorker' in navigator) {
-                    await navigator.serviceWorker.ready;
-                    console.log("Service Worker is ready for FCM token request.");
-                    await new Promise(resolve => setTimeout(resolve, 2000)); // 2초 지연
-                }
+                // if ('serviceWorker' in navigator) {
+                //     await navigator.serviceWorker.ready;
+                //     console.log("Service Worker is ready for FCM token request.");
+                //     await new Promise(resolve => setTimeout(resolve, 2000)); // 2초 지연
+                // }
 
-
+                checkServiceWorkerReady();
                 // // FCM 토큰 발급 시도 (최대 3회 재시도)
                 let fcmToken;
                 for (let attempt = 0; attempt < 5; attempt++) {
