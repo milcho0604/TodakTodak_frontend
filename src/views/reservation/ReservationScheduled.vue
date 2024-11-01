@@ -468,7 +468,7 @@ export default {
                 const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/member-service/child/`);
                 this.childOptions = response.data.result;
                 console.log(this.childOptions)
-            } catch (e) {           
+            } catch (e) {
                 console.log(e);
             }
         },
@@ -524,12 +524,15 @@ export default {
             })
 
             console.log(breakStart, breakEnd);
-            const start = this.timeToMinutes(openTime);
-            const end = this.timeToMinutes(closeTime);
+            let start;
+            let end;
+            if (breakStart || breakEnd) {
+                start = this.timeToMinutes(openTime);
+                end = this.timeToMinutes(closeTime);
 
-            breakStart = this.timeToMinutes(breakStart);
-            breakEnd = this.timeToMinutes(breakEnd);
-
+                breakStart = this.timeToMinutes(breakStart);
+                breakEnd = this.timeToMinutes(breakEnd);
+            }
             for (let i = start; i < end; i += 30) {
 
                 if (i < breakStart || i >= breakEnd) {
