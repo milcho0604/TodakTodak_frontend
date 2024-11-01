@@ -511,9 +511,10 @@ export default {
 
             const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/reservation-service/hospital-operating-hours/getBreakTime/${this.hospitalId}`);
             const todayOperating = response.data;
+            console.log(todayOperating);
+            console.log(response);
             let breakStart = '';
             let breakEnd = '';
-
             todayOperating.find(item => {
                 if (item.dayOfWeek == dayOfWeek) {
                     breakStart = item.breakStart
@@ -593,7 +594,6 @@ export default {
 
                 const selectDay = this.doctor.operatingHours.filter(item => item.dayOfWeek === dayOfWeek);
                 console.log(selectDay);
-                console.log(selectDay[0].openTime, selectDay[0].closeTime, dayOfWeek);
                 this.operatingTime(selectDay[0].openTime, selectDay[0].closeTime, dayOfWeek);
                 this.fetchDoctorTime();
             } catch (e) {
