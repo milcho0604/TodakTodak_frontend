@@ -534,7 +534,7 @@ export default {
                 }
             }
 
-            console.log(this.doctorTimeSlots);
+            console.log("나 의사 시간", this.doctorTimeSlots);
         },
         timeToMinutes(time) {
             const [hours, minutes] = time.split(':').map(Number);
