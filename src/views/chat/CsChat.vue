@@ -101,7 +101,7 @@ export default {
   },
   async mounted() {
     if (!this.isSubscribed) {
-    // this.stompClient.subscribe(...);
+
     this.isSubscribed = true;
 }
     this.connect(); // 웹소켓 connect
@@ -191,7 +191,7 @@ connect() {
       try {
         // 구독 중복 방지
         if (!this.isSubscribed) {
-          this.stompClient.watch(`/sub/${this.chatRoomId}`).subscribe(message => {
+          this.stompClient.subcribe(`/sub/${this.chatRoomId}`, message => {
             console.log("구독시작");
             const receivedMessage = JSON.parse(message.body);
             this.messages.push({
@@ -221,7 +221,6 @@ connect() {
     }
   );
 },
-
 
 sendMessage() {
   if (this.messageToSend.trim() !== '') {
