@@ -449,6 +449,7 @@ export default {
         },
         async fetchDoctorList() {
             try {
+                console.log(this.hospitalId);
                 const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/member-service/member/doctorList/${this.hospitalId}`);
                 this.doctorList = response.data.result.content;
                 console.log(response)
