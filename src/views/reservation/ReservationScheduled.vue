@@ -537,6 +537,8 @@ export default {
 
                 if (i < breakStart || i >= breakEnd) {
                     this.doctorTimeSlots.push(this.minutesToTime(i))
+                }else if(breakStart || breakEnd){
+                    this.doctorTimeSlots.push(this.minutesToTime(i))
                 }
             }
 
