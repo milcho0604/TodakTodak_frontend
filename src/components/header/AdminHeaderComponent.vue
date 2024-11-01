@@ -141,8 +141,8 @@
             </v-list>
           </v-menu>
           
-          <v-btn v-if="!isLogin" @click="kakaoLogin" class="mb-2">
-            <img src="@/assets/kakao_login_small.png" alt="카카오로그인 버튼" class="mb-1">
+          <v-btn v-if="!isLogin" @click="kakaoLogin">
+            <img src="@/assets/kakao_login_small.png" alt="카카오로그인 버튼">
           </v-btn>
         </v-col>
       </v-row>
@@ -151,280 +151,157 @@
 </template>
 
 <script>
-import { Stomp } from "@stomp/stompjs";
-import SockJS from "sockjs-client";
-// import AdminCsListForCsChat from "./AdminCsListForCsChat.vue";
-// import PadakAdminSideBar from "@/components/sidebar/PadakAdminSideBar.vue";
-import axios from "axios";
+import axios from 'axios'
 
 export default {
-  components: {
-    // AdminCsListForCsChat,
-    // PadakAdminSideBar
-  },
   data() {
     return {
-      selectedChatRoomId: null,  // 선택된 채팅방 ID를 저장할 변수
-      stompClient: null,
-      subscription: null,  // 구독 객체
-      isSubscribed: false,  // 구독 상태
-      currentUserName: null,  // 현재 접속한 user 이름
-      messageToSend: '',  // 보낼 메시지
-      messages: [],  // 수신된 메시지 저장
-      chatRoomId: '',  // 채팅방 ID
-      memberEmail: '',
-      chatRoomList: [],
-      itemsPerPage: 10,
-      csPage: 1,
-      memberInfo: null,  // 채팅 건 회원정보
-      memberId: '',  // 채팅 건 회원 ID
-      csContents: '',  // 상담 내용
-      csStatus: '',  // CS 처리 상태 (처리 중, 처리 완료)
-      csId: '',  // CS ID
-      statusItems: [
-        { key: 'INPROCESS', value: '처리중' },
-        { key: 'COMPLETED', value: '처리완료' }
+      isLogin: false, // 로그인 상태 확인 변수
+      name: "김파닥",
+      profileImgUrl:'https://todak-file.s3.ap-northeast-2.amazonaws.com/default-images/default_user_image.png',
+      memberId:'',
+      role:'',
+      email:'',
+      notifications: [], // 알림 목록
+      unreadCount: 0, // 읽지 않은 알림 수
+      notificationMenu: false, // 알림 메뉴 열림 여부
+      filter: 'all', // 필터 상태: 'all', 'unread', 'read', 'today'
+      filterOptions: [
+        { value: 'all', text: '전체' },
+        { value: 'unread', text: '읽지 않은 알림' },
+        { value: 'read', text: '읽은 알림' },
+        { value: 'today', text: '오늘 알림' }
       ],
-      cs: 'https://todak-file.s3.ap-northeast-2.amazonaws.com/default-images/cs_center_image.png',
-      csPostModal: false,
-      csPostModalTitle : "",
-      csPostModalContents: "",
-      isEditMode: true,  // 편집 모드 상태
-      hasCsData: false,  // 해당 채팅방에 CS 데이터가 있는지
-      currentPage: 1,  // 현재 페이지
-      totalPages: 0,  // 총 페이지 수
+      filteredNotifications: [],
     };
   },
-  created() {
-    this.loadAdminChatList();  // 채팅 리스트 로드
-    this.currentUserName = localStorage.getItem('name');  // 현재 접속한 user 이름
+  created(){
 
-    // 새로고침 또는 탭 닫기 시 WebSocket 연결 해제
-    window.addEventListener('beforeunload', this.disconnect);
-  },
-  beforeUnmount() {
-    this.disconnect();  // 컴포넌트 언마운트 시 웹소켓 연결 종료
-    window.removeEventListener('beforeunload', this.disconnect);  // 이벤트 리스너 제거
-  },
-  updated() {
-    this.scrollToBottom();  // 메시지가 업데이트될 때 스크롤 하단으로 이동
-  },
-  watch: {
-    currentPage(newCurrentPage) {
-      if (newCurrentPage) {
-        this.loadAdminChatList();
-      }
+    this.memberId = localStorage.getItem("memberId")
+    this.email = localStorage.getItem("email")
+    const token = localStorage.getItem("token")
+    if(token){
+      // localStorage에 token 있으면 로그인된 상태
+      this.isLogin = true;
+      this.loadUserProfile();
+      this.fetchNotifications();
     }
+
+  },
+  mounted() {
+
   },
   methods: {
-    connect(id) {
-      if (this.isSubscribed) return;  // 이미 구독된 경우 실행하지 않음
+    async loadUserProfile(){
+      try{
+        const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/member-service/member/id/${this.memberId}`);
+        console.log(response.data);
+        this.name = response.data.result.name;
+        this.role = response.data.result.role;
+        // 프로필 이미지가 null이면 기본 이미지 경로로 설정
+        this.profileImgUrl = response.data.result.profileImgUrl 
+            ? response.data.result.profileImgUrl
+            : "https://todak-file.s3.ap-northeast-2.amazonaws.com/default-images/default_user_image.png";
+        localStorage.setItem('name', this.name);
+        localStorage.setItem('profileImgUrl', this.profileImgUrl);
 
-      this.chatRoomId = id;
-      const socket = new SockJS(`${process.env.VUE_APP_API_BASE_URL}/member-service/ws/chat`);
-      this.stompClient = Stomp.over(socket);
-
-      const token = localStorage.getItem('token');
-      this.stompClient.connect(
-        { 'token': `Bearer ${token}` }, 
-        frame => {
-          console.log('Connected: ' + frame);
-
-          // 구독 로직
-          this.subscription = this.stompClient.subscribe(`/sub/${id}`, message => {
-            console.log("구독 시작");
-            const receivedMessage = JSON.parse(message.body);
-            this.messages.push({
-              senderId: receivedMessage.senderId,
-              senderName: receivedMessage.senderName,
-              contents: receivedMessage.contents,
-              senderProfileImgUrl: receivedMessage.senderProfileImgUrl,
-              createdAt: receivedMessage.createdAt
-            });
-            this.scrollToBottom();  // 새로운 메시지 수신 시 스크롤 하단으로 이동
-          });
-
-          this.isSubscribed = true;  // 구독 완료 상태 설정
-        },
-        error => {
-          console.error('Connection error:', error);
-          setTimeout(() => this.connect(id), 5000);  // 연결 실패 시 재시도
-        }
-      );
-    },
-    async sendMessage() {
-      if (this.messageToSend.trim() !== '') {
-        if (this.stompClient && this.stompClient.connected) {
-          const message = {
-            chatRoomId: this.chatRoomId,
-            contents: this.messageToSend,
-            token: localStorage.getItem('token')             
-          };
-
-          this.stompClient.send(`/pub/${this.chatRoomId}`, {}, JSON.stringify(message));
-          this.messageToSend = '';  // 입력 필드 초기화
-          this.scrollToBottom();
-        } else {
-          console.error('STOMP client is not connected.');  // 연결되지 않았을 때의 에러 처리
-          alert('채팅 서버에 연결되지 않았습니다.');  // 사용자에게 알림
-        }
+      }catch(error){
+        console.error("사용자 프로필 loading error : ",error);
       }
     },
-    disconnect() {
-      return new Promise((resolve, reject) => {  
-        if (this.stompClient && this.stompClient.connected) {
-          // 구독 해제
-          if (this.subscription) {
-            this.subscription.unsubscribe();  // 구독 해제
-            this.isSubscribed = false;  // 구독 상태 초기화
-          }
-          try {
-            this.stompClient.disconnect(() => {
-              this.stompClient = null;  // stompClient 초기화
-              resolve();
-            });
-          } catch (error) {
-            reject(error);
-          }
-        } else {
-          resolve();  // 이미 연결되지 않은 상태일 경우
+    kakaoLogin() {
+      window.location.href = 'http://localhost:8080/member-service/oauth2/authorization/kakao';
+    },
+    logout() {
+      localStorage.removeItem('token'); // 토큰 제거
+      localStorage.removeItem('fcmToken') // fcm 토큰 제거
+      localStorage.removeItem('role');
+      this.isLogin = false; // 로그아웃 후 로그인 상태 업데이트
+      window.location.href = "/"; // 로그아웃 후 메인 페이지로 이동
+    },
+    navigateTo(route) {
+      this.$router.push(route); // 해당 경로로 이동
+    },
+    toggleNotificationMenu() {
+      this.notificationMenu = !this.notificationMenu;
+    },
+    async fetchNotifications() {
+      try {
+        const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/member-service/fcm/list`);
+        this.notifications = response.data.result.content;
+        console.log(this.notifications)
+        this.updateUnreadCount(); // 읽지 않은 알림 수 업데이트
+        this.applyFilter();
+      } catch (error) {
+        console.error("알림 데이터를 불러오는 중 오류 발생:", error);
+      }
+    },
+    updateUnreadCount() {
+      this.unreadCount = this.notifications.filter(notification => !notification.read).length;
+    },
+    applyFilter() {
+      if (this.filter === 'unread') {
+        this.filteredNotifications = this.notifications.filter(notification => !notification.read);
+      } else if (this.filter === 'read') {
+        this.filteredNotifications = this.notifications.filter(notification => notification.read);
+      } else if (this.filter === 'today') {
+        const today = new Date().toISOString().split('T')[0];
+        this.filteredNotifications = this.notifications.filter(notification => notification.createdAt.startsWith(today));
+      } else {
+        this.filteredNotifications = this.notifications;
+      }
+      console.log(this.filteredNotifications);
+    },
+    async handleNotificationClick(notification) {
+      if (!notification.read) {
+        try {
+          await axios.get(`${process.env.VUE_APP_API_BASE_URL}/member-service/fcm/read/${notification.id}`);
+          notification.read = true;
+          this.updateUnreadCount();
+        } catch (error) {
+          console.error("알림 읽음 처리 중 오류 발생:", error);
         }
+      }
+      window.location.href = notification.url || '/';
+    },
+    setFilter(filter) {
+      this.filter = filter;
+    },
+    formatDate(dateString) {
+      const date = new Date(dateString);
+      return date.toLocaleString('ko-KR', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
       });
     },
-    async selectChatRoom(id) {
-      this.selectedChatRoomId = id;  // 선택한 채팅방 ID
-      this.chatRoomId = id;  // 채팅방 ID
-      this.loadCSbyChatRoomId(id);  // 채팅방 ID로 CS 조회
-      this.scrollToBottom();
-      try {
-        this.messages = [];
-        await this.disconnect();  // 기존 연결 해제
-        await this.connect(id);  // 해당 채팅방 ID로 웹소켓 연결
-        await this.loadChatMessages(id);  // 해당 채팅방 메시지 리스트 조회
+    toMemberList() {
+            this.$router.push('/admin/member/list');
+        },
+    toCsChat() {
+        this.$router.push('/admin/cs/center');
+    },
+    toCsList(){
+        this.$router.push('/admin/cs/list')
+    },
+    toReportList() {
+        this.$router.push('/admin/todak/report');
+    },
+    toPaymentList() {
+        this.$router.push('/admin/payment/list');
+    },
+    toHospitalList() {
+        this.$router.push('/admin/hospital/list');
+    },
+    toDashBoard() {
+        this.$router.push('/admin/todak/statistics');
+    },
 
-        const member = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/member-service/chat/member/info/chatroom/${id}`);
-        this.memberInfo = member.data.result;
-        this.$nextTick(() => {
-          this.$refs.csChatList.fetchCsList();  // memberInfo가 설정된 후 호출
-        });
-
-      } catch (e) {
-        console.error(e);
-      }
-    },
-    async loadChatMessages(id) {
-      try {
-        const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/member-service/chat/chatroom/${id}/messages`);
-        this.messages = response.data.result;
-      } catch (error) {
-        console.error(error);
-      }
-    },
-    async loadAdminChatList() {
-      try {
-        const params = { page: this.currentPage - 1 };
-        const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/member-service/chat/chatroom/list/admin`, { params });
-        this.chatRoomList = response.data.result.content;
-        this.totalPages = response.data.result.totalPages;
-      } catch (error) {
-        console.error(error);
-      }
-    },
-    async loadCSbyChatRoomId(id) {
-      try {
-        const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/member-service/cs/detail/chatroom-id/${id}`);
-        const result = response.data.result;
-        if (result && result.length > 0) {
-          this.csContents = result[0].csContents;
-          this.csStatus = result[0].csStatus;
-          this.csId = result[0].id;
-          this.isEditMode = false;
-          this.hasCsData = true;
-        } else {
-          this.csContents = '';
-          this.csStatus = '';
-          this.isEditMode = true;
-          this.hasCsData = false;
-        }
-      } catch (error) {
-        console.error(error);
-      }
-    },
-    async saveConsultation() {
-      const selectedStatus = this.statusItems.find(item => item.value === this.csStatus)?.key;
-      const body = {
-        chatRoomId: this.chatRoomId,
-        csContents: this.csContents,
-        csStatus: selectedStatus
-      };
-      
-      try {
-        const response = await axios.post(`${process.env.VUE_APP_API_BASE_URL}/member-service/cs/create`, body);
-        console.log(response)
-        this.csPostModal = true;
-        this.csPostModalTitle = 'CS 상담내용 저장 완료';
-        this.csPostModalContents = 'CS 상담 내용이 성공적으로 저장되었습니다!';
-        this.$refs.csChatList.fetchCsList();
-        this.isEditMode = false;
-        this.loadCSbyChatRoomId(this.chatRoomId);
-      } catch (error) {
-        console.error(error);
-      }
-    },
-    async updateConsultation() {
-      const selectedStatus = this.statusItems.find(item => item.value === this.csStatus)?.key;
-      const body = {
-        id: this.csId,
-        chatRoomId: this.chatRoomId,
-        csContents: this.csContents,
-        csStatus: selectedStatus
-      };
-      
-      try {
-        const response = await axios.post(`${process.env.VUE_APP_API_BASE_URL}/member-service/cs/update`, body);
-        console.log(response)
-        this.csPostModal = true;
-        this.csPostModalTitle = 'CS 상담내용 수정 완료';
-        this.csPostModalContents = 'CS 상담 내용이 성공적으로 수정되었습니다!';
-        this.$refs.csChatList.fetchCsList();
-        this.isEditMode = false;
-        this.loadCSbyChatRoomId(this.chatRoomId);
-      } catch (error) {
-        console.error(error);
-      }
-    },
-    async deleteCsData() {
-      try {
-        const response = await axios.delete(`${process.env.VUE_APP_API_BASE_URL}/member-service/cs/delete/${this.csId}`);
-        console.log(response)
-        this.csPostModal = true;
-        this.csPostModalTitle = 'CS 상담내용 삭제 완료';
-        this.csPostModalContents = 'CS 상담 내용이 성공적으로 삭제되었습니다!';
-        this.$refs.csChatList.fetchCsList();
-        this.isEditMode = false;
-        this.loadCSbyChatRoomId(this.chatRoomId);
-      } catch (error) {
-        console.error(error);
-      }
-    },
-    formatDate(date) {
-      return new Date(date).toLocaleString();
-    },
-    scrollToBottom() {
-      const chatBox = document.querySelector('.chat-box');
-      if (chatBox) {
-        setTimeout(() => {
-          chatBox.scrollTop = chatBox.scrollHeight;
-        }, 100);
-      }
-    },
-    toggleEditMode() {
-      this.isEditMode = !this.isEditMode;
-    }
   }
 };
 </script>
-
 
 <style scoped>
 .logo {
@@ -527,7 +404,7 @@ export default {
   max-height: 24px;
 }
 
-.v-img__img--contain {
+.v-img__img—contain {
   width: 24px !important;
   height: 24px !important;
   object-fit: contain !important;
