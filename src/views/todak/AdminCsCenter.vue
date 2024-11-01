@@ -284,6 +284,7 @@ export default {
         this.subscription = this.stompClient.subscribe(`/sub/${id}`, message => {
           console.log("구독시작");
           const receivedMessage = JSON.parse(message.body);
+          console.log("얍" + receivedMessage);
             this.messages.push(receivedMessage);
           this.scrollToBottom(); // 새로운 메시지 수신 시 스크롤 하단으로 이동
         });
