@@ -593,6 +593,7 @@ export default {
 
                 const selectDay = this.doctor.operatingHours.filter(item => item.dayOfWeek === dayOfWeek);
                 console.log(selectDay);
+                console.log(selectDay[0].openTime, selectDay[0].closeTime, dayOfWeek);
                 this.operatingTime(selectDay[0].openTime, selectDay[0].closeTime, dayOfWeek);
                 this.fetchDoctorTime();
             } catch (e) {
