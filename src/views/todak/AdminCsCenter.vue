@@ -225,6 +225,8 @@ export default {
       chatRoomId: '',  // 채팅방 id
       memberEmail: '',
       chatRoomList: [],
+      subscription: null,
+      isSubscribed: false,
       itemsPerPage: 10,
       csPage: 1,
       memberInfo: null, // 채팅 건 회원정보
@@ -265,9 +267,10 @@ export default {
 
   },
   methods: {
-    connect(id) {
+    async connect(id) {
+      if (this.stompClient && this.stompClient.connected) return;  // 중복 연결 방지
       this.chatRoomId = id;
-      const socket = new SockJS('http://localhost:8080/member-service/ws/chat');
+      const socket = new SockJS(`${process.env.VUE_APP_API_BASE_URL}/member-service/ws/chat`);
       this.stompClient = Stomp.over(socket);
 
       // JWT 토큰을 localStorage에서 가져와 auth-token으로 설정
@@ -277,23 +280,16 @@ export default {
       }, frame => {
         console.log('Connected: ' + frame);
 
-        this.stompClient.subscribe(`/sub/${id}`, message => {
+        this.subscription = this.stompClient.subscribe(`/sub/${id}`, message => {
           console.log("구독시작");
           const receivedMessage = JSON.parse(message.body);
-          this.messages.push({
-            senderId: receivedMessage.senderId,
-            senderName: receivedMessage.senderName,
-            contents: receivedMessage.contents,
-            senderProfileImgUrl: receivedMessage.senderProfileImgUrl,
-            createdAt: receivedMessage.createdAt
-          });
+            this.messages.push(receivedMessage);
           this.scrollToBottom(); // 새로운 메시지 수신 시 스크롤 하단으로 이동
         });
+        this.isSubscribed = true;  // 구독 완료 상태 설정
       }, error => {
         console.error('Connection error:', error);
-        setTimeout(() => {
-          this.connect(); // 연결 실패 시 재시도
-        }, 5000);
+        setTimeout(() => this.connect(), 5000);
       });
     },
     sendMessage() {
@@ -316,25 +312,27 @@ export default {
       }
     },
     disconnect() {
-      return new Promise((resolve, reject) => {  
-          if (this.stompClient && this.stompClient.connected) {
-              // 구독 해제
-              if (this.subscription) {
-                  this.stompClient.unsubscribe(this.subscription);
-              }
-              try {
-                  this.stompClient.disconnect(() => {
-                      this.isConnected = false; // 연결 상태 업데이트
-                      resolve();
-                  });
-              } catch (error) {
-                  reject(error);
-              }
-          } else {
-              resolve(); // 이미 연결되지 않은 상태일 경우
+  return new Promise((resolve, reject) => {  
+      if (this.stompClient && this.stompClient.connected) {
+          // 구독 해제
+          if (this.subscription) {
+              this.stompClient.unsubscribe();
+              this.subscription = null; // 구독 초기화
           }
-      });
-    },
+          try {
+              this.stompClient.disconnect(() => {
+                  this.stompClient = null;  // 연결 객체 초기화
+                  this.isConnected = false; // 연결 상태 업데이트
+                  resolve();
+              });
+          } catch (error) {
+              reject(error);
+          }
+      } else {
+          resolve(); // 이미 연결되지 않은 상태일 경우
+      }
+  });
+},
     async selectChatRoom(id) {
       this.selectedChatRoomId = id; // 선택한 채팅방 id
       this.chatRoomId = id; // 채팅방 id
