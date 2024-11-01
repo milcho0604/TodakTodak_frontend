@@ -344,7 +344,7 @@ export default {
         async fetchDoctorList() {
             try {
                 const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/member-service/member/doctorList/${this.hospitalId}`);
-
+                console.log(response);
                 this.doctorList = response.data.result.content.map(item => {
                     const waitingEntry = this.waitingData ? this.waitingData[item.id] : null;
                     let waitingTurn = 0;
