@@ -281,37 +281,36 @@ export default {
     kakaoLogin() {
       window.location.href = `${process.env.VUE_APP_API_BASE_URL}/member-service/oauth2/authorization/kakao`;
     },
-    logout() {
-      console.log("Logout function called"); // 호출 여부 확인
-      
-      // 현재 사용자의 이메일 가져오기
-      const memberEmail = localStorage.getItem('email');
-      console.log("Retrieved email from localStorage:", memberEmail)
-      // 로그아웃 API 호출
-      
-      axios.post(`${process.env.VUE_APP_API_BASE_URL}/member-service/fcm/logout`, {
-        // axios.post('http://localhost:8080/member-service/fcm/logout', {
-          memberEmail: memberEmail
-      })
-      .then((response) => {
-        console.log(response.data); // 로그아웃 성공 메시지 출력
+    async logout() {
+  console.log("Logout function called"); // 호출 여부 확인
+  
+  // 현재 사용자의 이메일 가져오기
+  const memberEmail = localStorage.getItem('email');
+  console.log("Retrieved email from localStorage:", memberEmail);
+  
+  try {
+    // 로그아웃 API 호출
+    const response = await axios.post(`${process.env.VUE_APP_API_BASE_URL}/member-service/fcm/logout`, {
+      memberEmail: memberEmail
+    });
+    
+    console.log(response.data); // 로그아웃 성공 메시지 출력
 
+    // 로컬 저장소에서 사용자 데이터 제거
+    await removeFcmToken(); // Firebase FCM 토큰 삭제 (removeFcmToken이 비동기 함수라면)
+    localStorage.removeItem('token');
+    localStorage.removeItem('role');
+    localStorage.removeItem('profileImgUrl');
+    localStorage.removeItem('name');
+    console.log("After removal:", localStorage); // 삭제 후 localStorage 상태 확인
 
-      // 로컬 저장소에서 사용자 데이터 제거
-      removeFcmToken(); // Firebase FCM 토큰 삭제
-      localStorage.removeItem('token');
-      localStorage.removeItem('role');
-      localStorage.removeItem('profileImgUrl');
-      localStorage.removeItem('name');
-      console.log("After removal:", localStorage); // 삭제 후 localStorage 상태 확인
+    this.isLogin = false;
+    window.location.href = "/";
+  } catch (error) {
+    console.error("로그아웃에 실패했습니다:", error); // 로그아웃 실패 메시지
+  }
+},
 
-      this.isLogin = false;
-      window.location.href = "/";
-      })
-      .catch((error) => {
-        console.error("로그아웃에 실패했습니다:", error); // 로그아웃 실패 메시지
-      });
-    },
 
     toChatList() {
         const chatWindow = window.open(

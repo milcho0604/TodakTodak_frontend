@@ -141,6 +141,7 @@
 
 <script>
 import axios from 'axios'
+import { removeFcmToken } from "@/firebase";
 
 export default {
   data() {
@@ -201,13 +202,35 @@ export default {
     kakaoLogin() {
       window.location.href = `${process.env.VUE_APP_API_BASE_URL}/member-service/oauth2/authorization/kakao`;
     },
-    logout() {
-      localStorage.removeItem('token'); // 토큰 제거
-      localStorage.removeItem('fcmToken') // fcm 토큰 제거
-      localStorage.removeItem('role');
-      this.isLogin = false; // 로그아웃 후 로그인 상태 업데이트
-      this.$router.push('/'); // 로그아웃 후 메인 페이지로 이동
-    },
+    async logout() {
+  console.log("Logout function called"); // 호출 여부 확인
+  
+  // 현재 사용자의 이메일 가져오기
+  const memberEmail = localStorage.getItem('email');
+  console.log("Retrieved email from localStorage:", memberEmail);
+  
+  try {
+    // 로그아웃 API 호출
+    const response = await axios.post(`${process.env.VUE_APP_API_BASE_URL}/member-service/fcm/logout`, {
+      memberEmail: memberEmail
+    });
+    
+    console.log(response.data); // 로그아웃 성공 메시지 출력
+
+    // 로컬 저장소에서 사용자 데이터 제거
+    await removeFcmToken(); // Firebase FCM 토큰 삭제 (removeFcmToken이 비동기 함수라면)
+    localStorage.removeItem('token');
+    localStorage.removeItem('role');
+    localStorage.removeItem('profileImgUrl');
+    localStorage.removeItem('name');
+    console.log("After removal:", localStorage); // 삭제 후 localStorage 상태 확인
+
+    this.isLogin = false;
+    window.location.href = "/";
+  } catch (error) {
+    console.error("로그아웃에 실패했습니다:", error); // 로그아웃 실패 메시지
+  }
+},
     navigateTo(route) {
       this.$router.push(route); // 해당 경로로 이동
     },
