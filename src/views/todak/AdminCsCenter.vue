@@ -270,6 +270,7 @@ export default {
     async connect(id) {
       if (this.stompClient && this.stompClient.connected) return;  // 중복 연결 방지
       this.chatRoomId = id;
+      console.log("얍" + id);
       const socket = new SockJS(`${process.env.VUE_APP_API_BASE_URL}/member-service/ws/chat`);
       this.stompClient = Stomp.over(socket);
 
@@ -283,7 +284,15 @@ export default {
         this.subscription = this.stompClient.subscribe(`/sub/${id}`, message => {
           console.log("구독시작");
           const receivedMessage = JSON.parse(message.body);
-            this.messages.push(receivedMessage);
+          console.log("얍" + receivedMessage);
+            // this.messages.push(receivedMessage);
+            this.messages.push({
+          senderId: receivedMessage.senderId,
+          senderName: receivedMessage.senderName,
+          contents: receivedMessage.contents,
+          senderProfileImgUrl: receivedMessage.senderProfileImgUrl,
+          createdAt: receivedMessage.createdAt
+        });
           this.scrollToBottom(); // 새로운 메시지 수신 시 스크롤 하단으로 이동
         });
         this.isSubscribed = true;  // 구독 완료 상태 설정
