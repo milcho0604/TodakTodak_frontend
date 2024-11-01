@@ -285,7 +285,14 @@ export default {
           console.log("구독시작");
           const receivedMessage = JSON.parse(message.body);
           console.log("얍" + receivedMessage);
-            this.messages.push(receivedMessage);
+            // this.messages.push(receivedMessage);
+            this.messages.push({
+          senderId: receivedMessage.senderId,
+          senderName: receivedMessage.senderName,
+          contents: receivedMessage.contents,
+          senderProfileImgUrl: receivedMessage.senderProfileImgUrl,
+          createdAt: receivedMessage.createdAt
+        });
           this.scrollToBottom(); // 새로운 메시지 수신 시 스크롤 하단으로 이동
         });
         this.isSubscribed = true;  // 구독 완료 상태 설정
