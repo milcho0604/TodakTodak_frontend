@@ -345,7 +345,14 @@ export default {
             try {
                 const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/member-service/member/doctorList/${this.hospitalId}`);
                 console.log(response);
-                this.doctorList = response.data.result.content.map(item => {
+
+                const today = new Date();
+                const dayOfWeek = today.toLocaleString('en-US', { weekday: 'long'});
+                this.doctorList = response.data.result.content
+                    .filter(item => {
+                        return item.operatingHours.some(hour => hour.dayOfWeek === dayOfWeek)
+                    })
+                    .map(item => {
                     const waitingEntry = this.waitingData ? this.waitingData[item.id] : null;
                     let waitingTurn = 0;
                     if (waitingEntry) {
@@ -359,7 +366,7 @@ export default {
                         waiting: waitingTurn,
                     }
                 });
-
+                console.log(this.doctorList)
             } catch (e) {
                 console.log(e);
             }
