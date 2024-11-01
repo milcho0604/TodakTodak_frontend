@@ -571,11 +571,11 @@ export default {
         }
     },
     async created() {
-        this.fetchDoctorList();
-        this.fetchChildList();
         const route = useRoute();
         this.hospitalId = route.params.hospitalId;
         this.hospitalName = this.$route.query.hospitalName;
+        this.fetchDoctorList();
+        this.fetchChildList();
     },
     watch: {
         date(newDate) {
