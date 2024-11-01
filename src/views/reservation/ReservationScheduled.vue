@@ -506,6 +506,7 @@ export default {
             }
         },
         async operatingTime(openTime, closeTime, dayOfWeek) {
+            console.log(openTime, closeTime, dayOfWeek);
             this.doctorTimeSlots = [];
 
             const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/reservation-service/hospital-operating-hours/getBreakTime/${this.hospitalId}`);
