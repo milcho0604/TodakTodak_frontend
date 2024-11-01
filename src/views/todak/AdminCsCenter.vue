@@ -270,6 +270,7 @@ export default {
     async connect(id) {
       if (this.stompClient && this.stompClient.connected) return;  // 중복 연결 방지
       this.chatRoomId = id;
+      console.log("얍" + id);
       const socket = new SockJS(`${process.env.VUE_APP_API_BASE_URL}/member-service/ws/chat`);
       this.stompClient = Stomp.over(socket);
 
