@@ -73,285 +73,179 @@
   import SockJS from "sockjs-client";
   import axios from 'axios';
 
-export default {
-  props: {
-
-  },
-  components:{
-
-  },
-  data() {
-    return {
-      stompClient: null,
-      messageToSend: '',
-      messages: [], // 수신된 메시지 저장
-      chatRoomId: null,  // 채팅방 id
-      memberEmail: '',
-      isReloading: false, // 로딩 상태
-      memberInfo:[], // 채팅참여자(상대방) 정보
-      myId: '', // 현재 접속자 id
-      currentUserName: null,
-    };
-  },
-  created(){
-    // this.$route.params를 사용하여 채팅방 ID를 가져옴
-    this.chatRoomId = this.$route.params.chatRoomId;
-    this.currentUserName = localStorage.getItem('name'); 
-    
-  },
-  async mounted() {
-    if (!this.isSubscribed) {
-
-    this.isSubscribed = true;
-}
-    this.connect(); // 웹소켓 connect
-    await this.loadChatMessages(); // 채팅메시지 리스트 조회
-    this.scrollToBottom(); // 새로운 메시지 수신 시 스크롤 하단으로 이동
-    this.$nextTick(() => {
-      window.scrollTo({
-        top: document.body.scrollHeight,
-        behavior: 'auto'  // 부드러운 스크롤
-      });
-    });
-  },
-  onBeforeUnmount() {
-    this.disconnect(); // 컴포넌트 언마운트 시 웹소켓 연결 종료
-  },
-  updated() {
-    this.scrollToBottom(); // 메시지가 업데이트될 때 스크롤 하단으로 이동
-  },
-
-  // watch: {
-  //   '$route.params.chatRoomId': {
-  //     immediate: true,
-  //     handler(newValue) {
-  //       this.chatRoomId = newValue;
-  //     }
-  //   }
-  // },
-  methods: {
-//     connect() {
-//       const socket = new SockJS(`${process.env.VUE_APP_API_BASE_URL}/member-service/ws/chat`); 
-//       this.stompClient = Stomp.over(socket);
-
-//       // JWT 토큰을 localStorage에서 가져와 auth-token으로 설정
-//       const token = localStorage.getItem('token');
-//       this.stompClient.connect({
-//         'token': `Bearer ${token}`  // 토큰을 헤더로 전송
-//       }, frame => {
-//         console.log('Connected: ' + frame);
-//         this.isSubscribed = false;  // 구독 상태 초기화
-
-//       this.stompClient.subscribe(`/sub/${this.chatRoomId}`, message => {
-//         console.log("구독시작");
-//         const receivedMessage = JSON.parse(message.body);
-//         if (!this.messages.some(m => m.messageId === receivedMessage.messageId)) {
-//         this.messages.push({
-//           senderId: receivedMessage.senderId,
-//           senderName: receivedMessage.senderName,
-//           contents: receivedMessage.contents,
-//           senderProfileImgUrl: receivedMessage.senderProfileImgUrl,
-//           createdAt: receivedMessage.createdAt
-//         });
-//         this.scrollToBottom();
-//         }
-//         // this.messages.push({
-//         //   senderId: receivedMessage.senderId,
-//         //   senderName: receivedMessage.senderName,
-//         //   contents: receivedMessage.contents,
-//         //   senderProfileImgUrl: receivedMessage.senderProfileImgUrl,
-//         //   createdAt: receivedMessage.createdAt
-//         // });
-//         this.scrollToBottom(); // 새로운 메시지 수신 시 스크롤 하단으로 이동
-
-//         console.log("this.message",this.messages);
-//         console.log("receivedMessage")
-//         console.log(receivedMessage)
-//       });
-//     }, error => {
-//       console.error('Connection error:', error);
-//       setTimeout(() => {
-//         this.connect(); // 연결 실패 시 재시도
-//       }, 5000);
-//     });
-// },
-connect() {
-  const socket = new SockJS(`${process.env.VUE_APP_API_BASE_URL}/member-service/ws/chat`);
-  this.stompClient = Stomp.over(socket);
-
-  const token = localStorage.getItem('token');
-  this.stompClient.connect(
-    {
-      'token': `Bearer ${token}`  // 토큰을 헤더로 전송
-    },
-    frame => {
-      console.log('Connected: ' + frame);
-      this.isSubscribed = false;  // 구독 상태 초기화
-
-      try {
-        // 구독 중복 방지
-        if (!this.isSubscribed) {
-          this.stompClient.subcribe(`/sub/${this.chatRoomId}`, message => {
-            console.log("구독시작");
-            const receivedMessage = JSON.parse(message.body);
-            this.messages.push({
-              senderId: receivedMessage.senderId,
-              senderName: receivedMessage.senderName,
-              contents: receivedMessage.contents,
-              senderProfileImgUrl: receivedMessage.senderProfileImgUrl,
-              createdAt: receivedMessage.createdAt
-            });
-            this.scrollToBottom(); // 새로운 메시지 수신 시 스크롤 하단으로 이동
-
-            console.log("this.message", this.messages);
-            console.log("receivedMessage");
-            console.log(receivedMessage);
-          });
-          this.isSubscribed = true;  // 구독 완료
-        }
-      } catch (error) {
-        console.error('Subscription error:', error);
-      }
-    },
-    error => {
-      console.error('Connection error:', error);
-      setTimeout(() => {
-        this.connect(); // 연결 실패 시 재시도
-      }, 5000);
-    }
-  );
-},
-
-sendMessage() {
-  if (this.messageToSend.trim() !== '') {
-    if (this.stompClient && this.stompClient.connected) {
-      const message = {
-        chatRoomId: this.chatRoomId,
-        contents: this.messageToSend,
-        token: localStorage.getItem('token')             
+  export default {
+    data() {
+      return {
+        stompClient: null,
+        subscription: null,
+        isSubscribed: false,  // 구독 상태를 나타내는 변수
+        messageToSend: '',
+        messages: [],  // 수신된 메시지 저장
+        chatRoomId: null,  // 채팅방 id
+        memberEmail: '',
+        isReloading: false,  // 로딩 상태
+        memberInfo: [],  // 채팅참여자(상대방) 정보
+        myId: '',  // 현재 접속자 id
+        currentUserName: null,
       };
+    },
+    created() {
+      this.chatRoomId = this.$route.params.chatRoomId;
+      this.currentUserName = localStorage.getItem('name');
+    },
+    async mounted() {
+      this.connect();  // 웹소켓 connect
+      await this.loadChatMessages();  // 채팅메시지 리스트 조회
+      this.scrollToBottom();  // 새로운 메시지 수신 시 스크롤 하단으로 이동
+      this.$nextTick(() => {
+        window.scrollTo({
+          top: document.body.scrollHeight,
+          behavior: 'auto',  // 부드러운 스크롤
+        });
+      });
 
-      this.stompClient.send(`/pub/${this.chatRoomId}`, {}, JSON.stringify(message));
-      this.messageToSend = ''; // 입력 필드 초기화
-      this.scrollToBottom();
-
-    } else {
-      console.error('STOMP client is not connected.'); // 연결되지 않았을 때의 에러 처리
-      alert('채팅 서버에 연결되지 않았습니다.'); // 사용자에게 알림
-    }
-  }
-// },
-// handleIncomingMessage(receivedMessage){
-//   // if(this.isChatPageActive){
-//     this.message.push(message);
-//       this.messages.push({
-//         senderName: receivedMessage.senderName,
-//         content: receivedMessage.contents
-//       });
-//       //페이지 비활성화 -> 알림
-//   if(!this.isChatPageActive){
-//     this.sendPushNotification(receivedMessage);
-//   }
-// },
-// sendPushNotification(message){
-//   //FCM 알림 전송 로직 추가
-//   console.log(`${message.senderName}: ${message.contents}`);
-//   //여기에 fcm 알림 보내는 코드 추가
-  
-// },
-// setChatPageActive(isActive){
-//   this.isChatPageActive = isActive;
-},
-disconnect() {
-  return new Promise((resolve, reject) => {  
-      if (this.stompClient && this.stompClient.connected) {
-          // 구독 해제
-          if (this.subscription) {
-              this.stompClient.unsubscribe(this.subscription);
+      // 새로고침 또는 탭 닫기 시 WebSocket 연결 해제
+      window.addEventListener('beforeunload', this.disconnect);
+    },
+    onBeforeUnmount() {
+      this.disconnect();  // 컴포넌트 언마운트 시 웹소켓 연결 종료
+      window.removeEventListener('beforeunload', this.disconnect);  // 이벤트 리스너 제거
+    },
+    updated() {
+      this.scrollToBottom();  // 메시지가 업데이트될 때 스크롤 하단으로 이동
+    },
+    watch: {
+      '$route.params.chatRoomId': {
+        immediate: true,
+        handler(newValue) {
+          this.chatRoomId = newValue;
+          if (this.isSubscribed) {
+            this.disconnect().then(() => this.connect());  // 기존 구독 해제 후 새로 구독
+          } else {
+            this.connect();
           }
-          try {
-              this.stompClient.disconnect(() => {
-                  this.isConnected = false; // 연결 상태 업데이트
-                  resolve();
-              });
-          } catch (error) {
-              reject(error);
-          }
-      } else {
-          resolve(); // 이미 연결되지 않은 상태일 경우
+        }
       }
-  });
-},
-goBack() {
-    this.$router.go(-1); // 뒤로가기 (히스토리에서 이전 페이지로 이동)
-},
-goForward() {
-    this.$router.go(1); // 앞으로가기 (히스토리에서 다음 페이지로 이동)
-},
- // 새로고침 아이콘 클릭 시 호출되는 함수
-reloadChatRooms() {
-    this.rotateAnimation(); // 애니메이션 시작
-    this.loadChatMessages(); // 채팅방 메시지 다시 불러오기
-},
-rotateAnimation(){
-    this.isReloading = true;
+    },
+    methods: {
+      connect() {
+        if (this.isSubscribed) return;  // 이미 구독된 경우 실행하지 않음
 
-    // 1초 후에 애니메이션 종료
-    setTimeout(() => {
-        this.isReloading = false;
-    }, 1000);
-},
-async loadChatMessages(){
-  try{
-    const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/member-service/chat/chatroom/${this.chatRoomId}/messages`);
-    this.messages = response.data.result;
-    console.log(response.data);
-  }catch(error){
-    console.log(error);
-  }
-},
-async loadChatRoomMemberInfo(){
-  try{
-    const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/member-service/chat/member/info/chatroom/${this.chatRoomId}`);
-    // 채팅참여자 정보
-    this.memberInfo = response.data.result;
-    console.log(response.data);
-  }catch(error){
-    console.log(error);
-  }
-},
-// 날짜 포맷팅 함수
-formatDate(date) {
-  return new Date(date).toLocaleString();
-},
-isMyMessage(message) {
-      // 보낸 사람이 나인지 확인 (senderId 또는 senderEmail 사용 가능)
-      return message.senderId === this.myId;
-},
-scrollToBottom() {
-  const chatBox = document.getElementById('.chat-box');
-  if (chatBox) {
-    // 잠시 딜레이를 주고 스크롤을 최하단으로 이동
-    setTimeout(() => {
-      chatBox.scrollTop = chatBox.scrollHeight;
-    }, 10);
-  }
-},
-scrollToRealBottom() {
-  window.scrollTo({
-      top: document.body.scrollHeight
-  });
-  // const chatBox = document.querySelector('.chat-box');
-  // const inputBox = document.querySelector('.input-box');
-  // const inputBoxHeight = inputBox ? inputBox.offsetHeight : 0;
+        const socket = new SockJS(`${process.env.VUE_APP_API_BASE_URL}/member-service/ws/chat`);
+        this.stompClient = Stomp.over(socket);
 
-  // if (chatBox) {
-  //   chatBox.scrollTop = chatBox.scrollHeight - inputBoxHeight - 20; // input-box 높이 + 여유 공간 20px
-  // }
-}
-}
-};
+        const token = localStorage.getItem('token');
+        this.stompClient.connect(
+          { 'token': `Bearer ${token}` },
+          frame => {
+            console.log('Connected: ' + frame);
+
+            // 구독 로직
+            this.subscription = this.stompClient.subscribe(`/sub/${this.chatRoomId}`, message => {
+              const receivedMessage = JSON.parse(message.body);
+              this.messages.push(receivedMessage);
+              this.scrollToBottom();
+            });
+
+            this.isSubscribed = true;  // 구독 완료 상태로 설정
+          },
+          error => {
+            console.error('Connection error:', error);
+            setTimeout(this.connect, 5000);  // 연결 실패 시 재시도
+          }
+        );
+      },
+      sendMessage() {
+        if (this.messageToSend.trim() !== '') {
+          if (this.stompClient && this.stompClient.connected) {
+            const message = {
+              chatRoomId: this.chatRoomId,
+              contents: this.messageToSend,
+              token: localStorage.getItem('token'),
+            };
+
+            this.stompClient.send(`/pub/${this.chatRoomId}`, {}, JSON.stringify(message));
+            this.messageToSend = '';  // 입력 필드 초기화
+            this.scrollToBottom();
+          } else {
+            console.error('STOMP client is not connected.');  // 연결되지 않았을 때의 에러 처리
+            alert('채팅 서버에 연결되지 않았습니다.');  // 사용자에게 알림
+          }
+        }
+      },
+      disconnect() {
+        return new Promise((resolve, reject) => {
+          if (this.stompClient && this.stompClient.connected) {
+            if (this.subscription) {
+              this.subscription.unsubscribe();  // 구독 해제
+              this.isSubscribed = false;  // 구독 상태 초기화
+            }
+            try {
+              this.stompClient.disconnect(() => {
+                this.isConnected = false;  // 연결 상태 업데이트
+                resolve();
+              });
+            } catch (error) {
+              reject(error);
+            }
+          } else {
+            resolve();  // 이미 연결되지 않은 상태일 경우
+          }
+        });
+      },
+      goBack() {
+        this.$router.go(-1);  // 뒤로가기 (히스토리에서 이전 페이지로 이동)
+      },
+      goForward() {
+        this.$router.go(1);  // 앞으로가기 (히스토리에서 다음 페이지로 이동)
+      },
+      // 새로고침 아이콘 클릭 시 호출되는 함수
+      reloadChatRooms() {
+        this.rotateAnimation();  // 애니메이션 시작
+        this.loadChatMessages();  // 채팅방 메시지 다시 불러오기
+      },
+      rotateAnimation() {
+        this.isReloading = true;
+        setTimeout(() => {
+          this.isReloading = false;
+        }, 1000);  // 1초 후에 애니메이션 종료
+      },
+      async loadChatMessages() {
+        try {
+          const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/member-service/chat/chatroom/${this.chatRoomId}/messages`);
+          this.messages = response.data.result;
+          console.log(response.data);
+        } catch (error) {
+          console.log(error);
+        }
+      },
+      async loadChatRoomMemberInfo() {
+        try {
+          const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/member-service/chat/member/info/chatroom/${this.chatRoomId}`);
+          this.memberInfo = response.data.result;  // 채팅참여자 정보
+          console.log(response.data);
+        } catch (error) {
+          console.log(error);
+        }
+      },
+      formatDate(date) {
+        return new Date(date).toLocaleString();  // 날짜 포맷팅 함수
+      },
+      isMyMessage(message) {
+        return message.senderId === this.myId;  // 보낸 사람이 나인지 확인
+      },
+      scrollToBottom() {
+        const chatBox = document.getElementById('.chat-box');
+        if (chatBox) {
+          setTimeout(() => {
+            chatBox.scrollTop = chatBox.scrollHeight;
+          }, 10);  // 잠시 딜레이를 주고 스크롤을 최하단으로 이동
+        }
+      },
+    },
+  };
 </script>
+
 
 <style scoped>
 .chat-box {
