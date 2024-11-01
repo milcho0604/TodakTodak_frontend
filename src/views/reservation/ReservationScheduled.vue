@@ -451,7 +451,7 @@ export default {
             try {
                 const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/member-service/member/doctorList/${this.hospitalId}`);
                 this.doctorList = response.data.result.content;
-                console.log(this.doctorList)
+                console.log(response)
                 this.doctorList.forEach(doctor => {
                     doctor.profileImgUrl = doctor.profileImgUrl ? doctor.profileImgUrl :
                         "https://todak-file.s3.ap-northeast-2.amazonaws.com/default-images/doctor-3d-image.png";
@@ -467,7 +467,7 @@ export default {
                 const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/member-service/child/`);
                 this.childOptions = response.data.result;
                 console.log(this.childOptions)
-            } catch (e) {
+            } catch (e) {           
                 console.log(e);
             }
         },
