@@ -186,7 +186,7 @@ export default {
             longitude: '126.927625', // 사용자 현재 경도
             hospitalList: [], // 병원리스트
             keywordList: [], // 키워드 리스트 (, 기준으로 split)
-            ㅁisOperating: false,
+            isOperating: false,
             locationModal: false,
             loading: false, // 로딩상태변수 추가
             isLoading: false, // 모달 테스트
