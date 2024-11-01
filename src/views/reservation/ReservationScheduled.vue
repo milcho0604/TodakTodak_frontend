@@ -524,7 +524,7 @@ export default {
             })
 
             console.log(breakStart, breakEnd);
-            const start = this.timeToMinutes(openTime);;
+            const start = this.timeToMinutes(openTime);
             const end = this.timeToMinutes(closeTime);
             if (breakStart || breakEnd) {
                 breakStart = this.timeToMinutes(breakStart);
