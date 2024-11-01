@@ -186,7 +186,7 @@ export default {
             longitude: '126.927625', // 사용자 현재 경도
             hospitalList: [], // 병원리스트
             keywordList: [], // 키워드 리스트 (, 기준으로 split)
-            isOperating: false,
+            ㅁisOperating: false,
             locationModal: false,
             loading: false, // 로딩상태변수 추가
             isLoading: false, // 모달 테스트
@@ -199,35 +199,35 @@ export default {
     async mounted() {
         await this.getCurrentLocation(); // 위치 정보를 가져온 후 병원리스트 axios 요청
     },
-    // watch: {
-    //     // dong 값이 변경될 때마다 병원 리스트를 새로 로드
-    //     dong(newDong) {
-    //         if (newDong) {
-    //             this.loadHospitalList();
-    //         }
-    //     },
-    //     // this.sort가 바뀔 때마다 loadHospitalList 메소드를 호출
-    //     sort(newSort) {
-    //         if (newSort) {
-    //             this.loadHospitalList();
-    //         }
-    //     },
-
-    // },
     watch: {
-    // `dong` 값이 변경될 때마다 병원 리스트를 새로 로드
-    dong(newDong) {
-        if (newDong && !this.isLoading) {
-            this.loadHospitalList();
-        }
+        // dong 값이 변경될 때마다 병원 리스트를 새로 로드
+        dong(newDong) {
+            if (newDong) {
+                this.loadHospitalList();
+            }
+        },
+        // this.sort가 바뀔 때마다 loadHospitalList 메소드를 호출
+        sort(newSort) {
+            if (newSort) {
+                this.loadHospitalList();
+            }
+        },
+
     },
-    // `sort` 값이 변경될 때마다 병원 리스트를 새로 로드
-    sort(newSort) {
-        if (newSort && !this.isLoading) {
-            this.loadHospitalList();
-        }
-    }
-    },
+    // watch: {
+    // // `dong` 값이 변경될 때마다 병원 리스트를 새로 로드
+    // dong(newDong) {
+    //     if (newDong && !this.isLoading) {
+    //         this.loadHospitalList();
+    //     }
+    // },
+    // // `sort` 값이 변경될 때마다 병원 리스트를 새로 로드
+    // sort(newSort) {
+    //     if (newSort && !this.isLoading) {
+    //         this.loadHospitalList();
+    //     }
+    // }
+    // },
     computed: {
         // 병원검색기능
         filteredHospitalList() {
