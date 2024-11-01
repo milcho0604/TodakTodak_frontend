@@ -532,7 +532,7 @@ export default {
             }
             for (let i = start; i < end; i += 30) {
 
-                if (i < breakStart || i >= breakEnd) {
+                if ((breakStart|| breakEnd) && i < breakStart || i >= breakEnd) {
                     this.doctorTimeSlots.push(this.minutesToTime(i))
                 }else if(breakStart || breakEnd){
                     this.doctorTimeSlots.push(this.minutesToTime(i))
