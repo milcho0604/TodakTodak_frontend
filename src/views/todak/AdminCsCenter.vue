@@ -217,23 +217,21 @@ export default {
   },
   data() {
     return {
-      selectedChatRoomId: null,  // 선택된 채팅방 ID를 저장할 변수
+      selectedChatRoomId: null, // 선택된 채팅방 ID를 저장할 변수
       stompClient: null,
-      subscription: null,  // 구독 객체
-      isSubscribed: false,  // 구독 상태
-      currentUserName: null,  // 현재 접속한 user 이름
-      messageToSend: '',  // 보낼 메시지
-      messages: [],  // 수신된 메시지 저장
-      chatRoomId: '',  // 채팅방 ID
+      currentUserName: null, // 현재 접속한 user 이름
+      messageToSend: '', // 보낼 메시지
+      messages: [], // 수신된 메시지 저장
+      chatRoomId: '',  // 채팅방 id
       memberEmail: '',
       chatRoomList: [],
       itemsPerPage: 10,
       csPage: 1,
-      memberInfo: null,  // 채팅 건 회원정보
-      memberId: '',  // 채팅 건 회원 ID
-      csContents: '',  // 상담 내용
-      csStatus: '',  // CS 처리 상태 (처리 중, 처리 완료)
-      csId: '',  // CS ID
+      memberInfo: null, // 채팅 건 회원정보
+      memberId: '', // 채팅 건 회원id
+      csContents: '', // 상담내용
+      csStatus: '', // CS 처리상태 (처리중, 처리완료)
+      csId: '', // CS id
       statusItems: [
         { key: 'INPROCESS', value: '처리중' },
         { key: 'COMPLETED', value: '처리완료' }
@@ -242,70 +240,63 @@ export default {
       csPostModal: false,
       csPostModalTitle : "",
       csPostModalContents: "",
-      isEditMode: true,  // 편집 모드 상태
-      hasCsData: false,  // 해당 채팅방에 CS 데이터가 있는지
+      isEditMode: true, // 편집 모드 상태 추가
+      hasCsData: false, // 해당 채팅방에 존재하는 CS 데이터가 있는지
       currentPage: 1,  // 현재 페이지
-      totalPages: 0,  // 총 페이지 수
+      totalPages: 0,   // 총 페이지 수
     };
   },
   created() {
-    this.loadAdminChatList();  // 채팅 리스트 로드
+    this.loadAdminChatList(); // 채팅 리스트 load
     this.currentUserName = localStorage.getItem('name');  // 현재 접속한 user 이름
-
-    // 새로고침 또는 탭 닫기 시 WebSocket 연결 해제
-    window.addEventListener('beforeunload', this.disconnect);
   },
-  beforeUnmount() {
-    this.disconnect();  // 컴포넌트 언마운트 시 웹소켓 연결 종료
-    window.removeEventListener('beforeunload', this.disconnect);  // 이벤트 리스너 제거
+  onBeforeUnmount() {
+      this.disconnect(); // 컴포넌트 언마운트 시 웹소켓 연결 종료
   },
   updated() {
-    this.scrollToBottom();  // 메시지가 업데이트될 때 스크롤 하단으로 이동
+      this.scrollToBottom(); // 메시지가 업데이트될 때 스크롤 하단으로 이동
   },
-  watch: {
-    currentPage(newCurrentPage) {
-      if (newCurrentPage) {
-        this.loadAdminChatList();
-      }
-    }
+  watch:{
+        currentPage(newCurrnetPage){
+            if(newCurrnetPage){
+                this.loadAdminChatList();
+            }
+        }
+
   },
   methods: {
     connect(id) {
-      if (this.isSubscribed) return;  // 이미 구독된 경우 실행하지 않음
-
       this.chatRoomId = id;
-      const socket = new SockJS(`${process.env.VUE_APP_API_BASE_URL}/member-service/ws/chat`);
+      const socket = new SockJS('http://localhost:8080/member-service/ws/chat');
       this.stompClient = Stomp.over(socket);
 
+      // JWT 토큰을 localStorage에서 가져와 auth-token으로 설정
       const token = localStorage.getItem('token');
-      this.stompClient.connect(
-        { 'token': `Bearer ${token}` }, 
-        frame => {
-          console.log('Connected: ' + frame);
+      this.stompClient.connect({
+        'token': `Bearer ${token}`  // 토큰을 헤더로 전송
+      }, frame => {
+        console.log('Connected: ' + frame);
 
-          // 구독 로직
-          this.subscription = this.stompClient.subscribe(`/sub/${id}`, message => {
-            console.log("구독 시작");
-            const receivedMessage = JSON.parse(message.body);
-            this.messages.push({
-              senderId: receivedMessage.senderId,
-              senderName: receivedMessage.senderName,
-              contents: receivedMessage.contents,
-              senderProfileImgUrl: receivedMessage.senderProfileImgUrl,
-              createdAt: receivedMessage.createdAt
-            });
-            this.scrollToBottom();  // 새로운 메시지 수신 시 스크롤 하단으로 이동
+        this.stompClient.subscribe(`/sub/${id}`, message => {
+          console.log("구독시작");
+          const receivedMessage = JSON.parse(message.body);
+          this.messages.push({
+            senderId: receivedMessage.senderId,
+            senderName: receivedMessage.senderName,
+            contents: receivedMessage.contents,
+            senderProfileImgUrl: receivedMessage.senderProfileImgUrl,
+            createdAt: receivedMessage.createdAt
           });
-
-          this.isSubscribed = true;  // 구독 완료 상태 설정
-        },
-        error => {
-          console.error('Connection error:', error);
-          setTimeout(() => this.connect(id), 5000);  // 연결 실패 시 재시도
-        }
-      );
+          this.scrollToBottom(); // 새로운 메시지 수신 시 스크롤 하단으로 이동
+        });
+      }, error => {
+        console.error('Connection error:', error);
+        setTimeout(() => {
+          this.connect(); // 연결 실패 시 재시도
+        }, 5000);
+      });
     },
-    async sendMessage() {
+    sendMessage() {
       if (this.messageToSend.trim() !== '') {
         if (this.stompClient && this.stompClient.connected) {
           const message = {
@@ -315,169 +306,190 @@ export default {
           };
 
           this.stompClient.send(`/pub/${this.chatRoomId}`, {}, JSON.stringify(message));
-          this.messageToSend = '';  // 입력 필드 초기화
+          this.messageToSend = ''; // 입력 필드 초기화
           this.scrollToBottom();
+
         } else {
-          console.error('STOMP client is not connected.');  // 연결되지 않았을 때의 에러 처리
-          alert('채팅 서버에 연결되지 않았습니다.');  // 사용자에게 알림
+          console.error('STOMP client is not connected.'); // 연결되지 않았을 때의 에러 처리
+          alert('채팅 서버에 연결되지 않았습니다.'); // 사용자에게 알림
         }
       }
     },
     disconnect() {
       return new Promise((resolve, reject) => {  
-        if (this.stompClient && this.stompClient.connected) {
-          // 구독 해제
-          if (this.subscription) {
-            this.subscription.unsubscribe();  // 구독 해제
-            this.isSubscribed = false;  // 구독 상태 초기화
+          if (this.stompClient && this.stompClient.connected) {
+              // 구독 해제
+              if (this.subscription) {
+                  this.stompClient.unsubscribe(this.subscription);
+              }
+              try {
+                  this.stompClient.disconnect(() => {
+                      this.isConnected = false; // 연결 상태 업데이트
+                      resolve();
+                  });
+              } catch (error) {
+                  reject(error);
+              }
+          } else {
+              resolve(); // 이미 연결되지 않은 상태일 경우
           }
-          try {
-            this.stompClient.disconnect(() => {
-              this.stompClient = null;  // stompClient 초기화
-              resolve();
-            });
-          } catch (error) {
-            reject(error);
-          }
-        } else {
-          resolve();  // 이미 연결되지 않은 상태일 경우
-        }
       });
     },
     async selectChatRoom(id) {
-      this.selectedChatRoomId = id;  // 선택한 채팅방 ID
-      this.chatRoomId = id;  // 채팅방 ID
-      this.loadCSbyChatRoomId(id);  // 채팅방 ID로 CS 조회
+      this.selectedChatRoomId = id; // 선택한 채팅방 id
+      this.chatRoomId = id; // 채팅방 id
+      this.loadCSbyChatRoomId(id); // 채팅방 id로 CS 조회
       this.scrollToBottom();
       try {
         this.messages = [];
-        await this.disconnect();  // 기존 연결 해제
-        await this.connect(id);  // 해당 채팅방 ID로 웹소켓 연결
-        await this.loadChatMessages(id);  // 해당 채팅방 메시지 리스트 조회
-
+        await this.disconnect();
+        await this.connect(id); // 해당 채팅방 id로 웹소켓 연결
+        await this.loadChatMessages(id); // 해당 채팅방 메시지리스트 조회
+        
+        // 멤버 정보를 비동기 요청으로 받아온 후 fetchCsList 호출
         const member = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/member-service/chat/member/info/chatroom/${id}`);
         this.memberInfo = member.data.result;
         this.$nextTick(() => {
-          this.$refs.csChatList.fetchCsList();  // memberInfo가 설정된 후 호출
+          this.$refs.csChatList.fetchCsList(); // memberInfo가 설정된 후 호출
         });
 
       } catch (e) {
         console.error(e);
       }
     },
-    async loadChatMessages(id) {
-      try {
+    // 채팅방 메시지 리스트 조회
+    async loadChatMessages(id){
+      try{
         const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/member-service/chat/chatroom/${id}/messages`);
         this.messages = response.data.result;
-      } catch (error) {
-        console.error(error);
+        console.log(response.data);
+      }catch(error){
+        console.log(error);
       }
     },
-    async loadAdminChatList() {
+    // 채팅방 리스트 (admin입장 채팅방 리스트)
+    async loadAdminChatList(){
       try {
-        const params = { page: this.currentPage - 1 };
-        const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/member-service/chat/chatroom/list/admin`, { params });
-        this.chatRoomList = response.data.result.content;
-        this.totalPages = response.data.result.totalPages;
+          let params = {
+              page: this.currentPage -1
+          };
+          const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/member-service/chat/chatroom/list/admin`,{params});
+          this.chatRoomList = response.data.result.content;
+          this.totalPages = response.data.result.totalPages; // 총 페이지 수 저장
       } catch (error) {
-        console.error(error);
+          console.log(error);
       }
     },
-    async loadCSbyChatRoomId(id) {
-      try {
+    // 채팅방 id로 CS 조회
+    async loadCSbyChatRoomId(id){
+      try{
         const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/member-service/cs/detail/chatroom-id/${id}`);
-        const result = response.data.result;
-        if (result && result.length > 0) {
-          this.csContents = result[0].csContents;
-          this.csStatus = result[0].csStatus;
-          this.csId = result[0].id;
-          this.isEditMode = false;
-          this.hasCsData = true;
-        } else {
-          this.csContents = '';
+        if (response.data.result && response.data.result.length > 0) {
+          this.csContents = response.data.result[0].csContents;
+          this.csStatus = response.data.result[0].csStatus;
+          this.csId = response.data.result[0].id;
+          this.isEditMode = false; // CS 데이터가 있을 경우 읽기 전용 모드로 설정
+          this.hasCsData = true; // 해당 채팅방에 CS 데이터 있음 (수정, 삭제버튼 보임)
+        }else {
+          this.csContents = ''; // 데이터가 없을 경우 초기화
           this.csStatus = '';
-          this.isEditMode = true;
+          this.isEditMode = true; // CS 데이터가 없을 경우 편집 모드로 설정
           this.hasCsData = false;
         }
-      } catch (error) {
-        console.error(error);
+      }catch(error){
+        console.log(error);
       }
     },
-    async saveConsultation() {
+    // 상담내용 저장(create)
+    async saveConsultation(){
+      // selectedStatus 조건에 맞는 item 객체가 있다면 item.key 값을 갖고, 없다면 undefined
       const selectedStatus = this.statusItems.find(item => item.value === this.csStatus)?.key;
+      
       const body = {
-        chatRoomId: this.chatRoomId,
-        csContents: this.csContents,
-        csStatus: selectedStatus
+        chatRoomId: this.chatRoomId, // 채팅방 Id
+        csContents: this.csContents, // 상담내용
+        csStatus: selectedStatus // 변환된 key 값 사용
       };
       
-      try {
+      try{
         const response = await axios.post(`${process.env.VUE_APP_API_BASE_URL}/member-service/cs/create`, body);
-        console.log(response)
+        console.log(response.data);
         this.csPostModal = true;
-        this.csPostModalTitle = 'CS 상담내용 저장 완료';
-        this.csPostModalContents = 'CS 상담 내용이 성공적으로 저장되었습니다!';
-        this.$refs.csChatList.fetchCsList();
-        this.isEditMode = false;
+        this.csPostModalTitle = 'CS 상담내용 저장완료',
+        this.csPostModalContents = 'CS 상담내용이 성공적으로 저장되었습니다!'
+        this.$refs.csChatList.fetchCsList(); // fetchCsList 호출
+        this.isEditMode = false; // 수정모드 X
         this.loadCSbyChatRoomId(this.chatRoomId);
-      } catch (error) {
-        console.error(error);
+      }catch(error){
+        console.log(error);
       }
     },
-    async updateConsultation() {
+    // 상담내용 수정(update)
+    async updateConsultation(){
+      // selectedStatus 조건에 맞는 item 객체가 있다면 item.key 값을 갖고, 없다면 undefined
       const selectedStatus = this.statusItems.find(item => item.value === this.csStatus)?.key;
+      
       const body = {
-        id: this.csId,
-        chatRoomId: this.chatRoomId,
-        csContents: this.csContents,
-        csStatus: selectedStatus
+        id: this.csId, // CS id
+        chatRoomId: this.chatRoomId, // 채팅방 id
+        csContents: this.csContents, // 상담내용
+        csStatus: selectedStatus // 변환된 key 값 사용
       };
       
-      try {
+      try{
         const response = await axios.post(`${process.env.VUE_APP_API_BASE_URL}/member-service/cs/update`, body);
-        console.log(response)
+        console.log(response.data);
         this.csPostModal = true;
-        this.csPostModalTitle = 'CS 상담내용 수정 완료';
-        this.csPostModalContents = 'CS 상담 내용이 성공적으로 수정되었습니다!';
-        this.$refs.csChatList.fetchCsList();
-        this.isEditMode = false;
+        this.csPostModalTitle = 'CS 상담내용 수정완료',
+        this.csPostModalContents = 'CS 상담내용이 성공적으로 수정되었습니다!'
+        this.$refs.csChatList.fetchCsList(); // fetchCsList 호출
+        this.isEditMode = false; // 수정모드 X
         this.loadCSbyChatRoomId(this.chatRoomId);
-      } catch (error) {
-        console.error(error);
+      }catch(error){
+        console.log(error);
       }
     },
-    async deleteCsData() {
-      try {
+    // 상담내용 삭제(delete)
+    async deleteCsData(){
+      try{
         const response = await axios.delete(`${process.env.VUE_APP_API_BASE_URL}/member-service/cs/delete/${this.csId}`);
-        console.log(response)
+        console.log(response.data);
         this.csPostModal = true;
-        this.csPostModalTitle = 'CS 상담내용 삭제 완료';
-        this.csPostModalContents = 'CS 상담 내용이 성공적으로 삭제되었습니다!';
-        this.$refs.csChatList.fetchCsList();
-        this.isEditMode = false;
+        this.csPostModalTitle = 'CS 상담내용 삭제완료',
+        this.csPostModalContents = 'CS 상담내용이 성공적으로 삭제되었습니다!'
+        this.$refs.csChatList.fetchCsList(); // fetchCsList 호출
+        this.isEditMode = false; // 수정모드 X
         this.loadCSbyChatRoomId(this.chatRoomId);
-      } catch (error) {
-        console.error(error);
+      }catch(error){
+        console.log(error);
       }
     },
+    // 날짜 포맷팅 함수
     formatDate(date) {
       return new Date(date).toLocaleString();
     },
     scrollToBottom() {
       const chatBox = document.querySelector('.chat-box');
       if (chatBox) {
+        // 잠시 딜레이를 주고 스크롤을 최하단으로 이동
         setTimeout(() => {
           chatBox.scrollTop = chatBox.scrollHeight;
         }, 100);
       }
     },
-    toggleEditMode() {
-      this.isEditMode = !this.isEditMode;
+    toggleEditMode(){
+      if(this.isEditMode){
+        this.isEditMode = false;
+      }else{
+        this.isEditMode = true;
+      }
     }
+  },
+  computed: {
+
   }
 };
 </script>
-
 
 <style scoped>
 * {
