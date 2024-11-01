@@ -366,7 +366,7 @@ export default {
                         waiting: waitingTurn,
                     }
                 });
-
+                console.log(this.doctorList)
             } catch (e) {
                 console.log(e);
             }
