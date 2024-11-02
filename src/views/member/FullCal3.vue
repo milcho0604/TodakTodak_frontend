@@ -22,7 +22,8 @@
     </div>
       <!-- 이벤트 및 예약 상세 정보 표시 영역 -->
       <!-- 일정 추가 버튼 -->
-    <v-chip @click="startNewEvent" class="mb-3 milcho-add-bbtn" color="#C2D7FF" variant="flat" size="large" label>
+    <v-chip @click="startNewEvent" class="mb-3 milcho-add-bbtn" color="#C2D7FF" variant="flat" size="large"
+     label>
       <span style="font-weight: bold; color: #00499E;">✍️일정추가</span>
     </v-chip>
 
@@ -586,6 +587,7 @@ methods: {
 
 <style>
 .milcho-entire-container {
+   position: relative; /* 부모 요소 고정 */
   max-width: 1500px !important;
   margin: 0 auto !important;
   width: 100% !important;
@@ -602,7 +604,7 @@ methods: {
   width: 100%;
   max-width: 1400px;
   margin-top: 20px;
-  gap: 60px; /* 캘린더와 디테일 사이에 공간 추가 */
+  gap: 40px; /* 캘린더와 디테일 사이에 공간 추가 */
   position: relative; /* 자식 요소가 absolute로 배치될 수 있도록 설정 */
 }
 
@@ -694,7 +696,7 @@ background-color: #FFAFAF !important;
 color: #650101;
 width: 50px;
 height: 44px;
-margin: 10px 20px 40px 20px;
+margin: 10px 20px 40px 60px;
 border-radius: 20px;
 font-family: 'Inter';
 font-weight: 700;
@@ -784,8 +786,8 @@ margin: 0 10px !important;
 }
 .milcho-add-bbtn{
   position: absolute; /* 절대 위치 설정 */
-  top: 130px; /* 위에서 20px 내려오게 설정 */
-  left: 1102px; /* 오른쪽 끝에서 20px 떨어지도록 설정 */
+  top: 7%; /* 부모 높이가 1000px일 때 */
+  left: 71.3%; /* 부모 너비가 1920px일 때 */
   z-index: 10; /* 다른 요소 위에 배치 */
 }
 

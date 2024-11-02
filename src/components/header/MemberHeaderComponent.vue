@@ -311,7 +311,6 @@ export default {
     console.error("로그아웃에 실패했습니다:", error); // 로그아웃 실패 메시지
   }
 },
-
     toChatList() {
         const chatWindow = window.open(
         '/chat/my-chat/list',  // ChatListComponent가 렌더링될 URL

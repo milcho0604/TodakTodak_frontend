@@ -59,6 +59,7 @@ export const removeFcmToken = async () => {
         console.log("FCM Token deleted successfully.");
         localStorage.removeItem("fcmToken");
       } else {
+        localStorage.removeItem("fcmToken");
         console.warn("Failed to delete FCM token.");
       }
     } catch (error) {
