@@ -13,7 +13,7 @@
                 <v-row>
                     <v-col cols="3" class="d-flex justify-center">
                         <v-avatar size="55">
-                            <v-img :src="child.imageUrl" alt="child image"/>
+                            <v-img :src="child.imageUrl" alt="child image" />
                         </v-avatar>
                     </v-col>
                     <v-col cols="9" class="info">
@@ -24,10 +24,10 @@
                             <v-icon class="share-icon" @click="openShareModal(child.id)">mdi-share</v-icon>
                             <v-icon class="delete-icon"
                                 @click="openDeleteModal(child.id)">mdi-trash-can-outline</v-icon>
-                        
+
                         </v-row>
                         <v-row class="small-font inter-normal">
-                            {{ child.ssn }}
+                            {{ maskSSN(child.ssn) }}
                         </v-row>
                     </v-col>
                 </v-row>
@@ -43,16 +43,17 @@
             @child-exists="openChildExistsDialog"></ChildCreateModal>
 
         <!-- 자녀 공유 모달 -->
-        <ChildShareModal v-model="shareModal" :childId="selectedChildId"
-            @update:dialog="shareModal = $event;"></ChildShareModal>
+        <ChildShareModal v-model="shareModal" :childId="selectedChildId" @update:dialog="shareModal = $event;">
+        </ChildShareModal>
 
         <!-- 자녀 삭제 모달 -->
         <ChildDeleteModal v-model="deleteModal" :childId="selectedChildId"
             @update:childDeleteDialog="deleteModal = $event; this.fetchChild()"></ChildDeleteModal>
 
         <!-- 자녀 수정 모달 -->
-        <ChildUpdateModal v-model="updateModal" @update:dialog="updateModal = $event; this.fetchChild()" :childId="selectedChild.id"
-            :initialName="selectedChild.name" :initialSSN="selectedChild.ssn" :initialImage="selectedChild.imageUrl">
+        <ChildUpdateModal v-model="updateModal" @update:dialog="updateModal = $event; this.fetchChild()"
+            :childId="selectedChild.id" :initialName="selectedChild.name" :initialSSN="selectedChild.ssn"
+            :initialImage="selectedChild.imageUrl">
         </ChildUpdateModal>
 
         <!-- 자녀 이미 등록 모달 -->
@@ -76,7 +77,7 @@
             </v-card>
         </v-dialog>
     </v-container>
-    <MyPageSideBar/>    
+    <MyPageSideBar />
 </template>
 
 <script>
@@ -145,6 +146,10 @@ export default {
             this.selectedChildId = childId; // 삭제할 자녀 ID 저장
             this.shareModal = true; // 삭제 모달 열기
         },
+        maskSSN(ssn) {
+            if (!ssn || ssn.length < 14) return ssn; // 잘못된 형식 처리
+            return ssn.slice(0, 8) + "*******"; // 앞 8자리만 남기고 뒤는 마스킹
+        }
     }
 }
 </script>
@@ -215,6 +220,7 @@ export default {
     font-size: 20px;
     margin-right: 20px;
 }
+
 .share-icon {
     color: #888888;
     font-size: 19px;
@@ -241,6 +247,7 @@ export default {
     text-align: center;
     font-size: 15px;
 }
+
 .info {
     margin: 10px 0px;
 }

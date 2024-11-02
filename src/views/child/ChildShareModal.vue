@@ -7,10 +7,10 @@
             </v-row>
             <v-card-text class="mt-5">
                 <div class="weak inter-light">
-                    이름, 이메일로 공유할 회원을 찾아보세요
+                    이메일로 공유할 회원을 찾아보세요
                 </div>
                 <div class="search">
-                    <input type="text" v-model="searchQuery" class="search-input" placeholder="검색...">
+                    <input type="text" v-model="searchQuery" class="search-input" placeholder="검색..." @keyup.enter="searchMember">
                     <span>🔍</span>
                 </div>
                 <div v-for="m in members.slice(0, 3)" :key="m.id" class="member" @click="selectMember(m.id)" :class="{ 'selected-member': m.id === selectedMemberId }" >
@@ -22,7 +22,7 @@
                         </v-col>
                         <v-col class="info">
                             <v-row class="inter-bold">
-                                {{ m.name }}
+                                {{ maskName(m.name)  }}
                             </v-row>
                             <v-row class="inter-light" style="color:grey;">
                                 {{ m.memberEmail }}
@@ -52,22 +52,20 @@ export default {
             selectedMemberId: null // 선택된 멤버 ID를 저장할 변수
         };
     },
-    watch: {
-        searchQuery(newQuery) {
-            this.searchMember(newQuery);
-        }
-    },
     methods: {
         closeModal() {
+            this.members = [];
+            this.searchQuery = '';
+            this.selectedMemberId = null;
             this.$emit('update:dialog', false);
         },
-        async searchMember(keyword) {
-            if (keyword.length === 0) {
+        async searchMember() {
+            if (this.searchQuery.length === 0) {
                 this.members = []; // 검색어가 비어있으면 멤버 리스트 초기화
                 return;
             }
             try {
-                const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/member-service/member/search/${keyword}`);
+                const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/member-service/member/search/${this.searchQuery}`);
                 this.members = response.data.result; // 멤버 리스트 업데이트
             } catch (error) {
                 console.error("Failed to get member:", error);
@@ -102,6 +100,13 @@ export default {
                 }
                 
                 console.error("Failed to share child:", error.response.data.status_message);
+            }
+        },
+        maskName(name) {
+            if(name.length>2) {
+                return name.slice(0,1)+ "*"+name.slice(2,3);
+            }else {
+                return name.slice(0,1)+ "*";
             }
         }
     }
