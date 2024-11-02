@@ -34,28 +34,28 @@
                             주민번호
                         </v-row>
                         <v-row class="input-space ssn-container" :class="{ 'error-border': !isValidSSN }">
-                            <!-- 앞 6자리 입력 -->
                             <input v-model="childSSN1" class="search-input ssn-input" maxlength="6" 
                                  @input="moveToNextField" ref="ssn1">
                             <span class="dash">-</span>
-                            <!-- 뒤 7자리 입력 -->
                             <input v-model="childSSN2" class="search-input ssn-input" maxlength="7" 
                                  @input="validateSSN" ref="ssn2">
                         </v-row>
-                        <!-- 유효하지 않을 때 에러 메시지 출력 -->
                         <v-row v-if="!isValidSSN" class="error-message inter-light">
                             유효하지 않은 주민등록번호입니다.
+                        </v-row>
+
+                        <!-- 약관 동의 체크박스 추가 -->
+                        <v-row class="input-space">
+                            <v-checkbox v-model="isAgreed" label="자녀 공유에 대한 약관에 동의합니다." />
                         </v-row>
                     </v-col>
                 </v-row>
             </v-card-text>
             <v-card-actions>
-                <div class="round inter-bold" @click="addChild">추가</div>
+                <div class="round inter-bold" @click="addChild" :disabled="!isAgreed">추가</div>
             </v-card-actions>
         </v-card>
     </v-dialog>
-    
-
 </template>
 
 <script>
@@ -64,16 +64,17 @@ import axios from 'axios';
 export default {
     data() {
         return {
-            dialog: false,  // 모달 열림 여부
-            previewImage: null,  // 업로드한 이미지 미리보기
-            defaultImage: 'https://via.placeholder.com/100',  // 기본 이미지
-            selectedFile: null,  // 선택된 파일 저장
+            dialog: false,
+            previewImage: null,
+            defaultImage: 'https://via.placeholder.com/100',
+            selectedFile: null,
             childName: '',
-            childSSN1: '', // 주민번호 앞 6자리
-            childSSN2: '', // 주민번호 뒤 7자리
-            isValidSSN: true,  // 유효성 상태를 저장하는 변수
-            fileName: '',  // 파일명 저장
+            childSSN1: '',
+            childSSN2: '',
+            isValidSSN: true,
+            fileName: '',
             alertModal: false,
+            isAgreed: false, // 약관 동의 상태를 저장하는 변수 추가
         };
     },
     computed: {
@@ -86,7 +87,6 @@ export default {
     },
     methods: {
         moveToNextField() {
-            // 앞 6자리 입력이 완료되면 뒤 7자리 입력 칸으로 포커스 이동
             if (this.childSSN1.length === 6) {
                 this.$refs.ssn2.focus();
             }
@@ -94,16 +94,15 @@ export default {
         validateSSN() {
             const fullSSN = this.childSSN1 + this.childSSN2;
             if (fullSSN.length === 13) {
-                this.isValidSSN = this.checkSSN(fullSSN); // 유효성 검사 로직 호출
+                this.isValidSSN = this.checkSSN(fullSSN);
             } else {
-                this.isValidSSN = true; // 13자리가 아니면 유효성 검사를 진행하지 않음
+                this.isValidSSN = true;
             }
         },
         checkSSN(ssn) {
             if (ssn.length !== 13) {
                 return false;
             }
-
             const multipliers = [2, 3, 4, 5, 6, 7, 8, 9, 2, 3, 4, 5];
             const firstTwelveDigits = ssn.substring(0, 12);
             let sum = 0;
@@ -130,7 +129,7 @@ export default {
             }
         },
         async addChild() {
-            if (!this.childName || !this.childSSN1 || !this.childSSN2 ) {
+            if (!this.childName || !this.childSSN1 || !this.childSSN2) {
                 alert('모든 필드를 입력해주세요.');
                 return;
             }
@@ -158,9 +157,9 @@ export default {
             } catch (error) {
                 console.error('자녀 등록 중 오류 발생:', error.response.data.result.parents);
                 
-                if (error.response && error.response.status === 400) {  // 이미 등록된 자녀 상태
-                    this.dialog = false;  // 자녀 추가 모달 닫기
-                    this.$emit('child-exists', error.response.data.result.parents);  // 부모 컴포넌트에 이벤트와 메시지 전파
+                if (error.response && error.response.status === 400) {
+                    this.dialog = false;
+                    this.$emit('child-exists', error.response.data.result.parents);
                 } else {
                     alert('자녀 등록에 실패했습니다.');
                 }
@@ -170,13 +169,14 @@ export default {
         },
         closeModal() {
             this.$emit('update:dialog', false);
-            window.location.reload();  // 페이지 새로 고침으로 폼 초기화
+            window.location.reload();
         }
     }
 };
 </script>
 
 <style scoped>
+/* 기존 스타일 유지 */
 .child-modal {
     padding: 20px;
     border-radius: 40px;

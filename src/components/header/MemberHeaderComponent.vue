@@ -128,7 +128,7 @@
                 <v-list-item-title>자녀 관리</v-list-item-title>
               </v-list-item>
               <v-list-item @click="toChatList">
-                <v-list-item-title>내 채팅</v-list-item-title>
+                <v-list-item-title>1:1 채팅</v-list-item-title>
               </v-list-item>
               <v-list-item :to="{ path: '/member/mychild-cal' }">
                 <v-list-item-title>우리아이 캘린더</v-list-item-title>

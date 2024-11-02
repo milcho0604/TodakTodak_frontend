@@ -137,7 +137,7 @@
                 </v-card-text>
                 <v-card-actions>
                   <span @click="comment.showTextarea = !comment.showTextarea"
-                    class="d-flex align-center action-link mr-10">
+                    class="d-flex align-center action-link mr-2">
                     <v-icon small>mdi-comment-outline</v-icon>&nbsp;댓글달기
                   </span>
                 </v-card-actions>
@@ -288,7 +288,7 @@ export default {
 
         const commentResponse = await axios.get((`${process.env.VUE_APP_API_BASE_URL}/community-service/comment/list/${postId}`));
         this.postDetail.comments = commentResponse.data.result;
-        console.log("댓글 " + JSON.stringify(this.postDetail.comments, null, 2));
+        // console.log("댓글 " + JSON.stringify(this.postDetail.comments, null, 2));
 
         // 댓글 및 대댓글 초기화
         this.postDetail.comments.forEach(comment => {
