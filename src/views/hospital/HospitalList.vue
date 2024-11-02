@@ -193,11 +193,12 @@ export default {
             hospital: 'https://todak-file.s3.ap-northeast-2.amazonaws.com/default-images/hospital-icon.png',
         }
     },
-    created() {
-
+    async created() {
+        // 위치 정보를 가져오고 `dong` 값이 업데이트되면 `loadHospitalList`가 호출됩니다.
+        await this.getCurrentLocation();
     },
     async mounted() {
-        await this.getCurrentLocation(); // 위치 정보를 가져온 후 병원리스트 axios 요청
+        
     },
     watch: {
         // dong 값이 변경될 때마다 병원 리스트를 새로 로드
@@ -268,6 +269,7 @@ export default {
 
             const storedLatitude = localStorage.getItem('latitude');
             const storedLongitude = localStorage.getItem('longitude');
+            const storedDong = localStorage.getItem('dong');
 
             if (navigator.geolocation) {
                 return new Promise((resolve, reject) => {
@@ -291,6 +293,7 @@ export default {
                                 // 위치가 변하지 않았다면 저장된 동 정보로 병원 리스트 로드
                                 this.latitude = storedLatitude;
                                 this.longitude = storedLongitude;
+                                this.dong = storedDong;
                                 await this.loadHospitalList();
                             }
                             this.loading = false; // 로딩 종료
@@ -311,6 +314,7 @@ export default {
 
         // 위도와 경도를 이용해 '동' 정보를 가져오는 메소드
         async getDongFromCoordinates(latitude, longitude) {
+            console.log("getDongFromCoordinates 진입");
             try {
 
                 const response = await apiClient.get(`https://dapi.kakao.com/v2/local/geo/coord2regioncode.json`, {
@@ -326,6 +330,7 @@ export default {
                     const dongInfo = regionInfo.find(region => region.region_type === "B");
                     if (dongInfo) {
                         this.dong = dongInfo.region_3depth_name; // '동' 이름 저장
+                        localStorage.setItem('dong', this.dong);
                         console.log("사용자의 동:", this.dong);
                         // 동 정보 업데이트 후 병원 리스트 로드
                         await this.loadHospitalList(); // 동 정보로 병원 리스트 로드
