@@ -154,9 +154,12 @@
             </v-date-picker>
           </v-menu>
 
-          <v-btn v-if="isEditing" class="milcho-btn-delete" elevation="0" @click="deleteEvent">삭제</v-btn>
-          <v-divider vertical class="milcho-vertical-divider"></v-divider>
-          <v-btn class="milcho-btn-save" elevation="0" @click="handleSaveEvent">저장</v-btn>
+          <div class="button-container">
+            <v-btn v-if="isEditing" class="milcho-btn-delete" elevation="0" @click="deleteEvent">삭제</v-btn>
+            <v-divider vertical class="milcho-vertical-divider"></v-divider>
+            <v-btn class="milcho-btn-save" elevation="0" @click="handleSaveEvent">저장</v-btn>
+        </div>
+        
         </v-form>
       </div>
 
@@ -666,48 +669,46 @@ methods: {
   width: 100px;
 }
 
-.milcho-btn-save {
-  background-color: #C2D7FF !important;
-  color: #00499e;
-  width: 50px;
-  height: 44px;
-  margin-bottom: 40px;
-  margin-top: 10;
-  margin-left: 20px;
-  border-radius: 20px;
-  font-family: 'Inter';
-  font-weight: 700;
-  font-size: 20px;
+.button-container {
   display: flex;
-  justify-content: center;
-  align-items: center;
+  align-items: center; /* 수직 가운데 정렬 */
+}
+
+.milcho-btn-save {
+background-color: #C2D7FF !important;
+color: #00499e;
+width: 50px;
+height: 44px;
+margin: 10px 20px 40px 20px;
+border-radius: 20px;
+font-family: 'Inter';
+font-weight: 700;
+font-size: 20px;
+display: flex;
+justify-content: center;
+align-items: center;
 }
 
 .milcho-btn-delete {
-  background-color: #FFAFAF !important;
-  color: #650101;
-  width: 50px;
-  height: 44px;
-  margin-bottom: 40px;
-  margin-top: 10;
-  margin-left: 30px;
-  border-radius: 20px;
-  font-family: 'Inter';
-  font-weight: 700;
-  font-size: 20px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+background-color: #FFAFAF !important;
+color: #650101;
+width: 50px;
+height: 44px;
+margin: 10px 20px 40px 20px;
+border-radius: 20px;
+font-family: 'Inter';
+font-weight: 700;
+font-size: 20px;
+display: flex;
+justify-content: center;
+align-items: center;
 }
 
 .milcho-vertical-divider {
-  width: 1px !important;
-  height: 30px !important;
-  background-color: black !important;
-  margin: 0 10px !important;
-  margin-left: 10px !important;
-  position: absolute !important;
-  margin-top: 8px !important;
+width: 1px !important;
+height: 44px !important;
+background-color: black !important;
+margin: 0 10px !important;
 }
 
 .milcho-btn-edit {
