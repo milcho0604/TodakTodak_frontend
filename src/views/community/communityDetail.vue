@@ -123,7 +123,7 @@
                   </v-row>
                   <div>
                     <v-list-item-subtitle
-                      style="font-size: 18px; overflow-wrap: break-word; word-break: break-word; display: block;">
+                      style="font-size: 18px; overflow-wrap: break-word; word-break: break-word; display: block; color: black;">
                       <template v-if="!comment.isEditing">
                         <div v-html="formatContent(comment.content)"></div>
                       </template>
@@ -137,7 +137,7 @@
                 </v-card-text>
                 <v-card-actions>
                   <span @click="comment.showTextarea = !comment.showTextarea"
-                    class="d-flex align-center action-link mr-2">
+                    class="d-flex align-center action-link mr-10">
                     <v-icon small>mdi-comment-outline</v-icon>&nbsp;댓글달기
                   </span>
                 </v-card-actions>
