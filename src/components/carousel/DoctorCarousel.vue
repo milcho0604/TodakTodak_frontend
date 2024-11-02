@@ -19,7 +19,7 @@
               class="rounded-xl fixed-card d-flex flex-column align-center justify-center"
               style="background-color: #F5F5F5;"
               variant="flat"
-              @click="() => moveToSiderCard(doctor.id)"
+              @click="() => moveToDoctorDetail(doctor.memberEmail)"
               >
               <!-- 의사 프로필 사진 -->
                 <v-card-item class="mt-3">
@@ -108,12 +108,12 @@
         const end = start + doctorsPerPage;
         return this.doctorList.slice(start, end);
       },
-      moveToDoctorDetail(id){
+      moveToDoctorDetail(email){
+        console.log("bbemail");
         // 비대면 진료 의사디테일 페이지 (TODO: path 수정)
-        this.$router.push('/').then(() => {
+        this.$router.push('/all/untact/detail/'+email).then(() => {
           // 페이지 이동 후 스크롤을 최상단으로 이동
           window.scrollTo(0, 0);
-          console.log(id);
         });
       }
     }
