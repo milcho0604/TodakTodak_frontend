@@ -19,8 +19,8 @@
                                 <div style="border-left: 1px solid #ccc; height: 45px; margin: 12px 0;"></div>
                                 <v-col>
                                     <div>
-                                        <span class="inter-normal child">{{ r.childName }}</span> <span class="ssn">{{
-                                            r.childSsn }}</span>
+                                        <span class="inter-normal child">{{ r.childName }}</span> <span class="ssn">
+                                            {{ maskSSN(r.childSsn) }}</span>
                                     </div>
 
                                     <div class="parent">
@@ -56,16 +56,18 @@
                             </v-col>
                         </v-row>
                         <v-row>
-                            <v-col cols="4" class="inter-normal bold">증상</v-col><v-col>{{ reservationDetail.field
-                                }}</v-col>
+                            <v-col cols="4" class="inter-normal bold">증상</v-col>
+                            <v-col v-if="reservationDetail.field && reservationDetail.field.length > 0">{{ reservationDetail.field}}</v-col>
+                            <v-col v-else>-</v-col>
                         </v-row>
                         <v-row>
-                            <v-col cols="4" class="inter-normal bold">환자 상태</v-col><v-col>{{ reservationDetail.message
-                                }}</v-col>
+                            <v-col cols="4" class="inter-normal bold">환자 상태</v-col>
+                            <v-col v-if="reservationDetail.message && reservationDetail.message.length > 0">{{ reservationDetail.message}}</v-col>
+                            <v-col v-else>-</v-col>
                         </v-row>
                         <v-row v-if="reservationDetail.fee">
-                            <v-col cols="4" class="inter-normal bold">진료비</v-col><v-col>{{ reservationDetail.fee
-                                }}원</v-col>
+                            <v-col cols="4" class="inter-normal bold">진료비</v-col><v-col>
+                                {{ formattedFee }}원</v-col>
                         </v-row>
                         <v-row v-if="reservationDetail.medicalStatus">
                             <v-col cols="4" class="inter-normal bold">결제 상태</v-col>
@@ -112,8 +114,8 @@
                                 <div style="border-left: 1px solid #ccc; height: 45px; margin: 12px 0;"></div>
                                 <v-col>
                                     <div>
-                                        <span class="inter-normal child">{{ r.childName }}</span> <span class="ssn">{{
-                                            r.childSsn }}</span>
+                                        <span class="inter-normal child">{{ r.childName }}</span> <span class="ssn">
+                                            {{ maskSSN(r.childSsn) }}</span>
                                     </div>
 
                                     <div class="parent">
@@ -177,6 +179,9 @@ export default {
         },
         completedTotalPages() {
             return Math.ceil(this.completedList.length / this.pageSize);
+        },
+        formattedFee() {
+            return new Intl.NumberFormat().format(this.reservationDetail.fee);
         }
     },
     created() {
@@ -270,6 +275,10 @@ export default {
                 console.log(e)
             }
         },
+        maskSSN(ssn) {
+            if (!ssn || ssn.length < 14) return ssn; // 잘못된 형식 처리
+            return ssn.slice(0, 8) + "*******"; // 앞 8자리만 남기고 뒤는 마스킹
+        }
     }
 }
 </script>
