@@ -58,7 +58,7 @@
       <v-col class="d-flex justify pa-0">
         <span @click="toggleLike" class="d-flex align-center action-link mr-2">
           <v-icon small>{{ liked ? 'mdi-heart' : 'mdi-heart-outline' }}</v-icon> &nbsp; 좋아요 {{ postDetail.likeCount }} ·
-        </span>
+        </span>    
         <span @click="showCommentTextarea = !showCommentTextarea" class="d-flex align-center action-link mr-2">
           <v-icon small>mdi-comment-outline</v-icon> &nbsp; 댓글 ·
         </span>
@@ -238,6 +238,7 @@ export default {
   },
   created() {
     this.fetchPostDetail();
+    this.checkLikeStatus(); // 좋아요 상태 확인
   },
   mounted() {
     this.currentUserEmail = localStorage.getItem('email');
@@ -257,6 +258,15 @@ export default {
         console.error("좋아요 토글 중 오류가 발생했습니다.", error);
         this.error = '좋아요 토글에 실패했습니다.';
       }
+    },
+    async checkLikeStatus() {
+        const postId = this.$route.params.id; // 현재 게시글 ID
+        try {
+            const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/posts/likes/status/${postId}`);
+            this.liked = response.data; // API 응답으로부터 좋아요 상태 설정
+        } catch (error) {
+            console.error("좋아요 상태 확인 중 오류가 발생했습니다.", error);
+        }
     },
     deletePost() {
       if (confirm("게시글을 정말 삭제하시겠습니까?")) {

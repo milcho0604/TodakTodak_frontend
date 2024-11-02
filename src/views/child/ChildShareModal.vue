@@ -30,11 +30,14 @@
                         </v-col>
                     </v-row>
                 </div>
+                <v-row class="input-space ml-10">
+                    <v-checkbox v-model="isAgreed" label="자녀 공유에 대한 약관에 동의합니다." />
+                </v-row>
             </v-card-text>
             <v-card-actions style="display: flex; justify-content: center; align-items: center; gap: 5px;">
                 <div class="round-grey inter-bold mr-3" @click="closeModal()">최소</div>
                 <div style="border-left: 1px solid #ccc; height: 20px;"></div>
-                <div class="round inter-bold ml-3" @click="shareChild()">공유</div>
+                <div class="round inter-bold ml-3" @click="shareChild()" :disabled="!isAgreed">공유</div>
             </v-card-actions>
         </v-card>
     </v-dialog>
@@ -49,7 +52,8 @@ export default {
         return {
             members: [], // 초기값을 빈 배열로 설정
             searchQuery: '', // 검색어
-            selectedMemberId: null // 선택된 멤버 ID를 저장할 변수
+            selectedMemberId: null, // 선택된 멤버 ID를 저장할 변수
+            isAgreed: false,
         };
     },
     watch: {
@@ -84,6 +88,10 @@ export default {
         async shareChild() {
             if (!this.selectedMemberId) {
                 alert('공유할 멤버를 선택해주세요.');
+                return;
+            }
+            if (!this.isAgreed) {
+                alert('약관에 동의해야 합니다.');
                 return;
             }
             try {
