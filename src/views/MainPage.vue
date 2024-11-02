@@ -239,8 +239,11 @@ export default {
       today: '',
     };
   },
+  async created() {
+        // 위치 정보를 가져오고 `dong` 값이 업데이트되면 `loadHospitalList`가 호출됩니다.
+        await this.getCurrentLocation();
+  },
   async mounted() {
-    await this.getCurrentLocation(); // 위치 정보를 가져온 후 병원리스트 axios 요청
     this.loadCommunityList(); // 커뮤니티 인기 게시글 리스트 조회
     this.loadDoctorList(); // 인기 비대면 의사 리스트 조회
   },
@@ -266,100 +269,86 @@ export default {
     async getCurrentLocation() {
       this.loading = true; // 로딩 시작
 
-      // 로컬스토리지에서 위도와 경도 값을 확인
       const storedLatitude = localStorage.getItem('latitude');
       const storedLongitude = localStorage.getItem('longitude');
-
-      // 로컬스토리지에서 '동' 값 확인
       const storedDong = localStorage.getItem('dong');
-      if (storedDong) {
-        this.dong = storedDong;
-      }
 
-      // 로컬스토리지에 위도, 경도 값이 이미 있으면 해당 값을 사용
-      if (storedLatitude && storedLongitude) {
-        this.latitude = storedLatitude;
-        this.longitude = storedLongitude;
-        console.log("로컬스토리지에서 가져온 위도", this.latitude);
-        console.log("로컬스토리지에서 가져온 경도", this.longitude);
+      if (navigator.geolocation) {
+          return new Promise((resolve, reject) => {
+              navigator.geolocation.getCurrentPosition(
+                  async position => {
+                      const newLatitude = position.coords.latitude;
+                      const newLongitude = position.coords.longitude;
 
-        // 위도, 경도가 로컬스토리지에 있는 경우 병원 리스트를 바로 로드
-        await this.loadHospitalList();
-        this.loading = false; // 로딩 종료
-        return; // 메소드 종료
-      }
+                      // 새로운 위치 정보가 로컬스토리지에 저장된 값과 다를 경우에만 동 정보 업데이트
+                      if (newLatitude !== parseFloat(storedLatitude) || newLongitude !== parseFloat(storedLongitude)) {
+                          this.latitude = newLatitude;
+                          this.longitude = newLongitude;
 
-      // 로컬스토리지에 값이 없으면, 새로 위치 정보를 가져옴
-      return new Promise((resolve, reject) => {
-        if (navigator.geolocation) {
-          navigator.geolocation.getCurrentPosition(
-            async position => {
-              this.latitude = position.coords.latitude;
-              this.longitude = position.coords.longitude;
-              console.log("사용자 위도", this.latitude);
-              console.log("사용자 경도", this.longitude);
+                          // 로컬스토리지에 새로운 위치 정보 저장
+                          localStorage.setItem('latitude', this.latitude);
+                          localStorage.setItem('longitude', this.longitude);
 
-              // 로컬스토리지에 사용자 현재위치 위도,경도 저장
-              localStorage.setItem('latitude', this.latitude);
-              localStorage.setItem('longitude', this.longitude);
-
-              // 위치 정보를 가져온 후, 동 정보를 업데이트
-              await this.getDongFromCoordinates(this.latitude, this.longitude);
-
-              this.loading = false; // 로딩 종료
-              resolve(); // 성공 시 resolve 호출
-            },
-            error => {
-              console.log("위치 정보를 가져오지 못했습니다.", error);
-              this.loading = false; // 로딩 종료
-
-              this.loadHospitalList(); // 초기값으로 병원 리스트 로드
-              reject(error); // 실패 시 reject 호출
-            }
-          );
-        } else {
+                          // 동 정보 업데이트
+                          await this.getDongFromCoordinates(this.latitude, this.longitude);
+                      } else {
+                          // 위치가 변하지 않았다면 저장된 동 정보로 병원 리스트 로드
+                          this.latitude = storedLatitude;
+                          this.longitude = storedLongitude;
+                          this.dong = storedDong;
+                          await this.loadHospitalList();
+                      }
+                      this.loading = false; // 로딩 종료
+                      resolve();
+                  },
+                  error => {
+                      console.log("위치 정보를 가져오지 못했습니다.", error);
+                      this.loading = false;
+                      reject(error);
+                  }
+              );
+          });
+      } else {
           console.log("Geolocation을 지원하지 않는 브라우저입니다.");
-          this.loading = false; // 로딩 종료
-          reject(new Error("Geolocation을 지원하지 않는 브라우저입니다."));
-        }
-      });
-    },
-    // 위도와 경도를 이용해 '동' 정보를 가져오는 메소드
-    async getDongFromCoordinates(latitude, longitude) {
+          this.loading = false;
+      }
+  },
+
+  // 위도와 경도를 이용해 '동' 정보를 가져오는 메소드
+  async getDongFromCoordinates(latitude, longitude) {
+      console.log("getDongFromCoordinates 진입");
       try {
 
-        const response = await apiClient.get(`https://dapi.kakao.com/v2/local/geo/coord2regioncode.json`, {
-          params: {
-            x: longitude, // 경도
-            y: latitude,  // 위도
-          }
-        });
+          const response = await apiClient.get(`https://dapi.kakao.com/v2/local/geo/coord2regioncode.json`, {
+              params: {
+                  x: longitude, // 경도
+                  y: latitude,  // 위도
+              }
+          });
 
-        // '동' 단위 행정구역 이름 찾기
-        const regionInfo = response.data.documents;
-        if (regionInfo.length > 0) {
-          const dongInfo = regionInfo.find(region => region.region_type === "B");
-          if (dongInfo) {
-            this.dong = dongInfo.region_3depth_name; // '동' 이름 저장
-            console.log("사용자의 동:", this.dong);
-
-            // 로컬스토리지에 '~~동'저장
-            localStorage.setItem('dong', this.dong);
-            // 동 정보 업데이트 후 병원 리스트 로드
-            await this.loadHospitalList(); // 동 정보로 병원 리스트 로드
-          } else {
-            console.log("동 정보를 찾을 수 없습니다.");
+          // '동' 단위 행정구역 이름 찾기
+          const regionInfo = response.data.documents;
+          if (regionInfo.length > 0) {
+              const dongInfo = regionInfo.find(region => region.region_type === "B");
+              if (dongInfo) {
+                  this.dong = dongInfo.region_3depth_name; // '동' 이름 저장
+                  localStorage.setItem('dong', this.dong);
+                  console.log("사용자의 동:", this.dong);
+                  // 동 정보 업데이트 후 병원 리스트 로드
+                  await this.loadHospitalList(); // 동 정보로 병원 리스트 로드
+              } else {
+                  console.log("동 정보를 찾을 수 없습니다.");
+              }
           }
-        }
       } catch (error) {
-        if (error.response) {
-          console.log("Error Status:", error.response.status);
-          console.log("Error Data:", error.response.data);
-        } else {
-          console.log("주소 정보를 가져오는 데 실패했습니다.", error);
-        }
+          if (error.response) {
+              console.log("Error Status:", error.response.status);
+              console.log("Error Data:", error.response.data);
+          } else {
+              console.log("주소 정보를 가져오는 데 실패했습니다.", error);
+          }
       }
-    },
+  },
     async loadHospitalList() {
       try {
         // this.dong에서 띄어쓰기 제거
