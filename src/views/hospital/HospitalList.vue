@@ -266,58 +266,49 @@ export default {
         async getCurrentLocation() {
             this.loading = true; // 로딩 시작
 
-            // 로컬스토리지에서 위도와 경도 값을 확인
             const storedLatitude = localStorage.getItem('latitude');
             const storedLongitude = localStorage.getItem('longitude');
 
-            // 로컬스토리지에 위도, 경도 값이 이미 있으면 해당 값을 사용
-            if (storedLatitude && storedLongitude) {
-                this.latitude = storedLatitude;
-                this.longitude = storedLongitude;
-                console.log("로컬스토리지에서 가져온 위도", this.latitude);
-                console.log("로컬스토리지에서 가져온 경도", this.longitude);
-
-                // 위도, 경도가 로컬스토리지에 있는 경우 병원 리스트를 바로 로드
-                await this.loadHospitalList();
-                this.loading = false; // 로딩 종료
-                return; // 메소드 종료
-            }
-
-            // 로컬스토리지에 값이 없으면, 새로 위치 정보를 가져옴
-            return new Promise((resolve, reject) => {
-                if (navigator.geolocation) {
+            if (navigator.geolocation) {
+                return new Promise((resolve, reject) => {
                     navigator.geolocation.getCurrentPosition(
                         async position => {
-                            this.latitude = position.coords.latitude;
-                            this.longitude = position.coords.longitude;
-                            console.log("사용자 위도", this.latitude);
-                            console.log("사용자 경도", this.longitude);
+                            const newLatitude = position.coords.latitude;
+                            const newLongitude = position.coords.longitude;
 
-                            // 로컬스토리지에 사용자 현재위치 위도,경도 저장
-                            localStorage.setItem('latitude', this.latitude);
-                            localStorage.setItem('longitude', this.longitude);
+                            // 새로운 위치 정보가 로컬스토리지에 저장된 값과 다를 경우에만 동 정보 업데이트
+                            if (newLatitude !== parseFloat(storedLatitude) || newLongitude !== parseFloat(storedLongitude)) {
+                                this.latitude = newLatitude;
+                                this.longitude = newLongitude;
 
-                            // 위치 정보를 가져온 후, 동 정보를 업데이트
-                            await this.getDongFromCoordinates(this.latitude, this.longitude);
+                                // 로컬스토리지에 새로운 위치 정보 저장
+                                localStorage.setItem('latitude', this.latitude);
+                                localStorage.setItem('longitude', this.longitude);
 
+                                // 동 정보 업데이트
+                                await this.getDongFromCoordinates(this.latitude, this.longitude);
+                            } else {
+                                // 위치가 변하지 않았다면 저장된 동 정보로 병원 리스트 로드
+                                this.latitude = storedLatitude;
+                                this.longitude = storedLongitude;
+                                await this.loadHospitalList();
+                            }
                             this.loading = false; // 로딩 종료
-                            resolve(); // 성공 시 resolve 호출
+                            resolve();
                         },
                         error => {
                             console.log("위치 정보를 가져오지 못했습니다.", error);
-                            this.loading = false; // 로딩 종료
-
-                            this.loadHospitalList(); // 초기값으로 병원 리스트 로드
-                            reject(error); // 실패 시 reject 호출
+                            this.loading = false;
+                            reject(error);
                         }
                     );
-                } else {
-                    console.log("Geolocation을 지원하지 않는 브라우저입니다.");
-                    this.loading = false; // 로딩 종료
-                    reject(new Error("Geolocation을 지원하지 않는 브라우저입니다."));
-                }
-            });
+                });
+            } else {
+                console.log("Geolocation을 지원하지 않는 브라우저입니다.");
+                this.loading = false;
+            }
         },
+
         // 위도와 경도를 이용해 '동' 정보를 가져오는 메소드
         async getDongFromCoordinates(latitude, longitude) {
             try {

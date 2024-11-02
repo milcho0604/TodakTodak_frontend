@@ -145,7 +145,7 @@
 
                     <!-- 게시글 내용 -->
                     <div class="post-content mb-n2" style="font-size: 20px;">
-                      {{ post.content ? post.content.slice(0, 53) : '' }}
+                      {{ post.content ? post.content.slice(0, 43) : '' }}
                     </div>
 
                     <!-- 좋아요, 댓글수, 조회수, 작성일시 -->
