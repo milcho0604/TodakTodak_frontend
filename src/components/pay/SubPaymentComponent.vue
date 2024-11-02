@@ -74,7 +74,7 @@ export default {
         buyerName: "",
         buyerEmail: "",
         buyerTel: "",
-        amount: 1000000,
+        amount: 149000,
         hospitalName: "",
         businessRegistrationInfo: "",
       },
@@ -99,7 +99,7 @@ export default {
         this.paymentData.businessRegistrationInfo = response.data.businessRegistrationInfo;
 
         if (!response.data.fee || response.data.fee === 0) {
-          this.paymentData.amount = 1000000;
+          this.paymentData.amount = 149000;
         } else {
           this.paymentData.amount = response.data.fee;
         }
