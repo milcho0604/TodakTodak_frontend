@@ -262,7 +262,7 @@ export default {
     async checkLikeStatus() {
         const postId = this.$route.params.id; // 현재 게시글 ID
         try {
-            const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/community-service/post/likes/status/${postId}`);
+            const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/community-service/post/posts/likes/status/${postId}`);
             this.liked = response.data; // API 응답으로부터 좋아요 상태 설정
         } catch (error) {
             console.error("좋아요 상태 확인 중 오류가 발생했습니다.", error);
