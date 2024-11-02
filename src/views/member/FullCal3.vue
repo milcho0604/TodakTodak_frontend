@@ -602,7 +602,7 @@ methods: {
   width: 100%;
   max-width: 1400px;
   margin-top: 20px;
-  gap: 60px; /* 캘린더와 디테일 사이에 공간 추가 */
+  gap: 40px; /* 캘린더와 디테일 사이에 공간 추가 */
   position: relative; /* 자식 요소가 absolute로 배치될 수 있도록 설정 */
 }
 
@@ -694,7 +694,7 @@ background-color: #FFAFAF !important;
 color: #650101;
 width: 50px;
 height: 44px;
-margin: 10px 20px 40px 20px;
+margin: 10px 20px 40px 60px;
 border-radius: 20px;
 font-family: 'Inter';
 font-weight: 700;
