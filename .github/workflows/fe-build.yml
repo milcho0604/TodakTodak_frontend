@@ -32,6 +32,7 @@ jobs:
             VUE_APP_API_BASE_URL: ${{secrets.SERVER_URL}}
             VUE_APP_FIREBASE_VAP_ID: ${{ secrets.FIREBASE_VAP_ID }}
             VUE_APP_KAKAO_MAP_JS_APP_KEY: ${{ secrets.KAKAO_MAP_JS_APP_KEY }}
+            VUE_APP_KAKAO_API_KEY: ${{ secrets.KAKAO_API_KEY }}
         working-directory: .
         run: npm run build
       
