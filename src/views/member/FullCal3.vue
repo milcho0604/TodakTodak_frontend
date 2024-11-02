@@ -785,9 +785,9 @@ margin: 0 10px !important;
   color: red !important;
 }
 .milcho-add-bbtn{
-  position: fixed; /* 절대 위치 설정 */
-  top: 16%; /* 부모 높이가 1000px일 때 */
-  left: 72.2%; /* 부모 너비가 1920px일 때 */
+  position: absolute; /* 절대 위치 설정 */
+  top: 7%; /* 부모 높이가 1000px일 때 */
+  left: 71.3%; /* 부모 너비가 1920px일 때 */
   z-index: 10; /* 다른 요소 위에 배치 */
 }
 
