@@ -24,18 +24,32 @@ app.provide('firebaseDatabase', database);
 
 // Register service worker for FCM
 if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('/firebase-messaging-sw.js')
-    .then((registration) => {
-      console.log('Service Worker registered with scope:', registration.scope);
-    })
-    .catch((error) => {
-      console.error('Service Worker registration failed:', error);
-    });
+  navigator.serviceWorker.getRegistrations().then((registrations) => {
+    if (registrations.length === 0) {
+      navigator.serviceWorker.register('/firebase-messaging-sw.js')
+        .then((registration) => {
+          console.log('Service Worker registered with scope:', registration.scope);
+        })
+        .catch((error) => {
+          console.error('Service Worker registration failed:', error);
+        });
+    } else {
+      console.log('Service Worker already registered.');
+    }
+  });
 }
 
 // Request FCM token and set up foreground message listener on page load
+// document.addEventListener("DOMContentLoaded", async () => {
+//   await setupMessageListener();
+// });
+let messageListenerInitialized = false;
+
 document.addEventListener("DOMContentLoaded", async () => {
-  await setupMessageListener();
+  if (!messageListenerInitialized) {
+    await setupMessageListener();
+    messageListenerInitialized = true;
+  }
 });
 
 // Notification permission request
