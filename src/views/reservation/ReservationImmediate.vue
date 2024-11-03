@@ -182,7 +182,7 @@
             <v-dialog v-model="reservedModal" max-width="500px">
                 <v-card>
                     <v-card-title class="submodal mt-6 inter-bold text-center">
-                        바로접수 완료하시겠습니까?
+                        바로대기 완료하시겠습니까?
                     </v-card-title>
                     <v-card-text>
                         <v-container class="submodaltext">
@@ -255,10 +255,10 @@
             <v-dialog v-model="successReserveModal" max-width="600px">
                 <v-card>
                     <v-card-title v-if="isValidation" class="submodal mt-6 inter-bold text-center">
-                        당일접수가 성공적으로 완료되었습니다!
+                        바로대기가 성공적으로 완료되었습니다!
                     </v-card-title>
                     <v-card-title v-else class="submodal mt-6 inter-bold text-center">
-                        해당 자녀의 당일접수가 이미 존재합니다.
+                        해당 자녀의 바로대기 접수내역이 이미 존재합니다.
                     </v-card-title>
                     <v-container style="text-align: center;" class="mt-3">
                         <v-row v-if="isValidation">

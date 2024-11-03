@@ -98,7 +98,7 @@
                         <v-row justify="center">
                             <v-col v-if="reservationDetail.reservationType == 'Immediate'"
                                 class="inter-bold subtitle-3">
-                                당일 예약
+                                바로 대기
                             </v-col>
                             <v-col v-else class="inter-bold subtitle-3">
                                 스케줄 예약
@@ -142,18 +142,9 @@
                             <v-col cols="2" class="modal-completed" @click="toCompleted('Completed')">
                                 접수완료
                             </v-col>
-                            <v-col cols="1"></v-col>
-                            <v-col cols="2" class="modal-noshow" @click="toCompleted('Noshow')">
-                                노쇼
-                            </v-col>
-                            <v-col cols="1"></v-col>
                             <v-col cols="2" class="modal-cancelled" @click="checkCompletedModal = true">
                                 예약취소
                             </v-col>
-                            <!-- <v-col cols="1"></v-col>
-                            <v-col cols="2" class="modal-close" @click="toCompletedModal = false">
-                                닫기
-                            </v-col> -->
                         </v-row>
                         <br>
                     </v-container>
