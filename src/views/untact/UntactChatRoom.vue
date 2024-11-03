@@ -108,10 +108,16 @@ export default {
   },
   created() {
     this.fetchReservation();
+    window.addEventListener("beforeunload", this.handlePageUnload);
   },
   mounted() {
     this.role = localStorage.getItem('role');
     this.startWebSocketConnection();
+  },
+  beforeUnmount() {
+    // 컴포넌트가 파괴될 때 WebSocket 연결을 닫습니다.
+    this.handlePageUnload();
+    window.removeEventListener("beforeunload", this.handlePageUnload);
   },
   methods: {
     async fetchReservation() {
@@ -153,7 +159,7 @@ export default {
       }
       this.socket.onclose = () => {
         console.log('Socket has been closed');
-        this.reconnectWebSocket();
+        // this.reconnectWebSocket();
       };
 
       this.socket.onerror = (message) => {
@@ -476,6 +482,11 @@ export default {
     openPayModal() {
       console.log("이제 결제할게");
       this.payModal = true;
+    },
+    handlePageUnload() {
+      if (this.socket && this.socket.readyState === WebSocket.OPEN) {
+        this.socket.close();
+      }
     }
   },
 };
