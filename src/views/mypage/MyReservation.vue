@@ -375,7 +375,7 @@ export default {
         },
         formatType(data) {
             if (data == 'Immediate') {
-                return "당일접수"
+                return "바로대기"
             } else {
                 return "예약접수"
             }
