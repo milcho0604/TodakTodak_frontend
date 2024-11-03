@@ -102,11 +102,11 @@ export const setupMessageListener = () => {
       const notificationTitle = payload.notification.title;
       const notificationOptions = {
         body: payload.notification.body,
-        icon: "favicon.ico",
+        icon: "todak-heart.png",
         data: payload.data
       };
 
-      if (Notification.permission === 'granted') {
+      if (Notification.permission === 'granted' && document.visibilityState === 'visible') {
         const notification = new Notification(notificationTitle, notificationOptions);
         notification.onclick = (event) => {
           event.preventDefault();
