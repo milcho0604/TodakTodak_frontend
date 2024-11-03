@@ -159,7 +159,7 @@ export default {
       }
       this.socket.onclose = () => {
         console.log('Socket has been closed');
-        // this.reconnectWebSocket();
+        this.reconnectWebSocket();
       };
 
       this.socket.onerror = (message) => {
