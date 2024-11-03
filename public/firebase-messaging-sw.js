@@ -32,7 +32,7 @@ messaging.onBackgroundMessage((payload) => {
   const notificationTitle = payload.notification.title;
   const notificationOptions = {
     body: payload.notification.body,
-    icon: "todak-heart.png",
+    icon: "/todak-heart.png",
     data: {
       url: payload.data.url,
       notificationId: payload.data.notificationId
