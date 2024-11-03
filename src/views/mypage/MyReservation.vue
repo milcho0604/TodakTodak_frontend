@@ -60,7 +60,7 @@
                                 <v-avatar size="">
                                 <v-img :src="item.profileImgUrl" alt="자녀 이미지" width="30px" height="30px"></v-img>
                                 </v-avatar>
-                                <div class="ml-3 childName" style="display: inline-block; vertical-align: middle;">
+                                <div class="ml-3 childName" style="display: inline-block; vertical-align: middle; font-size: 15px;">
                                     {{ item.childName }}</div>
                             </v-col>
                             <v-col cols="4"></v-col>
@@ -75,7 +75,7 @@
                         <!-- 스케줄 예약일 떄  -->
                         <v-row v-if="item.reservationType == 'Scheduled'">
                             <v-col cols="4">
-                                <div class="ml-1 waiting">
+                                <div class="ml-1 waiting; font-size: 20px;">
                                     {{ formatTime(item.reservationTime) }} 진료 예약</div>
                             </v-col>
                             <v-col cols="4"></v-col>
@@ -105,7 +105,7 @@
                             </v-col>
                         </v-row>
                         <v-row>
-                            <v-col style="margin-top: -15px">
+                            <v-col style="margin-top: -15px; font-size: 18px;">
                                 <p class="ml-1">{{ item.hospitalName }}</p>
                             </v-col>
                             <v-col cols="4" style="text-align: end; ">
@@ -119,7 +119,7 @@
                         </v-row>
                         <v-row>
                             <v-col cols="4">
-                                <div class="ml-1 doctorname">{{ item.doctorName }} 원장</div>
+                                <div class="ml-1 doctorname; font-size: 15px;">{{ item.doctorName }} 원장</div>
                             </v-col>
                         </v-row>
                         <v-row>
@@ -576,7 +576,7 @@ export default {
 
 .doctorname {
     margin-top: -20px;
-    font-size: 12px;
+    font-size: 15px;
     color: #676767;
 }
 
@@ -643,13 +643,13 @@ export default {
 }
 
 .subtitle-3 {
-    font-size: 1.2em;
+    font-size: 20px;
     color: #00499E;
 }
 
 .detail-text {
     margin-top: -20px;
-    font-size: 12px;
+    font-size: 15px;
     color: black;
 
 }
