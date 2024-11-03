@@ -108,17 +108,17 @@ export default {
   },
   created() {
     this.fetchReservation();
-    window.addEventListener("beforeunload", this.handlePageUnload);
+    // window.addEventListener("beforeunload", this.handlePageUnload);
   },
   mounted() {
     this.role = localStorage.getItem('role');
     this.startWebSocketConnection();
   },
-  beforeUnmount() {
-    // 컴포넌트가 파괴될 때 WebSocket 연결을 닫습니다.
-    this.handlePageUnload();
-    window.removeEventListener("beforeunload", this.handlePageUnload);
-  },
+  // beforeUnmount() {
+  //   // 컴포넌트가 파괴될 때 WebSocket 연결을 닫습니다.
+  //   this.handlePageUnload();
+  //   window.removeEventListener("beforeunload", this.handlePageUnload);
+  // },
   methods: {
     async fetchReservation() {
       try {
@@ -483,11 +483,11 @@ export default {
       console.log("이제 결제할게");
       this.payModal = true;
     },
-    handlePageUnload() {
-      if (this.socket && this.socket.readyState === WebSocket.OPEN) {
-        this.socket.close();
-      }
-    }
+    // handlePageUnload() {
+    //   if (this.socket && this.socket.readyState === WebSocket.OPEN) {
+    //     this.socket.close();
+    //   }
+    // }
   },
 };
 </script>
