@@ -23,7 +23,7 @@
                                         {{ doctor.name }} 의사
                                     </v-card-title>
                                     <v-chip color="#0066FF" class="ml-3">
-                                        <strong>대기 0명</strong>
+                                        <strong> {{ doctor.waiting }}명</strong>
                                     </v-chip>
                                 </div>
         
@@ -157,9 +157,17 @@
 </template>
 <script>
 import { useRoute } from 'vue-router';
+import { ref, onValue } from 'firebase/database';
 import axios from 'axios';
 
 export default{
+    inject: ['firebaseDatabase'],
+    props: {
+        hospitalName: {
+            type: String,
+            required: true
+        }
+    },
     data(){
         return{
             hospitalId:'',
@@ -176,11 +184,13 @@ export default{
                 Sunday: '일요일',
             },
             selectedDoctor: null, // 선택된 의사 정보
+            waitingData: null,
         }
     },
     created(){
         const route = useRoute();
         this.hospitalId = route.params.hospitalId; 
+        this.fetchWaitingData();
     },
     mounted(){
         this.loadDoctorList(); // 병원 별 의사리스트 조회
@@ -217,15 +227,28 @@ export default{
             return result;
             }   
     },
-    methods:{
+    methods: {
         async loadDoctorList(){
             try{
                 // http://localhost:8080/member-service/member/doctorList/2
                 const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/member-service/member/doctorList/${this.hospitalId}`);
                 console.log(response.data);
-                this.doctorList = response.data.result.content; // 의사 + 근무시간리스트
+                this.doctorList = response.data.result.content
+                    .map(item => {
+                        const waitingEntry = this.waitingData ? this.waitingData[item.id] : null;
+                        let waitingTurn = 0;
+                        if(waitingEntry){
+                            const entryValues = Object.values(waitingEntry);
+                            if(entryValues.length > 0){
+                                waitingTurn = entryValues.length;
+                            }
+                        }
+                        return {
+                            ...item,
+                            waiting: waitingTurn,
+                        }
+                    }); // 의사 + 근무시간리스트
                 console.log(this.doctorList);
-
 
             }catch(error){
                 console.log(error);
@@ -234,6 +257,21 @@ export default{
         openDoctorDetail(doctor) {
             this.selectedDoctor = doctor; // 선택된 의사 정보 설정
             this.doctorDetail = true; // 모달 열기
+        },
+        fetchWaitingData() {
+            console.log(this.hospitalName);
+            const waitingRef = ref(this.firebaseDatabase, `todakpadak/${this.hospitalName}`);
+            onValue(waitingRef, (snapshot) => {
+                const data = snapshot.val();
+                if (data) {
+                    this.waitingData = { ...data }; // 데이터를 갱신
+                    console.log("Waiting data updated:", this.waitingData); // 데이터 변경 시 콘솔에 로그
+                    this.loadDoctorList();
+                } else {
+                    this.waitingData = null; // 데이터가 없으면 null로 설정
+                    this.loadDoctorList();
+                }
+            });
         },
     }
     

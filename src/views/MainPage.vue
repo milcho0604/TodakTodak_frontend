@@ -6,7 +6,7 @@
         <v-carousel class="custom-carousel no-padding" show-arrows="hover" cycle hide-delimiter-background>
           <v-carousel-item v-for="(slide, i) in slides" :key="i">
             <v-img :src="slide" class="carousel-image" cover></v-img>
-            <span class="inner-text inter-bold">스마트한 병원의 선택, 토닥</span>
+            <span class="inner-text inter-bold">우리 아이의 건강, 쉽고 편하게</span>
           </v-carousel-item>
         </v-carousel>
       </div>
@@ -59,7 +59,7 @@
       <!-- 자녀 공유 광고 -->
       <v-row justify="center">
         <v-col>
-          <v-img style="border-radius: 10px;"
+          <v-img style="border-radius: 10px; cursor: pointer;" @click="navigateToChild"
             src="https://todak-file.s3.amazonaws.com/fd99c541-0a5f-4a36-88b9-cdcbd49ed553_Group 989012.png"></v-img>
         </v-col>
       </v-row>
@@ -422,7 +422,10 @@ export default {
     },
     navigateToUrl(url) {
       this.$router.push(url); // Vue Router로 URL 이동
-    }
+    },
+    navigateToChild() {
+      this.$router.push("/member/child"); // Vue Router로 URL 이동
+    },
   }
 };
 </script>

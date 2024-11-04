@@ -24,22 +24,41 @@ if (!firebase.apps.length) {
 // Initialize Firebase Messaging
 const messaging = firebase.messaging();
 
+// // Handle background messages
+// messaging.onBackgroundMessage((payload) => {
+//   console.log('[firebase-messaging-sw.js] Received background message', payload);
+
+//   // Extract notification details
+//   const notificationTitle = payload.notification.title;
+//   const notificationOptions = {
+//     body: payload.notification.body,
+//     icon: "/todak-heart.png",
+//     data: {
+//       url: payload.data.url,
+//       notificationId: payload.data.notificationId
+//     }
+//   };
+
+//   // Display notification
+//   self.registration.showNotification(notificationTitle, notificationOptions);
+// });
+
 // Handle background messages
 messaging.onBackgroundMessage((payload) => {
   console.log('[firebase-messaging-sw.js] Received background message', payload);
 
-  // Extract notification details
-  const notificationTitle = payload.notification.title;
+  // Extract notification details from data
+  const notificationTitle = payload.data.title;
   const notificationOptions = {
-    body: payload.notification.body,
-    icon: "todak-heart.png",
+    body: payload.data.body,
+    icon: "/todak-heart.png",
     data: {
       url: payload.data.url,
       notificationId: payload.data.notificationId
     }
   };
 
-  // Display notification
+  // Show notification
   self.registration.showNotification(notificationTitle, notificationOptions);
 });
 
@@ -49,7 +68,7 @@ self.addEventListener('notificationclick', async (event) => {
 
   const notificationId = event.notification.data?.notificationId;
   const redirectUrl = event.notification.data?.url;
-
+  // const url = event.notification.data.url;
   // Mark notification as read (optional)
   if (notificationId) {
     try {

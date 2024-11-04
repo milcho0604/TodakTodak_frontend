@@ -42,7 +42,15 @@
         <v-container class="hospital-list-container d-flex justify-center align-center">
             <!-- 의사리스트 -->
             <v-row>
-                <v-col cols="12" v-for="doctor in doctorList" :key="doctor.doctorId" class=no-padding>
+                <!-- 데이터가 없는 경우 메시지 표시 -->
+                <v-col v-if="doctorList.length === 0" class="text-center">
+                    <v-card variant="flat" class="justify-center">
+                        <div style="padding: 20px; font-size: 18px; color: #888888;">
+                            현재 진료 가능한 의사가 없습니다.
+                        </div>
+                    </v-card>
+                </v-col>
+                <v-col cols="12" v-else v-for="doctor in doctorList" :key="doctor.doctorId" class=no-padding>
                     <v-card style="width:800px !important;" variant="text" class="custom-card justify-center"
                         @click="goToDetail(doctor.memberEmail)" clickable>
                         <div class="d-flex flex-no-wrap">

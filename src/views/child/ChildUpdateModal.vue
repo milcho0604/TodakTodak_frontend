@@ -35,7 +35,7 @@
                             주민번호
                         </v-row>
                         <v-row class="input-space">
-                            <input v-model="childSSN" class="search-input" disabled>
+                            <input :value="maskedChildSSN" class="search-input" disabled>
                         </v-row>
                     </v-col>
                 </v-row>
@@ -50,7 +50,7 @@
 <script>
 import axios from 'axios';
 export default {
-    props: ['initialName','initialSSN','initialImage','childId'],
+    props: ['initialName', 'initialSSN', 'initialImage', 'childId'],
     data() {
         return {
             previewImage: this.initialImage,  // 기존 이미지로 미리보기 설정
@@ -68,6 +68,10 @@ export default {
                 return this.fileName.substring(0, 14) + '...';
             }
             return this.fileName || '파일 선택';  // 파일명이 없으면 기본 텍스트 표시
+        },
+        maskedChildSSN() {
+            if (!this.childSSN || this.childSSN.length < 14) return this.childSSN; // 유효성 확인
+            return this.childSSN.slice(0, 8) + "*******"; // 앞 8자리 + 마스킹
         }
     },
     watch: {
@@ -204,6 +208,7 @@ export default {
 .search-input:focus {
     outline: none;
 }
+
 .close-icon {
     color: #676767;
 }

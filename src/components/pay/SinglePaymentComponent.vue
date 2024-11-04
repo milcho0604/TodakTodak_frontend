@@ -88,7 +88,7 @@ export default {
   methods: {
     closeModal() {
       this.internalModal = false;
-      this.$router.push('/member/mypage/reservation');
+      window.location.href = '/member/mypage/reservation';
     },
     async fetchPaymentData() {
       try {
