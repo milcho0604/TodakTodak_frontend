@@ -108,17 +108,17 @@ export default {
   },
   created() {
     this.fetchReservation();
-    // window.addEventListener("beforeunload", this.handlePageUnload);
+    window.addEventListener("beforeunload", this.handlePageUnload);
   },
   mounted() {
     this.role = localStorage.getItem('role');
     this.startWebSocketConnection();
   },
-  // beforeUnmount() {
-  //   // 컴포넌트가 파괴될 때 WebSocket 연결을 닫습니다.
-  //   this.handlePageUnload();
-  //   window.removeEventListener("beforeunload", this.handlePageUnload);
-  // },
+  beforeUnmount() {
+    // 컴포넌트가 파괴될 때 WebSocket 연결을 닫습니다.
+    this.handlePageUnload();
+    window.removeEventListener("beforeunload", this.handlePageUnload);
+  },
   methods: {
     async fetchReservation() {
       try {
@@ -212,6 +212,12 @@ export default {
           .then(() => navigator.mediaDevices.getUserMedia({ audio: true, video: true }))
           .then(stream => {
             this.localStream = stream;
+
+            // 오디오 트랙을 무음 처리하여 로컬 비디오에 오디오가 나오지 않도록 설정
+            this.localStream.getAudioTracks().forEach(track => {
+              track.enabled = false; // 트랙은 생성하지만 로컬 오디오 출력을 막음
+            });
+
             this.$refs.localVideo.srcObject = stream;  // localVideo에 stream 연결
             this.localStream.getTracks().forEach(track => this.myPeerConnection.addTrack(track, this.localStream));
           })
@@ -483,11 +489,11 @@ export default {
       console.log("이제 결제할게");
       this.payModal = true;
     },
-    // handlePageUnload() {
-    //   if (this.socket && this.socket.readyState === WebSocket.OPEN) {
-    //     this.socket.close();
-    //   }
-    // }
+    handlePageUnload() {
+      if (this.socket && this.socket.readyState === WebSocket.OPEN) {
+        this.socket.close();
+      }
+    }
   },
 };
 </script>
