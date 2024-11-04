@@ -51,7 +51,7 @@
       </v-row>
       <div class="video-container mt-10">
         <video class="local_video" :class="{ small: isRemoteVideoVisible }" ref="localVideo" autoplay playsinline
-          style="transform: scaleX(-1);"></video>
+          id="localVideo" style="transform: scaleX(-1);"></video>
         <video class="remote_video" :class="{ tiny: !isRemoteVideoVisible }" ref="remoteVideo" autoplay playsinline
           style="transform: scaleX(-1);"></video>
       </div>
@@ -231,10 +231,15 @@ export default {
       navigator.mediaDevices.getUserMedia({ audio: false, video: true })
         .then(stream => {
           this.localStream = stream;
-            // 오디오 트랙을 무음 처리하여 로컬 비디오에 오디오가 나오지 않도록 설정
-            this.localStream.getAudioTracks().forEach(track => {
-              track.enabled = false; // 트랙은 생성하지만 로컬 오디오 출력을 막음
-            });
+          // 오디오 트랙을 무음 처리하여 로컬 비디오에 오디오가 나오지 않도록 설정
+          this.localStream.getAudioTracks().forEach(track => {
+            track.enabled = false; // 트랙은 생성하지만 로컬 오디오 출력을 막음
+          });
+
+          const videoElement = document.getElementById("localVideo");
+          videoElement.srcObject = this.localStream; // 로컬 스트림을 비디오 요소에 설정
+          videoElement.muted = true; // 오디오 피드백 방지를 위해 비디오 요소를 음소거
+          
           this.$refs.localVideo.srcObject = stream;
           stream.getTracks().forEach(track => this.myPeerConnection.addTrack(track, this.localStream));
         });
