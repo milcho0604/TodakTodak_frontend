@@ -4,7 +4,7 @@
             <v-spacer :style="{ height: '50px' }"></v-spacer>
             <v-row class="header-row">
                 <h2>{{ this.hospitalName }}</h2>
-                <v-chip class="schedule-chip ml-3" variant="flat" size="x-large" label>오늘 예약</v-chip>
+                <v-chip class="schedule-chip ml-3" variant="flat" size="x-large" label>바로 대기</v-chip>
             </v-row>
             <v-row class="header-row">
                 <v-col class="big-font">

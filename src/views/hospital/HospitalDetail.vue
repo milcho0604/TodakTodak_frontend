@@ -55,7 +55,7 @@
 
         <v-row class="my-7 ml-2">
             <v-btn size="large" class="schedule-button" rounded="lg" variant="flat" @click="scheduleReservation">스케쥴 예약</v-btn>
-            <v-btn size="large" class="today-button ml-5" rounded="lg" variant="flat" @click="todayReservation">오늘 예약</v-btn>
+            <v-btn size="large" class="today-button ml-5" rounded="lg" variant="flat" @click="todayReservation">바로 대기</v-btn>
         </v-row>
 
         <v-tabs v-model="activeTab" align-tabs="center" style="color: #00499E;" @change="updateTab">
