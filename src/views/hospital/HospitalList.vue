@@ -7,7 +7,7 @@
                 
             </v-col>
             <v-col cols="1" class="mt-1" style="padding: 15px 0">
-                <v-btn variant="flat" size="large" @click="locationModal = true">
+                <v-btn variant="flat" size="large" style="font-size:17px; font-weight:bold;" class="mr-1" @click="locationModal = true">
                     <!-- <v-icon> mdi-crosshairs-gps</v-icon> -->
                     📍 {{dong}}
                     <v-icon class="custom-width ml-n1"> mdi-chevron-down</v-icon>

@@ -277,6 +277,7 @@ export default {
             untact: null,
             mediChart: null,
             waiting: null,
+            previousWaiting: null,
         }
     },
     methods: {
@@ -295,6 +296,7 @@ export default {
                         } catch (e) {
                             console.log(e);
                         }
+
                     }
                     return {
                         ...item,
@@ -304,6 +306,7 @@ export default {
                 }));
             } else if (req == '지난예약') {
                 const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/reservation-service/reservation/list/yesterday`);
+                console.log(response)
                 this.filter = null;
                 this.reserveList = response.data.map(item => ({
                     ...item,
@@ -311,6 +314,8 @@ export default {
                     review: false,
                     medichart: ""
                 }));
+                
+                console.log(this.reserveList)
                 await Promise.all(this.reserveList.map(async (item, index) => {
                     await this.isReview(item.id, index);
                 }));
@@ -437,6 +442,10 @@ export default {
                     const data = snapshot.val();
                     if (data) {
                         this.waiting = data.turn;
+                        if(this.waiting !== this.previousWaiting){
+                            this.previousWaiting = this.waiting;
+                            this.updateReserveList('오는예약');
+                        }
                         resolve(this.waiting);  // resolve waiting 값을 반환
                     } else {
                         this.waitingData = null;
