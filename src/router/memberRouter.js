@@ -109,9 +109,9 @@ export const memberRouter = [
                         }
                     );
                 }
-                // next('/'); // next 호출로 라우트 진행
-                next(); // next 호출로 라우트 진행
-                window.location.href = "/";
+                next('/'); // next 호출로 라우트 진행
+                // next(); // next 호출로 라우트 진행
+                // window.location.href = "/";
             } catch (error) {
                 console.error("Invalid token or FCM request failed:", error);
                 next('/'); 
@@ -158,7 +158,7 @@ export const memberRouter = [
                         }
                     );
                 }
-                next(); // next 호출로 라우트 진행
+                next('/'); // next 호출로 라우트 진행
                 window.location.href = "/member/update";
             } catch (error) {
                 console.error("Invalid token or FCM request failed:", error);
