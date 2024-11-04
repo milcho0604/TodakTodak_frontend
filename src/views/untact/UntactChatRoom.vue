@@ -429,7 +429,7 @@ export default {
         await axios.post(`${process.env.VUE_APP_API_BASE_URL}/reservation-service/reservation/hospital/untact/update`,
           req
         ).then(response => {
-          if (response.status === 200 && response.data.result) {
+          if (response.ok) {
             window.location.href = '/doctor/untact/reservation';
           }
         }).catch(error => {
