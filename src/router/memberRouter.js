@@ -13,13 +13,13 @@ import { jwtDecode } from "jwt-decode";
 
 
 // 비동기 서비스 워커 준비 및 지연 함수
-async function checkServiceWorkerReady() {
-    if ('serviceWorker' in navigator) {
-      await navigator.serviceWorker.ready;
-      console.log("Service Worker is ready for FCM token request.");
-      setTimeout(() => console.log("2-second delay completed"), 2000);
-    }
-  }
+// async function checkServiceWorkerReady() {
+//     if ('serviceWorker' in navigator) {
+//       await navigator.serviceWorker.ready;
+//       console.log("Service Worker is ready for FCM token request.");
+//       setTimeout(() => console.log("2-second delay completed"), 2000);
+//     }
+//   }
 
 export const memberRouter = [
     {
@@ -87,14 +87,8 @@ export const memberRouter = [
                 localStorage.setItem("email", decoded.sub); 
                 localStorage.setItem("role", decoded.role);
 
-                // 서비스 워커가 준비 상태인지 확인하고 2초의 지연을 줌
-                // if ('serviceWorker' in navigator) {
-                //     await navigator.serviceWorker.ready;
-                //     console.log("Service Worker is ready for FCM token request.");
-                //     await new Promise(resolve => setTimeout(resolve, 2000)); // 2초 지연
-                // }
 
-                checkServiceWorkerReady();
+                // checkServiceWorkerReady();
                 // // FCM 토큰 발급 시도 (최대 3회 재시도)
                 let fcmToken;
                 for (let attempt = 0; attempt < 5; attempt++) {
@@ -102,9 +96,6 @@ export const memberRouter = [
                     if (fcmToken) break;
                     console.log(`Retrying FCM token request (${attempt + 1}/5)`);
                 }
-                // FCM 토큰 발급 요청
-                // const fcmToken = await requestFcmToken(true); // await 사용 가능
-                // console.log("FCM Token for Kakao login:", fcmToken);
 
                 if (fcmToken) {
 
@@ -118,7 +109,8 @@ export const memberRouter = [
                         }
                     );
                 }
-                next('/'); // next 호출로 라우트 진행
+                // next('/'); // next 호출로 라우트 진행
+                next(); // next 호출로 라우트 진행
                 window.location.href = "/";
             } catch (error) {
                 console.error("Invalid token or FCM request failed:", error);
@@ -154,9 +146,6 @@ export const memberRouter = [
                     if (fcmToken) break;
                     console.log(`Retrying FCM token request (${attempt + 1}/5)`);
                 }
-                // FCM 토큰 발급 요청
-                // const fcmToken = await requestFcmToken(true); // await 사용 가능
-                // console.log("FCM Token for Kakao login:", fcmToken);
 
                 if (fcmToken) {
                     await axios.post(
