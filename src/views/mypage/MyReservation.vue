@@ -314,6 +314,7 @@ export default {
                     review: false,
                     medichart: ""
                 }));
+                
                 console.log(this.reserveList)
                 await Promise.all(this.reserveList.map(async (item, index) => {
                     await this.isReview(item.id, index);
