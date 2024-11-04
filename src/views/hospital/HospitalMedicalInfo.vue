@@ -23,7 +23,7 @@
                                         {{ doctor.name }} 의사
                                     </v-card-title>
                                     <v-chip color="#0066FF" class="ml-3">
-                                        <strong> {{ doctor.waiting }}명</strong>
+                                        <strong> 대기 {{ doctor.waiting }}명</strong>
                                     </v-chip>
                                 </div>
         
