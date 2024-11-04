@@ -70,7 +70,7 @@
             <hr class="divider">
         </v-row>
 
-        <component :is="currentComponent"></component>
+        <component :is="currentComponent" :hospital-name="hospital.name"></component>
         <v-spacer :style="{ height: '50px' }"></v-spacer>
     </v-container>
 </template>

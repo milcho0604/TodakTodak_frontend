@@ -162,6 +162,12 @@ import axios from 'axios';
 
 export default{
     inject: ['firebaseDatabase'],
+    props: {
+        hospitalName: {
+            type: String,
+            required: true
+        }
+    },
     data(){
         return{
             hospitalId:'',
@@ -253,6 +259,7 @@ export default{
             this.doctorDetail = true; // 모달 열기
         },
         fetchWaitingData() {
+            console.log(this.hospitalName);
             const waitingRef = ref(this.firebaseDatabase, `todakpadak/${this.hospitalName}`);
             onValue(waitingRef, (snapshot) => {
                 const data = snapshot.val();
