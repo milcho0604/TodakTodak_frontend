@@ -94,14 +94,40 @@ export const removeFcmToken = async () => {
 // };
 let onMessageListenerInitialized = false;
 
+// export const setupMessageListener = () => {
+//   if (!onMessageListenerInitialized) {
+//     onMessage(messaging, (payload) => {
+//       console.log("Message received in foreground:", payload);
+      
+//       const notificationTitle = payload.notification.title;
+//       const notificationOptions = {
+//         body: payload.notification.body,
+//         icon: "todak-heart.png",
+//         data: payload.data
+//       };
+
+//       if (Notification.permission === 'granted' && document.visibilityState === 'visible') {
+//         const notification = new Notification(notificationTitle, notificationOptions);
+//         notification.onclick = (event) => {
+//           event.preventDefault();
+//           const redirectUrl = payload.data.url;
+//           if (redirectUrl) window.open(redirectUrl, "_self");
+//           notification.close();
+//         };
+//       }
+//     });
+//     onMessageListenerInitialized = true;
+//   }
+// };
 export const setupMessageListener = () => {
   if (!onMessageListenerInitialized) {
     onMessage(messaging, (payload) => {
       console.log("Message received in foreground:", payload);
-      
-      const notificationTitle = payload.notification.title;
+
+      // Extract notification details from data
+      const notificationTitle = payload.data.title;
       const notificationOptions = {
-        body: payload.notification.body,
+        body: payload.data.body,
         icon: "todak-heart.png",
         data: payload.data
       };
