@@ -277,6 +277,7 @@ export default {
             untact: null,
             mediChart: null,
             waiting: null,
+            previousWaiting: null,
         }
     },
     methods: {
@@ -437,6 +438,10 @@ export default {
                     const data = snapshot.val();
                     if (data) {
                         this.waiting = data.turn;
+                        if(this.waiting !== this.previousWaiting){
+                            this.previousWaiting = this.waiting;
+                            this.updateReserveList('오는예약');
+                        }
                         resolve(this.waiting);  // resolve waiting 값을 반환
                     } else {
                         this.waitingData = null;
