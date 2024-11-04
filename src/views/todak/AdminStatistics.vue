@@ -308,6 +308,7 @@ export default {
                 const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/reservation-service/payment/get/total`);
                 console.log("나는 총 매출", response)
                 this.totalAmount = response.data;
+                
             } catch (e) {
                 console.error(e);
             }
