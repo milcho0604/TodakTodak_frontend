@@ -92,7 +92,7 @@
                         <v-row v-else-if="item.reservationType == 'Immediate' && item.status == 'Confirmed'">
                             <v-col cols="4" v-if="reserveType != '지난예약'">
                                 <div class="ml-1 waiting">
-                                    {{  item.waiting }}명 대기중
+                                    내 대기 순번 {{ item.waiting }}번
                                 </div>
                             </v-col>
                             <v-col cols="4"></v-col>
