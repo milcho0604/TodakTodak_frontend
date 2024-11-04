@@ -178,7 +178,7 @@
 <br>
 
 ## 시스템 아키텍쳐
-<img width="500" alt="배포아키텍쳐" src="https://github.com/user-attachments/assets/900947e9-683a-4d1d-a04d-bf7b9eaaf23e">
+<img width="500" alt="배포아키텍쳐" src="https://github.com/user-attachments/assets/991bab33-368a-4c04-9f24-541324ebcce0">
 
 ## 프로젝트 시연
 <details>
