@@ -413,11 +413,8 @@ export default {
 
 .fixed-list-size {
   width: 350px !important;
-  /* 너비 고정 */
-  max-height: 500px;
-  /* 최대 높이 고정 */
-  overflow-y: auto;
-  /* 스크롤 가능하게 설정 */
+  max-height: 80vh; /* 드롭다운 높이를 화면의 80%로 설정하여 더 많은 알림 표시 */
+  overflow-y: auto; /* 스크롤 가능하게 설정 */
 }
 
 .small-font {
