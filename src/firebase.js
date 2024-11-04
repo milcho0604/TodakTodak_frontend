@@ -69,31 +69,9 @@ export const removeFcmToken = async () => {
     console.warn("No FCM token found to delete.");
   }
 };
-// Foreground message listener
-// export const setupMessageListener = () => {
-//   onMessage(messaging, (payload) => {
-//     console.log("Message received in foreground:", payload);
-    
-//     const notificationTitle = payload.notification.title;
-//     const notificationOptions = {
-//       body: payload.notification.body,
-//       icon: "favicon.ico",
-//       data: payload.data
-//     };
 
-//     if (Notification.permission === 'granted') {
-//       const notification = new Notification(notificationTitle, notificationOptions);
-//       notification.onclick = (event) => {
-//         event.preventDefault();
-//         const redirectUrl = payload.data.url;
-//         if (redirectUrl) window.open(redirectUrl, "_self");
-//         notification.close();
-//       };
-//     }
-//   });
-// };
 let onMessageListenerInitialized = false;
-
+// Foreground message listener
 // export const setupMessageListener = () => {
 //   if (!onMessageListenerInitialized) {
 //     onMessage(messaging, (payload) => {
