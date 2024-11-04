@@ -228,7 +228,6 @@
                     </v-col>
                 </div>
             </v-row>
-
             <v-dialog v-model="dialog" width="500">
                 <v-card class="review-edit-modal">
                     <v-card-text>
