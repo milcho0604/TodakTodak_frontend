@@ -184,6 +184,7 @@ export default{
     created(){
         const route = useRoute();
         this.hospitalId = route.params.hospitalId; 
+        this.fetchWaitingData();
     },
     mounted(){
         this.loadDoctorList(); // 병원 별 의사리스트 조회
