@@ -228,7 +228,7 @@ export default {
     },
     handlePeerConnection(message) {
       this.createPeerConnection();
-      navigator.mediaDevices.getUserMedia({ audio: true, video: true })
+      navigator.mediaDevices.getUserMedia({ audio: false, video: true })
         .then(stream => {
           this.localStream = stream;
             // 오디오 트랙을 무음 처리하여 로컬 비디오에 오디오가 나오지 않도록 설정
