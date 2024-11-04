@@ -19,8 +19,8 @@
                                 <div style="border-left: 1px solid #ccc; height: 40px; margin: 12px 0;"></div>
                                 <v-col>
                                     <div>
-                                        <span class="inter-normal child">{{ r.childName }}</span> <span class="ssn">{{
-                                            r.childSsn }}</span>
+                                        <span class="inter-normal child">{{ r.childName }}</span> <span class="ssn">
+                                            {{ maskSSN(r.childSsn) }}</span>
                                     </div>
 
                                     <div class="parent">
@@ -48,8 +48,8 @@
                                 <div style="border-left: 1px solid #ccc; height: 40px; margin: 12px 0;"></div>
                                 <v-col>
                                     <div>
-                                        <span class="inter-normal child">{{ r.childName }}</span> <span class="ssn">{{
-                                            r.childSsn }}</span>
+                                        <span class="inter-normal child">{{ r.childName }}</span> <span class="ssn">
+                                            {{ maskSSN(r.childSsn) }}</span>
                                     </div>
 
                                     <div class="parent">
@@ -73,8 +73,8 @@
                                 <div style="border-left: 1px solid #ccc; height: 40px; margin: 12px 0;"></div>
                                 <v-col>
                                     <div>
-                                        <span class="inter-normal child">{{ r.childName }}</span> <span class="ssn">{{
-                                            r.childSsn }}</span>
+                                        <span class="inter-normal child">{{ r.childName }}</span> <span class="ssn">
+                                            {{ maskSSN(r.childSsn) }}</span>
                                     </div>
 
                                     <div class="parent">
@@ -113,7 +113,7 @@
                         <v-row>
                             <v-col style="margin-top: -20px">
                                 {{ reservationDetail.childName }} <br>
-                                {{ reservationDetail.childSsn }}
+                                {{ maskSSN(reservationDetail.childSsn) }}
                             </v-col>
                         </v-row>
                         <v-row justify="center">
@@ -374,6 +374,10 @@ export default {
         },
         formatTime(time) {
             return time.slice(0, 5);
+        },
+        maskSSN(ssn) {
+            if (!ssn || ssn.length < 14) return ssn; // 잘못된 형식 처리
+            return ssn.slice(0, 8) + "*******"; // 앞 8자리만 남기고 뒤는 마스킹
         }
     },
     computed: {

@@ -36,7 +36,7 @@
                 </v-col>
                 <v-col class="text-center" cols="7" style="margin: 15px auto;">
                   <v-row class="inter-bold big-font">{{ child.name }}</v-row>
-                  <v-row class="inter-normal small-font">{{ child.ssn }}</v-row>
+                  <v-row class="inter-normal small-font">{{ maskSSN(child.ssn) }}</v-row>
                 </v-col>
               </v-row>
             </div>
@@ -430,7 +430,7 @@ export default {
           req
         ).then(response => {
           console.log(response);
-          if (response.status==200) {
+          if (response.status == 200) {
             window.location.href = '/doctor/untact/reservation';
           }
         }).catch(error => {
@@ -487,6 +487,10 @@ export default {
       if (this.socket && this.socket.readyState === WebSocket.OPEN) {
         this.socket.close();
       }
+    },
+    maskSSN(ssn) {
+      if (!ssn || ssn.length < 14) return ssn; // 잘못된 형식 처리
+      return ssn.slice(0, 8) + "*******"; // 앞 8자리만 남기고 뒤는 마스킹
     }
   },
 };
