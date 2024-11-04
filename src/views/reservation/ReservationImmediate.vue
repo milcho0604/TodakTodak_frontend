@@ -31,7 +31,7 @@
                             </v-col>
                             <v-col class="text-center" cols="5" style="margin-top: 11px;">
                                 <v-row class="inter-bold child-name">{{ child.name }}</v-row>
-                                <v-row class="inter-normal child-ssn">{{ child.ssn }}</v-row>
+                                <v-row class="inter-normal child-ssn">{{ maskSSN(child.ssn) }}</v-row>
                             </v-col>
                             <v-col cols="4">
                                 <div class="mini-button inline" v-if="this.child == child" style="margin-top: 5px;">선택됨
@@ -205,7 +205,7 @@
                             <v-row>
                                 <v-col style="margin-top: -20px">
                                     {{ child.name }} <br>
-                                    {{ child.ssn }}
+                                    {{ maskSSN(child.ssn) }}
                                 </v-col>
                             </v-row>
                             <v-row justify="center">
@@ -466,6 +466,10 @@ export default {
             }catch(e){
                 console.log(e.message);
             }
+        },
+        maskSSN(ssn) {
+            if (!ssn || ssn.length < 14) return ssn; // 잘못된 형식 처리
+            return ssn.slice(0, 8) + "*******"; // 앞 8자리만 남기고 뒤는 마스킹
         }
     },
     async created() {
