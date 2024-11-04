@@ -227,8 +227,23 @@ export default {
     async fetchNotifications() {
       try {
         const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/member-service/fcm/list`);
-        this.notifications = response.data.result.content;
+        // this.notifications = response.data.result.content;
         console.log(this.notifications)
+        // 여기서부터 추가
+        let notifications = response.data.result.content;
+
+        // 중복 알림 제거 (id 또는 title/content 등을 기준으로 중복 필터링)
+        const uniqueNotifications = notifications.reduce((acc, current) => {
+          const isDuplicate = acc.some(
+            (item) => item.title === current.title && item.content === current.content && item.createdAt === current.createdAt
+          );
+          if (!isDuplicate) acc.push(current);
+          return acc;
+        }, []);
+
+        this.notifications = uniqueNotifications;
+        console.log("Filtered Notifications:", this.notifications);
+                
         this.updateUnreadCount(); // 읽지 않은 알림 수 업데이트
         this.applyFilter();
       } catch (error) {
@@ -237,6 +252,7 @@ export default {
     },
     updateUnreadCount() {
       this.unreadCount = this.notifications.filter(notification => !notification.read).length;
+      console.log("Unread Count:", this.unreadCount); // 확인용 로그
     },
     applyFilter() {
       if (this.filter === 'unread') {
