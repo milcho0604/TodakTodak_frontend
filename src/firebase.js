@@ -128,7 +128,7 @@ export const setupMessageListener = () => {
       const notificationTitle = payload.data.title;
       const notificationOptions = {
         body: payload.data.body,
-        icon: "todak-heart.png",
+        icon: require("@/assets/todak-new-icon.png"),
         data: payload.data
       };
 
