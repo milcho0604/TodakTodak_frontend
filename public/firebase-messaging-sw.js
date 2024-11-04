@@ -22,7 +22,7 @@ if (!firebase.apps.length) {
 }
 
 // Initialize Firebase Messaging
-// const messaging = firebase.messaging();
+const messaging = firebase.messaging();
 
 // // Handle background messages
 // messaging.onBackgroundMessage((payload) => {
@@ -43,13 +43,32 @@ if (!firebase.apps.length) {
 //   self.registration.showNotification(notificationTitle, notificationOptions);
 // });
 
+// Handle background messages
+messaging.onBackgroundMessage((payload) => {
+  console.log('[firebase-messaging-sw.js] Received background message', payload);
+
+  // Extract notification details from data
+  const notificationTitle = payload.data.title;
+  const notificationOptions = {
+    body: payload.data.body,
+    icon: "/todak-heart.png",
+    data: {
+      url: payload.data.url,
+      notificationId: payload.data.notificationId
+    }
+  };
+
+  // Show notification
+  self.registration.showNotification(notificationTitle, notificationOptions);
+});
+
 // Notification click event
 self.addEventListener('notificationclick', async (event) => {
   event.notification.close(); // Close notification
 
   const notificationId = event.notification.data?.notificationId;
   const redirectUrl = event.notification.data?.url;
-
+  // const url = event.notification.data.url;
   // Mark notification as read (optional)
   if (notificationId) {
     try {
