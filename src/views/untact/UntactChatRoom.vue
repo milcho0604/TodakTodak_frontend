@@ -212,12 +212,6 @@ export default {
           .then(() => navigator.mediaDevices.getUserMedia({ audio: true, video: true }))
           .then(stream => {
             this.localStream = stream;
-
-            // 오디오 트랙을 무음 처리하여 로컬 비디오에 오디오가 나오지 않도록 설정
-            this.localStream.getAudioTracks().forEach(track => {
-              track.enabled = false; // 트랙은 생성하지만 로컬 오디오 출력을 막음
-            });
-
             this.$refs.localVideo.srcObject = stream;  // localVideo에 stream 연결
             this.localStream.getTracks().forEach(track => this.myPeerConnection.addTrack(track, this.localStream));
           })
@@ -234,9 +228,13 @@ export default {
     },
     handlePeerConnection(message) {
       this.createPeerConnection();
-      navigator.mediaDevices.getUserMedia({ audio: true, video: true })
+      navigator.mediaDevices.getUserMedia({ audio: false, video: true })
         .then(stream => {
           this.localStream = stream;
+            // 오디오 트랙을 무음 처리하여 로컬 비디오에 오디오가 나오지 않도록 설정
+            this.localStream.getAudioTracks().forEach(track => {
+              track.enabled = false; // 트랙은 생성하지만 로컬 오디오 출력을 막음
+            });
           this.$refs.localVideo.srcObject = stream;
           stream.getTracks().forEach(track => this.myPeerConnection.addTrack(track, this.localStream));
         });
