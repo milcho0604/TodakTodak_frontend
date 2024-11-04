@@ -306,7 +306,7 @@ export default {
                 }));
             } else if (req == '지난예약') {
                 const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/reservation-service/reservation/list/yesterday`);
-                console.log(response)
+                console.log("나야 예약", response)
                 this.filter = null;
                 this.reserveList = response.data.map(item => ({
                     ...item,
@@ -314,8 +314,8 @@ export default {
                     review: false,
                     medichart: ""
                 }));
-                
-                console.log(this.reserveList)
+
+                console.log("나야 예약 리스트",this.reserveList)
                 await Promise.all(this.reserveList.map(async (item, index) => {
                     await this.isReview(item.id, index);
                 }));
