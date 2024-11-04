@@ -8,7 +8,7 @@
 
             </v-col>
             <v-col cols="7">
-                <v-text-field v-model="search" label="병원검색" prepend-inner-icon="mdi-magnify" variant="underlined"
+                <v-text-field v-model="search" label="의사검색" prepend-inner-icon="mdi-magnify" variant="underlined"
                     type="text" clearable class="mt-n1" @input="onSearchInput"></v-text-field>
             </v-col>
             <v-col cols="3">
