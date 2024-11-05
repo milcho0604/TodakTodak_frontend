@@ -39,7 +39,7 @@
                         </v-col>
                         <v-col class="text-center" cols="5" style="margin-top: 11px;">
                             <v-row class="inter-bold big-font">{{ child.name }}</v-row>
-                            <v-row class="inter-normal small-font">{{ child.ssn }}</v-row>
+                            <v-row class="inter-normal small-font">{{ maskSSN(child.ssn) }}</v-row>
                         </v-col>
                         <v-col cols="4">
                             <div class="mini-button" v-if="this.child == child" style="margin-top: 5px;">선택</div>
@@ -169,7 +169,7 @@
                                     {{ child.name }}
                                 </v-row>
                                 <v-row v-if="child" class="inter-light">
-                                    {{ child.ssn }}
+                                    {{ maskSSN(child.ssn) }}
                                 </v-row>
                                 <v-row>
                                     <div class="modal-subtitle inter-bold mt-3">진료정보</div>
@@ -347,6 +347,10 @@ export default {
                 }
             });
         },
+        maskSSN(ssn) {
+            if (!ssn) return ssn; // 잘못된 형식 처리
+            return ssn.slice(0, 8) + "*******"; // 앞 8자리만 남기고 뒤는 마스킹
+        }
     },
 }
 </script>

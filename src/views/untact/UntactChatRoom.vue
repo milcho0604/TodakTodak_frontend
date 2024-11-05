@@ -36,7 +36,7 @@
                 </v-col>
                 <v-col class="text-center" cols="7" style="margin: 15px auto;">
                   <v-row class="inter-bold big-font">{{ child.name }}</v-row>
-                  <v-row class="inter-normal small-font">{{ child.ssn }}</v-row>
+                  <v-row class="inter-normal small-font">{{ maskSSN(child.ssn) }}</v-row>
                 </v-col>
               </v-row>
             </div>
@@ -51,7 +51,7 @@
       </v-row>
       <div class="video-container mt-10">
         <video class="local_video" :class="{ small: isRemoteVideoVisible }" ref="localVideo" autoplay playsinline
-          style="transform: scaleX(-1);"></video>
+          id="localVideo" style="transform: scaleX(-1);"></video>
         <video class="remote_video" :class="{ tiny: !isRemoteVideoVisible }" ref="remoteVideo" autoplay playsinline
           style="transform: scaleX(-1);"></video>
       </div>
@@ -212,12 +212,6 @@ export default {
           .then(() => navigator.mediaDevices.getUserMedia({ audio: true, video: true }))
           .then(stream => {
             this.localStream = stream;
-
-            // 오디오 트랙을 무음 처리하여 로컬 비디오에 오디오가 나오지 않도록 설정
-            this.localStream.getAudioTracks().forEach(track => {
-              track.enabled = false; // 트랙은 생성하지만 로컬 오디오 출력을 막음
-            });
-
             this.$refs.localVideo.srcObject = stream;  // localVideo에 stream 연결
             this.localStream.getTracks().forEach(track => this.myPeerConnection.addTrack(track, this.localStream));
           })
@@ -234,9 +228,18 @@ export default {
     },
     handlePeerConnection(message) {
       this.createPeerConnection();
-      navigator.mediaDevices.getUserMedia({ audio: true, video: true })
+      navigator.mediaDevices.getUserMedia({ audio: false, video: true })
         .then(stream => {
           this.localStream = stream;
+          // 오디오 트랙을 무음 처리하여 로컬 비디오에 오디오가 나오지 않도록 설정
+          this.localStream.getAudioTracks().forEach(track => {
+            track.enabled = false; // 트랙은 생성하지만 로컬 오디오 출력을 막음
+          });
+
+          const videoElement = document.getElementById("localVideo");
+          videoElement.srcObject = this.localStream; // 로컬 스트림을 비디오 요소에 설정
+          videoElement.muted = true; // 오디오 피드백 방지를 위해 비디오 요소를 음소거
+
           this.$refs.localVideo.srcObject = stream;
           stream.getTracks().forEach(track => this.myPeerConnection.addTrack(track, this.localStream));
         });
@@ -418,16 +421,23 @@ export default {
         alert("진료가 종료되었습니다.");
         this.reviewModal = true;
       } else if (localStorage.getItem('role') === 'DOCTOR') {
-        try {
-          // updateStatus가 완료될 때까지 기다립니다.
-          await this.updateStatus('Completed');
-          // updateStatus가 성공적으로 완료되면 페이지 이동
-          window.location.href = '/doctor/untact/reservation';
-        } catch (error) {
+        // 진료 종료시 예약 상태 & 진료 내역 상태 진료완료로 업데이트
+        const req = {
+          id: this.sid,
+          status: 'Completed'
+        }
+        await axios.post(`${process.env.VUE_APP_API_BASE_URL}/reservation-service/reservation/hospital/untact/update`,
+          req
+        ).then(response => {
+          console.log(response);
+          if (response.status == 200) {
+            window.location.href = '/doctor/untact/reservation';
+          }
+        }).catch(error => {
           // updateStatus가 실패하면 오류 메시지를 출력하고 페이지 이동하지 않음
           console.error("Status update failed:", error);
           alert("진료 상태 업데이트에 실패했습니다. 다시 시도해주세요.");
-        }
+        });
       }
     },
     handlePeerLeave(message) {
@@ -469,22 +479,6 @@ export default {
           console.error('Error creating medical chart:', error);
         });
     },
-    // 진료 종료시 예약 상태 & 진료 내역 상태 진료완료로 업데이트
-    async updateStatus(data) {
-      console.log(" 진료 완료처리 하려는데 ...")
-      try {
-        const req = {
-          id: this.sid,
-          status: data
-        }
-        console.log(req);
-        await axios.post(`${process.env.VUE_APP_API_BASE_URL}/reservation-service/reservation/hospital/untact/update`,
-          req
-        )
-      } catch (e) {
-        console.log(e)
-      }
-    },
     openPayModal() {
       console.log("이제 결제할게");
       this.payModal = true;
@@ -493,6 +487,10 @@ export default {
       if (this.socket && this.socket.readyState === WebSocket.OPEN) {
         this.socket.close();
       }
+    },
+    maskSSN(ssn) {
+      if (!ssn) return ssn; // 잘못된 형식 처리
+      return ssn.slice(0, 8) + "*******"; // 앞 8자리만 남기고 뒤는 마스킹
     }
   },
 };
