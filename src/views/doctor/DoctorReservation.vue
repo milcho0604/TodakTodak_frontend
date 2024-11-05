@@ -19,8 +19,8 @@
                                 <div style="border-left: 1px solid #ccc; height: 40px; margin: 12px 0;"></div>
                                 <v-col>
                                     <div>
-                                        <span class="inter-normal child">{{ r.childName }}</span> <span class="ssn">{{
-                                            r.childSsn }}</span>
+                                        <span class="inter-normal child">{{ r.childName }}</span> <span class="ssn">
+                                            {{ maskSSN(r.childSsn) }}</span>
                                     </div>
 
                                     <div class="parent">
@@ -48,8 +48,8 @@
                                 <div style="border-left: 1px solid #ccc; height: 40px; margin: 12px 0;"></div>
                                 <v-col>
                                     <div>
-                                        <span class="inter-normal child">{{ r.childName }}</span> <span class="ssn">{{
-                                            r.childSsn }}</span>
+                                        <span class="inter-normal child">{{ r.childName }}</span> <span class="ssn">
+                                            {{ maskSSN(r.childSsn) }}</span>
                                     </div>
 
                                     <div class="parent">
@@ -73,8 +73,8 @@
                                 <div style="border-left: 1px solid #ccc; height: 40px; margin: 12px 0;"></div>
                                 <v-col>
                                     <div>
-                                        <span class="inter-normal child">{{ r.childName }}</span> <span class="ssn">{{
-                                            r.childSsn }}</span>
+                                        <span class="inter-normal child">{{ r.childName }}</span> <span class="ssn">
+                                            {{ maskSSN(r.childSsn) }}</span>
                                     </div>
 
                                     <div class="parent">
@@ -90,7 +90,7 @@
                 </v-col>
             </v-row>
             <v-dialog v-model="toCompletedModal" max-width="500px">
-                <v-card>
+                <v-card style="padding: 10px 10px">
                     <v-card-title class="submodal mt-6 inter-bold text-center">
                         접수 완료 처리하시겠습니까?
                     </v-card-title>
@@ -113,7 +113,7 @@
                         <v-row>
                             <v-col style="margin-top: -20px">
                                 {{ reservationDetail.childName }} <br>
-                                {{ reservationDetail.childSsn }}
+                                {{ maskSSN(reservationDetail.childSsn) }}
                             </v-col>
                         </v-row>
                         <v-row justify="center">
@@ -139,10 +139,10 @@
                         </v-row>
                         <br><br>
                         <v-row justify="center" align="center">
-                            <v-col cols="2" class="modal-completed" @click="toCompleted('Completed')">
+                            <v-col cols="2" class="modal-completed mr-1" @click="toCompleted('Completed')">
                                 접수완료
                             </v-col>
-                            <v-col cols="2" class="modal-cancelled" @click="checkCompletedModal = true">
+                            <v-col cols="2" class="modal-cancelled ml-1" @click="checkCompletedModal = true">
                                 예약취소
                             </v-col>
                         </v-row>
@@ -374,6 +374,10 @@ export default {
         },
         formatTime(time) {
             return time.slice(0, 5);
+        },
+        maskSSN(ssn) {
+            if (!ssn) return ssn; // 잘못된 형식 처리
+            return ssn.slice(0, 8) + "*******"; // 앞 8자리만 남기고 뒤는 마스킹
         }
     },
     computed: {
@@ -545,6 +549,7 @@ export default {
     color: #00499E;
     cursor: pointer;
     font-weight: bold;
+    text-align: center;
 }
 
 .modal-cancelled {
@@ -555,6 +560,7 @@ export default {
     color: #A20000;
     cursor: pointer;
     font-weight: bold;
+    text-align: center;
 }
 
 .subtitle-3 {

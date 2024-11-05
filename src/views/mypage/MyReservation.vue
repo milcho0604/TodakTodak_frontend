@@ -187,7 +187,7 @@
                             <v-row>
                                 <v-col class="detail-text" style="margin-left: 6px;">
                                     {{ item.childName }} <br>
-                                    {{ item.ssn }}
+                                    {{ maskSSN(item.ssn) }}
                                 </v-col>
                             </v-row>
                             <v-row>
@@ -452,6 +452,10 @@ export default {
                     }
                 });
             });
+        },
+        maskSSN(ssn) {
+            if (!ssn) return ssn; // 잘못된 형식 처리
+            return ssn.slice(0, 8) + "*******"; // 앞 8자리만 남기고 뒤는 마스킹
         }
     },
     created() {

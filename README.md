@@ -79,21 +79,22 @@
 
 ## ERD
 ### 전체 ERD
-<img width="1115" alt="image" src="https://github.com/user-attachments/assets/e5ed1919-ef04-4536-ae35-34a265becc0a">
+<img width="1152" alt="image" src="https://github.com/user-attachments/assets/f388118d-3462-4ab9-b568-b79753410e4e">
 
 <details>
   <summary>Member-Service</summary>
-  <img width="1026" alt="image" src="https://github.com/user-attachments/assets/018d20a4-0364-4771-a4ac-ac49c4aec05e">
+  <img width="740" alt="image" src="https://github.com/user-attachments/assets/8dd04b61-3329-41cf-9c4a-dc0bbf84a149">
 </details>
 
 <details>
   <summary>Reservation-Service</summary>
-  <img width="1031" alt="image" src="https://github.com/user-attachments/assets/8e8f4c82-0489-4d4a-b05c-7c26a4a8fcba">
+  <img width="1042" alt="image" src="https://github.com/user-attachments/assets/9972b791-bb1b-4214-bc8e-da9f4c9f6fdc">
 </details>
 
 <details>
   <summary>Community-Service</summary>
-  <img width="1119" alt="image" src="https://github.com/user-attachments/assets/6f12faf1-974f-4170-9586-dbe2433bfb7b">
+  <img width="517" alt="image" src="https://github.com/user-attachments/assets/acc36b91-0a3c-48c5-8cdf-851efd0ecdc5">
+
 </details>
 
 ## API 명세서
@@ -113,35 +114,43 @@
 | **비대면 진료**         | WebRTC를 사용하여 병원에 직접 가지 않고도 비대면으로 진료를 받을 수 있습니다.                 |
 |**사용자 위치기반 병원목록 조회**|geolocation을 사용하여 사용자의 위치기반 주변 병원들의 목록을 조회할 수 있습니다.|
 |**자녀공유**|사용자간에 자녀를 공유하여 예약관리 및 일정 관리를 할 수 있습니다.|
-| **공유캘린더** | 자녀의 예약 일정을 공유하며, 개인 일정까지 한 눈에 편리하게 관리 할 수 있습니다.                 |
+| **공유캘린더** | fullCalendar를 이용해 자녀의 예약 일정을 공유하며, 개인 일정까지 한눈에 편리하게 관리할 수 있습니다.                 |
 | **병원 관리** | 복잡했던 병원 등록 및 병원 일정관리, 의료진 관리의 어려움을 줄이고  편의성을 높였습니다.             |
 | **실시간 CS문의** | kafka를 사용하여 메세지를 저장하고 웹소켓을 통해 실시간으로 소통할 수 있습니다. |
 | **fcm알림**  | 예약 확인 및 대기 상황 변경 안내, 자녀 공유, 결제 알림 등 상황별 사용자에게 적절한 알림을 제공합니다.    |
-| **포트원과 카카오페이 결제** | 카카오 페이를 통해 간편하게 결제하고 포트원 결제를 통해 안전하게 결제하여 간편하고 다양한 결제 수단을 제공합니다. |
+| **단건 결제, 정기 결제** | 포트원에서 제공하는 KG이니시스를 통해 진료비를 다양한 결제수단으로 결제할 수 있고 카카오페이 정기구독을 이용해 간편하게 병원 멤버십을 이용할 수 있습니다.  |
 |**데이터시각화**|chart.js를 이용하여 회원 관리를 위한 회원 비율 조회 및 신규 회원 유입 추이를 간편하게 조회할 수 있습니다.|
+|**Prometheus, Grafana**| Prometheus를 통해 각 파드와 노드별 CPU 및 메모리 사용량을 간편하게 모니터링할 수 있으며, Grafana로 시각화하여 한눈에 확인할 수 있습니다.|
 <br>
 
 ### 주요 기능 시연영상
 
 <details>
-  <summary> WEB RTC를 사용한 비대면진료</summary>
+  <summary> Web RTC :  비대면진료</summary>
   <img src="https://github.com/user-attachments/assets/0c1eda29-38c1-4c35-a20f-fd46269466a4">
 </details>
 <details>
-  <summary> 웹소켓과 카프카로 구현한 실시간 cs 문의</summary>
+  <summary> WebSocket, STOMP, Kafka : CS채팅 </summary>
   <img src="https://github.com/user-attachments/assets/01dffb84-9210-4482-9aff-5e013df7086f">
 </details>
 <details>
-  <summary> fullCalendar를 사용한 자녀 공유 캘린더 </summary>
+  <summary> fullCalendar : 자녀 공유 캘린더 </summary>
   <img src="https://github.com/user-attachments/assets/b3efc9ce-ec1e-4e2f-9043-d33e1cbc327a">
 </details>
 <details>
-  <summary> realtimeDB를 사용한 실시간 대기인원 확인</summary>
+  <summary> firebase RealTimeDB : 실시간 대기인원 확인</summary>
   <img src="https://github.com/user-attachments/assets/93109ee0-859a-40be-9792-27e515520a6f">
 </details>
 <details>
-  <summary> FCM을 사용한 웹 푸시 알림</summary>
+  <summary> FCM :웹 푸시 알림</summary>
+	<img width="370" alt="스크린샷 2024-11-05 오전 9 18 02" src="https://github.com/user-attachments/assets/233f00b9-1d8b-43c6-94d6-e4f8862e1e53">
+	<img width="370" alt="스크린샷 2024-11-04 오후 6 41 53" src="https://github.com/user-attachments/assets/17336983-2df4-4f2e-987c-be9c48a52bcd">
+
   <img src="">
+</details>
+<details>
+  <summary> Prometheus, Grafana를 이용한 모니터링 서비스</summary>
+  <img src="https://github.com/user-attachments/assets/12e1504f-eb22-4de5-9892-4935e392a065"> 
 </details>
 
 ## 스택
@@ -174,23 +183,34 @@
 ![Git](https://img.shields.io/badge/git-F05032?style=for-the-badge&logo=git&logoColor=white)
 ![GitHub](https://img.shields.io/badge/Github-181717?style=for-the-badge&logo=Github&logoColor=white)
 ![Figma](https://img.shields.io/badge/figma-%23F24E1E.svg?style=for-the-badge&logo=figma&logoColor=white)
-
+### DevOps
+![kubernetes](https://img.shields.io/badge/kubernetes-326CE5?style=for-the-badge&logo=kubernetes&logoColor=white)
+![amazoneks](https://img.shields.io/badge/amazoneks-FF9900?style=for-the-badge&logo=amazoneks&logoColor=white)
+![amazonec2](https://img.shields.io/badge/amazonec2-FF9900?style=for-the-badge&logo=amazonec2&logoColor=white)
+![docker](https://img.shields.io/badge/docker-2496ED?style=for-the-badge&logo=docker&logoColor=white)
+![amazonelasticache](https://img.shields.io/badge/amazonelasticache-FF4F00?style=for-the-badge&logo=amazonaws&logoColor=white)
+![apachekafka](https://img.shields.io/badge/apachekafka-231F20?style=for-the-badge&logo=apachekafka&logoColor=white)
+![amazonrds](https://img.shields.io/badge/amazonrds-527FFF?style=for-the-badge&logo=amazonrds&logoColor=white)
+![amazons3](https://img.shields.io/badge/amazons3-569A31?style=for-the-badge&logo=amazons3&logoColor=white)
+![amazonroute53](https://img.shields.io/badge/amazonroute53-FF9900?style=for-the-badge&logo=amazonroute53&logoColor=white)
+![prometheus](https://img.shields.io/badge/prometheus-E6522C?style=for-the-badge&logo=prometheus&logoColor=white)
+![grafana](https://img.shields.io/badge/grafana-F46800?style=for-the-badge&logo=grafana&logoColor=white)
+![githubactions](https://img.shields.io/badge/githubactions-2088FF?style=for-the-badge&logo=githubactions&logoColor=white)
 <br>
 
 ## 시스템 아키텍쳐
-### 백엔드 아키텍쳐
-![백엔드아키텍쳐]()
+<img width="500" alt="배포아키텍쳐" src="https://github.com/user-attachments/assets/2b101298-2cfb-48d2-9ad7-d49dc416834b">
 
-### 프론트엔드 아키텍쳐
-![프론트아키텍쳐]()
+### 아키텍쳐 선택이유
+|  | **Kubernetes** | docker compose |
+|:------:|:------:|:------:|
+| 아키텍처 | 다중호스트 | 단일호스트|
+|확상성|Scale-Out|Scale-Up 
+|로드밸런싱|자동설정(세션 설정 가능)|직접설정
+|HA|장애 감지 및 자동 복구| 장애 발생 시 서비스 다운
+|설정편의성|내부 서비스 디스커버리 자동 설정 | 서비스의 IP 주소나 도메인을 직접 지정|
 
-### 배포 아키텍쳐
-<img width="500" alt="배포아키텍쳐" src="https://github.com/user-attachments/assets/900947e9-683a-4d1d-a04d-bf7b9eaaf23e">
-
-<details>
-  <summary>통신플로우</summary>
-</details>
-
+<br><br>
 ## 프로젝트 시연
 <details>
   <summary> 메인페이지</summary>
@@ -199,7 +219,7 @@
 
 <details>
   <summary> 병원 도입 신청 페이지</summary>
-  <img src="https://github.com/user-attachments/assets/49702ad3-046e-4f39-bd78-30e26859df8e">
+  <img src="https://github.com/user-attachments/assets/fa627648-8017-4e9a-b0c3-8ce699212db2">
 </details>
 
 <details>
@@ -211,12 +231,12 @@
 #### ✍️ 로그인 및 회원가입
 <details>
 <summary>카카오 소셜 회원가입</summary>
-  <img src="https://github.com/user-attachments/assets/52615016-4306-49ac-bc32-a34848f50df8">
+  <img src="https://github.com/user-attachments/assets/90abeb2c-69b6-4000-a9ef-b3d8918deff8">
 </details>
 
 <details>
 <summary>카카오 소셜 로그인</summary>
-  <img src="https://github.com/user-attachments/assets/13518e08-1f27-4d16-9766-f31c1e4cd443">
+  <img src="https://github.com/user-attachments/assets/6612aa6c-7815-475f-b769-64b4601c23df">
 </details>
 
 
@@ -224,7 +244,7 @@
 #### 👶 자녀 등록 및 수정 삭제, 공유
 <details>
   <summary>자녀 정보 추가 : 유효한 주민번호 입력</summary>
-  <img src="https://github.com/user-attachments/assets/f8299dc4-b66b-4db9-91fd-ac7b4af53f1b">
+  <img src="https://github.com/user-attachments/assets/da95e5f7-dc05-406d-bb32-77a4d29f22be">
 </details>
 
 <details>
@@ -233,13 +253,23 @@
 </details>
 
 <details>
+  <summary>자녀 사진 수정</summary>
+  <img src="https://github.com/user-attachments/assets/0031cb00-f000-48bf-8bca-69a9926ab7c7">
+</details>
+
+<details>
   <summary>자녀 삭제</summary>
-  <img src="https://github.com/user-attachments/assets/0852970d-4092-43a0-b725-4b3cd13eb828">
+  <img src="https://github.com/user-attachments/assets/9efb40a8-b8ab-4e94-93fe-7b40af00ba23">
 </details>
 
 <details>
   <summary>자녀 공유</summary>
-  <img src="https://github.com/user-attachments/assets/d3b4d2f2-852d-411c-8148-d4e6a0ddc8e0">
+<img src="https://github.com/user-attachments/assets/e297000f-4099-4ded-8f33-3e1c080d5cdb">
+</details>
+
+<details>
+  <summary>자녀 공유 알림</summary>
+<img src="https://github.com/user-attachments/assets/2abac6fc-9616-4fec-bc6f-ed332c419f09">
 </details>
 
 ### 📆 공유 캘린더
@@ -289,21 +319,22 @@
 
 ### 🏥 진료 예약
 
-#### - 당일 예약 -
+#### - 바로 대기 -
 
 <details>
-  <summary>오늘 예약 - 일반진료 예약</summary>
-  <img src="https://github.com/user-attachments/assets/dec7a7a6-e093-4e34-95b5-d1c9312907e3">
+  <summary>바로 대기 - 일반진료 예약</summary>
+  <img src="https://github.com/user-attachments/assets/6fc6b6a5-a4bf-4522-a85e-5ff9167ad473">
 </details>
 
 <details>
-  <summary>오늘 예약 - 예방접종 예약</summary>
-  <img src="https://github.com/user-attachments/assets/cafc6cc2-47d8-424c-bc93-9ab43dc8ad91">
+  <summary>바로 대기 - 예방접종 예약</summary>
+  <img src="https://github.com/user-attachments/assets/8f30b397-5d25-4894-b349-662d546f3b14">
 </details>
 
 <details>
-<summary> 오늘 예약 - 실시간 대기인원 확인</summary>
-<img src="https://github.com/user-attachments/assets/93109ee0-859a-40be-9792-27e515520a6f">
+<summary> 바로 대기 - 실시간 대기인원 확인</summary>
+<img src="https://github.com/user-attachments/assets/f663ee2e-019b-4cae-afe1-d781c457e29f">
+
 </details>
 
 #### - 스케쥴 예약 -
@@ -315,7 +346,7 @@
 
 <details>
   <summary>스케쥴 예약 - 예방접종 예약</summary>
-  <img src="https://github.com/user-attachments/assets/7b67df23-8234-498a-9016-2bcd6c9543d6">
+  <img src="">
 </details>
 
 #### - 비대면 진료 -
@@ -323,6 +354,11 @@
 <details>
   <summary>비대면 진료 - 접수</summary>
   <img src="https://github.com/user-attachments/assets/80e09dd8-429c-440f-a74f-e99de5cae30b">
+</details>
+
+<details>
+<summary>비대면 진료 실시간 대기 인원 확인</summary>
+  <img src="https://github.com/user-attachments/assets/7bf5b962-8505-4a8f-9a08-d25f6ce8ed52">
 </details>
 
 <details>
@@ -342,7 +378,7 @@
 
 <details>
   <summary>비대면 진료 - 리뷰</summary>
-  <img src="https://github.com/user-attachments/assets/00eefb24-15b9-4bc3-9bc8-ea4bab8e12cf">
+  <img src="https://github.com/user-attachments/assets/2b9f18cc-5282-46cd-9dc2-d7289eed3e3e">
 </details>
 
 <br>
@@ -354,7 +390,7 @@
 
 <details>
   <summary>예약 취소</summary>
-  <img src="https://github.com/user-attachments/assets/52c25559-7205-48f3-a68f-b38974c0d9fe">
+  <img src="https://github.com/user-attachments/assets/9d8594a5-24ac-45fb-ae47-b0571eee511e">
 </details>
 
 #### 🔍 병원 검색
@@ -418,34 +454,26 @@
 
 <details>
   <summary>댓글 삭제</summary>
-  <img src="https://github.com/user-attachments/assets/c53b8a72-2005-47d5-8e94-19980c940d6c">
+  <img src="https://github.com/user-attachments/assets/55f01e4e-ce00-40f1-8ab7-a41099065177">
 </details>
 
 <br>
 <details>
   <summary>게시글 신고</summary>
-  <img src="https://github.com/user-attachments/assets/e8dfd069-3fd1-4675-ba59-d5ec031c465c">
+  <img src="https://github.com/user-attachments/assets/c3726958-f951-43d9-a1dd-a54f5f112ce9">
 </details>
 
 <details>
   <summary>댓글 신고</summary>
-  <img src="https://github.com/user-attachments/assets/409ef23c-d372-4d1b-afb9-f224bca8c0f4">
+  <img src="https://github.com/user-attachments/assets/ff9274e4-05c0-4c05-8387-20cfa5a5d024">
 </details>
 
-<details>
-  <summary>대댓글 신고</summary>
-  <img src="https://github.com/user-attachments/assets/1c2a4b47-dad0-4b31-8b4c-b846ad792d19">
-</details>
 <br>
 <details>
-  <summary>게시글 조회수 정렬</summary>
-  <img src="https://github.com/user-attachments/assets/1d585d78-1653-455a-bae8-8d36f21b20d7">
+  <summary>게시글 정렬</summary>
+  <img src="https://github.com/user-attachments/assets/9e96c33c-14e8-45df-befd-a03f211fa375">
 </details>
 
-<details>
-  <summary>게시글 최신순 정렬</summary>
-  <img src="https://github.com/user-attachments/assets/e4224455-3b52-4482-940d-617837112574">
-</details>
 
 ### 마이페이지
 
@@ -486,7 +514,7 @@
 
 <details>
   <summary>의사 이메일 로그인</summary>
-  <img src="https://github.com/user-attachments/assets/9ec6f87c-5ad2-4a32-b9a1-4c755e0ddcc8">
+  <img src="https://github.com/user-attachments/assets/2fe390ea-7015-46ac-a312-08dcb4b6555a">
 </details>
 
 <details>
@@ -504,12 +532,12 @@
 #### ✍️ 병원 등록 및 로그인
 <details>
   <summary>병원등록</summary>
-  <img src="https://github.com/user-attachments/assets/3fabad8c-1e82-460b-9fd5-c57fb31929d7">
+  <img src="https://github.com/user-attachments/assets/81332da3-367f-4b85-ab72-2d8b50e8a2bd">
 </details>
 
 <details>
   <summary>병원등록 후 결제</summary>
-  <img src="https://github.com/user-attachments/assets/3eb06eb6-798a-4364-91fc-c44f737cb93f">
+  <img src="https://github.com/user-attachments/assets/30efb264-7b00-4c01-aac7-354662977e42">
 </details>
 
 <details>
@@ -605,7 +633,7 @@
 
 #### 📣 예약 알림
 
-<br>
+
 <details>
   <summary>당일예약 : 일반 진료 예약 알림</summary>
   <img src="https://github.com/user-attachments/assets/6c34a088-7d64-4d2e-b4d2-d69f2c9a5e6b">
@@ -617,15 +645,14 @@
 </details>
 
 <details>
-  <summary>스케쥴 예약 : 일반진료 예약 알림</summary>
-  <img src="https://github.com/user-attachments/assets/4ec0c6a2-a97b-41e0-9108-dd568fa4ebab">
+  <summary>스케쥴 예약 - 일반진료 알림</summary>
+  <img src="https://github.com/user-attachments/assets/852137da-401c-4c6c-ad28-c95a57d932eb">
 </details>
 
 <details>
-  <summary>스케쥴 예약 : 예방접종 예약알림</summary>
-  <img src="https://github.com/user-attachments/assets/b3c1b987-8c6c-4db5-9394-5a27cdf11240">
+  <summary>스케쥴 예약 - 예방접종 알림</summary>
+  <img src="https://github.com/user-attachments/assets/e0824117-4908-425e-80ee-5d439dc745a2">
 </details>
-
 
 ### 👩‍⚕️🧑‍⚕️👩‍⚕️👨‍⚕️👩‍⚕
 ### ️파닥 관리자
@@ -647,5 +674,5 @@
 
 <details>
   <summary>병원 사용 승인</summary>
-  <img src="https://github.com/user-attachments/assets/bbdeeaca-c631-4d2b-9f37-566c04cad4c4">
+  <img src="https://github.com/user-attachments/assets/6b06f3ff-cd29-4d85-9748-e870e40c365c">
 </details>
