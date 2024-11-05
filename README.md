@@ -124,23 +124,23 @@
 ### 주요 기능 시연영상
 
 <details>
-  <summary> WEB RTC를 사용한 비대면진료</summary>
+  <summary> Web RTC :  비대면진료</summary>
   <img src="https://github.com/user-attachments/assets/0c1eda29-38c1-4c35-a20f-fd46269466a4">
 </details>
 <details>
-  <summary> 웹소켓과 카프카로 구현한 실시간 cs 문의</summary>
+  <summary> WebSocket, STOMP, Kafka : CS채팅 </summary>
   <img src="https://github.com/user-attachments/assets/01dffb84-9210-4482-9aff-5e013df7086f">
 </details>
 <details>
-  <summary> fullCalendar를 사용한 자녀 공유 캘린더 </summary>
+  <summary> fullCalendar : 자녀 공유 캘린더 </summary>
   <img src="https://github.com/user-attachments/assets/b3efc9ce-ec1e-4e2f-9043-d33e1cbc327a">
 </details>
 <details>
-  <summary> realtimeDB를 사용한 실시간 대기인원 확인</summary>
+  <summary> firebase RealTimeDB : 실시간 대기인원 확인</summary>
   <img src="https://github.com/user-attachments/assets/93109ee0-859a-40be-9792-27e515520a6f">
 </details>
 <details>
-  <summary> FCM을 사용한 웹 푸시 알림</summary>
+  <summary> FCM :웹 푸시 알림</summary>
   <img src="">
 </details>
 
@@ -289,20 +289,20 @@
 
 ### 🏥 진료 예약
 
-#### - 당일 예약 -
+#### - 바로대기 -
 
 <details>
-  <summary>오늘 예약 - 일반진료 예약</summary>
+  <summary>바로대기 - 일반진료 예약</summary>
   <img src="https://github.com/user-attachments/assets/dec7a7a6-e093-4e34-95b5-d1c9312907e3">
 </details>
 
 <details>
-  <summary>오늘 예약 - 예방접종 예약</summary>
+  <summary>바로대기 - 예방접종 예약</summary>
   <img src="https://github.com/user-attachments/assets/cafc6cc2-47d8-424c-bc93-9ab43dc8ad91">
 </details>
 
 <details>
-<summary> 오늘 예약 - 실시간 대기인원 확인</summary>
+<summary> 바로대기 - 실시간 대기인원 확인</summary>
 <img src="https://github.com/user-attachments/assets/93109ee0-859a-40be-9792-27e515520a6f">
 </details>
 
