@@ -408,6 +408,7 @@ export default {
                 this.totalWaiting = entryValues.length-1;
                 this.myWaiting = this.totalWaiting;
                 this.successReserveModal = true;
+                
             } catch (e) {
                 alert(e.message)
             }
