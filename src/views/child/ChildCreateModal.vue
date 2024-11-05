@@ -35,15 +35,15 @@
                         </v-row>
                         <v-row class="input-space ssn-container" :class="{ 'error-border': !isValidSSN }">
                             <!-- 앞 6자리 입력 -->
-                            <input v-model="childSSN1" class="search-input ssn-input" maxlength="6" 
-                                 @input="moveToNextField" ref="ssn1">
+                            <input v-model="childSSN1" class="search-input ssn-input" maxlength="6"
+                                @input="moveToNextField" ref="ssn1">
                             <span class="dash">-</span>
                             <!-- 뒤 7자리 입력 -->
-                            <input v-model="childSSN2" class="search-input ssn-input" maxlength="7" 
-                                 @input="validateSSN" ref="ssn2">
+                            <input v-model="childSSN2" class="search-input ssn-input" maxlength="7" @input="validateSSN"
+                                ref="ssn2">
                         </v-row>
                         <!-- 유효하지 않을 때 에러 메시지 출력 -->
-                        <v-row v-if="!isValidSSN" class="error-message inter-light">
+                        <v-row v-if="!isValidSSN" class="error-message inter-light mt-3">
                             유효하지 않은 주민등록번호입니다.
                         </v-row>
                     </v-col>
@@ -54,7 +54,7 @@
             </v-card-actions>
         </v-card>
     </v-dialog>
-    
+
 
 </template>
 
@@ -130,8 +130,21 @@ export default {
             }
         },
         async addChild() {
-            if (!this.childName || !this.childSSN1 || !this.childSSN2 ) {
+            if (!this.childName || !this.childSSN1 || !this.childSSN2) {
                 alert('모든 필드를 입력해주세요.');
+                return;
+            }
+            // childSSN1이 6자리 숫자인지, childSSN2가 7자리 숫자인지 확인
+            const ssn1Pattern = /^\d{6}$/; // 숫자 6자리 정규식
+            const ssn2Pattern = /^\d{7}$/; // 숫자 7자리 정규식
+
+            if (!ssn1Pattern.test(this.childSSN1)) {
+                alert('주민등록번호 앞자리는 6자리 숫자여야 합니다.');
+                return;
+            }
+
+            if (!ssn2Pattern.test(this.childSSN2)) {
+                alert('주민등록번호 뒷자리는 7자리 숫자여야 합니다.');
                 return;
             }
 
@@ -157,7 +170,7 @@ export default {
                 this.closeModal();
             } catch (error) {
                 console.error('자녀 등록 중 오류 발생:', error.response.data.result.parents);
-                
+
                 if (error.response && error.response.status === 400) {  // 이미 등록된 자녀 상태
                     this.dialog = false;  // 자녀 추가 모달 닫기
                     this.$emit('child-exists', error.response.data.result.parents);  // 부모 컴포넌트에 이벤트와 메시지 전파

@@ -147,7 +147,7 @@ export default {
             this.shareModal = true; // 삭제 모달 열기
         },
         maskSSN(ssn) {
-            if (!ssn || ssn.length < 14) return ssn; // 잘못된 형식 처리
+            if (!ssn) return ssn; // 잘못된 형식 처리
             return ssn.slice(0, 8) + "*******"; // 앞 8자리만 남기고 뒤는 마스킹
         }
     }
@@ -236,6 +236,7 @@ export default {
     text-align: center;
     color: #00499E;
     margin: auto;
+    cursor: pointer;
 }
 
 .strong {

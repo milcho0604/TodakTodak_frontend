@@ -31,7 +31,7 @@
                             </v-col>
                             <v-col class="text-center" cols="5" style="margin-top: 11px;">
                                 <v-row class="inter-bold child-name">{{ child.name }}</v-row>
-                                <v-row class="inter-normal child-ssn">{{ child.ssn }}</v-row>
+                                <v-row class="inter-normal child-ssn">{{ maskSSN(child.ssn) }}</v-row>
                             </v-col>
                             <v-col cols="4">
                                 <div class="mini-button inline" v-if="this.child == child" style="margin-top: 5px;">선택됨
@@ -205,7 +205,7 @@
                             <v-row>
                                 <v-col style="margin-top: -20px">
                                     {{ child.name }} <br>
-                                    {{ child.ssn }}
+                                    {{ maskSSN(child.ssn) }}
                                 </v-col>
                             </v-row>
                             <v-row justify="center">
@@ -245,7 +245,7 @@
                                     취소
                                 </v-col>
                                 <v-col cols="4" class="modal-reserved" @click="reservedApply">
-                                    당일접수 신청
+                                    바로대기 신청
                                 </v-col>
                             </v-row>
                         </v-container>
@@ -271,7 +271,6 @@
                                 현재 내 차례는 <span style="color: #0066FF;">{{ myWaiting }}</span>번 째 입니다.
                             </v-col>
                         </v-row>
-
                         <v-row justify="center" align="center" class="mt-6">
                             <v-col cols="4" class="modal-success-home" @click="this.$router.push('/')">
                                 홈으로 가기
@@ -347,25 +346,25 @@ export default {
                 console.log(response);
 
                 const today = new Date();
-                const dayOfWeek = today.toLocaleString('en-US', { weekday: 'long'});
+                const dayOfWeek = today.toLocaleString('en-US', { weekday: 'long' });
                 this.doctorList = response.data.result.content
                     .filter(item => {
                         return item.operatingHours.some(hour => hour.dayOfWeek === dayOfWeek)
                     })
                     .map(item => {
-                    const waitingEntry = this.waitingData ? this.waitingData[item.id] : null;
-                    let waitingTurn = 0;
-                    if (waitingEntry) {
-                        const entryValues = Object.values(waitingEntry);
-                        if (entryValues.length > 0) {
-                            waitingTurn = entryValues.length;
+                        const waitingEntry = this.waitingData ? this.waitingData[item.id] : null;
+                        let waitingTurn = 0;
+                        if (waitingEntry) {
+                            const entryValues = Object.values(waitingEntry);
+                            if (entryValues.length > 0) {
+                                waitingTurn = entryValues.length;
+                            }
                         }
-                    }
-                    return {
-                        ...item,
-                        waiting: waitingTurn,
-                    }
-                });
+                        return {
+                            ...item,
+                            waiting: waitingTurn,
+                        }
+                    });
                 console.log(this.doctorList)
             } catch (e) {
                 console.log(e);
@@ -393,24 +392,29 @@ export default {
                     field: this.symptoms.toString(),
                     message: this.comment
                 }
-                
+
                 const response = await axios.post(`${process.env.VUE_APP_API_BASE_URL}/reservation-service/reservation/immediate`,
                     req);
 
                 const doctorId = this.doctorList.find(item => item.doctorEmail === response.data.result.doctorEmail).id;
 
 
-                const waitingEntry = this.waitingData ? this.waitingData[doctorId] : null;
-                const entryValues = waitingEntry ? Object.values(waitingEntry) : [];
+
 
                 this.reservedModal = false;
-                this.successReserveModal = true;
-                this.totalWaiting = entryValues.length;
-                this.myWaiting = this.totalWaiting + 1;
-                this.successReserveModal = true;
+                this.modal(doctorId)
+
             } catch (e) {
                 alert(e.message)
             }
+        },
+        modal(data) {
+            setTimeout(() => console.log("1-second delay completed"), 2000);
+            const waitingEntry = this.waitingData ? this.waitingData[data] : null;
+            const entryValues = waitingEntry ? Object.values(waitingEntry) : [];
+            this.totalWaiting = entryValues.length;
+            this.myWaiting = this.totalWaiting + 1;
+            this.successReserveModal = true;
         },
         fetchWaitingData() {
             const waitingRef = ref(this.firebaseDatabase, `todakpadak/${this.hospitalName}`);
@@ -451,7 +455,7 @@ export default {
         async reservationValidation(child) {
             try {
                 console.log(child);
-                const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/reservation-service/reservation/isValid`,{
+                const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/reservation-service/reservation/isValid`, {
                     params: {
                         hospitalId: this.hospitalId,
                         childId: child.id
@@ -460,12 +464,16 @@ export default {
                 this.isValidation = response.data;
                 if (!this.isValidation) {
                     this.successReserveModal = true;
-                }else{
+                } else {
                     this.child = child;
                 }
-            }catch(e){
+            } catch (e) {
                 console.log(e.message);
             }
+        },
+        maskSSN(ssn) {
+            if (!ssn) return ssn; // 잘못된 형식 처리
+            return ssn.slice(0, 8) + "*******"; // 앞 8자리만 남기고 뒤는 마스킹
         }
     },
     async created() {

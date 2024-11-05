@@ -92,7 +92,7 @@
                         <v-row v-else-if="item.reservationType == 'Immediate' && item.status == 'Confirmed'">
                             <v-col cols="4" v-if="reserveType != '지난예약'">
                                 <div class="ml-1 waiting">
-                                    {{  item.waiting }}명 대기중
+                                    내 대기 순번 {{ item.waiting }}번
                                 </div>
                             </v-col>
                             <v-col cols="4"></v-col>
@@ -187,7 +187,7 @@
                             <v-row>
                                 <v-col class="detail-text" style="margin-left: 6px;">
                                     {{ item.childName }} <br>
-                                    {{ item.ssn }}
+                                    {{ maskSSN(item.ssn) }}
                                 </v-col>
                             </v-row>
                             <v-row>
@@ -296,17 +296,16 @@ export default {
                         } catch (e) {
                             console.log(e);
                         }
-
                     }
                     return {
                         ...item,
                         showDetails: false,
-                        waiting: wait,
+                        waiting: wait+1,
                     }
                 }));
             } else if (req == '지난예약') {
                 const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/reservation-service/reservation/list/yesterday`);
-                console.log(response)
+                console.log("나야 예약", response)
                 this.filter = null;
                 this.reserveList = response.data.map(item => ({
                     ...item,
@@ -314,8 +313,8 @@ export default {
                     review: false,
                     medichart: ""
                 }));
-                
-                console.log(this.reserveList)
+
+                console.log("나야 예약 리스트",this.reserveList)
                 await Promise.all(this.reserveList.map(async (item, index) => {
                     await this.isReview(item.id, index);
                 }));
@@ -453,6 +452,10 @@ export default {
                     }
                 });
             });
+        },
+        maskSSN(ssn) {
+            if (!ssn) return ssn; // 잘못된 형식 처리
+            return ssn.slice(0, 8) + "*******"; // 앞 8자리만 남기고 뒤는 마스킹
         }
     },
     created() {

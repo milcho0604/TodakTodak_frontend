@@ -306,7 +306,9 @@ export default {
         async totalAmountCount() {
             try {
                 const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/reservation-service/payment/get/total`);
-                this.totalAmount = response.data;
+                console.log("나는 총 매출", response)
+                this.totalAmount = new Intl.NumberFormat().format(response.data);
+                
             } catch (e) {
                 console.error(e);
             }
