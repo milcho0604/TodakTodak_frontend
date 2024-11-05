@@ -346,25 +346,25 @@ export default {
                 console.log(response);
 
                 const today = new Date();
-                const dayOfWeek = today.toLocaleString('en-US', { weekday: 'long'});
+                const dayOfWeek = today.toLocaleString('en-US', { weekday: 'long' });
                 this.doctorList = response.data.result.content
                     .filter(item => {
                         return item.operatingHours.some(hour => hour.dayOfWeek === dayOfWeek)
                     })
                     .map(item => {
-                    const waitingEntry = this.waitingData ? this.waitingData[item.id] : null;
-                    let waitingTurn = 0;
-                    if (waitingEntry) {
-                        const entryValues = Object.values(waitingEntry);
-                        if (entryValues.length > 0) {
-                            waitingTurn = entryValues.length;
+                        const waitingEntry = this.waitingData ? this.waitingData[item.id] : null;
+                        let waitingTurn = 0;
+                        if (waitingEntry) {
+                            const entryValues = Object.values(waitingEntry);
+                            if (entryValues.length > 0) {
+                                waitingTurn = entryValues.length;
+                            }
                         }
-                    }
-                    return {
-                        ...item,
-                        waiting: waitingTurn,
-                    }
-                });
+                        return {
+                            ...item,
+                            waiting: waitingTurn,
+                        }
+                    });
                 console.log(this.doctorList)
             } catch (e) {
                 console.log(e);
@@ -400,15 +400,19 @@ export default {
 
                 const waitingEntry = this.waitingData ? this.waitingData[doctorId] : null;
                 const entryValues = waitingEntry ? Object.values(waitingEntry) : [];
-                
+
                 this.reservedModal = false;
-                this.totalWaiting = entryValues.length;
-                this.myWaiting = this.totalWaiting+1;
-                this.successReserveModal = true;
+                this.modal(entryValues.length)
 
             } catch (e) {
                 alert(e.message)
             }
+        },
+        modal(data) {
+            setTimeout(() => console.log("2-second delay completed"), 2000);
+            this.totalWaiting = data.length;
+            this.myWaiting = this.totalWaiting + 1;
+            this.successReserveModal = true;
         },
         fetchWaitingData() {
             const waitingRef = ref(this.firebaseDatabase, `todakpadak/${this.hospitalName}`);
@@ -449,7 +453,7 @@ export default {
         async reservationValidation(child) {
             try {
                 console.log(child);
-                const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/reservation-service/reservation/isValid`,{
+                const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/reservation-service/reservation/isValid`, {
                     params: {
                         hospitalId: this.hospitalId,
                         childId: child.id
@@ -458,10 +462,10 @@ export default {
                 this.isValidation = response.data;
                 if (!this.isValidation) {
                     this.successReserveModal = true;
-                }else{
+                } else {
                     this.child = child;
                 }
-            }catch(e){
+            } catch (e) {
                 console.log(e.message);
             }
         },
