@@ -405,8 +405,8 @@ export default {
 
                 this.reservedModal = false;
                 this.successReserveModal = true;
-                this.totalWaiting = entryValues.length;
-                this.myWaiting = this.totalWaiting + 1;
+                this.totalWaiting = entryValues.length-1;
+                this.myWaiting = this.totalWaiting;
                 this.successReserveModal = true;
             } catch (e) {
                 alert(e.message)
