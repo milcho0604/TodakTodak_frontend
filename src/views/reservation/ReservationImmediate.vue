@@ -392,40 +392,28 @@ export default {
                     field: this.symptoms.toString(),
                     message: this.comment
                 }
+
                 const response = await axios.post(`${process.env.VUE_APP_API_BASE_URL}/reservation-service/reservation/immediate`,
                     req);
 
+                const doctorId = this.doctorList.find(item => item.doctorEmail === response.data.result.doctorEmail).id;
+
                 this.reservedModal = false;
-                console.log(response)
-                await this.updateLatestWaitingData();
+                setTimeout(() => {
+                    this.modal(doctorId);
+                }, 500);
 
             } catch (e) {
                 alert(e.message)
             }
         },
-        async updateLatestWaitingData() {
-            this.successReserveModal = false;
-
-            try {
-                // 서버에서 최신 대기 정보를 가져옵니다
-                const updatedResponse = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/reservation-service/reservation/latest`, {
-                    params: { hospitalId: this.hospitalId }
-                });
-                const latestData = updatedResponse.data;
-
-                // 의사의 ID와 대기 데이터를 확인합니다
-                const doctorId = this.doctorList.find(item => item.doctorEmail === latestData.result.doctorEmail).id;
-                const waitingEntry = this.waitingData ? this.waitingData[doctorId] : null;
-                const entryValues = waitingEntry ? Object.values(waitingEntry) : [];
-
-                // 최신 대기 번호 설정
-                this.totalWaiting = entryValues.length;
-                this.myWaiting = this.totalWaiting + 1;
-                this.successReserveModal = true;
-
-            } catch (e) {
-                console.error("Error fetching latest waiting data:", e);
-            }
+        modal(data) {
+            setTimeout(() => console.log("1-second delay completed"), 2000);
+            const waitingEntry = this.waitingData ? this.waitingData[data] : null;
+            const entryValues = waitingEntry ? Object.values(waitingEntry) : [];
+            this.totalWaiting = entryValues.length;
+            this.myWaiting = this.totalWaiting + 1;
+            this.successReserveModal = true;
         },
         fetchWaitingData() {
             const waitingRef = ref(this.firebaseDatabase, `todakpadak/${this.hospitalName}`);
