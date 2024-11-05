@@ -9,6 +9,7 @@ import ResetPasswordPage from "@/views/member/ResetPasswordPage.vue";
 import MyNotification from "@/views/member/MyNotification.vue";
 import AdminLoginPage from "@/views/member/AdminLoginPage.vue";
 import HospitalAdminLogin from "@/views/member/HospitalAdminLogin.vue";
+import TestLogin from "@/views/member/TestLogin.vue";
 import { jwtDecode } from "jwt-decode";
 
 
@@ -67,6 +68,11 @@ export const memberRouter = [
         path: '/all/hospital/login',
         name: 'HospitalAdminLogin',
         component: HospitalAdminLogin
+    },
+    {
+        path: '/all/test/login',
+        name: 'TestLogin',
+        component: TestLogin
     },
     {
         path: '/all/loginSuccess',

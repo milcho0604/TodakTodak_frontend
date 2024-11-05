@@ -393,7 +393,7 @@ export default {
                     field: this.symptoms.toString(),
                     message: this.comment
                 }
-
+                
                 const response = await axios.post(`${process.env.VUE_APP_API_BASE_URL}/reservation-service/reservation/immediate`,
                     req);
 
