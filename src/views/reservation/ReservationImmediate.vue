@@ -394,14 +394,15 @@ export default {
                 }
                 const response = await axios.post(`${process.env.VUE_APP_API_BASE_URL}/reservation-service/reservation/immediate`,
                     req);
-
+                
+                setTimeout(() => console.log("1-second delay completed"), 2000);
+                
                 const doctorId = this.doctorList.find(item => item.doctorEmail === response.data.result.doctorEmail).id;
 
 
                 const waitingEntry = this.waitingData ? this.waitingData[doctorId] : null;
                 const entryValues = waitingEntry ? Object.values(waitingEntry) : [];
                 
-                setTimeout(() => console.log("1-second delay completed"), 2000);
                 this.reservedModal = false;
                 this.totalWaiting = entryValues.length-1;
                 this.myWaiting = this.totalWaiting;
