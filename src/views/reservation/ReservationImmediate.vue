@@ -401,10 +401,10 @@ export default {
                 const waitingEntry = this.waitingData ? this.waitingData[doctorId] : null;
                 const entryValues = waitingEntry ? Object.values(waitingEntry) : [];
                 
+                setTimeout(() => console.log("1-second delay completed"), 2000);
                 this.reservedModal = false;
                 this.totalWaiting = entryValues.length-1;
                 this.myWaiting = this.totalWaiting;
-                setTimeout(() => console.log("1-second delay completed"), 2000);
                 this.successReserveModal = true;
 
             } catch (e) {
