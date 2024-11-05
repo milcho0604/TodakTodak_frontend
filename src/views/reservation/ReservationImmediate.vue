@@ -245,7 +245,7 @@
                                     취소
                                 </v-col>
                                 <v-col cols="4" class="modal-reserved" @click="reservedApply">
-                                    당일접수 신청
+                                    바로대기 신청
                                 </v-col>
                             </v-row>
                         </v-container>
