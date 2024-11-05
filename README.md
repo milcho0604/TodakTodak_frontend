@@ -114,12 +114,13 @@
 | **비대면 진료**         | WebRTC를 사용하여 병원에 직접 가지 않고도 비대면으로 진료를 받을 수 있습니다.                 |
 |**사용자 위치기반 병원목록 조회**|geolocation을 사용하여 사용자의 위치기반 주변 병원들의 목록을 조회할 수 있습니다.|
 |**자녀공유**|사용자간에 자녀를 공유하여 예약관리 및 일정 관리를 할 수 있습니다.|
-| **공유캘린더** | 자녀의 예약 일정을 공유하며, 개인 일정까지 한 눈에 편리하게 관리 할 수 있습니다.                 |
+| **공유캘린더** | fullCalendar를 이용해 자녀의 예약 일정을 공유하며, 개인 일정까지 한눈에 편리하게 관리할 수 있습니다.                 |
 | **병원 관리** | 복잡했던 병원 등록 및 병원 일정관리, 의료진 관리의 어려움을 줄이고  편의성을 높였습니다.             |
 | **실시간 CS문의** | kafka를 사용하여 메세지를 저장하고 웹소켓을 통해 실시간으로 소통할 수 있습니다. |
 | **fcm알림**  | 예약 확인 및 대기 상황 변경 안내, 자녀 공유, 결제 알림 등 상황별 사용자에게 적절한 알림을 제공합니다.    |
-| **포트원과 카카오페이 결제** | 카카오 페이를 통해 간편하게 결제하고 포트원 결제를 통해 안전하게 결제하여 간편하고 다양한 결제 수단을 제공합니다. |
+| **단건 결제, 정기 결제** | 포트원에서 제공하는 KG이니시스를 통해 진료비를 다양한 결제수단으로 결제할 수 있고 카카오페이 정기구독을 이용해 간편하게 병원 멤버십을 이용할 수 있습니다.  |
 |**데이터시각화**|chart.js를 이용하여 회원 관리를 위한 회원 비율 조회 및 신규 회원 유입 추이를 간편하게 조회할 수 있습니다.|
+|**Prometheus, Grafana**| Prometheus를 통해 각 파드와 노드별 CPU 및 메모리 사용량을 간편하게 모니터링할 수 있으며, Grafana로 시각화하여 한눈에 확인할 수 있습니다.|
 <br>
 
 ### 주요 기능 시연영상
@@ -146,6 +147,10 @@
 	<img width="370" alt="스크린샷 2024-11-04 오후 6 41 53" src="https://github.com/user-attachments/assets/17336983-2df4-4f2e-987c-be9c48a52bcd">
 
   <img src="">
+</details>
+<details>
+  <summary> Prometheus, Grafana를 이용한 모니터링 서비스</summary>
+  <img src=""> 
 </details>
 
 ## 스택
@@ -178,12 +183,34 @@
 ![Git](https://img.shields.io/badge/git-F05032?style=for-the-badge&logo=git&logoColor=white)
 ![GitHub](https://img.shields.io/badge/Github-181717?style=for-the-badge&logo=Github&logoColor=white)
 ![Figma](https://img.shields.io/badge/figma-%23F24E1E.svg?style=for-the-badge&logo=figma&logoColor=white)
-
+### DevOps
+![kubernetes](https://img.shields.io/badge/kubernetes-326CE5?style=for-the-badge&logo=kubernetes&logoColor=white)
+![amazoneks](https://img.shields.io/badge/amazoneks-FF9900?style=for-the-badge&logo=amazoneks&logoColor=white)
+![amazonec2](https://img.shields.io/badge/amazonec2-FF9900?style=for-the-badge&logo=amazonec2&logoColor=white)
+![docker](https://img.shields.io/badge/docker-2496ED?style=for-the-badge&logo=docker&logoColor=white)
+![amazonelasticache](https://img.shields.io/badge/amazonelasticache-FF4F00?style=for-the-badge&logo=amazonaws&logoColor=white)
+![apachekafka](https://img.shields.io/badge/apachekafka-231F20?style=for-the-badge&logo=apachekafka&logoColor=white)
+![amazonrds](https://img.shields.io/badge/amazonrds-527FFF?style=for-the-badge&logo=amazonrds&logoColor=white)
+![amazons3](https://img.shields.io/badge/amazons3-569A31?style=for-the-badge&logo=amazons3&logoColor=white)
+![amazonroute53](https://img.shields.io/badge/amazonroute53-FF9900?style=for-the-badge&logo=amazonroute53&logoColor=white)
+![prometheus](https://img.shields.io/badge/prometheus-E6522C?style=for-the-badge&logo=prometheus&logoColor=white)
+![grafana](https://img.shields.io/badge/grafana-F46800?style=for-the-badge&logo=grafana&logoColor=white)
+![githubactions](https://img.shields.io/badge/githubactions-2088FF?style=for-the-badge&logo=githubactions&logoColor=white)
 <br>
 
 ## 시스템 아키텍쳐
 <img width="500" alt="배포아키텍쳐" src="https://github.com/user-attachments/assets/2b101298-2cfb-48d2-9ad7-d49dc416834b">
 
+### 아키텍쳐 선택이유
+|  | **Kubernetes** | docker compose |
+|:------:|:------:|:------:|
+| 아키텍처 | 다중호스트 | 단일호스트|
+|확상성|Scale-Out|Scale-Up 
+|로드밸런싱|자동설정(세션 설정 가능)|직접설정
+|HA|장애 감지 및 자동 복구| 장애 발생 시 서비스 다운
+|설정편의성|내부 서비스 디스커버리 자동 설정 | 서비스의 IP 주소나 도메인을 직접 지정|
+
+<br><br>
 ## 프로젝트 시연
 <details>
   <summary> 메인페이지</summary>
