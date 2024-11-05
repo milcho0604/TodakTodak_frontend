@@ -141,6 +141,9 @@
 </details>
 <details>
   <summary> FCM :웹 푸시 알림</summary>
+	<img width="370" alt="스크린샷 2024-11-05 오전 9 18 02" src="https://github.com/user-attachments/assets/233f00b9-1d8b-43c6-94d6-e4f8862e1e53">
+	<img width="370" alt="스크린샷 2024-11-04 오후 6 41 53" src="https://github.com/user-attachments/assets/17336983-2df4-4f2e-987c-be9c48a52bcd">
+
   <img src="">
 </details>
 
