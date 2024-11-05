@@ -398,11 +398,10 @@ export default {
                 const doctorId = this.doctorList.find(item => item.doctorEmail === response.data.result.doctorEmail).id;
 
 
-                const waitingEntry = this.waitingData ? this.waitingData[doctorId] : null;
-                const entryValues = waitingEntry ? Object.values(waitingEntry) : [];
+
 
                 this.reservedModal = false;
-                this.modal(entryValues.length)
+                this.modal(doctorId)
 
             } catch (e) {
                 alert(e.message)
@@ -410,7 +409,9 @@ export default {
         },
         modal(data) {
             setTimeout(() => console.log("1-second delay completed"), 2000);
-            this.totalWaiting = data;
+            const waitingEntry = this.waitingData ? this.waitingData[data] : null;
+            const entryValues = waitingEntry ? Object.values(waitingEntry) : [];
+            this.totalWaiting = entryValues.length;
             this.myWaiting = this.totalWaiting + 1;
             this.successReserveModal = true;
         },
