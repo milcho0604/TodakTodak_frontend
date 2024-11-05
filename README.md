@@ -79,21 +79,22 @@
 
 ## ERD
 ### 전체 ERD
-<img width="1115" alt="image" src="https://github.com/user-attachments/assets/e5ed1919-ef04-4536-ae35-34a265becc0a">
+<img width="1152" alt="image" src="https://github.com/user-attachments/assets/f388118d-3462-4ab9-b568-b79753410e4e">
 
 <details>
   <summary>Member-Service</summary>
-  <img width="1026" alt="image" src="https://github.com/user-attachments/assets/018d20a4-0364-4771-a4ac-ac49c4aec05e">
+  <img width="740" alt="image" src="https://github.com/user-attachments/assets/8dd04b61-3329-41cf-9c4a-dc0bbf84a149">
 </details>
 
 <details>
   <summary>Reservation-Service</summary>
-  <img width="1031" alt="image" src="https://github.com/user-attachments/assets/8e8f4c82-0489-4d4a-b05c-7c26a4a8fcba">
+  <img width="1042" alt="image" src="https://github.com/user-attachments/assets/9972b791-bb1b-4214-bc8e-da9f4c9f6fdc">
 </details>
 
 <details>
   <summary>Community-Service</summary>
-  <img width="1119" alt="image" src="https://github.com/user-attachments/assets/6f12faf1-974f-4170-9586-dbe2433bfb7b">
+  <img width="517" alt="image" src="https://github.com/user-attachments/assets/acc36b91-0a3c-48c5-8cdf-851efd0ecdc5">
+
 </details>
 
 ## API 명세서
