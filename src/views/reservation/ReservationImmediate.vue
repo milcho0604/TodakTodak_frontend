@@ -261,7 +261,7 @@
                         해당 자녀의 바로대기 접수내역이 이미 존재합니다.
                     </v-card-title>
                     <v-container style="text-align: center;" class="mt-3">
-                        <v-row v-if="isValidation">
+                        <!-- <v-row v-if="isValidation">
                             <v-col class="waiting">
                                 {{ totalWaiting }}명 대기중
                             </v-col>
@@ -270,8 +270,7 @@
                             <v-col class="waiting-text" style="margin-top: -20px;">
                                 현재 내 차례는 <span style="color: #0066FF;">{{ myWaiting }}</span>번 째 입니다.
                             </v-col>
-                        </v-row>
-
+                        </v-row> -->
                         <v-row justify="center" align="center" class="mt-6">
                             <v-col cols="4" class="modal-success-home" @click="this.$router.push('/')">
                                 홈으로 가기
@@ -408,7 +407,7 @@ export default {
                 this.totalWaiting = entryValues.length-1;
                 this.myWaiting = this.totalWaiting;
                 this.successReserveModal = true;
-                
+
             } catch (e) {
                 alert(e.message)
             }
