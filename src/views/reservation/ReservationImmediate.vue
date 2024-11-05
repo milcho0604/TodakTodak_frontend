@@ -420,6 +420,7 @@ export default {
             onValue(waitingRef, (snapshot) => {
                 const data = snapshot.val();
                 if (data) {
+                    setTimeout(() => console.log("1-second delay completed"), 1000);
                     this.waitingData = { ...data }; // 데이터를 갱신
                     console.log("Waiting data updated:", this.waitingData); // 데이터 변경 시 콘솔에 로그
                     this.fetchDoctorList();
