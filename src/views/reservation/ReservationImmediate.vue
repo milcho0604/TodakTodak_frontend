@@ -409,7 +409,7 @@ export default {
             }
         },
         modal(data) {
-            setTimeout(() => console.log("1-second delay completed"), 1000);
+            setTimeout(() => console.log("1-second delay completed"), 2000);
             this.totalWaiting = data;
             this.myWaiting = this.totalWaiting + 1;
             this.successReserveModal = true;
