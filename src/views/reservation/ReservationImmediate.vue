@@ -392,7 +392,6 @@ export default {
                     field: this.symptoms.toString(),
                     message: this.comment
                 }
-
                 const response = await axios.post(`${process.env.VUE_APP_API_BASE_URL}/reservation-service/reservation/immediate`,
                     req);
 
@@ -401,11 +400,11 @@ export default {
 
                 const waitingEntry = this.waitingData ? this.waitingData[doctorId] : null;
                 const entryValues = waitingEntry ? Object.values(waitingEntry) : [];
-
+                
                 this.reservedModal = false;
-                this.successReserveModal = true;
                 this.totalWaiting = entryValues.length-1;
                 this.myWaiting = this.totalWaiting;
+                setTimeout(() => console.log("1-second delay completed"), 2000);
                 this.successReserveModal = true;
 
             } catch (e) {
