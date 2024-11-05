@@ -300,7 +300,7 @@ export default {
                     return {
                         ...item,
                         showDetails: false,
-                        waiting: wait,
+                        waiting: wait+1,
                     }
                 }));
             } else if (req == '지난예약') {
