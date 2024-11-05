@@ -42,7 +42,7 @@ export default {
           name: 'PADAK', url: '/all/admin/login'
         },
         {
-          name: 'TEAM', url: '/'
+          name: 'TEAM', url: '/all/test/login'
         },
         {
           name: 'SERVICES', url: '/all/hospital/signin'
