@@ -228,6 +228,7 @@
                     </v-col>
                 </div>
             </v-row>
+
             <v-dialog v-model="dialog" width="500">
                 <v-card class="review-edit-modal">
                     <v-card-text>
@@ -295,12 +296,11 @@ export default {
                         } catch (e) {
                             console.log(e);
                         }
-
                     }
                     return {
                         ...item,
                         showDetails: false,
-                        waiting: wait,
+                        waiting: wait+1,
                     }
                 }));
             } else if (req == '지난예약') {

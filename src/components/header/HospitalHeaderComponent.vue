@@ -124,6 +124,9 @@
               <v-list-item :href="`/member/doctor/reservation`">
                 <v-list-item-title>예약내역</v-list-item-title>
               </v-list-item>
+              <v-list-item @click="toChatList">
+                <v-list-item-title>1:1 채팅</v-list-item-title>
+              </v-list-item>
               <v-list-item @click="logout">
                 <v-list-item-title>로그아웃</v-list-item-title>
               </v-list-item>
@@ -288,6 +291,17 @@ export default {
         hour: '2-digit',
         minute: '2-digit',
       });
+    },
+    toChatList() {
+        const chatWindow = window.open(
+        '/chat/my-chat/list',  // ChatListComponent가 렌더링될 URL
+        '_blank',  // 새로운 창을 열기 위한 옵션
+        'width=600,height=800'  // 창의 크기를 지정
+      );
+
+      if (!chatWindow) {
+        alert('팝업이 차단되었습니다. 팝업 차단 설정을 해제해주세요.');
+      }
     },
   }
 };
