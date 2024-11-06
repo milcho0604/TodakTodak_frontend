@@ -365,7 +365,6 @@ export default {
                 const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/reservation-service/hospital/sorted/list`, { params }
                 );
                 this.hospitalList = response.data.result
-                .filter(hospital => hospital.operating) // 진료중 필터링
                 .map(hospital => {
                     return {
                         ...hospital,
