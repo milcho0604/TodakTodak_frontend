@@ -365,12 +365,12 @@ export default {
                 const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/reservation-service/hospital/sorted/list`, { params }
                 );
                 this.hospitalList = response.data.result
-                .map(hospital => {
-                    return {
-                        ...hospital,
-                        keywordList: hospital.keywords ? hospital.keywords.split(",") : []
-                    };
-                });
+                    .map(hospital => {
+                        return {
+                            ...hospital,
+                            keywordList: hospital.keywords ? hospital.keywords.split(",") : []
+                        };
+                    });
                 console.log(this.hospitalList);
                 this.hospitalList = await Promise.all(
                     this.hospitalList.map(async (hospital) => {
@@ -395,10 +395,20 @@ export default {
                     })
                 );
 
+                // 거리 단위를 변환하여 정렬
+                const parseDistance = (distance) => {
+                    if (distance.endsWith("km")) {
+                        return parseFloat(distance) * 1000; // km를 m로 변환
+                    } else if (distance.endsWith("m")) {
+                        return parseFloat(distance); // m는 그대로 숫자로 변환
+                    }
+                    return Infinity; // 알 수 없는 단위의 경우 큰 값으로 처리
+                };
+
                 // sort 기준에 따라 정렬
                 this.hospitalList.sort((a, b) => {
                     if (this.sort === 'distance') {
-                        return parseFloat(a.distance) - parseFloat(b.distance);
+                        return parseDistance(a.distance) - parseDistance(b.distance);
                     } else if (this.sort === 'rating') {
                         return b.averageRating - a.averageRating;
                     } else if (this.sort === 'review') {
