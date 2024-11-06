@@ -103,7 +103,7 @@
             </v-row>
             <v-row><textarea class="text ml-4" v-model="comment"></textarea></v-row>
             <v-row class="mt-6 ml-1">
-                <div class="button inter-bold" @click="reserved()">오늘예약 신청</div>
+                <div class="button inter-bold" @click="reserved()">바로대기 신청</div>
             </v-row>
 
             <v-dialog v-model="symptomsModal" max-width="700px">
