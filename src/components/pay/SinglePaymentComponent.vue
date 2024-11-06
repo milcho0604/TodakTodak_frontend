@@ -149,7 +149,7 @@ export default {
         IMP.request_pay(paymentParams, (rsp) => {
           if (rsp.success) {
             axios
-              .post(`${process.env.VUE_APP_API_BASE_URL}/reservation-service/payment/single`, {
+              .post(`${process.env.VUE_APP_API_BASE_URL}/reservation-service/payment/single/${this.reservationId}`, {
                 impUid: rsp.imp_uid,
               })
               .then((response) => {
