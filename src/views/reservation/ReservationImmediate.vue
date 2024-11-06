@@ -11,7 +11,7 @@
                     <div class="no-wrap">
                         진료대상 선택
                     </div>
-                    <div class="custom-text2">
+                    <div class="custom-text2" @click="$router.push('/member/child')">
                         자녀 추가
                     </div>
                 </v-col>
