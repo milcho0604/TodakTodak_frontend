@@ -127,7 +127,7 @@
           } else {
             localStorage.removeItem('savedEmail');
           }
-          window.location.href = "/admin/todak/statistics";
+          window.location.href = "/";
         } catch (e) {
           if (e.response?.status === 422) {
             alert('잘못된 이메일/비밀번호입니다.');
