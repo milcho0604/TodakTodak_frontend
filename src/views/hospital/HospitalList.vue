@@ -2,16 +2,17 @@
     <v-container fluid class="custom-container">
         <v-spacer :style="{ height: '50px' }"></v-spacer>
         <!-- 검색창 -->
-        <v-row >
+        <v-row>
             <v-col cols="2">
-                
+
             </v-col>
             <v-col cols="1" class="mt-1" style="padding: 15px 0">
-                <v-btn variant="flat" size="large" style="font-size:17px; font-weight:bold;" class="mr-1" @click="locationModal = true">
+                <v-btn variant="flat" size="large" style="font-size:17px; font-weight:bold;" class="mr-1"
+                    @click="locationModal = true">
                     <!-- <v-icon> mdi-crosshairs-gps</v-icon> -->
-                    📍 {{dong}}
+                    📍 {{ dong }}
                     <v-icon class="custom-width ml-n1"> mdi-chevron-down</v-icon>
-            </v-btn>
+                </v-btn>
             </v-col>
             <v-col cols="6">
                 <v-text-field v-model="search" label="병원검색" prepend-inner-icon="mdi-magnify" variant="underlined"
@@ -198,7 +199,7 @@ export default {
         await this.getCurrentLocation();
     },
     async mounted() {
-        
+
     },
     watch: {
         // dong 값이 변경될 때마다 병원 리스트를 새로 로드
@@ -363,7 +364,9 @@ export default {
                 console.log("요청 파라미터:", params); // 요청 파라미터 로그
                 const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/reservation-service/hospital/sorted/list`, { params }
                 );
-                this.hospitalList = response.data.result.map(hospital => {
+                this.hospitalList = response.data.result
+                .filter(hospital => hospital.operating) // 진료중 필터링
+                .map(hospital => {
                     return {
                         ...hospital,
                         keywordList: hospital.keywords ? hospital.keywords.split(",") : []
@@ -392,6 +395,21 @@ export default {
                         });
                     })
                 );
+
+                // sort 기준에 따라 정렬
+                this.hospitalList.sort((a, b) => {
+                    if (this.sort === 'distance') {
+                        return parseFloat(a.distance) - parseFloat(b.distance);
+                    } else if (this.sort === 'rating') {
+                        return b.averageRating - a.averageRating;
+                    } else if (this.sort === 'review') {
+                        return b.reviewCount - a.reviewCount;
+                    } else {
+                        return 0; // 정렬 기준이 없거나 알 수 없는 경우 변경하지 않음
+                    }
+                });
+
+                console.log("정렬된 병원 목록:", this.hospitalList);
             } catch (error) {
                 console.log(error);
             }
